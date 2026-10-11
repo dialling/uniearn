@@ -1,0 +1,7 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),rules=require('../utils/rules-data');let def;
+vm.runInNewContext(fs.readFileSync(require.resolve('../pages/info/index.js'),'utf8'),{Page:v=>def=v,require:n=>n.includes('/store')?{get:()=>({language:'en',profile:{runnerRulesAccepted:true}})}:n.includes('rules-data')?rules:(()=>{throw Error('Native page must load JS rules data, not JSON.');})(),wx:{redirectTo:()=>{},navigateTo:()=>{}}});
+const page={...def,data:{...def.data},setData(v){Object.assign(this.data,v)}};
+for(const [topic,tab,count] of [['rules','students',5],['runnerRules','runners',6],['privacy','privacy',4],['unknown','students',5]]){page.onLoad({topic});assert.equal(page.data.tab,tab);assert.equal(page.data.rules.rules.length,count);assert(page.data.rules.intro);}
+page.choose({currentTarget:{dataset:{tab:'runners'}}});assert.equal(page.data.rules.rules[3].title,'Tasks: photo and note when done');page.choose({currentTarget:{dataset:{tab:'privacy'}}});assert.equal(page.data.rules.rules[3].title,'The public job hall');assert.equal(page.data.tabs.length,3);
+const xml=fs.readFileSync(require.resolve('../pages/info/index.wxml'),'utf8');assert(!xml.includes('help-link'));assert(!xml.includes('Questions?'));assert(!xml.includes('wx:else'));assert(xml.includes('numbered-card'));
+console.log('Rules entries always load full three-tab JS content; old summary fallback and bottom Help prompt removed.');

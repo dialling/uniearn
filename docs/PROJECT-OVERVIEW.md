@@ -1,8 +1,8 @@
 # UniEarn 项目总览
 
-> 本文是 `dialling/uniearn` 的架构与业务规则归纳，面向接手代码的人。
-> 文中所有结论来自仓库内实际代码；无法从代码确认的部分会明确标注。
-> 生成时间：2026-10-11 · 对应版本 `0.9.20`
+> 本文是 `uniEarn` 的架构与业务规则归纳，面向接手代码的人。
+> 文中结论均来自仓库内实际代码；无法从代码确认的部分会明确标注。
+> 对应版本 `0.9.20` · 全仓 114 JS / 40 JSON · `npm test` 退出码 0
 
 ---
 
@@ -10,7 +10,7 @@
 
 XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代拿外卖 / 其他任务**，校园帮手（Runner）顺路接单、取件、送达并拍照留证，双方确认后结算。中英双语，微信小程序 + 微信云开发。
 
-当前只开放 **XJTLU SIP 校区**；云函数里对 `universityId === 'xjtlu' && campusId === 'sip'` 做了硬校验，太仓校区只记录意向、不开放下单接单。
+当前只开放 **XJTLU SIP 校区**；云函数对 `universityId === 'xjtlu' && campusId === 'sip'` 做了硬校验，太仓校区只记录意向、不开放下单接单。
 
 ---
 
@@ -18,7 +18,12 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 
 ```
 微信小程序（原生 WXML/WXSS/JS）
-   │  app.js → utils/cloud（wx.cloud.init）+ utils/store（本地状态）+ utils/orders（轮询）
+   app.js ─ onLaunch: ensureCloud() + store.get()
+          ├ onShow:  account.call('status') + orders.start()   ← 前台每 10s 轮询 sync
+          └ onHide:  orders.stop()
+   │
+   │  utils/orders.js 是唯一的订单出入口：
+   │    call() → 云函数 → apply(snapshot) → store 本地缓存 → 通知页面刷新
    ▼
 云函数（wx-server-sdk）
    ├── orderService            订单/行程/奖励的单一写入口（事务 + 幂等）
@@ -33,7 +38,10 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
    └── 云存储 order-photos/ · ocr-temp/ · sms-temp/
 ```
 
-关键设计：**客户端不直接写数据库**。所有状态变更都走 `orderService` 一个云函数，在 `db.runTransaction` 里读取 `uniearn_order_state/team-test` 这一份文档、执行动作、再整体写回，并用 `revision` 递增做版本标记。这样并发接单、拆分订单、幂等重试都是原子的。
+两个关键设计：
+
+1. **客户端不直接写数据库。** 所有状态变更都走 `orderService`，在 `db.runTransaction` 里读取 `uniearn_order_state/team-test` 一份文档、执行动作、整体写回，并用 `revision` 递增标记版本。并发接单、拆分订单、幂等重试因此都是原子的。
+2. **客户端有一份本地缓存，只读不权威。** `utils/store.js` 把快照存进 `wx` 本地存储（键 `uniearn_cloud_cache_v1`），页面全部从缓存渲染；服务端快照到达后覆盖。缓存里的 `cloudRevision` 用来丢弃过期快照。
 
 ---
 
@@ -41,44 +49,115 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 
 | 路径 | 职责 |
 | --- | --- |
-| `app.js` / `app.json` / `app.wxss` | 小程序入口、页面注册与全局样式；`app.json` 声明 26 个页面和 3 个全局组件 |
+| `app.js` / `app.json` / `app.wxss` | 入口、页面注册（26 个页面 + 3 个全局组件）、全局样式 |
 | `sitemap.json` | 微信搜索索引配置 |
-| `project.config.json` | 微信开发者工具项目配置。`miniprogramRoot: "./"`、`cloudfunctionRoot: "cloudfunctions/"`、AppID `wxf6d43df037493a8c`、基础库 3.7.0 |
-| `assets/` | 52 个图标与插画（SVG 为主，少数 PNG） |
+| `project.config.json` | 微信开发者工具配置。`miniprogramRoot: "./"`、`cloudfunctionRoot: "cloudfunctions/"`、AppID `wxf6d43df037493a8c`、基础库 3.7.0 |
+| `assets/` | 78 个图标、插画与「云宝」吉祥物（`yuni-*` 系列共 14 组 PNG+SVG） |
 | `components/nav/` | 底部导航栏 |
 | `components/yuni/` | 「云宝」轻提示 |
 | `components/yuni-assistant/` | 「云宝」助手浮层 |
+| `pages/` | 26 个页面，见下表 |
+| `utils/` | 30 个客户端共享模块，见第 4 节 |
 | `cloudfunctions/orderService/` | 核心业务：订单、行程、奖励、聊天、支持工单 |
 | `cloudfunctions/studentAccount/` | 账户与学生认证 |
 | `cloudfunctions/parseParcelScreenshot/` | 快递截图 OCR |
 | `cloudfunctions/parseSmsScreenshot/` | 短信截图 OCR |
 | `scripts/check.js` | 全仓 JS/JSON 语法检查，然后依次执行 `tests/*.test.js` |
-| `tests/` | 回归测试，无测试框架，`node` 直跑 |
+| `tests/` | 36 个回归测试 + `helpers/order-cloud.js`，无框架，`node` 直跑 |
 | `docs/` | 本文档、版本更新说明、自检原始输出 |
-| `pages/` | ⚠️ **仓库缺失** —— `app.json` 声明的 26 个页面 |
-| `utils/` | ⚠️ **仓库缺失** —— 客户端共享模块 |
 
-> 小程序根目录就是仓库根目录，因此 `app.*`、`assets/`、`components/`、`pages/`、`utils/` 必须在顶层，不能收进 `src/`。`project.config.json` 的 `packOptions.ignore` 已把 `tests/`、`scripts/` 及所有 `.md` / `.txt` 排除出小程序包。
+> 小程序根目录就是仓库根目录，因此 `app.*`、`assets/`、`components/`、`pages/`、`utils/` 必须在顶层，不能收进 `src/`。
 
-### orderService 内部模块
+### 页面清单
 
-| 文件 | 职责 |
-| --- | --- |
-| `index.js` | 云函数入口。取 `OPENID` → 算 `actor` → 跑事务 → 补照片临时链接 |
-| `engine.js` | 动作分发（`execute`）与可见性投影（`snapshot`） |
-| `domain.js` | 订单/行程的数据操作：创建、指派、取件、送达、确认、取消、部分接单 |
-| `workflow.js` | 业务规则与展示层：费用、时限、路线匹配、状态文案、时间格式化（中国时区） |
-| `catalog.js` | 包裹尺寸目录与分类/规格文案 |
-| `rewards.js` | 优惠券、周奖金、高峰加价、邀请奖励、结算 |
-| `promotions.js` | **运营配置**：活动、优惠券、周奖、高峰、公告（改这里后重新部署） |
-| `runner-level.js` | Runner 等级、额度与暂停判定 |
-| `initial-state.json` | 数据库初始文档，部署时导入 |
+| 页面 | 标题 | 主要依赖的 utils | 作用 |
+| --- | --- | --- | --- |
+| `welcome` | — | account, store, onboarding, orders | 欢迎、微信登录/注册、用户协议与隐私入口 |
+| `campus` | — | account, store, onboarding, orders | 学校/校区选择（SIP 开放，太仓记录意向） |
+| `guide` | — | app-guide | 新手引导（有单/无单两套内容） |
+| `jobs` | — | orders, domain, workflow, ui, runner-level, hall-copy, app-guide, onboarding, saved-routes | 任务大厅：筛选、展开选择、接单入口 |
+| `job` | Choose parcels | orders, domain, catalog, account | 按件挑选包裹接单 |
+| `requests` / `request` | — | orders, workflow, domain, ui | 我的订单列表 / 订单详情（顾客侧） |
+| `posted` | — | store, orders, workflow | 我发布的订单 |
+| `public-job` | — | orders, workflow | 公开任务/行程详情 |
+| `create` | Post a pick-up | saved-routes, pickup-point, rewards, orders, domain, ocr, catalog, account, image-input, workflow | 发布代取（快递） |
+| `takeaway` | Post a pick-up | rewards, saved-routes, account, orders, workflow, ui | 发布外卖代取 |
+| `task-post` | — | store, orders, ui, workflow | 发布其他校园任务 |
+| `task` | — | orders, workflow, ui | 任务详情与完成 |
+| `trip-start` | Start a trip | orders, workflow, ui, account | 开一条行程（站点/楼栋/容量/出发时间） |
+| `trip` | Pick up & deliver | orders, domain, workflow, ui, runner-level | 取件与送达主流程 |
+| `join` | Join a trip | orders, domain, workflow | 加入别人的行程 |
+| `sms-scan` | Read pickup SMS | cloud, pickup-point, ocr | 读短信/截图取件码（另含 `parser.js`） |
+| `student-check` | — | store, account, image-input, domain, runner-level | 学生认证（学生卡 OCR + 邮箱验证码） |
+| `earnings` | — | orders, workflow, domain, catalog, earnings, runner-level | 收益汇总（周收入、单量、等级进度） |
+| `rewards` | — | orders, store, ui | 优惠券与活动 |
+| `routes` / `route-edit` | Route details | saved-routes, store, account, ui | 已保存路线列表 / 路线编辑 |
+| `chat` | — | orders, store, workflow | 订单内聊天（送达后 24h 关闭） |
+| `info` | — | store, rules-data | 规则与信息页 |
+| `help` | Help | store, orders, help-copy, help-faq | 帮助与支持工单 |
+| `profile` | — | store, domain, account, me-copy, orders, runner-level, earnings, yuni | 「我的」：资料、语言切换、认证状态、帮手等级 |
+
+`job` 与 `posted` 没有自己的 `.wxss`，复用 `utils/` 里的共享样式。
 
 ---
 
-## 4. 云函数接口
+## 4. 客户端架构（`utils/`）
 
-### 4.1 orderService
+### 数据流与同步
+
+| 模块 | 职责 |
+| --- | --- |
+| `cloud.js` | `ensureCloud()`：从 `ocr-config.js` 取 `envId`，调 `wx.cloud.init`。缺 `envId` 或 `wx.cloud` 不可用会**直接抛错**，不做静默降级 |
+| `ocr-config.js` | 只放公开的云环境 ID（`cloud1-d1g757cev03375e35`），注释明确写着**绝不放密钥** |
+| `store.js` | 本地缓存：内存 + `wx` 存储，`get` / `update` / `reset`；缓存键 `uniearn_cloud_cache_v1`；无 profile 时重建为空态 |
+| `orders.js` | **核心同步层**，见下 |
+| `account.js` | `call()` 调 `studentAccount`；`requireRunner()` 接单前门禁；`scan()` 上传 + 识别学生卡 |
+
+`orders.js` 的几个要点：
+
+- `sync()`：`sync` 动作只读拉取快照，同一时刻只允许一个在飞请求（`syncing` 去重），错误消息去重后只提示一次。
+- `start()` / `stop()`：`app.js` 的 `onShow`/`onHide` 控制；前台每 **10 秒**轮询一次。
+- `act(action, payload)`：
+  - `mutating` 单飞锁，避免连续提交两个变更
+  - 发送前把 `{at, signature, data}`（含生成的 `operationId`）写进本地 `pendingOrderOperation`
+  - 网络失败**重试一次**；业务错误（`result.ok === false`）直接抛给页面，并清掉 pending
+  - 恢复不确定请求时若 `signature` 变了，会拒绝静默重放，提示用户先核对订单
+  - pending 超过 24 小时会报错要求先核对
+- `upload(path)`：先 `prepareUpload` 拿路径再上传；同一路径的并发上传会合并成一次。
+- `bind(page, method)` / `unbind`：页面订阅刷新；快照应用后统一 `page.refresh()`。
+- `apply(snapshot)`：`revision` 落后于本地则丢弃；比对前后状态后按 `preferences` 触发「云宝」事件或 toast（新消息 `orderUpdates`、订单状态变化、新行程 `nearbyTrip`、新任务 `newJobs`），并遵守考试周免打扰（`examUntil`）。
+- `photoURL(path)`：把 `cloud://` 换成快照里的临时链接；`invalidate()` 在登录态变化时清空事件、代数、上传缓存。
+
+### 与服务端共享的模块（容易踩坑）
+
+这几个文件与 `cloudfunctions/orderService/` 下的同名文件**逐字节相同**，是刻意的双份（客户端预览/校验、服务端权威）：
+
+- `utils/domain.js` = `cloudfunctions/orderService/domain.js`
+- `utils/catalog.js` = `cloudfunctions/orderService/catalog.js`
+- `utils/runner-level.js` = `cloudfunctions/orderService/runner-level.js`
+- `utils/pickup-point.js` = `cloudfunctions/parseSmsScreenshot/pickup-point.js`
+
+**改动其中一份，必须同步另一份**，否则端上预览和服务端判定会不一致。
+
+两处**同名但内容不同**，不要当成副本：
+
+- `utils/workflow.js`：客户端专用分支。差异在于中国时区用 `+08:00` 字符串解析、`view()` 会把照片字段换成本地缓存 URL、`candidates()` 按 `campusId` 过滤。业务规则本身与云端一致。
+- `utils/rewards.js`：完全是另一个模块。客户端这份只有 `quote(id, reward, fee)`，用来在发布页**预览**券列表与抵扣金额；服务端那份才是权威的券引擎（发放、可用性、核销、结算）。
+
+### 文案、样式与辅助模块
+
+| 类别 | 模块 |
+| --- | --- |
+| 中英文案 | `onboarding.js`、`app-guide.js`（引导）、`hall-copy.js`（大厅）、`me-copy.js`（我的）、`help-copy.js` + `help-faq.js`（帮助）、`rules-data.js` + `rules.json`（规则） |
+| 交互辅助 | `ui.js`（toast 等）、`image-input.js`（选图）、`yuni.js`（吉祥物定义）、`yuni-events.js`（按 key 去重的事件队列）、`ocr.js`（OCR 调用） |
+| 业务辅助 | `earnings.js`（周收益汇总）、`saved-routes.js`（已保存地址与路线）、`pickup-point.js`（从通知里抽取真实驿站名，**从不默认到某个校区**） |
+| 共享样式 | `flow.wxss`、`final.wxss`、`v8.wxss`、`post-form.wxss` |
+
+---
+
+## 5. 云函数接口
+
+### 5.1 orderService
 
 入口签名：`exports.main(event)`。`event.action` 缺省为 `sync`（只读）。
 
@@ -129,13 +208,13 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 
 **容量上限**：订单 ≤ 200 条、行程 ≤ 200 条、单文档 ≤ 850 KB。照片通过 `cloud.getTempFileURL` 下发的临时链接有效 **600 秒**，只下发当前快照中真正可见的照片。
 
-### 4.2 studentAccount
+### 5.2 studentAccount
 
 | action | 说明 |
 | --- | --- |
 | `wechatLogin` | 用微信手机号授权码换手机号；仅接受中国大陆号；写入 `profile`、`loggedOut: false`、`authRevision+1` |
 | `sendEmailCode` / `checkEmailCode` / `agreeRules` | 邮箱验证码与规则同意（转 `email.js`） |
-| 其余 | 转 `handler.js` 的学生卡扫描流程 |
+| `scan` / `status` 等 | 转 `handler.js` 的学生卡扫描流程 |
 
 - 集合 `uniearn_accounts`，文档 ID = `sha256(openid)`
 - 字段：`profile`、`verification`、`authRevision`、`scanLock`、`loggedOut`
@@ -143,7 +222,7 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 - `config.json` 声明了 `phonenumber.getPhoneNumber` 权限
 - 依赖：`wx-server-sdk`、`tencentcloud-sdk-nodejs-ocr`、`nodemailer`
 
-### 4.3 parseParcelScreenshot / parseSmsScreenshot
+### 5.3 parseParcelScreenshot / parseSmsScreenshot
 
 两个 OCR 云函数结构几乎相同，用 `parseSmsScreenshot` 举例：
 
@@ -158,7 +237,7 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 
 ---
 
-## 5. 订单状态机
+## 6. 订单状态机
 
 ```
                     ┌──────────── cancel（顾客，仅未接单）──────────► cancelled
@@ -180,7 +259,7 @@ waiting ──accept──► taken ──pickup──► collected ──delive
 
 ---
 
-## 6. 业务规则速查
+## 7. 业务规则速查
 
 ### 价格与费用
 
@@ -238,7 +317,7 @@ waiting ──accept──► taken ──pickup──► collected ──delive
 
 ### 优惠券与奖金
 
-运营配置集中在 `promotions.js`（**改完要重新部署 orderService**）：
+运营配置集中在 `cloudfunctions/orderService/promotions.js`（**改完要重新部署 orderService**）：
 
 - `golden2026`：国庆 1–7 日 18:00–20:00 免配送费（上限 ¥8），每晚前 30 单
 - `welcome-free`：新用户免配送费（上限 ¥8，7 天，自动发放）
@@ -254,7 +333,7 @@ waiting ──accept──► taken ──pickup──► collected ──delive
 
 ---
 
-## 7. 数据模型
+## 8. 数据模型
 
 **`uniearn_order_state/team-test`**（单文档，全局状态）
 
@@ -279,11 +358,13 @@ waiting ──accept──► taken ──pickup──► collected ──delive
 
 **云存储**：`order-photos/<actorHash>/`、`ocr-temp/<actorHash>/`、`sms-temp/<actorHash>/`
 
+**客户端本地缓存**：`wx` 存储键 `uniearn_cloud_cache_v1`，含快照、`cloudRevision`、`photoURLs`、`pendingOrderOperation`。
+
 > 身份口径：`actor = sha256(openid)`。数据库里不存明文 `openid`。
 
 ---
 
-## 8. 部署与配置
+## 9. 部署与配置
 
 ### 云函数环境变量
 
@@ -297,87 +378,44 @@ waiting ──accept──► taken ──pickup──► collected ──delive
 ### 步骤
 
 1. 微信开发者工具导入本项目，填自己的 AppID，开通云开发环境
-2. 建三个集合：`uniearn_order_state`、`uniearn_accounts`、`uniearn_ocr_limits`
-3. 在 `uniearn_order_state` 里新建文档 `team-test`，内容用 `cloudfunctions/orderService/initial-state.json`
-4. 部署 4 个云函数，选「上传并部署：云端安装依赖」
+2. 把云环境 ID 写进 `utils/ocr-config.js` 的 `envId`（该文件只放公开 ID，**不要放密钥**）
+3. 建三个集合：`uniearn_order_state`、`uniearn_accounts`、`uniearn_ocr_limits`
+4. 在 `uniearn_order_state` 里新建文档 `team-test`，内容用 `cloudfunctions/orderService/initial-state.json`
+5. 部署 4 个云函数，选「上传并部署：云端安装依赖」
    - `wx-server-sdk ~3.0.1`
    - `tencentcloud-sdk-nodejs-ocr ^4.0.345`（三个函数）
    - `nodemailer ^7.0.0`（studentAccount）
-5. 给需要 OCR / 发信的云函数配上表里的环境变量
-6. 确认 `studentAccount` 的 `config.json` 权限已随部署生效（微信手机号）
+6. 给需要 OCR / 发信的云函数配上表里的环境变量
+7. 确认 `studentAccount` 的 `config.json` 权限已随部署生效（微信手机号）
 
 ---
 
-## 9. 测试现状
+## 10. 测试
 
 `npm test` → `node scripts/check.js`：先遍历全仓做 JS 语法检查与 JSON 解析，再按文件名顺序 `node` 执行每个 `tests/*.test.js`。
 
-仓库现有 **10 个** 测试文件：
+**当前 36 个测试文件全部通过，退出码 0**，输出 `Syntax checked: 114 JS files, 40 JSON files`。
 
-| 文件 | 覆盖 |
+> 输出里出现 `Coupon refresh failed Error: offline`、`studentAccount failure { ... }` 是**故意构造的失败路径**，用于验证离线降级与错误提示，不是失败。判断标准只看退出码。
+
+覆盖范围（按文件名）：
+
+| 领域 | 测试文件 |
 | --- | --- |
-| `dorm-profile.test.js` | 宿舍资料同步、认证与手机号来源、登出与不完整保存 |
-| `bilingual-hall.test.js` | 中英切换、动态姓名、单复数、空/筛选空状态、引导返回高亮 |
-| `categories.test.js` | 分类与规格 |
-| `cloud.test.js` | 云初始化顺序、OCR 与账户调用 |
-| `domain.test.js` | 领域流程 |
-| `final-english.test.js` | 英文规则总检（证明与 24h 结算、隐私、等级、拼单、中国时区） |
-| `guide-replay.test.js` | 新手引导回放 |
-| `help-template.test.js` | 帮助页模板绑定 |
-| `jobs-navigation.test.js` | 任务大厅归属/新鲜度、导航与订单状态 |
-| `jobs-selection.test.js` | 大厅展开选择、金额统计、自己发布的单不可接 |
+| 云端服务 | `order-service`、`workflow`、`domain`、`cloud`、`v8-services`、`retry` |
+| 账户与认证 | `dorm-profile`、`logout`、`student-check`、`v8-email`、`onboarding-campus` |
+| 快递与 OCR | `ocr`、`pickup-point`、`sms`、`sms-flow`、`parcel-address`、`non-dorm-orders`、`categories` |
+| 页面与流程 | `pages`、`takeaway-pages`、`task-post-controls`、`task-no-address`、`saved-routes`、`read-coupons`、`rules-full-page` |
+| 任务大厅 | `jobs-navigation`、`jobs-selection`、`bilingual-hall` |
+| 界面与文案 | `ui-bindings`、`wxss`、`help-template`、`me-copy-compatibility`、`me-sticker-inline`、`final-english` |
+| 引导与提示 | `guide-replay`、`yuni-support` |
 
-**当前只有 `dorm-profile.test.js` 能加载**（它只依赖已存在的 `cloudfunctions/studentAccount/handler.js`）。另外 9 个都因为 `utils/`、`pages/` 缺失而在 `require` 阶段就 `MODULE_NOT_FOUND`。
-
-`docs/SELF-CHECK.txt` 是一次完整自检的原始输出，记录了 **114 个 JS / 40 个 JSON** 和更多测试（例如 `tests/read-coupons.test.js`），说明原始工程比本仓库大不少。
+`docs/SELF-CHECK.txt` 保存了一次完整自检的原始输出，可与本地结果对照。
 
 ---
 
-## 10. 当前缺口与补齐步骤
+## 附：已知小问题（未改）
 
-### 缺口 A：`pages/`（26 个页面）
-
-`app.json` 声明但仓库中不存在：
-
-```
-welcome  campus  jobs  requests  create  earnings  profile  request  trip  join
-job  student-check  sms-scan  takeaway  trip-start  rewards  posted  chat  info
-task-post  task  public-job  routes  guide  help  route-edit
-```
-
-每个页面应为 `pages/<名字>/index.{js,json,wxml,wxss}`。
-
-### 缺口 B：`utils/`（11 个客户端共享模块）
-
-被 `app.js` 和测试引用但仓库中不存在：
-
-```
-store  cloud  account  orders  domain  catalog  ocr  workflow  runner-level
-help-copy  onboarding
-```
-
-注意 `utils/domain.js`、`utils/catalog.js`、`utils/workflow.js`、`utils/runner-level.js` 与 `cloudfunctions/orderService/` 下的同名文件是**两份不同的代码**（客户端版 + 云端版），不能互相替代。
-
-### 补齐方式
-
-用 GitHub 网页上传时，务必**把整个文件夹拖进去**（分次上传单个文件最容易漏目录）。更稳的方式是在原始工程目录里：
-
-```sh
-git add pages utils
-git commit -m "补传 pages/ 与 utils/"
-git push
-```
-
-补齐后 `npm test` 应打印 `Syntax checked: 114 JS files, 40 JSON files`（或更多）并跑完所有测试。若数字对不上，说明仍有遗漏。
-
-### 本次整理顺带处理的事
-
-- 新增 `docs/`，把原先散在根目录的 `UPDATE-CN.md`、`SELF-CHECK.txt` 移入（用 `git mv`，保留历史）
-- 重写根 `README.md`：原文写的是「仓库尚无内容」的占位说明，已替换为真实的项目说明 + 当前状态
-- 从版本控制中移除 `project.private.config.json`：它已在 `.gitignore` 里，是微信开发者工具的本地配置，不该提交（本地文件保留）
-
-### 已知小问题（未改）
-
-- `project.config.json` 声明基础库 `3.7.0`，本地 `project.private.config.json` 是 `3.17.3`，不一致
-- `parseParcelScreenshot` 与 `parseSmsScreenshot` 存在逐字节相同的副本文件（见 4.3，属有意重复）
+- `project.config.json` 声明基础库 `3.7.0`，而本地 `project.private.config.json` 是 `3.17.3`，不一致
+- `parseParcelScreenshot` 与 `parseSmsScreenshot` 存在逐字节相同的副本文件（见 5.3，属有意重复）
 - 代码中的「退款」「扣款」均为演示逻辑（`demo refund`、`simulated refund`），未接入真实支付；也未接入微信订阅消息

@@ -1,0 +1,13 @@
+const assert=require('node:assert/strict');
+const {extractPoint,normalizePoint}=require('../utils/pickup-point');
+assert.equal(extractPoint('【菜鸟驿站】您的包裹已到站，凭13-2-1337到太仓青草巷广场二十一号店取件。'),'太仓青草巷广场二十一号店');
+assert.equal(extractPoint('【菜鸟驿站】您的包裹已到站，凭13-2-1337到太仓青草巷广场21号店取件。'),'太仓青草巷广场21号店');
+assert.equal(extractPoint('【菜鸟驿站】包裹在苏州园区文荟公寓驿站，取件码13-2-1337。'),'苏州园区文荟公寓驿站');
+assert.equal(extractPoint('【菜鸟驿站】凭13-2-1337到园区翰林缘自提点取件。'),'园区翰林缘自提点');
+assert.equal(extractPoint('Please collect at Store No. 21, Qingcao Lane Square. Please use pickup code 27-4-2127.'),'Store No. 21, Qingcao Lane Square');
+assert.equal(normalizePoint('公园二十一号店'),'公园二十一号店');
+assert.equal(extractPoint('您的包裹已到站，取件码13-2-1337。'),'');
+const {parseSms}=require('../cloudfunctions/parseSmsScreenshot/parser');
+const multi=parseSms('【菜鸟驿站】凭13-2-1337到园区文荟公寓驿站取件\n【菜鸟驿站】凭14-2-1338到园区翰林缘自提点取件');
+assert.equal(new Set(multi.candidates.map(x=>x.point)).size,2);
+console.log('Station extraction: full SMS removed, actual name variants retained, campus stations separated, no fixed default.');

@@ -1,0 +1,16 @@
+@import "../../utils/post-form.wxss";
+.route-line{border-left:3rpx solid #d7d4ca;padding-left:24rpx;margin:18rpx 0}.route-line .value{margin-bottom:18rpx}
+.dash{border:2rpx dashed #c8ac9b;border-radius:18rpx;padding:20rpx;margin:18rpx 0}.thumb{width:140rpx;height:140rpx;border-radius:16rpx}
+.bag-control{margin:18rpx 0}.bag-control>view:first-child{flex:1;min-width:0}.bag-control .hint{margin:4rpx 0}
+.soup-control{display:flex;align-items:center;gap:12rpx;border:1rpx solid #dfdfd8;border-radius:18rpx;padding:18rpx;min-height:90rpx}.soup-control .hint{margin:2rpx 0}
+.fee-control{margin:22rpx 0 4rpx}.fee-round{flex:none;width:72rpx;height:72rpx;line-height:72rpx;text-align:center;border-radius:50%;background:#efefeb;font-size:36rpx}.fee-value{flex:1;text-align:center;white-space:nowrap}.fee-value .amount{font-size:50rpx;font-weight:800}.fee-value .hint{font-size:24rpx}
+
+.coupon-unavailable{opacity:.55;border-style:dashed}.coupon-block .pills{flex-wrap:wrap}
+
+.campus-proof{display:flex;align-items:center;gap:18rpx;padding:22rpx 24rpx;margin:16rpx 0 22rpx;border-radius:22rpx;background:#e8f2ec;color:#41775b;font-weight:650}.campus-proof>view{flex:1}.proof-icon{border:3rpx solid #41775b;border-radius:50%;width:30rpx;height:30rpx;text-align:center;line-height:27rpx}.address-card{margin-bottom:22rpx!important}.destination-column{width:57%}.room-column{flex:1;min-width:0}.orange-label{color:#ad5a35!important;font-weight:700}.route-tag{background:#fff1e7;border:1rpx solid #ecd4c4;color:#9b472c;padding:6rpx 13rpx;border-radius:9rpx;font-size:22rpx}.drop-pills{flex-wrap:nowrap!important}.drop-pills .pill{flex:1;text-align:center;padding:12rpx 8rpx;font-size:23rpx}.bag-phone{text-align:center;flex:none}.phone-field{flex:1;min-width:0}.phone-digits{background:#191a1d;color:white;border-radius:12rpx;padding:8rpx 16rpx;letter-spacing:3rpx;font-weight:750}.save-route-choice{display:flex;align-items:flex-start;gap:16rpx;padding:20rpx;border:1rpx solid #dfdfd8;border-radius:18rpx;background:white;margin:24rpx 0}.save-route-choice .check{margin-top:6rpx}.save-route-choice>view{flex:1}.privacy-lock{margin-top:24rpx!important}.other-place-link{color:#ad5a35;font-weight:650;margin:22rpx 0}.wechat-number{margin:8rpx 0 12rpx;padding:12rpx 20rpx;background:#f3faf3;border:1rpx solid #a6d8b4;color:#41775b;border-radius:40rpx;font-size:23rpx;line-height:1.5;text-align:left}.wechat-number::after{border:0}.fee-value .price-input{display:inline-block;width:95rpx;height:60rpx;font-size:50rpx;font-weight:800;vertical-align:middle;text-align:center}.post-header{position:sticky;top:0;z-index:10}
+
+.privacy-lock{display:flex;align-items:center;gap:12rpx}.lock-icon{width:24rpx;height:24rpx;flex:none}
+
+.takeaway-page .phone-invalid{border:2rpx solid #cc6e40}.phone-error{font-size:24rpx;font-weight:650;color:#ae3324;margin:12rpx 0 18rpx}
+
+.takeaway-page .place-tag{background:#fff;border-color:#dfdfd8;color:#65645d}.formatted-phone{font-weight:600;letter-spacing:1rpx}
