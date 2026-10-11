@@ -1,0 +1,23 @@
+<view class="rules-page">
+ <view class="rules-header">
+  <view class="flow-title">{{labels.title}}</view>
+  <view class="hint">{{labels.version}} · {{agreement}}</view>
+  <view class="final-tabs">
+   <text wx:for="{{tabs}}" wx:key="id" class="{{tab===item.id?'active':''}}" data-tab="{{item.id}}" bindtap="choose">{{item.label}}</text>
+  </view>
+ </view>
+ <view class="rules-body">
+  <view class="rules-intro">{{rules.intro}}</view>
+  <view class="numbered-card {{tab}}">
+   <view wx:for="{{rules.rules}}" wx:key="n" class="rule-row">
+    <text class="number">{{item.n}}</text>
+    <view class="rule-copy">
+     <view class="rule-title">{{item.title}}</view>
+     <view class="rule-text">{{item.text}}</view>
+    </view>
+   </view>
+  </view>
+  <button wx:if="{{tab==='privacy'}}" class="delete-button" bindtap="deletion">{{labels.deletion}}</button>
+ </view>
+</view>
+<yuni-assistant/>

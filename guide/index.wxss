@@ -1,0 +1,2 @@
+@import "../../utils/flow.wxss";
+.guide-page{background:white;min-height:100vh;padding:48rpx 40rpx}.guide-art{text-align:center;margin:60rpx 0 25rpx}.guide-art image{width:240rpx;height:270rpx}.guide-copy{font-size:30rpx;line-height:1.8;color:#555850;margin:25rpx 0 60rpx}.yuni-name{color:#41775b;font-size:25rpx;font-weight:700}.action-row{margin-top:40rpx}
