@@ -1,0 +1,11 @@
+{
+  "name": "uniearn-miniprogram",
+  "version": "0.9.20",
+  "private": true,
+  "scripts": {
+    "test": "node scripts/check.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

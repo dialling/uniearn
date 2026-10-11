@@ -1,0 +1,78 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> uniearn-miniprogram@0.9.20 test
+> node scripts/check.js
+
+Syntax checked: 114 JS files, 40 JSON files
+Bilingual hall: approved copy, dynamic full name, unchanged places, singular English, empty/filtered states, guide back focus and all template expressions passed.
+Mixed size pricing, partial acceptance/restore, optional takeaway code and category separation passed
+Cloud initialized before OCR and account calls, including after SDK replacement
+Domain flow checks passed
+Dorm profile syncing updates only the authenticated delivery fields, retains verification and phone provenance, and rejects incomplete or logged-out saves.
+Final English rules: task proof and 24h settlement, public privacy, runner levels and pause, five-bag and 15-minute grouping, China time, ETA cancellation and seal acknowledgement passed.
+Me guide replay: welcome, real page/component highlights, forward/back, finish/skip and legacy entry passed
+Help template binds complete bilingual labels without inline literal expressions.
+Jobs ownership/freshness, other-runner Taken, confirmed Done, saved place address, Me navigation and order/trip states passed
+Jobs expansion: grouped and single orders/tasks, selected fee/count, collapse persistence, own-post guard, acceptance subset and refresh passed.
+Logout cancel/confirm, persistent logged-out status, retained records, card re-login and stale scan guard passed.
+Me copy initializes both languages without Object.entries/fromEntries.
+Sticker selection uses the inline hint, preserves locked/unlocked state and follows language changes.
+orderService  Choose requests on the same route
+orderService  Choose a delivery location.
+orderService  Describe exactly where to deliver.
+Non-dorm cloud orders: no room required, complete private address, server-owned grouping key, destination isolation and accepting runner visibility passed.
+OCR field extraction checks passed
+Pending parcel list: all six codes, station assignment, tracking number exclusion, missing address and multiple stations passed.
+Confirmed icon alias cleaned; legitimate 公 preserved.
+Direct OpenID entry, no contact authorization, bilingual onboarding, closed Taicang, persisted campus and interest, campus-isolated public jobs/trips, legacy order retention and deferred runner contact checks passed.
+orderService  You cannot accept your own order.
+orderService  Complete your student check before accepting jobs.
+orderService  Only the customer who posted this order can do that.
+orderService  A selected request is no longer available
+orderService  This is not your active trip.
+orderService  Only the customer who posted this order can do that.
+orderService  Upload this photo again before submitting.
+orderService  Request is not ready for confirmation
+orderService  Operation ID was reused.
+orderService  Too many boxes for this trip
+orderService  Save your profile / log in in Me first.
+Cloud service: server identity, privacy, concurrent acceptance, idempotency, private photo access, split parcel privacy, atomic joins, 1h/48h settlement and logout passed.
+First Me visit, saved profile, student states, mixed size form and cloud posting boundary checks passed
+Parcel address: save/update/reopen, independent takeaway and parcel lists/defaults/deletion/profile, persistent instructions, new-address callback, non-dorm address and OCR pickup/code isolation passed.
+Station extraction: full SMS removed, actual name variants retained, campus stations separated, no fixed default.
+Coupon refresh failed Error: offline
+    at orders.sync (/workspace/scratch/4b64935a927d/current/source/UniEarn-v9-English/tests/read-coupons.test.js:26:30)
+    at Object.loadCoupons (/workspace/scratch/4b64935a927d/current/source/UniEarn-v9-English/pages/create/index.js:14:39)
+    at /workspace/scratch/4b64935a927d/current/source/UniEarn-v9-English/tests/read-coupons.test.js:27:15
+    at Object.<anonymous> (/workspace/scratch/4b64935a927d/current/source/UniEarn-v9-English/tests/read-coupons.test.js:32:3)
+    at Module._compile (node:internal/modules/cjs/loader:1872:14)
+    at Object..js (node:internal/modules/cjs/loader:2003:10)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+Read exact screenshot SMS, two parcel totals, owned coupon display/selection and offline refresh passed.
+studentAccount failure {
+  action: 'scan',
+  stage: 'ocr',
+  code: 'UNKNOWN',
+  message: 'service failed'
+}
+Unlabelled vertical card; >10 immediate retries; legacy counters ignored; concurrent guard, exception release and expired lease recovery passed.
+Try again reopens image picker and scans, with specific field failure feedback.
+Rules entries always load full three-tab JS content; old summary fallback and bottom Help prompt removed.
+Saved routes: first-entry auto-save, reopening, cancel isolation, per-order edit/drop-off isolation, precise non-dorm address, account isolation and authorized phone reuse passed.
+Review page: select/deselect, event payload, parcel cap, mixed-station guard; year boundary passed.
+Cloud flow: file-only prepare/request, caller folder isolation, OCR language, parser integration and temporary file cleanup passed (mock SDK).
+SMS parser: screenshot fixture, deduplication, date gap, unknown dates, OCR order, English and Chinese dates passed.
+Student card: required fields, ambiguity, caller isolation, auto registration, unreadable and cleanup passed.
+orderService  Too many boxes for this trip
+Cloud page integration: lost-response retry, post, customer list, raise, two identities, pickup, cloud photo, confirm, runner-only earnings, cross-device share and join rollback passed.
+Task without profile address/phone: front-end publishing and cloud accept/proof/confirmation passed; takeaway validation retained
+Task form: China-time midnight rollover, past deadline, minimum/decimal prices, example, agreement and cloud posting passed
+New page bindings and registered page assets checked
+V8 email: fixed domain, SMTP mock, no raw stored code, send limits, attempts, expiration, one-time consumption, identity uniqueness and rules passed.
+V8: coupon identity/use/refund/split totals, runner rules, chat privacy/expiry, indexed pickup, progress idempotence, self-pickup rollback and campaign windows passed.
+Takeaway fees, whole-order raises, timed cancellations, 1h/48h settlement, disputes, atomic trip joins and schedule matching passed
+New WXSS selectors checked for unsupported wildcard syntax
+Support ticket persistence/privacy/rate limit; Yuni queue, transition deduplication and hidden-page recovery passed.
