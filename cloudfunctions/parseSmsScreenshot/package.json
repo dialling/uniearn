@@ -1,0 +1,10 @@
+{
+  "name": "parse-sms-screenshot",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "dependencies": {
+    "tencentcloud-sdk-nodejs-ocr": "^4.0.345",
+    "wx-server-sdk": "~3.0.1"
+  }
+}

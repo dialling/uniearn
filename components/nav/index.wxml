@@ -1,0 +1,17 @@
+<view wx:if="{{showCreateSheet}}" class="sheet-backdrop" bindtap="closeCreateSheet"></view>
+<view wx:if="{{showCreateSheet}}" class="create-sheet" catchtap="stopSheetTap">
+ <image class="sheet-yuni" src="/assets/yuni-work.png" mode="aspectFit"/>
+ <view class="sheet-handle"></view>
+ <view class="sheet-header"><text>{{zh?"你想做什么？":"What do you want to do?"}}</text><view class="sheet-close" bindtap="closeCreateSheet">×</view></view>
+ <view class="sheet-choice parcel" data-mode="request" data-category="parcel" bindtap="create"><view class="sheet-icon"><image src="/assets/sheet-pickup.svg"/></view><view class="sheet-copy"><view class="sheet-name">{{zh?"发布代取":"Post a pick-up"}}</view><view class="sheet-description">{{zh?"请校园帮手取外卖、拿快递，送到你的门口。":"Takeaway from the gate or a parcel from the station, brought to your door"}}</view></view><text class="sheet-arrow">›</text></view>
+ <view class="sheet-choice task" data-mode="task" bindtap="create"><view class="sheet-icon"><image src="/assets/sheet-task.svg"/></view><view class="sheet-copy"><view class="sheet-name">{{zh?"发布其他任务 ":"Post any task "}}<text class="sheet-new">{{zh?"新":"New"}}</text></view><view class="sheet-description">{{zh?"写下需要帮忙的事，价格由你来定。":"Write what you need done and set your own price"}}</view></view><text class="sheet-arrow">›</text></view><view class="sheet-soon-heading">{{zh?"接单赚零花钱":"Earn"}}</view>
+ <view class="sheet-choice trip" data-mode="trip" data-category="parcel" bindtap="create"><view class="sheet-icon"><image src="/assets/sheet-trip.svg"/></view><view class="sheet-copy"><view class="sheet-name">{{zh?"发起行程":"Start a trip"}}</view><view class="sheet-description">{{zh?"刚好去取外卖或快递？顺路帮同学带回来，赚点零花钱。":"Going to the gate or a station anyway? Bring others\u2019 orders back and earn"}}</view></view><text class="sheet-arrow">›</text></view>
+
+</view>
+<view class="nav {{active==='profile'?'me-nav':''}}">
+ <view class="item {{active==='jobs'?'selected':''}}" data-key="jobs" bindtap="go"><image class="nav-icon" mode="aspectFit" src="{{active==='jobs'?'/assets/jobs-active.png':'/assets/jobs.png'}}"/><text>{{zh?"任务大厅":"Jobs"}}</text></view>
+ <view class="item nav-orders {{active==='requests'?'selected':''}}" data-key="requests" bindtap="go"><image class="nav-icon" mode="aspectFit" src="{{active==='requests'?'/assets/orders-active.png':'/assets/orders.png'}}"/><text>{{zh?"我的订单":"My orders"}}</text></view>
+ <view class="plus nav-plus" data-key="create" bindtap="go">＋</view>
+ <view class="item {{active==='rewards'?'selected':''}}" data-key="rewards" bindtap="go"><image class="nav-icon" mode="aspectFit" src="{{active==='rewards'?'/assets/rewards-active.png':'/assets/rewards.png'}}"/><text>{{zh?"动态":"News"}}</text></view>
+ <view class="item nav-me {{active==='profile'?'selected':''}}" data-key="profile" bindtap="go"><image class="nav-icon" mode="aspectFit" src="{{active==='profile'?'/assets/profile-green.svg':'/assets/profile.png'}}"/><text>{{zh?"我的":"Me"}}</text></view>
+</view>
