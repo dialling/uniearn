@@ -11,24 +11,92 @@
   <view class="muted">{{profile.onboarded?(language==='zh'?'更新你的资料和常用地址。':'Update your details and usual address.'):(language==='zh'?'先填写姓名和手机号，注册后可以再添加常用地址。':'Start with your name and phone number. You can add a usual address after registration.')}}</view>
   <view class="field-label">{{language==='zh'?'姓名':'Full name'}}</view><input class="field" maxlength="60" value="{{form.name}}" data-field="name" bindinput="input" placeholder="{{language==='zh'?'与学生证一致':'Name on your student card'}}"/>
   <view class="field-label">{{language==='zh'?'手机号':'Phone number'}}</view><input class="field" type="number" maxlength="11" value="{{form.phone}}" data-field="phone" bindinput="input" placeholder="{{language==='zh'?'11 位手机号':'11-digit mobile number'}}"/>
-  <block wx:if="{{profile.onboarded}}"><view class="row"><view class="half"><view class="field-label">{{language==='zh'?'宿舍 / 楼栋':'Dorm / building'}}</view><input class="field" value="{{form.dorm}}" data-field="dorm" bindinput="input" placeholder="D01"/></view><view class="half"><view class="field-label">{{language==='zh'?'房间号':'Room'}}</view><input class="field" value="{{form.room}}" data-field="room" bindinput="input" placeholder="412"/></view></view><view class="field-label">{{language==='zh'?'常用外卖取餐点':'Usual takeaway pickup point'}}</view><input class="field" value="{{form.pickup}}" data-field="pickup" bindinput="input" placeholder="Takeaway counter A"/></block>
+
+  <block wx:if="{{profile.onboarded}}"><view class="row"><view class="half"><view class="field-label">{{language==='zh'?'宿舍 / 楼栋':'Dorm / building'}}</view><input class="field" value="{{form.dorm}}" data-field="dorm" bindinput="input" placeholder="D01"/></view><view class="half"><view class="field-label">{{language==='zh'?'房间号':'Room'}}</view><input class="field" value="{{form.room}}" data-field="room" bindinput="input" placeholder="412"/></view></view><view class="field-label">{{language==='zh'?'常用外卖取餐点':'Usual takeaway pickup point'}}</view><input class="field" value="{{form.pickup}}" data-field="pickup" bindinput="input" placeholder="Takeaway counter A"/>
+  <view class="address-privacy"><image src="/assets/lock-outline.svg"/><text>{{ui.private}}</text></view></block>
   <button class="btn" bindtap="save" loading="{{saving}}" disabled="{{saving || loading}}">{{profile.onboarded?(language==='zh'?'保存修改':'Save changes'):(language==='zh'?'注册并继续':'Register and continue')}}</button><button wx:if="{{profile.onboarded}}" class="btn outline" bindtap="cancelEdit">{{language==='zh'?'返回':'Back'}}</button>
  </view>
 <block wx:else>
-<view class="profile-heading"><view class="avatar {{isRunner?'runner-avatar':'customer-avatar'}}">{{initial}}</view><view class="profile-name"><view class="profile-top"><view class="profile-full-name">{{profile.name||ui.account}}</view><button class="edit-button" bindtap="edit"><image src="/assets/edit-outline.svg"/>{{ui.edit}}</button></view><view wx:if="{{!isRunner && profile.name}}" class="public-name">{{ui.others}} <text>{{publicName}}.</text></view><view class="wechat-line"><image src="/assets/shield-outline.svg"/>{{ui.wechat}}</view><view class="student-badge {{isRunner?'verified':''}}" bindtap="studentCheck">{{isRunner?'✓ '+ui.verified+(verifiedDate?' '+verifiedDate:''):ui.check}}</view></view></view>
+<!-- ① 顶部大卡：资料 + 双徽章 + 等级进度 -->
+<view class="me-header">
+ <view class="me-header-top">
+  <view class="avatar header-avatar">{{initial}}</view>
+  <view class="header-main">
+   <view class="header-name">{{profile.name||ui.account}}</view>
+   <view class="header-badge {{isRunner?'verified':''}}" bindtap="studentCheck">{{isRunner?'✓ '+ui.verified+(verifiedDate?' '+verifiedDate:''):ui.check}}</view>
+  </view>
+  <button class="edit-button" bindtap="edit"><image src="/assets/edit-outline.svg"/>{{ui.edit}}</button>
+  <view wx:if="{{isRunner}}" class="runner-tag">● {{ui.runnerTag}}</view>
+ </view>
+ <view class="badge-row">
+  <view class="tier-badge">{{ui.badgePosts}} · {{ui[postedBadge]}}</view>
+  <view class="tier-badge">{{ui.badgeJobs}} · {{ui[jobsBadge]}}</view>
+ </view>
+ <view class="header-level" bindtap="toggleLevel">
+  <text class="hl-label">{{ui.campusHelper}} · {{tierName}}</text>
+  <text class="hl-next">{{nextJobsText}}</text>
+  <text class="hl-caret">{{levelOpen?'⌄':'›'}}</text>
+ </view>
+ <view class="hl-track"><view class="hl-fill" style="width:{{progress}}%"/></view>
+ <view class="hl-tiers">
+  <text class="{{rankName==='New'?'cur':''}}">{{ui.tierNew}}</text>
+  <text class="{{rankName==='Trusted'?'cur':''}}">{{ui.tierTrusted}}</text>
+  <text class="{{rankName==='Top'?'cur':''}}">{{ui.tierTop}}</text>
+ </view>
+ <view wx:if="{{levelOpen}}" class="level-detail">
+  <view class="level-grid"><view wx:for="{{levelSteps}}" wx:key="name"><view class="level-track"><view style="width:{{item.progress}}%"/></view><view class="strong {{item.active?'green-text':''}}">{{item.name}}</view><view class="hint">{{item.description}}</view></view></view>
+  <view class="level-nudge">{{levelMessage}}</view>
+  <view class="mark-note"><text class="mark-count">{{activeMarks}}</text><view>{{activeMarks?ui.marksRule:ui.noMarks}}<view wx:for="{{markDetails}}" wx:key="key" class="hint">{{item.reason}} · {{item.expires}}</view></view></view>
+ </view>
+</view>
+<!-- ② 数据卡 -->
 <view class="me-stats"><view bindtap="firstStat"><text class="stats-number">{{isRunner?profile.jobsDone||0:postedCount}}</text><text>{{isRunner?ui.jobsRun:ui.orders}}</text></view><view bindtap="past"><text class="stats-number">{{isRunner?postedCount:deliveredCount}}</text><text>{{isRunner?ui.orders:ui.delivered}}</text></view><view bindtap="coupons"><text class="stats-number">{{couponCount}}</text><text>{{ui.coupons}}</text></view></view>
-<view class="flow-card stickers-card"><view class="row"><text class="strong">{{ui.stickers}}</text><text class="sticker-count">{{unlockedCount}} {{ui.of}} 6</text></view><view class="stickers"><view wx:for="{{stickers}}" wx:key="id" class="sticker {{item.unlocked?'':'locked'}}" data-id="{{item.id}}" bindtap="sticker"><image src="/assets/yuni-{{item.pose}}.png" mode="aspectFit"/><view>{{item.name}}</view></view></view><view class="hint sticker-hint">{{stickerHint||ui.tapSticker}}</view><view class="tips-row"><view><view class="strong">{{ui.tips}}</view><view class="hint">{{ui.tipsHelp}}</view></view><switch checked="{{tips}}" color="#41775b" bindchange="tipToggle"/></view></view>
-<block wx:if="{{!isRunner}}"><view class="become-card"><view class="become-label">{{ui.become}}</view><view class="become-title">{{ui.earnTitle}}</view><view class="become-description">{{ui.earnHelp}}</view><button bindtap="studentCheck">{{ui.start}}</button></view><view class="ask-card" bindtap="askYuni"><image src="/assets/yuni-work.png" mode="aspectFit"/><text>{{ui.how}} <text class="green-text">{{ui.ask}} ›</text></text></view></block>
-<block wx:else><view class="flow-card earnings-summary" bindtap="earnings"><view class="row card-heading"><text>{{ui.earnings}}</text><text class="green-text">{{ui.details}} ›</text></view><view class="row earnings-body"><view><view class="earnings-total">¥{{earnTotal}}</view><view class="hint"><text class="strong">¥{{earnWaiting}}</text> {{ui.waiting}}</view></view><view class="mini-bars"><view wx:for="{{earnBars}}" wx:key="index" style="height:{{item}}rpx"/></view></view><view class="earnings-note"><image src="/assets/balance-outline.svg"/><text>{{ui.testBalance}}</text></view></view>
-<view class="flow-card level-card"><view class="row card-heading"><text>{{ui.level}}</text><text class="green-text">{{level}}</text></view><view class="hint tier-line">{{tierLabel}}</view><view class="level-grid"><view wx:for="{{levelSteps}}" wx:key="name"><view class="level-track"><view style="width:{{item.progress}}%"/></view><view class="strong {{item.active?'green-text':''}}">{{item.name}}</view><view class="hint">{{item.description}}</view></view></view><view class="level-nudge">{{levelMessage}}</view><view class="mark-note"><text class="mark-count">{{activeMarks}}</text><view>{{activeMarks?ui.marksRule:ui.noMarks}}<view wx:for="{{markDetails}}" wx:key="key" class="hint">{{item.reason}} · {{item.expires}}</view></view></view></view></block>
-<view class="flow-card delivery-card"><view class="row card-heading"><text>{{ui.delivery}}</text><text class="link" bindtap="edit">{{hasDeliveryAddress?ui.edit:ui.add}}</text></view><view wx:if="{{hasDeliveryAddress}}"><view class="delivery-line"><view class="settings-icon"><image src="/assets/university-outline.svg"/></view><view><view class="strong">{{profile.dorm}} · {{profile.room}}</view><view class="hint">{{ui.drop}}</view></view></view><view wx:if="{{profile.phone}}" class="delivery-line"><view class="settings-icon"><image src="/assets/phone-outline.svg"/></view><text class="phone-number">{{profile.phone}}</text></view></view><view wx:else class="address-not-set">{{ui.notSet}}</view><view class="address-privacy"><image src="/assets/lock-outline.svg"/><text>{{ui.private}}</text></view></view>
+<!-- ③ 收益卡（跑手） -->
+<block wx:if="{{isRunner}}"><view class="flow-card earnings-summary" bindtap="earnings"><view class="row card-heading"><text>{{ui.earnings}}</text><text class="green-text">{{ui.details}} ›</text></view><view class="row earnings-body"><view><view class="earnings-total">¥{{earnTotal}}</view><view class="hint"><text class="strong">¥{{earnWaiting}}</text> {{ui.waiting}}</view></view><view class="mini-bars"><view wx:for="{{earnBars}}" wx:key="index" style="height:{{item}}rpx"/></view></view><view class="earnings-note"><image src="/assets/balance-outline.svg"/><text>{{ui.testBalance}}</text></view></view></block>
+<!-- ④ Yuni 贴纸（折叠入口） -->
+<view class="flow-card stickers-card">
+ <view class="row sticker-head" bindtap="toggleStickers" hover-class="sticker-head-press"><text class="strong">{{ui.stickers}}</text><text class="sticker-count">{{unlockedCount}} {{ui.of}} 6 {{stickersOpen?'⌄':'›'}}</text></view>
+ <view class="stickers-mini" bindtap="toggleStickers">
+  <view wx:for="{{stickers}}" wx:key="id" class="mini-sticker {{item.unlocked?'':'locked'}}"><image src="/assets/yuni-{{item.pose}}.png" mode="aspectFit"/></view>
+ </view>
+ <block wx:if="{{stickersOpen}}">
+  <view class="stickers"><view wx:for="{{stickers}}" wx:key="id" class="sticker {{item.unlocked?'':'locked'}}" data-id="{{item.id}}" bindtap="sticker"><image src="/assets/yuni-{{item.pose}}.png" mode="aspectFit"/><view>{{item.name}}</view></view></view>
+  <view class="hint sticker-hint">{{stickerHint||ui.tapSticker}}</view>
+ </block>
+</view>
+<!-- 非跑手：成为跑手 -->
+<block wx:if="{{!isRunner}}"><view class="become-card"><view class="become-label">{{ui.become}}</view><view class="become-title">{{ui.earnTitle}}</view><view class="become-description">{{ui.earnHelp}}</view><button bindtap="studentCheck">{{ui.start}}</button></view></block>
+<!-- ⑤ 订单与工具 -->
+<view class="section">{{ui.tools}}</view>
+<view class="flow-card menu-card">
+ <view class="menu-row" bindtap="myOrders"><view class="settings-icon"><image src="/assets/receipt-outline.svg"/></view><view class="menu-copy">{{ui.myOrders}}<view class="hint">{{ui.myOrdersSub}}</view></view><text class="setting-chevron">›</text></view>
+ <view class="menu-row" bindtap="routes"><view class="settings-icon"><image src="/assets/route-outline.svg"/></view><view class="menu-copy">{{ui.routes}}<view class="hint">{{ui.routesHelp}}</view></view><text class="setting-chevron">›</text></view>
+ <view class="menu-row" bindtap="edit"><view class="settings-icon"><image src="/assets/university-outline.svg"/></view><view class="menu-copy">{{ui.delivery}}<view class="hint">{{hasDeliveryAddress?profile.dorm+' · '+profile.room:ui.notSetAdd}}</view></view><text class="setting-chevron">›</text></view>
+</view>
+<!-- ⑥ 邀请同学 -->
 <view class="flow-card invite-card"><view class="invite-icon"><image src="/assets/invite-classmate.svg"/></view><view class="invite-copy"><view class="strong">{{ui.inviteTitle}}</view><view class="hint">{{ui.inviteHelp}}</view></view><button class="invite-button" bindtap="inviteFriends">{{ui.invite}}</button></view>
-<view class="section">{{ui.ordering}}</view><view class="flow-card menu-card"><view class="menu-row" bindtap="routes" ><view class="settings-icon"><image src="/assets/route-outline.svg"/></view><view class="menu-copy">{{ui.routes}}<view class="hint">{{ui.routesHelp}}</view></view><text class="setting-chevron">›</text></view><view class="menu-row" bindtap="past" ><view class="settings-icon"><image src="/assets/receipt-outline.svg"/></view><view class="menu-copy">{{ui.past}}<view class="hint">{{postedCount?postedCount+' '+ui.orders:ui.none}}</view></view><text class="setting-chevron">›</text></view><view class="menu-row" bindtap="coupons" ><view class="settings-icon"><image src="/assets/coupon-outline.svg"/></view><view class="menu-copy">{{ui.myCoupons}}<view class="hint">{{couponCount}} {{ui.ready}}</view></view><text class="setting-chevron">›</text></view></view>
-<block wx:if="{{isRunner}}"><view class="section">{{ui.running}}</view><view class="flow-card menu-card"><view class="menu-row" bindtap="ranJobs" ><view class="settings-icon"><image src="/assets/box-outline.svg"/></view><view class="menu-copy">{{ui.ran}}<view class="hint">{{profile.jobsDone||0}} {{ui.done}} · {{profile.onTime||0}} {{ui.onTime}}</view></view><text class="setting-chevron">›</text></view><view class="menu-row" bindtap="runnerRules" ><view class="settings-icon"><image src="/assets/rules-outline.svg"/></view><view class="menu-copy">{{ui.runnerRules}}</view><text class="setting-chevron">›</text></view></view></block>
-<view class="section">{{ui.notifications}}</view><view class="flow-card menu-card notifications-card"><block wx:if="{{isRunner}}"><view class="menu-row"><view><view class="strong">{{ui.near}}</view><view class="hint">{{ui.nearHelp}}</view></view><switch color="#41775b" checked="{{preferences.newJobs!==false}}" data-key="newJobs" bindchange="preference"/></view><view class="menu-row"><view><view class="strong">{{ui.exam}}</view><view class="hint">{{ui.examHelp}}</view></view><switch color="#41775b" checked="{{exam}}" data-key="exam" bindchange="preference"/></view></block><view class="menu-row"><view><view class="strong">{{ui.updates}}</view><view class="hint">{{ui.updatesHelp}}</view><text class="link" catchtap="notifyGuide">{{ui.notifyGuide}} ›</text></view><switch color="#41775b" checked="{{preferences.orderUpdates!==false}}" data-key="orderUpdates" bindchange="preference"/></view></view>
-<view class="section">{{ui.accountHeading}}</view><view class="flow-card menu-card"><view class="menu-row" bindtap="campus"><view class="settings-icon"><image src="/assets/university-outline.svg"/></view><view class="menu-copy">{{ui.university}}</view><text class="setting-value">{{profile.campusId==='sip'?'XJTLU · SIP':ui.campus}}</text><text class="setting-chevron">›</text></view>
-<picker mode="selector" class="language-picker" range="{{languageOptions}}" value="{{languageIndex}}" bindchange="changeLanguage"><view class="menu-row"><view class="settings-icon"><image src="/assets/language-outline.svg"/></view><view class="menu-copy">{{ui.language}}</view><text class="setting-value">{{language==='zh'?'中文':'English'}}</text><text class="setting-chevron">⌄</text></view></picker>
-<picker mode="selector" class="appearance-picker" range="{{appearanceOptions}}" value="{{appearanceIndex}}" bindchange="changeAppearance"><view class="menu-row"><view class="settings-icon"><image src="/assets/moon-outline.svg"/></view><view class="menu-copy">{{ui.appearance}}</view><text class="setting-value">{{appearance==='dark'?ui.dark:ui.light}}</text><text class="setting-chevron">⌄</text></view></picker>
-<view class="menu-row" bindtap="info" data-topic="rules"><view class="settings-icon"><image src="/assets/rules-outline.svg"/></view><view class="menu-copy">{{ui.rules}}<view class="hint">{{profile.runnerRulesAccepted?ui.agreed:ui.readRules}}</view></view><text class="setting-chevron">›</text></view><view class="menu-row" bindtap="info" data-topic="privacy"><view class="settings-icon"><image src="/assets/lock-outline.svg"/></view><view class="menu-copy">{{ui.privacy}}</view><text class="setting-chevron">›</text></view><view class="menu-row" bindtap="info" data-topic="support"><view class="settings-icon"><image src="/assets/support-outline.svg"/></view><view class="menu-copy">{{ui.support}}</view><text class="setting-chevron">›</text></view><view class="menu-row" bindtap="guide" ><view class="settings-icon"><image src="/assets/help-outline.svg"/></view><view class="menu-copy">{{ui.guide}}</view><text class="setting-chevron">›</text></view></view><view class="flow-card menu-card admin-entry"><view class="menu-row" bindtap="admin"><view class="settings-icon"><image src="/assets/shield-outline.svg"/></view><view class="menu-copy">{{ui.adminLogin}}<view class="hint">{{ui.adminHelp}}</view></view><text class="setting-chevron">›</text></view></view><view class="me-footer">{{ui.footer}}<view>Uniearn v{{version}}</view></view>
-</block></view><app-nav id="app-nav" active="profile"/>
+
+<!-- ⑦ 通知与提醒（已删除考试模式） -->
+<view class="section">{{ui.notifyGroup}}</view>
+<view class="flow-card menu-card notifications-card">
+ <view class="menu-row"><view><view class="strong">{{ui.tips}}</view><view class="hint">{{ui.tipsHelp}}</view></view><switch checked="{{tips}}" color="#41775b" bindchange="tipToggle"/></view>
+ <block wx:if="{{isRunner}}"><view class="menu-row"><view><view class="strong">{{ui.near}}</view><view class="hint">{{ui.nearHelp}}</view></view><switch color="#41775b" checked="{{preferences.newJobs!==false}}" data-key="newJobs" bindchange="preference"/></view></block>
+ <view class="menu-row"><view><view class="strong">{{ui.updates}}</view><view class="hint">{{ui.updatesHelp}}</view><text class="link" catchtap="notifyGuide">{{ui.notifyGuide}} ›</text></view><switch color="#41775b" checked="{{preferences.orderUpdates!==false}}" data-key="orderUpdates" bindchange="preference"/></view>
+</view>
+<!-- ⑧ 账户 -->
+<view class="section">{{ui.accountGroup}}</view>
+<view class="flow-card menu-card">
+ <view class="menu-row" bindtap="toggleSettings"><view class="settings-icon"><image src="/assets/profile-green.svg"/></view><view class="menu-copy">{{ui.general}}<view class="hint">{{ui.generalSub}}</view></view><text class="setting-chevron">{{settingsOpen?'⌄':'›'}}</text></view>
+ <block wx:if="{{settingsOpen}}">
+  <view class="menu-row" bindtap="campus"><view class="settings-icon"><image src="/assets/university-outline.svg"/></view><view class="menu-copy">{{ui.campusSetting}}</view><text class="setting-value">{{profile.campusId==='sip'?'XJTLU · SIP':ui.campus}}</text><text class="setting-chevron">›</text></view>
+  <picker mode="selector" class="language-picker" range="{{languageOptions}}" value="{{languageIndex}}" bindchange="changeLanguage"><view class="menu-row"><view class="settings-icon"><image src="/assets/language-outline.svg"/></view><view class="menu-copy">{{ui.language}}</view><text class="setting-value">{{language==='zh'?'中文':'English'}}</text><text class="setting-chevron">⌄</text></view></picker>
+  <picker mode="selector" class="appearance-picker" range="{{appearanceOptions}}" value="{{appearanceIndex}}" bindchange="changeAppearance"><view class="menu-row"><view class="settings-icon"><image src="/assets/moon-outline.svg"/></view><view class="menu-copy">{{ui.appearance}}</view><text class="setting-value">{{appearance==='dark'?ui.dark:ui.light}}</text><text class="setting-chevron">⌄</text></view></picker>
+ </block>
+ <view class="menu-row" bindtap="info" data-topic="rules"><view class="settings-icon"><image src="/assets/rules-outline.svg"/></view><view class="menu-copy">{{ui.rules}}<view class="hint">{{profile.runnerRulesAccepted?ui.agreed:ui.readRules}}</view></view><text class="setting-chevron">›</text></view>
+ <view class="menu-row" bindtap="info" data-topic="privacy"><view class="settings-icon"><image src="/assets/lock-outline.svg"/></view><view class="menu-copy">{{ui.privacy}}</view><text class="setting-chevron">›</text></view>
+ <view class="menu-row" bindtap="info" data-topic="support"><view class="settings-icon"><image src="/assets/support-outline.svg"/></view><view class="menu-copy">{{ui.helpCenter}}<view class="hint">{{ui.helpCenterSub}}</view></view><text class="setting-chevron">›</text></view>
+</view>
+<view class="flow-card menu-card admin-entry"><view class="menu-row" bindtap="admin"><view class="settings-icon"><image src="/assets/shield-outline.svg"/></view><view class="menu-copy">{{ui.adminLogin}}<view class="hint">{{ui.adminHelp}}</view></view><text class="setting-chevron">›</text></view></view>
+<view class="me-footer">{{ui.footer}}<view>Uniearn v{{version}}</view></view>
+</block></view><app-nav active="profile"/>
 <yuni-assistant id="me-yuni" topic="me" language="{{language}}"/>

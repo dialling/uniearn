@@ -130,7 +130,7 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
   - pending 超过 20 小时（`STALE_OPERATION_MS`）视为过期：丢弃并重新同步，提示用户核对订单，不再永久锁死
 - `upload(path)`：先 `prepareUpload` 拿路径再上传；同一路径的并发上传会合并成一次。
 - `bind(page, method)` / `unbind`：页面订阅刷新；快照应用后统一 `page.refresh()`。
-- `apply(snapshot)`：`revision` 落后于本地则丢弃；比对前后状态后按 `preferences` 触发「云宝」事件或 toast（新消息 `orderUpdates`、订单状态变化、新行程 `nearbyTrip`、新任务 `newJobs`），并遵守考试周免打扰（`examUntil`）。
+- `apply(snapshot)`：`revision` 落后于本地则丢弃；比对前后状态后按 `preferences` 触发「云宝」事件或 toast（新消息 `orderUpdates`、订单状态变化、新行程 `nearbyTrip`、新任务 `newJobs`）。（考试模式已于界面改版中移除。）
 - `photoURL(path)`：把 `cloud://` 换成快照里的临时链接；`invalidate()` 在登录态变化时清空事件、代数、上传缓存。
 
 ### 与服务端共享的模块（容易踩坑）

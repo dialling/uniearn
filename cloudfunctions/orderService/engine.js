@@ -197,7 +197,7 @@ function execute(s, actor, account, event, now = Date.now()) {
   } else if(action==='collectCoupon'){rewards.collect(s,actor,event.campaignId,now);
   } else if(action==='rewardsInit'){
   } else if(action==='invite'){rewards.invite(s,actor,String(event.code||''));
-  } else if(action==='preferences'){const m=s.members[actor];m.preferences=m.preferences||{};for(const k of ['newJobs','orderUpdates','nearbyTrip','deliveredUpdates','skillsInterested'])if(typeof event.values?.[k]==='boolean')m.preferences[k]=event.values[k];if(typeof event.values?.exam==='boolean')m.preferences.examUntil=event.values.exam?now+7*86400000:0;
+  } else if(action==='preferences'){const m=s.members[actor];m.preferences=m.preferences||{};for(const k of ['newJobs','orderUpdates','nearbyTrip','deliveredUpdates','skillsInterested'])if(typeof event.values?.[k]==='boolean')m.preferences[k]=event.values[k];
   } else if(action==='message'||action==='readMessages'){
     const r=s.requests.find(x=>x.id===event.id),t=r&&s.trips.find(x=>x.id===r.runnerId);check(r&&t&&(r.ownerId===actor||t.runnerAccountId===actor),'Only the current order participants can open this chat.');
     const key=r.id+':'+t.id;const threads=s.threads||(s.threads={});const thread=threads[key]||(threads[key]={messages:[],read:{}});
@@ -218,7 +218,7 @@ function snapshot(s, actor, account, now = Date.now()) {
     if (isMine || isRunner) {
       const out = clone(r); delete out.splitOriginal; delete out.ownerId;
       const rt=s.trips.find(t=>t.id===r.runnerId),thread=rt&&(s.threads||{})[r.id+':'+rt.id];
-      out.runnerPhone=rt&&rt.runnerPhone||'';out.runnerStats=rt?stats(s,rt.runnerAccountId):{};out.unread=thread?thread.messages.filter(m=>m.sender!==actor&&m.at>(thread.read[actor]||0)).length:0;
+      out.runnerPhone=rt&&rt.runnerPhone||'';out.runnerStats=rt?(()=>{const st=stats(s,rt.runnerAccountId);return{jobsDone:st.jobsDone,onTime:st.onTime};})():{};out.unread=thread?thread.messages.filter(m=>m.sender!==actor&&m.at>(thread.read[actor]||0)).length:0;
       out.messages=thread?thread.messages.map(m=>({id:m.id,text:m.text,at:m.at,mine:m.sender===actor})):[];
       return { ...out, runnerName:(s.trips.find(t=>t.id===r.runnerId)||{}).runnerName||'', ownerId: isMine ? actor : '', isMine, isRunner };
     }

@@ -6,7 +6,7 @@ const db = cloud.database();
 const json = value => JSON.parse(JSON.stringify(value));
 async function getAccount(tx, actor) {
   try { return (await tx.collection('uniearn_accounts').doc(actor).get()).data || {}; }
-  catch (e) { if (/not exist|not found|does not exist/i.test(e.message || '')) return {}; throw e; }
+  catch (e) { if (/not exist|not found|does not exist/i.test(e.message || '') || e.errCode === -502005 || e.code === -502005) return {}; throw e; }
 }
 const ARCHIVE_CHECK_MS = 3600000;
 // Runs in its own transaction so a missing archive collection never blocks orders.
