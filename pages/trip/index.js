@@ -13,6 +13,6 @@ Page({data:{trip:null,requests:[],reward:'0.00',boxes:0,cancelling:'',cancelReas
  async leave(){if(!await (zh()?ui.confirm('停止加入并去送达？','只有已取件的订单会进入送达。'):ui.confirm('Close joining and go deliver?','Only collected orders can proceed to delivery.')))return;try{await orders.act('leave',{id:this.id});this.refresh();}catch(e){ui.toast(e);}},
  async endEmpty(){if(!await (zh()?ui.confirm('结束这个空行程？','结束后其他同学将无法加入。'):ui.confirm('End this empty trip?','Nobody else can join after you end it.')))return;try{await orders.act('endEmpty',{id:this.id});this.refresh();}catch(e){ui.toast(e);} },
  joinPreview(){require('../../utils/nav').navigateTo({url:'/pages/join/index?id='+this.id});},
- onShareAppMessage(){const t=this.data.trip,lang=store.get().language;return{title:zh()?(t?rc.name(t.station,lang)+' → '+t.dorm:'UniEarn 行程')+' · 加入你的'+(t&&t.category==='takeout'?'外卖':'快递'):(t?t.station+' → '+t.dorm:'UniEarn trip')+' · add your '+(t&&t.category==='takeout'?'takeaway':'parcel'),path:'/pages/join/index?id='+this.id};},
+ onShareAppMessage(){const t=this.data.trip,lang=store.get().language;return{title:zh()?(t?rc.name(t.station,lang)+' → '+t.dorm:'XP 跑了么行程')+' · 加入你的'+(t&&t.category==='takeout'?'外卖':'快递'):(t?t.station+' → '+t.dorm:'UniEarn trip')+' · add your '+(t&&t.category==='takeout'?'takeaway':'parcel'),path:'/pages/join/index?id='+this.id};},
  request(e){require('../../utils/nav').navigateTo({url:'/pages/request/index?id='+e.currentTarget.dataset.id});},reset(){wx.reLaunch({url:'/pages/jobs/index'});}
 });
