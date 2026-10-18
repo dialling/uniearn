@@ -157,6 +157,7 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 | 中英文案 | `order-copy.js`（订单状态/标签）、`create-copy.js`、`post-copy.js`、`runner-copy.js`、`orders-copy.js`（各页面）、`onboarding.js`、`app-guide.js`（引导）、`hall-copy.js`（大厅）、`me-copy.js`（我的）、`help-copy.js` + `help-faq.js`（帮助）、`rules-data.js` + `rules.json`（规则） |
 | 交互辅助 | `ui.js`（toast、照片本地保存；`cleanSaved()` 清理 24 小时前或超过 6 MB 的已保存照片）、`image-input.js`（选图）、`yuni.js`（吉祥物定义）、`yuni-events.js`（按 key 去重的事件队列）、`ocr.js`（OCR 调用） |
 | 业务辅助 | `earnings.js`（周收益汇总）、`saved-routes.js`（已保存地址与路线）、`pickup-point.js`（从通知里抽取真实驿站名，**从不默认到某个校区**） |
+| 校园数据 | `campus.js`：4 个宿舍区（文缘/文星/文萃/文荟）、31 栋楼（D01–D06、A01–A05、C01–C10、B01–B10）、楼层（文缘/文萃/文荟 23 层，文星 A05 20 层、其余 6 层）、9 个真实取件点，全部中英双语；来源 mini program 1（xjtlu-run-no-run） |
 | 外观 | `appearance.js`：读取 `meAppearance`，设置原生导航栏与窗口背景的深浅色；底部导航组件按 `dark` 状态切换配色（「我的」页切换后立即生效） |
 | 共享样式 | `flow.wxss`、`final.wxss`、`v8.wxss`、`post-form.wxss` |
 

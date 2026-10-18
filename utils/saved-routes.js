@@ -1,8 +1,9 @@
 const store=require('./store');
 const phoneHint='Enter an 11-digit mobile number that starts with 1.';
 function validPhone(value){return /^1\d{10}$/.test(String(value||'').replace(/\s/g,''));}
-const stations=['North gate','South gate','East gate','Parcel station'];
-const dorms=['Choose building','Dorm 3','Dorm 5','Dorm 6','Dorm 7'];
+const campus=require('./campus');
+const stations=campus.stationValues();
+const dorms=campus.buildings();
 const names=['Study spot','Classroom','Roommate','Other'];
 const suggestions=['In front of the main entrance','Outside the library','Classroom 302','Meet me at the building entrance'];
 function normalize(a={}){
@@ -22,7 +23,7 @@ function scoped(service){
  function save(a){const x=scopedValidate(a);store.update(s=>{const owner=s.profile.accountId||'local';s[key]=(s[key]||[]).map(v=>v.accountId?v:{...v,accountId:owner});const own=s[key].filter(v=>v.accountId===owner),old=own.find(v=>v.id===x.id);if(x.id&&!old)throw Error('This saved route is unavailable.');x.id=x.id||(parcel?'parcelRoute':'route')+s.nextId++;x.accountId=owner;x.default=old?!!old.default:!own.length;const i=s[key].findIndex(v=>v.id===x.id);if(i>=0)s[key][i]={...x};else s[key].push({...x});if(!parcel&&x.destinationType==='dorm'&&x.name==='My dorm'){s.profile.dorm=x.dorm;s.profile.room=x.room;s.profile.pickup=x.station;}});return {...x};}
  function setDefault(id){store.update(s=>{const owner=s.profile.accountId||'local';(s[key]||[]).forEach(v=>{if(!v.accountId||v.accountId===owner)v.default=v.id===id;});});}
  function remove(id){store.update(s=>{const owner=s.profile.accountId||'local';s[key]=(s[key]||[]).filter(v=>!(v.id===id&&(!v.accountId||v.accountId===owner)));const own=s[key].filter(v=>!v.accountId||v.accountId===owner);if(own.length&&!own.some(v=>v.default))own[0].default=true;});}
- return {phoneHint,validPhone,stations,dorms,names,suggestions,normalize,validate:scopedValidate,list,save,setDefault,remove,display,phoneMask,formatPhone};
+ return {phoneHint,validPhone,stations,dorms,names,suggestions,normalize,validate:scopedValidate,list,save,setDefault,remove,display,phoneMask,formatPhone,campus,buildingLabel:lang=>campus.buildingLabel,dormLabel:(code,lang)=>campus.buildingLabel(code,lang),stationLabel:(v,lang)=>campus.stationLabel(v,lang),areas:campus.areas,buildingsOf:area=>campus.areaOfBuilding(area)};
 }
 function display(a){return a.destinationType==='place'?a.deliveryAddress:(a.dorm||'Choose building')+' · Room '+(a.room||'—');}
 function formatPhone(value){const phone=String(value||'').replace(/\s/g,'');return validPhone(phone)?phone.slice(0,3)+' '+phone.slice(3,7)+' '+phone.slice(7):phone;}
