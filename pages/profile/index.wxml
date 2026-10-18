@@ -6,15 +6,24 @@
   <view class="muted">{{language==='zh'?'你已退出登录。登录后可查看订单和已保存的账户信息。':'You are logged out. Sign in to see your orders and saved account.'}}</view>
   <button class="btn" bindtap="login" disabled="{{loading || loggingOut}}">{{language==='zh'?'登录':'Sign in'}}</button>
  </view>
- <view wx:elif="{{editing}}" class="card">
-  <view class="route">{{profile.onboarded?(language==='zh'?'你的资料':'Your information'):(language==='zh'?'欢迎来到 UniEarn':'Welcome to UniEarn')}}</view>
-  <view class="muted">{{profile.onboarded?(language==='zh'?'更新你的资料和常用地址。':'Update your details and usual address.'):(language==='zh'?'先填写姓名和手机号，注册后可以再添加常用地址。':'Start with your name and phone number. You can add a usual address after registration.')}}</view>
-  <view class="field-label">{{language==='zh'?'姓名':'Full name'}}</view><input class="field" maxlength="60" value="{{form.name}}" data-field="name" bindinput="input" placeholder="{{language==='zh'?'与学生证一致':'Name on your student card'}}"/>
-  <view class="field-label">{{language==='zh'?'手机号':'Phone number'}}</view><input class="field" type="number" maxlength="11" value="{{form.phone}}" data-field="phone" bindinput="input" placeholder="{{language==='zh'?'11 位手机号':'11-digit mobile number'}}"/>
-
-  <block wx:if="{{profile.onboarded}}"><view class="row"><view class="half"><view class="field-label">{{language==='zh'?'宿舍 / 楼栋':'Dorm / building'}}</view><input class="field" value="{{form.dorm}}" data-field="dorm" bindinput="input" placeholder="D01"/></view><view class="half"><view class="field-label">{{language==='zh'?'房间号':'Room'}}</view><input class="field" value="{{form.room}}" data-field="room" bindinput="input" placeholder="412"/></view></view><view class="field-label">{{language==='zh'?'常用外卖取餐点':'Usual takeaway pickup point'}}</view><input class="field" value="{{form.pickup}}" data-field="pickup" bindinput="input" placeholder="Takeaway counter A"/>
-  <view class="address-privacy"><image src="/assets/lock-outline.svg"/><text>{{ui.private}}</text></view></block>
-  <button class="btn" bindtap="save" loading="{{saving}}" disabled="{{saving || loading}}">{{profile.onboarded?(language==='zh'?'保存修改':'Save changes'):(language==='zh'?'注册并继续':'Register and continue')}}</button><button wx:if="{{profile.onboarded}}" class="btn outline" bindtap="cancelEdit">{{language==='zh'?'返回':'Back'}}</button>
+ <view wx:elif="{{editing}}" class="profile-editor">
+  <view class="edit-hero">
+   <view class="edit-avatar {{isRunner?'runner-avatar':'customer-avatar'}}">{{initial}}</view>
+   <view class="edit-heading"><view class="edit-title">{{profile.onboarded?(language==='zh'?'编辑个人资料':'Edit profile'):(language==='zh'?'欢迎来到 UniEarn':'Welcome to UniEarn')}}</view><view class="edit-subtitle">{{profile.onboarded?(language==='zh'?'让同学看到准确、清晰的信息。':'Keep your details clear and up to date.'):(language==='zh'?'填写基本信息，开始使用校园互助服务。':'Add your details to start using the campus service.')}}</view></view>
+   <button wx:if="{{profile.onboarded}}" class="edit-close" bindtap="cancelEdit" aria-label="{{language==='zh'?'关闭编辑':'Close editor'}}">×</button>
+  </view>
+  <view class="edit-section">
+   <view class="edit-section-title">{{language==='zh'?'基本资料':'Basic details'}}</view>
+   <view class="edit-field"><view class="field-label">{{language==='zh'?'姓名':'Full name'}}</view><input class="field" maxlength="60" value="{{form.name}}" data-field="name" bindinput="input" placeholder="{{language==='zh'?'与学生证一致':'Name on your student card'}}"/></view>
+   <view class="edit-field"><view class="field-label">{{language==='zh'?'手机号':'Phone number'}}</view><input class="field" type="number" maxlength="11" value="{{form.phone}}" data-field="phone" bindinput="input" placeholder="{{language==='zh'?'11 位手机号':'11-digit mobile number'}}"/></view>
+  </view>
+  <view wx:if="{{profile.onboarded}}" class="edit-section">
+   <view class="edit-section-title">{{language==='zh'?'常用配送信息':'Usual delivery details'}}</view>
+   <view class="edit-grid"><view class="edit-field"><view class="field-label">{{language==='zh'?'宿舍 / 楼栋':'Dorm / building'}}</view><input class="field" value="{{form.dorm}}" data-field="dorm" bindinput="input" placeholder="D01"/></view><view class="edit-field room-field"><view class="field-label">{{language==='zh'?'房间号':'Room'}}</view><input class="field" value="{{form.room}}" data-field="room" bindinput="input" placeholder="412"/></view></view>
+   <view class="edit-field"><view class="field-label">{{language==='zh'?'常用外卖取餐点':'Usual takeaway pickup point'}}</view><input class="field" value="{{form.pickup}}" data-field="pickup" bindinput="input" placeholder="Takeaway counter A"/></view>
+   <view class="edit-privacy"><image src="/assets/lock-outline.svg"/><text>{{ui.private}}</text></view>
+  </view>
+  <view class="edit-actions"><button class="btn edit-save" bindtap="save" loading="{{saving}}" disabled="{{saving || loading}}">{{profile.onboarded?(language==='zh'?'保存修改':'Save changes'):(language==='zh'?'注册并继续':'Register and continue')}}</button><button wx:if="{{profile.onboarded}}" class="edit-cancel" bindtap="cancelEdit">{{language==='zh'?'取消':'Cancel'}}</button></view>
  </view>
 <block wx:else>
 <!-- ① 顶部大卡：资料 + 双徽章 + 等级进度 -->
