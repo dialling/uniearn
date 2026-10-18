@@ -20,9 +20,9 @@ function createRequest(s, data) {
   if(data.floor&&campus.isBuilding(data.dorm)&&(Number(data.floor)<1||Number(data.floor)>campus.maxFloorOf(data.dorm)))throw Error('That floor does not exist in this building');
   let reward;
   if(data.category==='parcel' && Array.isArray(data.parcelItems)) {
-    if(!data.parcelItems.length||data.parcelItems.length>5)throw Error('Choose between 1 and 5 parcels');
+    if(!data.parcelItems.length||data.parcelItems.length>12)throw Error('Choose between 1 and 12 parcels');
     data.parcelItems=data.parcelItems.map(item=>{const size=catalog.sizes.find(x=>x.id===item.size);if(!size||!String(item.code||'').trim())throw Error('Add one pickup code per parcel');return {size:size.id,code:String(item.code).trim(),price:size.price};});
-    data.codes=data.parcelItems.map(x=>x.code);data.big=data.parcelItems.filter(x=>['large','oversized'].includes(x.size)).length;data.small=data.parcelItems.length-data.big;
+    const sizeCounts={};data.parcelItems.forEach(x=>{sizeCounts[x.size]=(sizeCounts[x.size]||0)+1;if(sizeCounts[x.size]>9)throw Error('Up to 9 items of one size');});data.codes=data.parcelItems.map(x=>x.code);data.big=data.parcelItems.filter(x=>['large','oversized'].includes(x.size)).length;data.small=data.parcelItems.length-data.big;
     if(![0,188,266,555,666,888].includes(Math.round(Number(data.tip||0)*100)))throw Error('Choose a valid tip');
     reward=data.parcelItems.reduce((sum,x)=>sum+x.price,0)+Number(data.tip||0);
   } else {

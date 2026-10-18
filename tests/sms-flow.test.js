@@ -11,7 +11,7 @@ page.onShow();page.applyResult({candidates:[{id:'0',code:'1-2-8011',selected:tru
 assert.equal(page.data.selectedCount,2);
 page.toggle({currentTarget:{dataset:{i:1}}});assert.equal(page.data.selectedCount,1);
 page.confirm();assert.equal(emitted.name,'smsSelected');assert.equal(emitted.v.codes.join(','),'1-2-8011');assert.ok(back);
-emitted=null;page.data.candidates=Array.from({length:6},(_,i)=>({code:'1-1-100'+i,selected:true,point:'Station One'}));page.confirm();assert.equal(emitted,null);
+emitted=null;page.data.candidates=Array.from({length:13},(_,i)=>({code:'1-1-'+String(1000+i),selected:true,point:'Station One'}));page.confirm();assert.equal(emitted,null);
 page.data.candidates=[{code:'1-1-1001',selected:true,point:'A'},{code:'1-1-1002',selected:true,point:'B'}];page.confirm();assert.equal(emitted,null);
 assert.match(page.data.error,/different pickup points/);
 assert.equal(parser.dateOf('Dec 31 at 12:00',Date.parse('2026-01-01T01:00:00Z')),Math.floor(Date.UTC(2025,11,31)/86400000));

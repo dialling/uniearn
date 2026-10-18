@@ -31,4 +31,14 @@ assert.equal(mk({dorm:'D01'}).reward,3,'Wenyuan has no surcharge');
 assert.throws(()=>mk({dorm:'A01',floor:99}),/floor/i,'nonexistent floor is rejected');
 assert.equal(r.validate({destinationType:'dorm',station:'North gate',dorm:'D01',room:'101',floor:23,owner:'A',phone:'13800000000'}).area,'wenyuan');
 assert.throws(()=>r.validate({destinationType:'dorm',station:'North gate',dorm:'D01',room:'101',floor:24,owner:'A',phone:'13800000000'}),/floor/i);
+
+// multi-parcel caps: up to 12 items, at most 9 of one size
+const s2=d.initial();s2.requests=[];
+const parcelBase={category:'parcel',station:'North gate',dorm:'D01',room:'101',phone:'13800000000',owner:'A',deadline:'18:00',tip:0};
+const tooMany=Array.from({length:13},(_,i)=>({size:'small',code:'C'+i}));
+assert.throws(()=>d.createRequest(s2,{...parcelBase,parcelItems:tooMany}),/12/);
+const tenSmall=Array.from({length:10},(_,i)=>({size:'small',code:'D'+i}));
+assert.throws(()=>d.createRequest(s2,{...parcelBase,parcelItems:tenSmall}),/9 items/);
+const twelve=Array.from({length:12},(_,i)=>({size:i%2?'small':'medium',code:'E'+i}));
+assert.equal(d.createRequest(s2,{...parcelBase,parcelItems:twelve}).parcelItems.length,12);
 console.log('Campus data: 31 real buildings, floors, lift rule and bilingual pickup points passed.');

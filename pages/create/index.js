@@ -37,7 +37,7 @@ Page({
  service(e){if(wx.redirectTo&&e.currentTarget.dataset.category==='takeout'&&!this.data.categoryLocked){wx.redirectTo({url:'/pages/takeaway/index?coupon='+encodeURIComponent(this.data.couponId||'')});return;}if(this.data.categoryLocked||this.data.scanBusy)return;const category=e.currentTarget.dataset.category;if(category===this.data.category)return;this.drafts=this.drafts||{};const keys=['codes','scanImages','pickupPoint','pickupAddress','description','stationIndex','small','orderPictures'];this.drafts[this.data.category]={};keys.forEach(k=>this.drafts[this.data.category][k]=this.data[k]);this.setData({category,stations:category==='parcel'?['Station A','Station B','Station C']:['Takeaway counter A','Takeaway counter B'],codes:[''],scanImages:[],pickupPoint:'',pickupAddress:'',description:'',stationIndex:0,small:1,orderPictures:[],scanError:'',scanState:'',...this.drafts[category]});this.totals();this.refresh();},
  station(e){this.setData({stationIndex:Number(e.detail.value)});this.refresh();},dorm(e){this.setData({dormIndex:Number(e.detail.value)});this.addressView();this.autoSaveAddress();this.refresh();},
  text(e){this.setData({[e.currentTarget.dataset.field]:e.detail.value});this.addressView();this.autoSaveAddress();},code(e){this.setData({['codes['+e.currentTarget.dataset.i+']']:e.detail.value});this.setData({foundCodes:this.data.codes.filter(Boolean).length});},editPhone(){this.setData({phoneEditing:true});},
- sizeCount(e){if(this.data.scanBusy)return;const {size,delta}=e.currentTarget.dataset;const options=this.data.sizeOptions.map(x=>x.id===size?{...x,count:Math.max(0,Math.min(5,x.count+Number(delta)))}:x);if(options.reduce((n,x)=>n+x.count,0)>5){wx.showToast({title:this.t('Up to 5 parcels per request'),icon:'none'});return;}this.setData({sizeOptions:options});this.totals();},
+ sizeCount(e){if(this.data.scanBusy)return;const {size,delta}=e.currentTarget.dataset;const options=this.data.sizeOptions.map(x=>x.id===size?{...x,count:Math.max(0,Math.min(9,x.count+Number(delta)))}:x);if(options.reduce((n,x)=>n+x.count,0)>12){wx.showToast({title:this.t('Up to 12 parcels per request'),icon:'none'});return;}this.setData({sizeOptions:options});this.totals();},
  coupon(e){const id=e.currentTarget.dataset.id,c=this.data.coupons.find(x=>x.id===id);if(c&&!c.usable){wx.showToast({title:copy.coupon(c.unavailableLabel,this.lang()),icon:'none'});return;}this.setData({couponId:id});this.totals();},openSms(){this.pasteSms();},
  openParcelScreenshot(){this.openNoticeReview('sms');},
  openNoticeReview(mode){
@@ -60,7 +60,7 @@ Page({
    if(!sms)throw Error(this.t('Paste your pickup notice first.'));
    const parsed=smsParser.parseSms(sms),codes=[...new Set(parsed.candidates.map(x=>x.code))];
    if(!codes.length)throw Error(this.t('No pickup codes found. Check the text or enter the codes manually.'));
-   if(codes.length>5)throw Error(this.t('Up to 5 parcels per request. Split this notice into separate requests.'));
+   if(codes.length>12)throw Error(this.t('Up to 12 parcels per request. Split this notice into separate requests.'));
    const points=[...new Set(parsed.candidates.map(x=>x.point).filter(Boolean))];
    if(points.length>1)throw Error(this.t('Use one pickup point per request.'));
    const point=points[0]||pickupPointParser.extractPoint(sms);
