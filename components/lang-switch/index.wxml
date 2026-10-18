@@ -1,1 +1,1 @@
-<view class="lang-bar"><view class="lang-pill" bindtap="toggle" hover-class="lang-pill-press" aria-role="button" aria-label="{{zh?'Switch to English':'切换到中文'}}">{{zh?'EN':'中'}}</view></view>
+<view class="lang-host"></view>

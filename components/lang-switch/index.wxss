@@ -1,4 +1,4 @@
-/* Reserves a strip at the top of every page so the fixed pill never covers a header button. */
-.lang-bar{height:64rpx;width:100%}
-.lang-pill{position:fixed;top:12rpx;right:20rpx;z-index:60;display:flex;align-items:center;justify-content:center;min-width:56rpx;height:44rpx;padding:0 18rpx;border:1rpx solid #deded8;border-radius:999rpx;background:rgba(255,255,255,.94);color:#41775b;font-size:22rpx;font-weight:700;line-height:1;box-shadow:0 2rpx 10rpx rgba(0,0,0,.08)}
-.lang-pill-press{opacity:.65}
+/* Renders nothing: this component only applies the localized title and the
+   light/dark navigation colours on each page show. The language switch itself
+   lives in Me → Language (and on the welcome/login page). */
+.lang-host{display:none}
