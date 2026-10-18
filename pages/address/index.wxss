@@ -2,24 +2,24 @@
 .addr-page{padding-top:24rpx}
 .addr-form{padding:30rpx 28rpx!important;border-radius:28rpx!important}
 .addr-form-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6rpx}.addr-title{font-size:32rpx;font-weight:800}
-.addr-page .field-label{margin:22rpx 0 10rpx;font-size:24rpx;color:#73736c;font-weight:600}
+.addr-page .field-label{margin:22rpx 0 10rpx;font-size:24rpx;color:#8a7768;font-weight:600}
 .addr-page .field{background:#f6f5f1;border:1rpx solid transparent;border-radius:18rpx;transition:border-color .2s,background .2s}
 
 .addr-save{margin-top:34rpx!important;transition:transform .15s}.addr-save:active{transform:scale(.98)}
 .addr-list-head{display:flex;align-items:center;gap:12rpx;margin:34rpx 6rpx 16rpx;font-size:28rpx;font-weight:800}
-.addr-count{min-width:36rpx;height:36rpx;line-height:36rpx;padding:0 8rpx;text-align:center;border-radius:18rpx;background:#f6e6dc;color:#ad5a35;font-size:22rpx}
+.addr-count{min-width:36rpx;height:36rpx;line-height:36rpx;padding:0 8rpx;text-align:center;border-radius:18rpx;background:#fdf2f0;color:#8b1e2b;font-size:22rpx}
 .addr-pick-hint{margin:0 0 0 auto!important;font-weight:400}
-.addr-empty{padding:40rpx 24rpx;text-align:center;color:#888780;border:2rpx dashed #d7d4ca;border-radius:24rpx}
+.addr-empty{padding:40rpx 24rpx;text-align:center;color:#8a7768;border:2rpx dashed #e7d9cb;border-radius:24rpx}
 .addr-item{position:relative;padding:26rpx 28rpx;margin-bottom:18rpx;background:#fff;border:2rpx solid #e6e4dd;border-radius:24rpx;animation:ue-settle .3s cubic-bezier(.22,.8,.3,1) backwards;transition:border-color .22s,box-shadow .22s,transform .18s}
-.addr-item.selected{border-color:#ad5a35;box-shadow:0 10rpx 28rpx rgba(173,90,53,.14)}
+.addr-item.selected{border-color:#8b1e2b;box-shadow:0 10rpx 28rpx rgba(139,30,43,.14)}
 .addr-item.flash{animation:addr-flash .9s ease}
-@keyframes addr-flash{0%{box-shadow:0 0 0 0 rgba(173,90,53,.35)}60%{box-shadow:0 0 0 14rpx rgba(173,90,53,0)}}
+@keyframes addr-flash{0%{box-shadow:0 0 0 0 rgba(139,30,43,.35)}60%{box-shadow:0 0 0 14rpx rgba(139,30,43,0)}}
 .addr-press{transform:scale(.985)}
 .addr-row{display:flex;align-items:center;gap:12rpx}.addr-name{font-size:30rpx;font-weight:800}
-.addr-badge{padding:2rpx 12rpx;border-radius:8rpx;background:#ad5a35;color:#fff;font-size:20rpx;font-weight:700}
-.addr-tick{margin-left:auto;width:40rpx;height:40rpx;line-height:40rpx;text-align:center;border-radius:50%;background:#ad5a35;color:#fff;font-size:22rpx;animation:ue-pop .25s ease backwards}
-.addr-phone{margin-top:8rpx;color:#888780;font-size:24rpx;letter-spacing:1rpx}.addr-place{margin-top:10rpx;font-size:28rpx;font-weight:650}
-.addr-actions{display:flex;align-items:center;justify-content:space-between;margin-top:20rpx;padding-top:18rpx;border-top:1rpx solid #efeee9}
-.addr-default{color:#ad5a35;font-size:23rpx;font-weight:650}.addr-btns{display:flex;gap:14rpx}
-.addr-btn{padding:8rpx 24rpx;border-radius:30rpx;background:#f0efeb;font-size:23rpx;font-weight:650}.addr-btn:active{opacity:.6}.addr-btn.danger{background:#fbeae6;color:#ae3324}
-.page-dark .addr-item{background:#2c332f;border-color:#465149}.page-dark .addr-page .field{background:#232926;color:#edf1ed}.page-dark .addr-actions{border-top-color:#465149}.page-dark .addr-btn{background:#3a423d;color:#edf1ed}.page-dark .addr-empty{border-color:#465149}
+.addr-badge{padding:2rpx 12rpx;border-radius:8rpx;background:#8b1e2b;color:#fff;font-size:20rpx;font-weight:700}
+.addr-tick{margin-left:auto;width:40rpx;height:40rpx;line-height:40rpx;text-align:center;border-radius:50%;background:#8b1e2b;color:#fff;font-size:22rpx;animation:ue-pop .25s ease backwards}
+.addr-phone{margin-top:8rpx;color:#8a7768;font-size:24rpx;letter-spacing:1rpx}.addr-place{margin-top:10rpx;font-size:28rpx;font-weight:650}
+.addr-actions{display:flex;align-items:center;justify-content:space-between;margin-top:20rpx;padding-top:18rpx;border-top:1rpx solid #f4ece2}
+.addr-default{color:#8b1e2b;font-size:23rpx;font-weight:650}.addr-btns{display:flex;gap:14rpx}
+.addr-btn{padding:8rpx 24rpx;border-radius:30rpx;background:#f5ede3;font-size:23rpx;font-weight:650}.addr-btn:active{opacity:.6}.addr-btn.danger{background:#fdf2f0;color:#7a1a26}
+.page-dark .addr-item{background:#33231a;border-color:#4e3a2c}.page-dark .addr-page .field{background:#232926;color:#f5e9dc}.page-dark .addr-actions{border-top-color:#4e3a2c}.page-dark .addr-btn{background:#3a423d;color:#f5e9dc}.page-dark .addr-empty{border-color:#4e3a2c}

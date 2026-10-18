@@ -33,9 +33,9 @@
   ],
   "window": {
     "navigationBarTitleText": "UniEarn",
-    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarBackgroundColor": "#f6efe4",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#eeede8"
+    "backgroundColor": "#f1e7da"
   },
   "style": "v2",
   "usingComponents": {
