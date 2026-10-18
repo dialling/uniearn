@@ -10,7 +10,7 @@ XJTLU 校园里的「顺路帮拿」平台。同学发布 **代取快递**、**�
 | 技术栈 | 微信小程序原生（WXML/WXSS/JS）+ 云函数 + 云数据库 + 云存储 |
 | 基础库 | `3.7.0` |
 | Node.js | ≥ 18（**仅**用于跑本地测试，小程序本身不需要） |
-| 规模 | 114 个 JS / 40 个 JSON，26 个页面，30 个客户端模块，4 个云函数，36 个测试文件 |
+| 规模 | 119 个 JS / 42 个 JSON，27 个页面，38 个客户端模块，4 个云函数，35 个测试文件 |
 
 ---
 
@@ -22,20 +22,20 @@ uniearn/
 ├── sitemap.json                   微信搜索索引配置
 ├── project.config.json            微信开发者工具项目配置
 ├── package.json                   仅承载 npm test
-├── assets/                        78 个图标、插画与「云宝」吉祥物
+├── assets/                        46 个图标、插画与「云宝」吉祥物
 ├── components/                    自定义组件
 │   ├── nav/                       底部导航栏
 │   ├── yuni/                      「云宝」轻提示
 │   └── yuni-assistant/            「云宝」助手浮层
-├── pages/                         26 个页面（每个页面 index.{js,json,wxml,wxss}）
-├── utils/                         30 个客户端共享模块（含中英文案、共享样式）
+├── pages/                         27 个页面（每个页面 index.{js,json,wxml,wxss}）
+├── utils/                         38 个客户端共享模块（含中英文案、共享样式）
 ├── cloudfunctions/                4 个云函数，每个目录独立部署
 │   ├── orderService/              订单 / 行程 / 奖励核心服务
-│   ├── studentAccount/            账户、学生认证、邮箱验证码
+│   ├── studentAccount/            账户、帮手申请、管理后台、微信手机号
 │   ├── parseParcelScreenshot/     快递截图 OCR 解析
 │   └── parseSmsScreenshot/        短信截图 OCR 解析
 ├── scripts/check.js               语法检查 + 依次执行 tests/
-├── tests/                         36 个回归测试（Node 直跑，无框架）
+├── tests/                         35 个回归测试（Node 直跑，无框架）
 └── docs/                          项目文档
     ├── PROJECT-OVERVIEW.md        架构与业务规则总览 ← 接手代码先看这个
     ├── UPDATE-CN.md               0.9.20 版本更新说明
@@ -54,9 +54,9 @@ cd uniEarn
 npm test
 ```
 
-`npm test` 应输出 `Syntax checked: 114 JS files, 40 JSON files`，然后跑完 `tests/` 下 36 个测试文件并**退出码 0**。
+`npm test` 应输出 `Syntax checked: 119 JS files, 42 JSON files`，然后跑完 `tests/` 下 35 个测试文件并**退出码 0**。
 
-（若本地显示 `41 JSON files`，多出来的是微信开发者工具生成的 `project.private.config.json`——它已被 `.gitignore` 忽略、不在仓库里，属正常。）
+（若本地显示 `43 JSON files`，多出来的是微信开发者工具生成的 `project.private.config.json`——它已被 `.gitignore` 忽略、不在仓库里，属正常。）
 
 > 测试输出里会出现 `Coupon refresh failed Error: offline`、`studentAccount failure { ... }` 这类字样——那是**故意构造的失败路径**，用来验证降级行为，不是测试失败。判断标准只看退出码和结尾。
 

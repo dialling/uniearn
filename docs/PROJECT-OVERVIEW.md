@@ -50,17 +50,17 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 
 | 路径 | 职责 |
 | --- | --- |
-| `app.js` / `app.json` / `app.wxss` | 入口、页面注册（26 个页面 + 3 个全局组件）、全局样式 |
+| `app.js` / `app.json` / `app.wxss` | 入口、页面注册（27 个页面 + 3 个全局组件）、全局样式 |
 | `sitemap.json` | 微信搜索索引配置 |
 | `project.config.json` | 微信开发者工具配置。`miniprogramRoot: "./"`、`cloudfunctionRoot: "cloudfunctions/"`、AppID `wxf6d43df037493a8c`、基础库 3.7.0 |
 | `assets/` | 图标、插画与「云宝」吉祥物（`yuni-*.png`，按姿势名动态引用） |
 | `components/nav/` | 底部导航栏 |
 | `components/yuni/` | 「云宝」轻提示 |
 | `components/yuni-assistant/` | 「云宝」助手浮层 |
-| `pages/` | 26 个页面，见下表 |
-| `utils/` | 30 个客户端共享模块，见第 4 节 |
+| `pages/` | 27 个页面，见下表 |
+| `utils/` | 38 个客户端共享模块，见第 4 节 |
 | `cloudfunctions/orderService/` | 核心业务：订单、行程、奖励、聊天、支持工单 |
-| `cloudfunctions/studentAccount/` | 账户与学生认证 |
+| `cloudfunctions/studentAccount/` | 账户、帮手申请与管理员审核、管理后台 |
 | `cloudfunctions/parseParcelScreenshot/` | 快递截图 OCR |
 | `cloudfunctions/parseSmsScreenshot/` | 短信截图 OCR |
 | `scripts/check.js` | 全仓 JS/JSON 语法检查，然后依次执行 `tests/*.test.js` |
@@ -417,6 +417,7 @@ waiting ──accept──► taken ──pickup──► collected ──delive
 | 任务大厅 | `jobs-navigation`、`jobs-selection`、`bilingual-hall` |
 | 界面与文案 | `ui-bindings`、`wxss`、`help-template`、`me-copy-compatibility`、`me-sticker-inline`、`final-english` |
 | 引导与提示 | `guide-replay`、`yuni-support` |
+| 审查修复 | `review-fixes`（中国时区显示、页面栈安全跳转、已存照片清理） |
 
 `docs/SELF-CHECK.txt` 保存了一次完整自检的原始输出，可与本地结果对照。
 
