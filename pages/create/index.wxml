@@ -1,3 +1,4 @@
+<lang-switch/>
 <view class="post-page create-page">
  <view wx:if="{{mode==='choose'}}">
   <view class="title">{{ui['What do you want to do?']}}</view>

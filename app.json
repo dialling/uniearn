@@ -38,6 +38,7 @@
   "usingComponents": {
     "app-nav": "/components/nav/index",
     "yuni-tip": "/components/yuni/index",
-    "yuni-assistant": "/components/yuni-assistant/index"
+    "yuni-assistant": "/components/yuni-assistant/index",
+    "lang-switch": "/components/lang-switch/index"
   }
 }

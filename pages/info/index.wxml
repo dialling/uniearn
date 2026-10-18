@@ -1,3 +1,4 @@
+<lang-switch/>
 <view class="rules-page">
  <view class="rules-header">
   <view class="flow-title">{{labels.title}}</view>

@@ -57,6 +57,7 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 | `components/nav/` | 底部导航栏 |
 | `components/yuni/` | 「云宝」轻提示 |
 | `components/yuni-assistant/` | 「云宝」助手浮层 |
+| `components/lang-switch/` | 每页顶部固定的「中/EN」切换；配合 `utils/page-title.js` 设置双语导航标题 |
 | `pages/` | 27 个页面，见下表 |
 | `utils/` | 38 个客户端共享模块，见第 4 节 |
 | `cloudfunctions/orderService/` | 核心业务：订单、行程、奖励、聊天、支持工单 |
@@ -152,6 +153,7 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 
 | 类别 | 模块 |
 | --- | --- |
+| 语言切换 | `page-title.js`：27 个页面的中文/英文导航标题映射 + 切换后重跑当前页本地化；`components/lang-switch` 提供顶部按钮 |
 | 中英文案 | `order-copy.js`（订单状态/标签）、`create-copy.js`、`post-copy.js`、`runner-copy.js`、`orders-copy.js`（各页面）、`onboarding.js`、`app-guide.js`（引导）、`hall-copy.js`（大厅）、`me-copy.js`（我的）、`help-copy.js` + `help-faq.js`（帮助）、`rules-data.js` + `rules.json`（规则） |
 | 交互辅助 | `ui.js`（toast、照片本地保存；`cleanSaved()` 清理 24 小时前或超过 6 MB 的已保存照片）、`image-input.js`（选图）、`yuni.js`（吉祥物定义）、`yuni-events.js`（按 key 去重的事件队列）、`ocr.js`（OCR 调用） |
 | 业务辅助 | `earnings.js`（周收益汇总）、`saved-routes.js`（已保存地址与路线）、`pickup-point.js`（从通知里抽取真实驿站名，**从不默认到某个校区**） |

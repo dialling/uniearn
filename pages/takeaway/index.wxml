@@ -1,3 +1,4 @@
+<lang-switch/>
 <view class="post-page takeaway-page" wx:if="{{!unavailable}}">
  <view class="post-header"><view class="post-tabs"><button class="post-tab active">{{ui.tabTakeaway}}</button><button class="post-tab" bindtap="parcels" disabled="{{routeLocked}}">{{ui.tabParcels}}</button></view></view>
  <yuni-tip text="{{ui.tip}}" tip-key="takeaway-post"/>

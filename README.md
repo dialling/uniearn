@@ -27,8 +27,9 @@ uniearn/
 │   ├── nav/                       底部导航栏
 │   ├── yuni/                      「云宝」轻提示
 │   └── yuni-assistant/            「云宝」助手浮层
+│   └── lang-switch/               「中/EN」切换（每页顶部固定）
 ├── pages/                         27 个页面（每个页面 index.{js,json,wxml,wxss}）
-├── utils/                         38 个客户端共享模块（含中英文案、共享样式）
+├── utils/                         39 个客户端共享模块（含中英文案、共享样式）
 ├── cloudfunctions/                4 个云函数，每个目录独立部署
 │   ├── orderService/              订单 / 行程 / 奖励核心服务
 │   ├── studentAccount/            账户、跑手申请、管理后台、微信手机号
