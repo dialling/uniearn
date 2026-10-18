@@ -46,3 +46,18 @@
 .sheet-choice.parcel{animation-delay:.08s}.sheet-choice.task{animation-delay:.13s}.sheet-choice.trip{animation-delay:.2s}
 .sheet-choice.choice-press{transform:scale(.98);opacity:.85}
 .sheet-close.choice-press{transform:scale(.9)}
+
+/* Dark appearance (Me → Appearance). The bottom bar and the create sheet follow it. */
+.nav.nav-dark{background:#2c332f;border-top-color:#465149}
+.nav-dark .item{color:#bfc6bd}
+.nav-dark .item.selected .nav-label{color:#96c9aa}
+.nav-dark .plus{border-color:#202522}
+.nav-dark .create-sheet{background:#2c332f;color:#edf1ed}
+.nav-dark .sheet-handle{background:#465149}
+.nav-dark .sheet-close{background:#3a423d;color:#edf1ed}
+.nav-dark .sheet-soon-heading{color:#bfc6bd}
+.nav-dark .sheet-copy{color:#edf1ed}
+.nav-dark .sheet-description{color:#bfc6bd}
+.nav-dark .sheet-choice.parcel{background:#3a2f29;border-color:#c7532b;color:#e6a37f}
+.nav-dark .sheet-choice.task{background:#2f3140;border-color:#6b74c9;color:#a8b0f0}
+.nav-dark .sheet-choice.trip{background:#2c3a33;border-color:#41775b;color:#96c9aa}
