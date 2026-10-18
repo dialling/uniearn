@@ -135,7 +135,7 @@ function execute(s, actor, account, event, now = Date.now()) {
     check(s.requests.filter(r => r.ownerId === actor && r.createdAt > now - 86400000).length < MAX_CREATES_PER_DAY, 'You can post up to '+MAX_CREATES_PER_DAY+' orders a day.');
     check(s.requests.length < 200, 'The order board is full right now. Please try again later.');
     const data = input(event.data, actor);
-    let r;if(data.category==='task'){data.dorm='';data.room='';r={...data,id:'r'+s.nextId++,small:1,big:0,codes:[''],reward:Math.round(data.price*100)/100,serviceFee:.5,status:'waiting',runnerId:null,collected:[],photo:'',closesAt:data.dueAt,deadline:f.clock(data.dueAt),station:'Task',createdAt:now};s.requests.unshift(r);f.event(r,'Posted',now);}else r=data.category==='takeout'?f.createTakeaway(s,data,now):d.createRequest(s,data);
+    let r;if(data.category==='task'){data.dorm='';data.room='';r={...data,id:'r'+s.nextId++,small:1,big:0,codes:[''],reward:Math.round(data.price*100)/100,serviceFee:0,status:'waiting',runnerId:null,collected:[],photo:'',closesAt:data.dueAt,deadline:f.clock(data.dueAt),station:'Task',createdAt:now};s.requests.unshift(r);f.event(r,'Posted',now);}else r=data.category==='takeout'?f.createTakeaway(s,data,now):d.createRequest(s,data);
     r.createdAt = now; r.campusId=campusId;r.universityId='xjtlu';r.ownerId = actor; r.isMine = true;
     rewards.apply(s,actor,r,event.couponId,now);
     if (data.category === 'parcel') {const date=data.deliveryDate||new Date(now+28800000).toISOString().slice(0,10);if(data.deadline){const close=Date.parse(date+'T'+data.deadline+':00+08:00');check(Number.isFinite(close)&&close>now,'Choose a future delivery deadline.');r.closesAt=close;}f.event(r, 'Posted', now);}

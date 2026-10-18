@@ -2,7 +2,7 @@ const d=require('./domain'),c=require('./catalog');
 const HOUR=3600000,MIN=60000;
 function clock(ts){if(!ts)return '—';const t=new Date(ts+8*3600000);return String(t.getUTCHours()).padStart(2,'0')+':'+String(t.getUTCMinutes()).padStart(2,'0');}
 function todayAt(value,now=Date.now()){const parts=String(value).split(':').map(Number);if(parts.length!==2||parts[0]<0||parts[0]>23||parts[1]<0||parts[1]>59||parts.some(x=>!Number.isInteger(x)))throw Error('Choose a valid time');const t=new Date(now+8*3600000);return Date.UTC(t.getUTCFullYear(),t.getUTCMonth(),t.getUTCDate(),parts[0]-8,parts[1],0,0);}
-function fee(r){return Number(r.serviceFee===undefined?(c.category(r)==='takeout'?0.5:d.serviceFee(d.boxes(r))):r.serviceFee);}
+function fee(r){return Number(r.serviceFee===undefined?d.serviceFee(d.boxes(r)):r.serviceFee);}
 function total(r){return Math.max(0,Math.round((r.reward+fee(r)-Number(r.discount||0))*100)/100);}
 function hours(r){return c.category(r)==='task'?24:c.category(r)==='takeout'?1:48;}
 function event(r,label,at=Date.now()){(r.history||(r.history=[])).push({label,at});}
@@ -22,7 +22,7 @@ function createTakeaway(s,data,now=Date.now()){
  const r=d.createRequest(s,{...data,category:'takeout',small:Number(data.bags),big:0,codes:[],pricePerBox:Number(data.price),deadline:clock(arrivalAt+30*MIN),arrivalAt,arrived:!!data.arrived,closesAt:arrivalAt+30*MIN,soup:!!data.soup,riderPhoto:data.riderPhoto||''});
  r.createdAt=now;r.baseReward=r.reward;event(r,'Posted',now);return r;
 }
-function raise(s,id,amount){const r=s.requests.find(x=>x.id===id);if(!r||r.status!=='waiting')throw Error('This request is no longer waiting');if(![1,2].includes(amount))throw Error('Choose ¥1 or ¥2');r.reward=Math.round((r.reward+amount)*100)/100;r.raised=(r.raised||0)+amount;event(r,'Offer raised by ¥'+amount);return r;}
+function raise(s,id,amount){const r=s.requests.find(x=>x.id===id);if(!r||r.status!=='waiting')throw Error('This request is no longer waiting');if(![188,266,555,666,888].includes(Math.round(amount*100)))throw Error('Choose ¥1.88, ¥2.66, ¥5.55, ¥6.66 or ¥8.88');r.reward=Math.round((r.reward+amount)*100)/100;r.raised=(r.raised||0)+amount;event(r,'Offer raised by ¥'+amount);return r;}
 function cancelReason(r,reason,now=Date.now()){
  if(r.status!=='taken'||r.collected.length)throw Error('Only an uncollected order can be cancelled');
  if(!['missing','quantity','personal','mismatch'].includes(reason))throw Error('Choose a reason');

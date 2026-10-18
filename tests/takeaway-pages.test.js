@@ -14,18 +14,18 @@ const e=data=>({currentTarget:{dataset:data}});
 async function login(name){h.user=name;orders.invalidate();store.reset();const a=h.accounts[h.engine.idFor(name)];store.update(s=>{s.language='en';s.profile={...s.profile,...a.profile,onboarded:true,studentVerified:true,accountId:h.engine.idFor(name)};});await orders.sync();}
 (async()=>{
  await login('customer');assert.equal(store.get().requests.length,0,'no demo orders uploaded');
- const p=load('takeaway');p.setData({arrived:true,agreed:true,bags:2});p.totals();assert.equal(p.data.total,'8.50');p.setData({station:'North gate'});p.autoSaveDorm();assert.equal(store.get().routes.length,1);
+ const p=load('takeaway');p.setData({arrived:true,agreed:true,bags:2});p.totals();assert.equal(p.data.total,'6.00');p.setData({station:'North gate'});p.autoSaveDorm();assert.equal(store.get().routes.length,1);
  failAfterCommit=true;await p.post();assert.equal(h.state.requests.length,1,'lost response retry does not duplicate post');
  const rid=h.state.requests[0].id;assert.match(navigation,/posted\/index\?id=/);
  const mine=load('requests');mine.refresh();assert.equal(mine.data.active.length,1);
- const request=load('request',{id:rid});request.refresh();await request.raise(e({amount:1}));assert.equal(h.state.requests[0].reward,9);
+ const request=load('request',{id:rid});request.refresh();await request.raise(e({amount:1.88}));assert.equal(h.state.requests[0].reward,7.88);
  const ownBoard=load('jobs');ownBoard.refresh();assert.equal(ownBoard.data.cards.length,1,'own order appears as Your post');assert.equal(ownBoard.data.cards[0].mine,true);await ownBoard.take(e({ids:[rid]}));assert.equal(h.state.trips.length,0,'own order cannot be accepted');assert.match(notices.at(-1),/own post/);
  await login('runner');const jobs=load('jobs');jobs.refresh();assert.equal(jobs.data.cards.length,1);assert.ok(!JSON.stringify(jobs.data.cards).includes('13801026092'));
  await jobs.take(e({ids:[rid]}));const tid=h.state.trips[0].id;assert.match(navigation,/trip\/index/);
  const trip=load('trip',{id:tid});trip.refresh();trip.onUnload();assert.equal(h.state.requests[0].status,'taken');
  await trip.collect(e({id:rid}));await trip.photo(e({id:rid}));trip.setData({sealChecked:true});await trip.sendDelivery();assert.equal(h.state.requests[0].status,'delivered');assert.match(h.state.requests[0].photo,/^cloud:\/\//);
  await login('customer');request.refresh();assert.match(request.data.request.photo,/https:\/\/private.example/,'customer image uses authorized URL');await request.confirm();assert.equal(h.state.requests[0].status,'confirmed');assert.equal(store.get().profile.paid,0);
- await login('runner');const earnings=load('earnings');earnings.refresh();assert.equal(earnings.data.paid,'9.00');assert.equal(earnings.data.waiting,'0.00');
+ await login('runner');const earnings=load('earnings');earnings.refresh();assert.equal(earnings.data.paid,'7.88');assert.equal(earnings.data.waiting,'0.00');
  const setup=load('trip-start');setup.setData({category:'takeout',station:'North gate',dorm:'Dorm 7',capacity:1,duration:10});await setup.start();const second=h.state.trips[0];
  await login('customer');const join=load('join',{id:second.id,origin:'different-phone'});join.refresh();assert.equal(join.data.open,true,'share opens on a different phone');join.join();assert.match(navigation,/takeaway\/index\?tripId=/);
  const joining=load('takeaway',{tripId:second.id});joining.setData({arrived:true,agreed:true,bags:2});const count=h.state.requests.length;await joining.post();assert.equal(h.state.requests.length,count);assert.match(notices.at(-1),/Too many/);

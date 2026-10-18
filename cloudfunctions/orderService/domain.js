@@ -6,9 +6,8 @@ const demo = [
   {id:'r4',owner:'Lina',station:'Station C',dorm:'Building C',room:'107',small:1,big:0,codes:['73-1-2321'],phone:'138 0102 1872',note:'Please call on arrival',deadline:'14:00',reward:5,status:'waiting',runnerId:null,collected:[],photo:''}
 ];
 function boxes(r) { return Number(r.small || 0) + Number(r.big || 0); }
-function parcelTip(r,i) { const n=boxes(r),tip=Number(r.tip||0);return n?Math.floor(tip/n)+(i<tip%n?1:0):0; }
 function limit(jobs) { return require('./runner-level').level(typeof jobs==='object'?jobs:{jobsDone:jobs,onTime:jobs}).limit; }
-function serviceFee(boxCount) { return Math.round(boxCount * 50) / 100; }
+function serviceFee() { return 0; }
 // Prices are typed as decimals, so 4.35*100 is 434.99999999999994. Compare against the rounded cent value.
 function wholeCents(value) { const n=Number(value); return Number.isFinite(n) && Math.abs(n*100-Math.round(n*100)) < 1e-6; }
 const MAX_PRICE_PER_BOX = 50;
@@ -22,7 +21,7 @@ function createRequest(s, data) {
     if(!data.parcelItems.length||data.parcelItems.length>5)throw Error('Choose between 1 and 5 parcels');
     data.parcelItems=data.parcelItems.map(item=>{const size=catalog.sizes.find(x=>x.id===item.size);if(!size||!String(item.code||'').trim())throw Error('Add one pickup code per parcel');return {size:size.id,code:String(item.code).trim(),price:size.price};});
     data.codes=data.parcelItems.map(x=>x.code);data.big=data.parcelItems.filter(x=>['large','oversized'].includes(x.size)).length;data.small=data.parcelItems.length-data.big;
-    if(![0,1,2,3].includes(Number(data.tip||0)))throw Error('Choose a valid tip');
+    if(![0,188,266,555,666,888].includes(Math.round(Number(data.tip||0)*100)))throw Error('Choose a valid tip');
     reward=data.parcelItems.reduce((sum,x)=>sum+x.price,0)+Number(data.tip||0);
   } else {
     if(data.category==='parcel'&&!catalog.sizes.some(x=>x.id===data.parcelSize))throw Error('Choose a parcel size');
@@ -30,10 +29,10 @@ function createRequest(s, data) {
     if(boxes(data)<1||boxes(data)>(data.category==='takeout'?5:3)||(data.big&&boxes(data)>1))throw Error('Choose a valid quantity');
     if(data.category==='takeout')data.codes=Array(boxes(data)).fill('').map((_,i)=>(data.codes||[])[i]||'');
     if(!data.codes||data.codes.length!==boxes(data)||(data.category==='parcel'&&data.codes.some(x=>!String(x).trim())))throw Error('Add one pickup code per parcel');
-    if(!wholeCents(data.pricePerBox)||Number(data.pricePerBox)<(data.category==='takeout'?3:2)||Number(data.pricePerBox)>MAX_PRICE_PER_BOX)throw Error('Choose an offer between the minimum and ¥'+MAX_PRICE_PER_BOX+' per item');
+    if(!wholeCents(data.pricePerBox)||Number(data.pricePerBox)<3||Number(data.pricePerBox)>MAX_PRICE_PER_BOX)throw Error('Choose an offer between the minimum and ¥'+MAX_PRICE_PER_BOX+' per item');
     reward=Math.round(boxes(data)*Number(data.pricePerBox)*100)/100;
   }
-  const r={...data,id:'r'+s.nextId++,status:'waiting',runnerId:null,collected:[],photo:'',reward,createdAt:Date.now(),isMine:true,ownerId:s.profile.accountId||'local',serviceFee:data.category==='takeout'?0.5:serviceFee(boxes(data))};
+  const r={...data,id:'r'+s.nextId++,status:'waiting',runnerId:null,collected:[],photo:'',reward,createdAt:Date.now(),isMine:true,ownerId:s.profile.accountId||'local',serviceFee:serviceFee()};
   s.requests.unshift(r); return r;
 }
 function eligible(s, trip) { return s.requests.filter(r=>r.status==='waiting' && r.station===trip.station && r.dorm===trip.dorm && catalog.category(r)===catalog.category(trip) && boxes(r)<=trip.capacity); }
@@ -79,22 +78,22 @@ function acceptBoxes(s,refs) {
   const originals=Object.keys(groups).map(id=>s.requests.find(r=>r.id===id));
   const station=originals[0].station,dorm=originals[0].dorm;
   if(originals.some(r=>r.station!==station||r.dorm!==dorm||(r.destinationKey||'')!==(originals[0].destinationKey||'')||r.campusId!==originals[0].campusId||catalog.category(r)!==catalog.category(originals[0])))throw Error('Choose parcels on the same route');
-  const rewards=originals.map(r=>r.parcelItems?groups[r.id].reduce((sum,i)=>sum+r.parcelItems[i].price+parcelTip(r,i),0):Math.round(r.reward*groups[r.id].length/boxes(r)*100)/100);
+  const rewards=originals.map(r=>{const idxs=groups[r.id];if(!r.parcelItems)return Math.round(r.reward*idxs.length/boxes(r)*100)/100;const prices=idxs.reduce((n,i)=>n+r.parcelItems[i].price,0);return prices+(idxs.length===boxes(r)?Number(r.tip||0):0);});
   if(rewards.reduce((n,v)=>n+v,0)>limit(s.profile))throw Error('This trip exceeds your runner limit');
   const t={id:'t'+s.nextId++,campusId:originals[0].campusId,universityId:originals[0].universityId,category:catalog.category(originals[0]),station,dorm,capacity:refs.length,depart:'Now',phase:'collect',requestIds:[],cancelled:false};
   originals.forEach((r,i)=>{
-    const indices=groups[r.id].sort((a,b)=>a-b),remaining=r.codes.filter((_,idx)=>!indices.includes(idx)),selectedTip=indices.reduce((n,idx)=>n+parcelTip(r,idx),0);
+    const indices=groups[r.id].sort((a,b)=>a-b),remaining=r.codes.filter((_,idx)=>!indices.includes(idx)),originalTip=Number(r.tip||0);
     if(remaining.length){
       const extra={...r,id:'r'+s.nextId++,codes:remaining,small:r.big?0:remaining.length,big:r.big?1:0,reward:Math.round((r.reward-rewards[i])*100)/100,collected:[],status:'waiting',runnerId:null,photo:'',splitParentId:r.id};
       r.splitOriginal={codes:r.codes.slice(),small:r.small,big:r.big,reward:r.reward,tip:r.tip,discount:r.discount,extraId:extra.id,serviceFee:r.serviceFee,parcelItems:r.parcelItems&&r.parcelItems.slice()};
-      if(r.parcelItems){extra.parcelItems=r.parcelItems.filter((_,idx)=>!indices.includes(idx));extra.tip=r.parcelItems.reduce((n,_,idx)=>n+(!indices.includes(idx)?parcelTip(r,idx):0),0);extra.big=extra.parcelItems.filter(x=>['large','oversized'].includes(x.size)).length;extra.small=extra.parcelItems.length-extra.big;}
+      if(r.parcelItems){extra.parcelItems=r.parcelItems.filter((_,idx)=>!indices.includes(idx));extra.tip=originalTip;extra.big=extra.parcelItems.filter(x=>['large','oversized'].includes(x.size)).length;extra.small=extra.parcelItems.length-extra.big;}
       if(r.serviceFee!==undefined){extra.serviceFee=serviceFee(remaining.length);r.serviceFee=serviceFee(indices.length);}
       // Split the coupon by parcel count, but never let either part's discount exceed what that part costs.
       const originalDiscount=Number(r.discount||0),round=x=>Math.round(x*100)/100,mineCap=round(rewards[i]+serviceFee(indices.length)),restCap=round(extra.reward+serviceFee(remaining.length));let mine=Math.min(mineCap,round(originalDiscount*indices.length/boxes(r))),rest=Math.min(restCap,round(originalDiscount-mine));mine=Math.min(mineCap,round(originalDiscount-rest));r.discount=Math.max(0,mine);extra.discount=Math.max(0,rest);
       s.requests.push(extra);
     }
     r.codes=indices.map(idx=>r.codes[idx]);r.small=r.big?0:indices.length;r.reward=rewards[i];
-    if(r.parcelItems){r.tip=selectedTip;r.parcelItems=indices.map(idx=>r.parcelItems[idx]);r.big=r.parcelItems.filter(x=>['large','oversized'].includes(x.size)).length;r.small=r.parcelItems.length-r.big;}
+    if(r.parcelItems){r.tip=remaining.length?0:originalTip;r.parcelItems=indices.map(idx=>r.parcelItems[idx]);r.big=r.parcelItems.filter(x=>['large','oversized'].includes(x.size)).length;r.small=r.parcelItems.length-r.big;}
     r.status='taken';r.runnerId=t.id;r.takenAt=Date.now();t.requestIds.push(r.id);
   });
   s.trips.unshift(t);return t;
@@ -134,5 +133,5 @@ function cancelTrip(s,id) {
 function cancelRequest(s,id) {
   const r=s.requests.find(x=>x.id===id);if(!r||r.status!=='waiting')throw Error('Only an unclaimed request can be cancelled here');r.status='cancelled';r.refundAmount=Math.max(0,Math.round((r.reward+(r.serviceFee===undefined?serviceFee(boxes(r)):r.serviceFee)-Number(r.discount||0))*100)/100);r.cancelledAt=Date.now();
 }
-function initial() { const now=Date.now(),food=[{id:'food1',owner:'Ming Li',station:'North gate',dorm:'Dorm 7',room:'412',small:2,big:0,codes:['',''],phone:'13801026092',note:'Leave at the desk',category:'takeout',reward:8,serviceFee:0.5,status:'waiting',runnerId:null,collected:[],photo:'',arrivalAt:now+20*60000,closesAt:now+50*60000,deadline:'',soup:true,price:4,createdAt:now},{id:'food2',owner:'Minjun',station:'North gate',dorm:'Dorm 7',room:'208',small:1,big:0,codes:[''],phone:'13801023381',note:'',category:'takeout',reward:4,serviceFee:0.5,status:'waiting',runnerId:null,collected:[],photo:'',arrivalAt:now,closesAt:now+30*60000,deadline:'',arrived:true,price:4,createdAt:now}];return {nextId:10,requests:JSON.parse(JSON.stringify(demo)).concat(food),trips:[],profile:{name:'',phone:'',dorm:'',room:'',onboarded:false,studentVerified:false,verification:{status:'unverified'},jobsDone:0,paid:0}}; }
-module.exports={initial,boxes,parcelTip,limit,serviceFee,wholeCents,MAX_PRICE_PER_BOX,createRequest,eligible,assign,startTrip,acceptJob,acceptBoxes,abandonUncollectedTrip,collect,deliver,confirm,cancelTrip,cancelRequest};
+function initial() { const now=Date.now(),food=[{id:'food1',owner:'Ming Li',station:'North gate',dorm:'Dorm 7',room:'412',small:2,big:0,codes:['',''],phone:'13801026092',note:'Leave at the desk',category:'takeout',reward:8,serviceFee:0,status:'waiting',runnerId:null,collected:[],photo:'',arrivalAt:now+20*60000,closesAt:now+50*60000,deadline:'',soup:true,price:4,createdAt:now},{id:'food2',owner:'Minjun',station:'North gate',dorm:'Dorm 7',room:'208',small:1,big:0,codes:[''],phone:'13801023381',note:'',category:'takeout',reward:4,serviceFee:0,status:'waiting',runnerId:null,collected:[],photo:'',arrivalAt:now,closesAt:now+30*60000,deadline:'',arrived:true,price:4,createdAt:now}];return {nextId:10,requests:JSON.parse(JSON.stringify(demo)).concat(food),trips:[],profile:{name:'',phone:'',dorm:'',room:'',onboarded:false,studentVerified:false,verification:{status:'unverified'},jobsDone:0,paid:0}}; }
+module.exports={initial,boxes,limit,serviceFee,wholeCents,MAX_PRICE_PER_BOX,createRequest,eligible,assign,startTrip,acceptJob,acceptBoxes,abandonUncollectedTrip,collect,deliver,confirm,cancelTrip,cancelRequest};

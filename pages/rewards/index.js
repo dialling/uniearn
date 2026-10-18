@@ -10,7 +10,7 @@ const goldenWeek = {
 const goldenWeekZh = {
   ...goldenWeek, bannerLabel: '活动 · 10月1日–7日',
   headline: '国庆校园福利：每晚 18:00–20:00 免费配送',
-  blurb: '假期留在西浦？每天晚间时段可享一次免费配送，校园帮手的酬劳照常全额发放。'
+  blurb: '假期留在西浦？每天晚间时段可享一次免费配送，跑手的赏金照常全额发放。'
 };
 function couponDate(value,zh){
   const date=new Date(value);

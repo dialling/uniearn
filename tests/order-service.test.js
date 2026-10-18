@@ -12,7 +12,7 @@ const ok=async(who,action,extra={})=>{const r=await h.call(who,action,extra);ass
  assert.equal(publicView.requests[0].phone,'');assert.equal(publicView.requests[0].room,'');assert.ok(!JSON.stringify(publicView).includes('13801026092'));
  assert.equal((await h.call('customer','accept',{ids:[rid]})).ok,false,'cannot accept own order');
  assert.equal((await h.call('stranger','accept',{ids:[rid]})).ok,false,'runner student check enforced on server');
- assert.equal((await h.call('other','raise',{id:rid,amount:2})).ok,false,'customer ownership checked');
+ assert.equal((await h.call('other','raise',{id:rid,amount:1.88})).ok,false,'customer ownership checked');
  const racing=await Promise.all(['runner','other'].map(who=>h.call(who,'accept',{ids:[rid]})));
  assert.equal(racing.filter(x=>x.ok).length,1,'exactly one runner wins a concurrent acceptance');
  const who=racing[0].ok?'runner':'other',loser=who==='runner'?'other':'runner',tid=h.state.requests[0].runnerId;
