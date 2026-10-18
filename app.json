@@ -29,7 +29,7 @@
     "pages/admin/index"
   ],
   "window": {
-    "navigationBarTitleText": "XP 跑了么",
+    "navigationBarTitleText": "UniEarn",
     "navigationBarBackgroundColor": "#ffffff",
     "navigationBarTextStyle": "black",
     "backgroundColor": "#eeede8"

@@ -67,7 +67,7 @@ Page({
     catch (err) { ui.toast(err); }
   },
   copy() { wx.setClipboardData({data: this.data.inviteCode}); },
-  onShareAppMessage() { return {title: this.data.zh ? '加入 XP 跑了么 · 校园代取' : 'Join UniEarn · campus pickups', path: '/pages/rewards/index?invite=' + this.data.inviteCode}; },
+  onShareAppMessage() { return {title: this.data.zh ? '加入 UniEarn · 校园代取' : 'Join UniEarn · campus pickups', path: '/pages/rewards/index?invite=' + this.data.inviteCode}; },
   onLoad(o={}) {if(o.section==='coupons')this.couponFocus=true;if(o.openInvite==='1')this.setData({inviting:true}); if (o.invite) this.setData({inviteInput: o.invite, inviting: true}); },
   jobs() { wx.reLaunch({url: '/pages/jobs/index'}); }
 });
