@@ -36,4 +36,12 @@
 .addr-summary-body{flex:1;min-width:0}.addr-summary-place{font-size:30rpx;font-weight:800}.addr-summary .hint{margin:4rpx 0 0}
 .page-dark .addr-chip,.page-dark .addr-empty-card,.page-dark .addr-summary{background:#2c332f;border-color:#465149}.page-dark .addr-chip.selected{border-color:#d0835c;background:#3a332d}.page-dark .addr-chip-name{color:#edf1ed}.page-dark .addr-chip-place{color:#c3c9c4}
 
-.type-switch{margin:2rpx 30rpx 18rpx}
+
+.note-soup{margin-top:14rpx}.soup-inline{min-height:0;padding:16rpx 18rpx;border:0;background:#f8f7f3;border-radius:18rpx}.soup-inline .check{flex:none}
+.note-label{display:flex;align-items:center;gap:8rpx}.vis-tag{margin-left:auto;padding:2rpx 12rpx;border-radius:8rpx;font-size:20rpx;font-weight:650}.vis-tag.public{background:#eef3ef;color:#41775b}.vis-tag.private{background:#fff1e7;color:#ad5a35}
+.arrival-switch{display:flex;gap:16rpx;margin:6rpx 0 18rpx}.arrival-opt{flex:1;height:84rpx;line-height:84rpx;text-align:center;border-radius:42rpx;border:2rpx solid #e3e1da;background:#fff;color:#4a4a45;font-weight:700;transition:background .22s ease,color .22s ease,border-color .22s ease,transform .15s ease}.arrival-opt:active{transform:scale(.96)}.arrival-opt.on{background:#ad5a35;border-color:#ad5a35;color:#fff;box-shadow:0 6rpx 16rpx rgba(173,90,53,.25)}
+.arrival-box{padding:22rpx 24rpx;border-radius:22rpx;background:#f8f7f3;animation:ue-settle .25s ease backwards}
+.arrival-row{margin-bottom:14rpx}.time-step{display:flex;align-items:center;gap:6rpx;padding:6rpx 10rpx;border-radius:40rpx;background:#fff;border:2rpx solid #e3e1da}.time-btn{width:60rpx;height:60rpx;line-height:58rpx;text-align:center;font-size:34rpx;color:#4a4a45;border-radius:50%;transition:background .15s}.time-btn:active{background:#f0efeb}.time-value{display:inline-block;min-width:110rpx;text-align:center;font-size:34rpx;font-weight:800;font-family:monospace;letter-spacing:1rpx}
+.arrival-close{color:#5e5d57;font-size:24rpx;line-height:1.6}.time-strong{font-weight:800;font-family:monospace;color:#202126;margin:0 6rpx}
+.arrival-tip{display:flex;align-items:center;gap:14rpx;margin-top:16rpx;padding-top:16rpx;border-top:1rpx solid #e9e7e0;color:#5e5d57;font-size:23rpx;line-height:1.5}.arrival-yuni{flex:none;width:56rpx;height:56rpx}
+.page-dark .arrival-opt{background:#2c332f;border-color:#465149;color:#edf1ed}.page-dark .arrival-opt.on{background:#ad5a35;border-color:#ad5a35}.page-dark .arrival-box{background:#2c332f}.page-dark .time-step{background:#232926;border-color:#465149}.page-dark .time-btn,.page-dark .time-strong{color:#edf1ed}.page-dark .arrival-close,.page-dark .arrival-tip{color:#c3c9c4}

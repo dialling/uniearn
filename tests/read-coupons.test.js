@@ -16,11 +16,12 @@ assert.equal(parcel.data.smsEditing,false);
 assert.equal(parcel.data.discount,'0.00');
 store.update(s=>{s.rewards={coupons:[{id:'owned',short:'¥2 off',kind:'total',max:2,usable:true,expiresAt:Date.now()+86400000},{id:'expired',max:5,expiresAt:1},{id:'used',max:5,usedBy:'order'}]};});
 for(const form of [parcel,page('takeaway')]){
- form.totals();assert.equal(form.data.coupons.length,1);
- const before=Number(form.data.total);
- form.coupon({currentTarget:{dataset:{id:'owned'}}});
- assert.equal(form.data.couponId,'owned');assert.equal(form.data.discount,'2.00');assert.equal(Number(form.data.total),before-2);
- form.coupon({currentTarget:{dataset:{id:''}}});assert.equal(form.data.discount,'0.00');assert.equal(Number(form.data.total),before);
+ form.couponManual=false;form.totals();assert.equal(form.data.coupons.length,1);
+ assert.equal(form.data.couponId,'owned','best usable coupon is applied automatically');assert.equal(form.data.discount,'2.00');
+ const after=Number(form.data.total);
+ form.coupon({currentTarget:{dataset:{id:''}}});assert.equal(form.data.discount,'0.00');assert.equal(Number(form.data.total),after+2);
+ form.totals();assert.equal(form.data.couponId,'','a manual "none" choice is kept');
+ form.coupon({currentTarget:{dataset:{id:'owned'}}});assert.equal(form.data.couponId,'owned');assert.equal(Number(form.data.total),after);
 }
 (async()=>{
  orders.sync=async()=>{throw Error('offline');};

@@ -1,0 +1,17 @@
+<lang-switch/>
+<view class="cp-page {{darkClass}}">
+ <view class="cp-tabs"><view class="cp-tab {{tab==='usable'?'on':''}}" data-tab="usable" bindtap="switchTab">{{zh?'可使用':'Available'}} {{usable.length}}</view><view class="cp-tab {{tab==='expired'?'on':''}}" data-tab="expired" bindtap="switchTab">{{zh?'已过期':'Expired'}} {{expired.length}}</view><view class="cp-slider {{tab==='expired'?'right':''}}"></view></view>
+ <block wx:if="{{tab==='usable'}}">
+  <view wx:if="{{!usable.length}}" class="cp-empty">{{zh?'暂无可用的优惠券，可以去「动态」领取。':'No coupons yet. Collect some in Rewards.'}}</view>
+  <view wx:for="{{usable}}" wx:key="id" class="cp-card {{selected===item.id?'on':''}} {{item.usable?'':'off'}}" style="animation-delay:{{index*40}}ms" data-id="{{item.id}}" bindtap="pick">
+   <view class="cp-left"><view class="cp-amt"><text class="cp-yen">¥</text>{{item.usable?item.save:item.max}}</view><view class="cp-sub">{{item.usable?(zh?'本单可省':'Saves'):(zh?'最高减':'Up to')}}</view></view>
+   <view class="cp-right"><view class="cp-name">{{item.name}}<text wx:if="{{best===item.id}}" class="cp-best">{{zh?'最优':'Best'}}</text></view><view class="cp-until">{{item.note||item.until}}</view></view>
+   <view class="cp-radio"><text wx:if="{{selected===item.id}}">✓</text></view>
+  </view>
+  <view class="cp-none {{!selected?'on':''}}" data-id="" bindtap="pick">{{zh?'不使用优惠券':'Don’t use a coupon'}}</view>
+ </block>
+ <block wx:else>
+  <view wx:if="{{!expired.length}}" class="cp-empty">{{zh?'没有过期的优惠券。':'No expired coupons.'}}</view>
+  <view wx:for="{{expired}}" wx:key="id" class="cp-card expired"><view class="cp-left"><view class="cp-amt"><text class="cp-yen">¥</text>{{item.max}}</view><view class="cp-sub">{{zh?'最高减':'Up to'}}</view></view><view class="cp-right"><view class="cp-name">{{item.name}}</view><view class="cp-until">{{item.until}}</view></view><text class="cp-stamp">{{zh?'已过期':'Expired'}}</text></view>
+ </block>
+</view>

@@ -1,1 +1,3 @@
 @import "../../utils/flow.wxss";
+
+.pickup-code-line{display:flex;align-items:center;justify-content:space-between;margin:10rpx 0;padding:14rpx 18rpx;border-radius:14rpx;background:#fff1e7;color:#9b472c;font-size:24rpx}.pickup-code-value{font-weight:800;letter-spacing:3rpx;font-size:30rpx}.page-dark .pickup-code-line{background:#3a332d;color:#e0a07d}

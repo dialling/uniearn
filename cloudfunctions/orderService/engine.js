@@ -68,10 +68,11 @@ function photo(value, actor, required = false) {
 }
 function input(data, actor) {
   data = data || {}; const out = {};
-  for (const key of ['destinationType','deliveryAddress','owner','station','dorm','room','phone','note','description','pickupPoint','pickupAddress','pickupNote','dropNote','deadline','deliveryDate','arrivalTime']) {
+  for (const key of ['destinationType','deliveryAddress','owner','station','dorm','room','phone','note','description','pickupPoint','pickupAddress','pickupNote','dropNote','deadline','deliveryDate','arrivalTime','pickupCode']) {
     check(data[key] === undefined || typeof data[key] === 'string', 'Invalid ' + key);
     out[key] = (data[key] || '').trim(); check(out[key].length <= 500, key + ' is too long.');
   }
+  check(out.pickupCode.length <= 20, 'Keep the pickup code under 20 characters.');
   check(['parcel','takeout','task'].includes(data.category), 'Choose takeaway or parcel.');
   out.category = data.category;
   out.arrived = data.arrived === true; out.soup = data.soup === true;
@@ -221,9 +222,10 @@ function snapshot(s, actor, account, now = Date.now()) {
       out.messages=thread?thread.messages.map(m=>({id:m.id,text:m.text,at:m.at,mine:m.sender===actor})):[];
       return { ...out, runnerName:(s.trips.find(t=>t.id===r.runnerId)||{}).runnerName||'', ownerId: isMine ? actor : '', isMine, isRunner };
     }
-    // Allowlist public fields. Never send pickup codes, phone, room, notes, or photo IDs.
+    // Allowlist public fields. Never send pickup codes, phone, room or photo IDs. Takeaway notes are public by design.
     const out = {};
     for (const k of ['destinationKey','destinationType','id','campusId','universityId','category','station','dorm','small','big','reward','serviceFee','status','deadline','deliveryDate','createdAt','arrivalAt','closesAt','arrived','soup','raised','tip','parcelSize']) if (r[k] !== undefined) out[k] = r[k];
+    if (r.category === 'takeout' && r.note) out.note = r.note;
     return { ...out, owner:'Request', phone:'', room:'', codes:Array(d.boxes(r)).fill(''), collected:[], photo:'',
       parcelItems:r.parcelItems && r.parcelItems.map(p => ({size:p.size, price:p.price, code:''})), isMine:false, isRunner:false };
   });

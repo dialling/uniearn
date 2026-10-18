@@ -26,6 +26,7 @@
     "pages/help/index",
     "pages/route-edit/index",
     "pages/address/index",
+    "pages/coupon-pick/index",
     "pages/admin/index",
     "pages/notify-guide/index",
     "pages/terms/index"
