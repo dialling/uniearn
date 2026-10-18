@@ -1,6 +1,6 @@
 # UniEarn · 校园代取与跑腿小程序
 
-XJTLU 校园里的「顺路帮拿」平台。同学发布 **代取快递**、**代拿外卖** 或 **其他任务**，跑手（Runner）顺路接单、取件、上门送达并拍照留证，双方确认后结算。中英双语，微信小程序 + 微信云开发（CloudBase）。
+XJTLU 校园里的「顺路帮拿」平台。同学发布 **代取快递**、**代拿外卖** 或 **其他任务**，校园帮手（Runner）顺路接单、取件、上门送达并拍照留证，双方确认后结算。中英双语，微信小程序 + 微信云开发（CloudBase）。
 
 | 项 | 值 |
 | --- | --- |
@@ -10,7 +10,7 @@ XJTLU 校园里的「顺路帮拿」平台。同学发布 **代取快递**、**�
 | 技术栈 | 微信小程序原生（WXML/WXSS/JS）+ 云函数 + 云数据库 + 云存储 |
 | 基础库 | `3.7.0` |
 | Node.js | ≥ 18（**仅**用于跑本地测试，小程序本身不需要） |
-| 规模 | 119 个 JS / 42 个 JSON，27 个页面，38 个客户端模块，4 个云函数，35 个测试文件 |
+| 规模 | 26 个页面、4 个云函数、38 个测试文件（文件数量随迭代变化） |
 
 ---
 
@@ -22,21 +22,20 @@ uniearn/
 ├── sitemap.json                   微信搜索索引配置
 ├── project.config.json            微信开发者工具项目配置
 ├── package.json                   仅承载 npm test
-├── assets/                        46 个图标、插画与「云宝」吉祥物
+├── assets/                        78 个图标、插画与「云宝」吉祥物
 ├── components/                    自定义组件
 │   ├── nav/                       底部导航栏
 │   ├── yuni/                      「云宝」轻提示
 │   └── yuni-assistant/            「云宝」助手浮层
-│   └── lang-switch/               每页钩子：本地化导航标题 + 深浅色导航（不渲染 UI）
-├── pages/                         27 个页面（每个页面 index.{js,json,wxml,wxss}）
-├── utils/                         39 个客户端共享模块（含中英文案、共享样式）
+├── pages/                         26 个页面（每个页面 index.{js,json,wxml,wxss}）
+├── utils/                         30 个客户端共享模块（含中英文案、共享样式）
 ├── cloudfunctions/                4 个云函数，每个目录独立部署
 │   ├── orderService/              订单 / 行程 / 奖励核心服务
-│   ├── studentAccount/            账户、跑手申请、管理后台、微信手机号
+│   ├── studentAccount/            账户、学生认证、邮箱验证码
 │   ├── parseParcelScreenshot/     快递截图 OCR 解析
 │   └── parseSmsScreenshot/        短信截图 OCR 解析
 ├── scripts/check.js               语法检查 + 依次执行 tests/
-├── tests/                         35 个回归测试（Node 直跑，无框架）
+├── tests/                         36 个回归测试（Node 直跑，无框架）
 └── docs/                          项目文档
     ├── PROJECT-OVERVIEW.md        架构与业务规则总览 ← 接手代码先看这个
     ├── UPDATE-CN.md               0.9.20 版本更新说明
@@ -55,9 +54,9 @@ cd uniEarn
 npm test
 ```
 
-`npm test` 应输出 `Syntax checked: 119 JS files, 42 JSON files`，然后跑完 `tests/` 下 35 个测试文件并**退出码 0**。
+`npm test` 会检查全部 JS 语法与 JSON 格式，然后跑完 `tests/` 下 38 个测试文件并**退出码 0**。
 
-（若本地显示 `43 JSON files`，多出来的是微信开发者工具生成的 `project.private.config.json`——它已被 `.gitignore` 忽略、不在仓库里，属正常。）
+（若本地显示 `41 JSON files`，多出来的是微信开发者工具生成的 `project.private.config.json`——它已被 `.gitignore` 忽略、不在仓库里，属正常。）
 
 > 测试输出里会出现 `Coupon refresh failed Error: offline`、`studentAccount failure { ... }` 这类字样——那是**故意构造的失败路径**，用来验证降级行为，不是测试失败。判断标准只看退出码和结尾。
 
@@ -76,5 +75,7 @@ npm test
 - 用 GitHub 网页上传时，**文件夹要整个拖进去**。分次上传单个文件很容易漏目录——曾经有一份拷贝就是因为漏了 `pages/` 和 `utils/` 导致整个小程序跑不起来。
 - `project.private.config.json` 是微信开发者工具的本地配置，已在 `.gitignore` 中忽略，**不要提交**。
 - 提交信息写清「这次改了什么」。
-- **开工前先拉代码**：改代码前必须 `git pull --rebase` 拿到队友最新代码再动手；已经在本地改了一半，先 commit 或 stash 再拉，别硬拉。
-- **完工后马上推**：调试完立即 commit + push 到 `main`，别在本地囤着，否则队友拉不到你的改动。
+
+## 中英文与个人语言设置
+
+在「我的」顶部选择 **语言 / Language**。已登录账户的偏好保存在 CloudBase，访客使用微信本机存储。首次使用按微信客户端语言选择中文或英文。部署步骤、兼容说明、测试和已知限制见 [中英文开发与部署](docs/LOCALIZATION.md)。

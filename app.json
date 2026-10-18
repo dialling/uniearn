@@ -25,8 +25,7 @@
     "pages/routes/index",
     "pages/guide/index",
     "pages/help/index",
-    "pages/route-edit/index",
-    "pages/admin/index"
+    "pages/route-edit/index"
   ],
   "window": {
     "navigationBarTitleText": "UniEarn",
@@ -38,7 +37,6 @@
   "usingComponents": {
     "app-nav": "/components/nav/index",
     "yuni-tip": "/components/yuni/index",
-    "yuni-assistant": "/components/yuni-assistant/index",
-    "lang-switch": "/components/lang-switch/index"
+    "yuni-assistant": "/components/yuni-assistant/index"
   }
 }
