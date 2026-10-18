@@ -44,7 +44,7 @@ function runnerCancel(s,id,reason,now=Date.now()){
  expire(s,now);return mark;
 }
 function pickup(s,id){const r=s.requests.find(x=>x.id===id);if(!r||r.status!=='taken')throw Error('This order cannot be picked up');if(c.category(r)==='takeout')while(r.status==='taken')d.collect(s,id);else d.collect(s,id);if(r.status==='collected')event(r,'Picked up');const t=s.trips.find(x=>x.id===r.runnerId);if(t&&t.joinUntil>Date.now())t.phase='collect';}
-function deliver(s,id,photo,location){if(!String(location||'').trim())throw Error('Choose where you left the order');d.deliver(s,id,photo);const r=s.requests.find(x=>x.id===id);r.deliveryLocation=location;event(r,'Delivered · photo');}
+function deliver(s,id,photo,location){d.deliver(s,id,photo);const r=s.requests.find(x=>x.id===id);r.deliveryLocation=location||'';event(r,'Delivered · photo');}
 function report(s,id,reason,photo,note){const r=s.requests.find(x=>x.id===id);if(!r||r.status!=='delivered')throw Error('Only a delivered order can be reported');if(!['Not received','Wrong bag','Spilled or damaged','Something else'].includes(reason))throw Error('Choose a reason');if(reason==='Spilled or damaged'&&!photo)throw Error('Add a photo of the damage');if(reason==='Something else'&&!String(note||'').trim())throw Error('Describe the issue');r.status='disputed';r.dispute={reason,photo:photo||'',note:note||'',at:Date.now()};event(r,'Issue reported · settlement paused');}
 function candidates(s,t,now=Date.now()){
  return s.requests.filter(r=>r.status==='waiting'&&r.campusId===t.campusId&&r.station===t.station&&r.dorm===t.dorm&&c.category(r)===c.category(t)&&(!r.closesAt||r.closesAt>now)&&(!r.closesAt||r.closesAt>t.departAt)&&(!r.arrivalAt||r.arrivalAt<=t.departAt));

@@ -19,3 +19,5 @@
 .answer{animation:ya-fade .25s ease-out backwards}
 .question-title>.ya-q-toggle{transition:transform .2s ease}
 .close,.got,.still{transition:transform .16s ease,opacity .16s ease}
+
+.trip-ask{bottom:calc(170rpx + env(safe-area-inset-bottom));z-index:20}

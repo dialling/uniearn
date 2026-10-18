@@ -181,7 +181,7 @@ function execute(s, actor, account, event, now = Date.now()) {
       else f.pickup(s,r.id);
       const trip=s.trips.find(t=>t.id===r.runnerId);if(trip.requestIds.every(id=>s.requests.find(x=>x.id===id).status==='collected')){trip.phase='deliver';trip.joinUntil=now;}
     }
-    if (action === 'deliver') { check(r.category!=='task','Use the task completion photo and note.'); if(r.category==='takeout')check(event.sealChecked===true,'Check the seal sticker in the delivery photo.'); check(ownTrip(s,r.runnerId,actor).phase==='deliver', 'Close joining and go deliver first.'); check((r.destinationType==='place'?['At the stated location']:['At your door','At the front desk','Downstairs']).includes(event.location), 'Choose a delivery location.'); f.deliver(s, r.id, photo(event.photo, actor, true), event.location);rewards.recordBonus(s,actor,r,now); }
+    if (action === 'deliver') { check(r.category!=='task','Use the task completion photo and note.'); check(ownTrip(s,r.runnerId,actor).phase==='deliver', 'Close joining and go deliver first.'); if(event.location)check((r.destinationType==='place'?['At the stated location']:['At your door','At the front desk','Downstairs']).includes(event.location), 'Choose a delivery location.'); f.deliver(s, r.id, photo(event.photo, actor, true), event.location||'');rewards.recordBonus(s,actor,r,now); }
     if (action === 'runnerCancel') { f.runnerCancel(s, r.id, event.reason, now);s.members[actor].marks=s.profile.marks; }
   } else if (action === 'leave' || action === 'endEmpty') {
     const t = ownTrip(s, event.id, actor);

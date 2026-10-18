@@ -23,7 +23,7 @@ async function login(name){h.user=name;orders.invalidate();store.reset();const a
  await login('runner');const jobs=load('jobs');jobs.refresh();assert.equal(jobs.data.cards.length,1);assert.ok(!JSON.stringify(jobs.data.cards).includes('13801026092'));
  await jobs.take(e({ids:[rid]}));const tid=h.state.trips[0].id;assert.match(navigation,/trip\/index/);
  const trip=load('trip',{id:tid});trip.refresh();trip.onUnload();assert.equal(h.state.requests[0].status,'taken');
- await trip.collect(e({id:rid}));await trip.photo(e({id:rid}));trip.setData({sealChecked:true});await trip.sendDelivery();assert.equal(h.state.requests[0].status,'delivered');assert.match(h.state.requests[0].photo,/^cloud:\/\//);
+ await trip.collect(e({id:rid}));await trip.photo(e({id:rid}));await trip.sendDelivery();assert.equal(h.state.requests[0].status,'delivered');assert.match(h.state.requests[0].photo,/^cloud:\/\//);
  await login('customer');request.refresh();assert.match(request.data.request.photo,/https:\/\/private.example/,'customer image uses authorized URL');await request.confirm();assert.equal(h.state.requests[0].status,'confirmed');assert.equal(store.get().profile.paid,0);
  await login('runner');const earnings=load('earnings');earnings.refresh();assert.equal(earnings.data.paid,'7.88');assert.equal(earnings.data.waiting,'0.00');
  const setup=load('trip-start');setup.setData({category:'takeout',station:'North gate',dorm:'Dorm 7',capacity:1,duration:10});await setup.start();const second=h.state.trips[0];
