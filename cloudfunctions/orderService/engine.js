@@ -140,6 +140,15 @@ function execute(s, actor, account, event, now = Date.now()) {
     if(!t){check(m.supportTickets.filter(x=>now-x.createdAt<86400000).length<10,'You can send up to 10 support requests a day.');t={id:'support-'+s.nextId++,topic:['order','payment','other','deletion'].includes(event.topic)?event.topic:'other',createdAt:now,status:'open'};m.supportTickets.push(t);m.supportTickets=m.supportTickets.slice(-50);}
     check((t.messages||[]).filter(msg=>now-msg.at<86400000).length<50,'Too many messages today. Please wait for the team to reply.');
     t.messages=t.messages||[];t.messages.push({text,at:now,mine:true});value={ticket:t};
+  } else if (action === 'supportReply') {
+    check(account._admin===true||account._reviewer===true,'Admin access required.');
+    const accountId=String(event.accountId||''),member=s.members[accountId];
+    check(/^[a-f0-9]{64}$/.test(accountId)&&member,'Support conversation not found.');
+    const t=(member.supportTickets||[]).find(x=>x.id===event.ticketId&&x.status==='open');
+    check(t,'Support conversation is closed or unavailable.');
+    const text=String(event.text||'').trim();check(text&&text.length<=500,'Enter a reply up to 500 characters.');
+    t.messages=t.messages||[];check(t.messages.filter(msg=>!msg.mine&&now-msg.at<86400000).length<100,'Too many team replies today.');
+    t.messages.push({text,at:now,mine:false});value={ticketId:t.id};
   } else if (action === 'create') {
     check(s.requests.filter(r => r.ownerId === actor && OPEN_STATUSES.includes(r.status)).length < MAX_OPEN_PER_USER, 'You have '+MAX_OPEN_PER_USER+' open orders. Wait for some to finish before posting more.');
     check(s.requests.filter(r => r.ownerId === actor && r.createdAt > now - 86400000).length < MAX_CREATES_PER_DAY, 'You can post up to '+MAX_CREATES_PER_DAY+' orders a day.');
@@ -245,7 +254,8 @@ function snapshot(s, actor, account, now = Date.now()) {
     cancelled:false, remaining:t.capacity-t.requestIds.reduce((n,id)=>n+d.boxes(s.requests.find(r=>r.id===id)),0)
   }));
   const publicJobs=s.requests.filter(r=>inCampus(r)&&!['cancelled','refunded','disputed'].includes(r.status)).map(r=>{const o={};for(const k of ['destinationKey','destinationType','id','campusId','universityId','category','station','dorm','small','big','reward','status','arrivalAt','closesAt','deadline','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','arrived','deliverBy','soup','fragile','night','shop','raised','title','dueAt'])if(r[k]!==undefined)o[k]=r[k];return o;});
-  return {revision:s.revision,serverTime:now,publicJobs,deliveredThisWeek:s.requests.filter(r=>inCampus(r)&&r.deliveredAt>now-7*86400000).length,requests,trips,publicTrips,accountId:actor,
+  const supportInbox=(account&&account._admin||account&&account._reviewer)?Object.entries(s.members).flatMap(([accountId,member])=>(member.supportTickets||[]).filter(t=>t.status==='open').map(t=>({...clone(t),accountId}))).sort((a,b)=>((b.messages||[]).at(-1)?.at||b.createdAt)-((a.messages||[]).at(-1)?.at||a.createdAt)).slice(0,50):[];
+  return {revision:s.revision,serverTime:now,publicJobs,deliveredThisWeek:s.requests.filter(r=>inCampus(r)&&r.deliveredAt>now-7*86400000).length,requests,trips,publicTrips,accountId:actor,supportInbox,
     adjustments:loggedIn?(s.adjustments||[]).filter(a=>a.runnerAccountId===actor).map(({runnerAccountId,...a})=>a):[],rewards:loggedIn?rewards.view(s,actor,now):null,preferences:loggedIn?(s.members[actor]||{}).preferences||{}:{},
     supportTickets:loggedIn?((s.members[actor]||{}).supportTickets||[]):[],stats:loggedIn ? stats(s,actor) : {jobsDone:0,paid:0,marks:[]} };
 }

@@ -14,6 +14,8 @@ assert.match(profileCss,/\.edit-grid\{display:flex/);
 assert.match(profileCss,/\.edit-grid \.room-field\{flex:0 0 190rpx/);
 assert.match(profileCss,/\.edit-save\{flex:1\}/);
 assert.match(profileCss,/\.edit-button\{[^}]*width:auto;[^}]*height:40rpx/);
+assert.match(profileCss,/\.hl-track\{[^}]*background:#f4f7f4/);
+assert.match(profileCss,/\.hl-fill\{[^}]*background:#69d39a/);
 assert.match(chatXml,/class="compose-input"/);
 assert.match(chatXml,/class="send-button"/);
 assert.match(chatXml,/bindconfirm="send" confirm-type="send"/);
