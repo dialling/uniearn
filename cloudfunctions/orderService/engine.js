@@ -131,6 +131,14 @@ function execute(s, actor, account, event, now = Date.now()) {
     check(m.supportTickets.filter(t=>now-t.createdAt<86400000).length<10,'You can send up to 10 support requests a day.');
     const ticket={id:'support-'+s.nextId++,topic:event.topic,createdAt:now,status:'open'};
     m.supportTickets.push(ticket);m.supportTickets=m.supportTickets.slice(-50);value={ticket};
+  } else if (action === 'supportMessage') {
+    const m=s.members[actor];m.supportTickets=m.supportTickets||[];
+    const text=String(event.text||'').trim().slice(0,500);
+    check(text.length>0,'Enter a message.');
+    let t=m.supportTickets.filter(x=>x.status==='open').at(-1);
+    if(!t){check(m.supportTickets.filter(x=>now-x.createdAt<86400000).length<10,'You can send up to 10 support requests a day.');t={id:'support-'+s.nextId++,topic:'other',createdAt:now,status:'open'};m.supportTickets.push(t);m.supportTickets=m.supportTickets.slice(-50);}
+    check((t.messages||[]).filter(msg=>now-msg.at<86400000).length<50,'Too many messages today. Please wait for the team to reply.');
+    t.messages=t.messages||[];t.messages.push({text,at:now,mine:true});value={ticket:t};
   } else if (action === 'create') {
     check(s.requests.filter(r => r.ownerId === actor && OPEN_STATUSES.includes(r.status)).length < MAX_OPEN_PER_USER, 'You have '+MAX_OPEN_PER_USER+' open orders. Wait for some to finish before posting more.');
     check(s.requests.filter(r => r.ownerId === actor && r.createdAt > now - 86400000).length < MAX_CREATES_PER_DAY, 'You can post up to '+MAX_CREATES_PER_DAY+' orders a day.');

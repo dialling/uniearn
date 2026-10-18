@@ -23,10 +23,12 @@
   <view class="avatar header-avatar">{{initial}}</view>
   <view class="header-main">
    <view class="header-name">{{profile.name||ui.account}}</view>
-   <view class="header-badge {{isRunner?'verified':''}}" bindtap="studentCheck">{{isRunner?'✓ '+ui.verified+(verifiedDate?' '+verifiedDate:''):ui.check}}</view>
   </view>
   <button class="edit-button" bindtap="edit"><image src="/assets/edit-outline.svg"/>{{ui.edit}}</button>
   <view wx:if="{{isRunner}}" class="runner-tag">● {{ui.runnerTag}}</view>
+ </view>
+ <view class="header-badge-row">
+  <view class="header-badge {{isRunner?'verified':''}}" bindtap="studentCheck">{{isRunner?'✓ '+ui.verified+(verifiedDate?' '+verifiedDate:''):ui.check}}</view>
  </view>
  <view class="badge-row">
   <view class="tier-badge">{{ui.badgePosts}} · {{ui[postedBadge]}}</view>

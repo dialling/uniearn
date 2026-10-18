@@ -1,0 +1,11 @@
+<lang-switch/>
+<view class="v8-page chat-page {{darkClass}}">
+<view class="hint center chat-note">{{zh?'团队人工支持 · 服务时间目标 10:00–22:00':'A person from the team · planned hours 10:00–22:00'}}</view>
+<view class="message-row"><view class="bubble team-bubble">{{hello}}<view class="message-time">{{zh?'Uniearn 团队':'Uniearn team'}}</view></view></view>
+<view class="topic-row">
+<text wx:for="{{topicOptions}}" wx:key="id" class="pill {{topic===item.id?'on':''}}" data-id="{{item.id}}" bindtap="chooseTopic">{{item.label}}</text>
+</view>
+<view wx:for="{{messages}}" wx:key="at" class="message-row mine"><view class="bubble">{{item.text}}<view class="message-time">{{item.time}}</view></view></view>
+<view wx:if="{{error}}" class="notice-error">{{error}}</view>
+<view class="chat-compose"><view class="compose-row"><input class="compose-input" value="{{text}}" bindinput="input" maxlength="500" placeholder="{{zh?'输入消息…':'Message…'}}" cursor-spacing="20"/><button class="send-button" disabled="{{!text}}" bindtap="send"><image src="/assets/send.svg" mode="aspectFit"/></button></view></view>
+</view>

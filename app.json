@@ -18,6 +18,7 @@
     "pages/rewards/index",
     "pages/posted/index",
     "pages/chat/index",
+    "pages/support-chat/index",
     "pages/info/index",
     "pages/task/index",
     "pages/public-job/index",

@@ -5,19 +5,20 @@
 
 /* ① 顶部大卡：资料 + 双徽章 + 等级进度 */
 .me-header{background:#215233;color:#fff;border-radius:27rpx;padding:30rpx 27rpx 26rpx;margin-bottom:20rpx}
-.me-header-top{display:flex;align-items:center;gap:22rpx}
+.me-header-top{display:flex;align-items:center;gap:18rpx}
 .avatar{width:108rpx;height:108rpx;line-height:108rpx;font-size:43rpx}
 .header-avatar{width:96rpx;height:96rpx;line-height:96rpx;font-size:38rpx;background:#346e46;color:#fff;border-radius:50%;text-align:center;flex:none}
 .customer-avatar{background:#ad4920}
 .runner-avatar{background:#41775b}
-.header-main{flex:1;min-width:0}
-.header-name{font-size:37rpx;font-weight:800;line-height:1.35;word-break:break-word;margin-bottom:10rpx}
-.header-badge{font-size:21rpx;line-height:1.6;padding:6rpx 15rpx;background:#f0efea;border-radius:26rpx;font-weight:650;color:#63665d;display:inline-block}
+.header-main{flex:none;max-width:330rpx}
+.header-name{font-size:37rpx;font-weight:800;line-height:96rpx;white-space:nowrap;overflow:visible}
+.header-badge-row{margin:14rpx 0 0 116rpx}
+.header-badge{font-size:21rpx;line-height:1.6;padding:6rpx 15rpx;background:#f0efea;border-radius:26rpx;font-weight:650;color:#63665d;display:inline-block;white-space:nowrap}
 .header-badge.verified{background:#dbecde;color:#215233}
-.edit-button{margin:0;padding:0 20rpx;min-width:0;flex:none;height:58rpx;line-height:58rpx;display:flex;align-items:center;gap:10rpx;border:1rpx solid #a8c8af;border-radius:40rpx;background:transparent;color:#dbecde;font-size:23rpx;font-weight:650}
-.edit-button image{width:22rpx;height:22rpx}
-.runner-tag{flex:none;font-size:22rpx;font-weight:700;color:#215233;background:#dbecde;border-radius:26rpx;padding:9rpx 18rpx}
-.badge-row{display:flex;gap:16rpx;margin:26rpx 0 22rpx}
+.edit-button{margin:0;padding:0;min-width:0;flex:none;width:104rpx;height:44rpx;line-height:44rpx;display:flex;align-items:center;justify-content:center;gap:6rpx;border:1rpx solid #a8c8af;border-radius:40rpx;background:transparent;color:#dbecde;font-size:20rpx;font-weight:650}
+.edit-button image{width:18rpx;height:18rpx}
+.runner-tag{flex:none;font-size:20rpx;font-weight:700;color:#215233;background:#dbecde;border-radius:26rpx;padding:8rpx 14rpx;line-height:1.4}
+.badge-row{display:flex;gap:16rpx;margin:24rpx 0 22rpx}
 .tier-badge{font-size:23rpx;font-weight:650;color:#dbecde;border:1rpx solid #a8c8af;border-radius:26rpx;padding:10rpx 22rpx}
 .header-level{display:flex;align-items:center;gap:14rpx}
 .hl-label{font-size:22rpx;color:#a8c8af;font-weight:650;flex:none}
