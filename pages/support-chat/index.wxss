@@ -7,11 +7,11 @@
 .team-bubble{background:#fff}
 .message-time{font-size:20rpx;color:#888;text-align:right;margin-top:8rpx}
 .topic-row{display:flex;flex-wrap:wrap;gap:14rpx;padding:0 30rpx;margin:8rpx 0 10rpx}
-.pill{font-size:22rpx;padding:10rpx 22rpx;border-radius:30rpx;background:#fff;border:1rpx solid #e7d9cb;color:#55564e}
-.pill.on{background:#8b1e2b;color:#fff;border-color:#8b1e2b}
+.pill{font-size:22rpx;padding:10rpx 22rpx;border-radius:30rpx;background:#fff;border:1rpx solid #deded7;color:#55564e}
+.pill.on{background:#41775b;color:#fff;border-color:#41775b}
 .chat-compose{position:fixed;left:0;right:0;bottom:0;z-index:20;background:#f7f7f7;border-top:1rpx solid #eadfd2;padding:16rpx 24rpx calc(16rpx + env(safe-area-inset-bottom))}
 .compose-row{display:flex;align-items:center;gap:18rpx;width:100%}
 .compose-input{flex:1;min-width:0;height:76rpx;background:#fff;border-radius:38rpx;padding:0 30rpx;font-size:28rpx;box-sizing:border-box}
-.send-button{flex:none;width:76rpx;height:76rpx;min-width:0;margin:0;padding:0;border-radius:50%;background:#8b1e2b;display:flex;align-items:center;justify-content:center;line-height:0}
+.send-button{flex:none;width:76rpx;height:76rpx;min-width:0;margin:0;padding:0;border-radius:50%;background:#41775b;display:flex;align-items:center;justify-content:center;line-height:0}
 .send-button image{width:36rpx;height:36rpx;margin-left:4rpx}
 .send-button[disabled]{opacity:.45}
