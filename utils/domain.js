@@ -6,9 +6,9 @@ const demo = [
   {id:'r4',owner:'Lina',station:'Station C',dorm:'Building C',room:'107',small:1,big:0,codes:['73-1-2321'],phone:'138 0102 1872',note:'Please call on arrival',deadline:'14:00',reward:5,status:'waiting',runnerId:null,collected:[],photo:''}
 ];
 function boxes(r) { return Number(r.small || 0) + Number(r.big || 0); }
-function parcelTip(r,i) { const n=boxes(r),tip=Number(r.tip||0);return n?Math.floor(tip/n)+(i<tip%n?1:0):0; }
+function parcelTip(r,i) { const n=boxes(r),cents=Math.round(Number(r.tip||0)*100);if(!n)return 0;const base=Math.floor(cents/n),extra=cents-base*n;return (base+(i<extra?1:0))/100; }
 function limit(jobs) { return require('./runner-level').level(typeof jobs==='object'?jobs:{jobsDone:jobs,onTime:jobs}).limit; }
-function serviceFee(boxCount) { return Math.round(boxCount * 50) / 100; }
+function serviceFee() { return 0; }
 // Prices are typed as decimals, so 4.35*100 is 434.99999999999994. Compare against the rounded cent value.
 function wholeCents(value) { const n=Number(value); return Number.isFinite(n) && Math.abs(n*100-Math.round(n*100)) < 1e-6; }
 const MAX_PRICE_PER_BOX = 50;
@@ -22,7 +22,7 @@ function createRequest(s, data) {
     if(!data.parcelItems.length||data.parcelItems.length>5)throw Error('Choose between 1 and 5 parcels');
     data.parcelItems=data.parcelItems.map(item=>{const size=catalog.sizes.find(x=>x.id===item.size);if(!size||!String(item.code||'').trim())throw Error('Add one pickup code per parcel');return {size:size.id,code:String(item.code).trim(),price:size.price};});
     data.codes=data.parcelItems.map(x=>x.code);data.big=data.parcelItems.filter(x=>['large','oversized'].includes(x.size)).length;data.small=data.parcelItems.length-data.big;
-    if(![0,1,2,3].includes(Number(data.tip||0)))throw Error('Choose a valid tip');
+    if(![0,188,266,555,666,888].includes(Math.round(Number(data.tip||0)*100)))throw Error('Choose a valid tip');
     reward=data.parcelItems.reduce((sum,x)=>sum+x.price,0)+Number(data.tip||0);
   } else {
     if(data.category==='parcel'&&!catalog.sizes.some(x=>x.id===data.parcelSize))throw Error('Choose a parcel size');
@@ -30,10 +30,10 @@ function createRequest(s, data) {
     if(boxes(data)<1||boxes(data)>(data.category==='takeout'?5:3)||(data.big&&boxes(data)>1))throw Error('Choose a valid quantity');
     if(data.category==='takeout')data.codes=Array(boxes(data)).fill('').map((_,i)=>(data.codes||[])[i]||'');
     if(!data.codes||data.codes.length!==boxes(data)||(data.category==='parcel'&&data.codes.some(x=>!String(x).trim())))throw Error('Add one pickup code per parcel');
-    if(!wholeCents(data.pricePerBox)||Number(data.pricePerBox)<(data.category==='takeout'?3:2)||Number(data.pricePerBox)>MAX_PRICE_PER_BOX)throw Error('Choose an offer between the minimum and ¥'+MAX_PRICE_PER_BOX+' per item');
+    if(!wholeCents(data.pricePerBox)||Number(data.pricePerBox)<3||Number(data.pricePerBox)>MAX_PRICE_PER_BOX)throw Error('Choose an offer between the minimum and ¥'+MAX_PRICE_PER_BOX+' per item');
     reward=Math.round(boxes(data)*Number(data.pricePerBox)*100)/100;
   }
-  const r={...data,id:'r'+s.nextId++,status:'waiting',runnerId:null,collected:[],photo:'',reward,createdAt:Date.now(),isMine:true,ownerId:s.profile.accountId||'local',serviceFee:data.category==='takeout'?0.5:serviceFee(boxes(data))};
+  const r={...data,id:'r'+s.nextId++,status:'waiting',runnerId:null,collected:[],photo:'',reward,createdAt:Date.now(),isMine:true,ownerId:s.profile.accountId||'local',serviceFee:serviceFee()};
   s.requests.unshift(r); return r;
 }
 function eligible(s, trip) { return s.requests.filter(r=>r.status==='waiting' && r.station===trip.station && r.dorm===trip.dorm && catalog.category(r)===catalog.category(trip) && boxes(r)<=trip.capacity); }
@@ -134,5 +134,5 @@ function cancelTrip(s,id) {
 function cancelRequest(s,id) {
   const r=s.requests.find(x=>x.id===id);if(!r||r.status!=='waiting')throw Error('Only an unclaimed request can be cancelled here');r.status='cancelled';r.refundAmount=Math.max(0,Math.round((r.reward+(r.serviceFee===undefined?serviceFee(boxes(r)):r.serviceFee)-Number(r.discount||0))*100)/100);r.cancelledAt=Date.now();
 }
-function initial() { const now=Date.now(),food=[{id:'food1',owner:'Ming Li',station:'North gate',dorm:'Dorm 7',room:'412',small:2,big:0,codes:['',''],phone:'13801026092',note:'Leave at the desk',category:'takeout',reward:8,serviceFee:0.5,status:'waiting',runnerId:null,collected:[],photo:'',arrivalAt:now+20*60000,closesAt:now+50*60000,deadline:'',soup:true,price:4,createdAt:now},{id:'food2',owner:'Minjun',station:'North gate',dorm:'Dorm 7',room:'208',small:1,big:0,codes:[''],phone:'13801023381',note:'',category:'takeout',reward:4,serviceFee:0.5,status:'waiting',runnerId:null,collected:[],photo:'',arrivalAt:now,closesAt:now+30*60000,deadline:'',arrived:true,price:4,createdAt:now}];return {nextId:10,requests:JSON.parse(JSON.stringify(demo)).concat(food),trips:[],profile:{name:'',phone:'',dorm:'',room:'',onboarded:false,studentVerified:false,verification:{status:'unverified'},jobsDone:0,paid:0}}; }
+function initial() { const now=Date.now(),food=[{id:'food1',owner:'Ming Li',station:'North gate',dorm:'Dorm 7',room:'412',small:2,big:0,codes:['',''],phone:'13801026092',note:'Leave at the desk',category:'takeout',reward:8,serviceFee:0,status:'waiting',runnerId:null,collected:[],photo:'',arrivalAt:now+20*60000,closesAt:now+50*60000,deadline:'',soup:true,price:4,createdAt:now},{id:'food2',owner:'Minjun',station:'North gate',dorm:'Dorm 7',room:'208',small:1,big:0,codes:[''],phone:'13801023381',note:'',category:'takeout',reward:4,serviceFee:0,status:'waiting',runnerId:null,collected:[],photo:'',arrivalAt:now,closesAt:now+30*60000,deadline:'',arrived:true,price:4,createdAt:now}];return {nextId:10,requests:JSON.parse(JSON.stringify(demo)).concat(food),trips:[],profile:{name:'',phone:'',dorm:'',room:'',onboarded:false,studentVerified:false,verification:{status:'unverified'},jobsDone:0,paid:0}}; }
 module.exports={initial,boxes,parcelTip,limit,serviceFee,wholeCents,MAX_PRICE_PER_BOX,createRequest,eligible,assign,startTrip,acceptJob,acceptBoxes,abandonUncollectedTrip,collect,deliver,confirm,cancelTrip,cancelRequest};

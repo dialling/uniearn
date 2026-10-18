@@ -1,6 +1,6 @@
 # UniEarn · 校园代取与跑腿小程序
 
-XJTLU 校园里的「顺路帮拿」平台。同学发布 **代取快递**、**代拿外卖** 或 **其他任务**，校园帮手（Runner）顺路接单、取件、上门送达并拍照留证，双方确认后结算。中英双语，微信小程序 + 微信云开发（CloudBase）。
+XJTLU 校园里的「顺路帮拿」平台。同学发布 **代取快递**、**代拿外卖** 或 **其他任务**，跑手（Runner）顺路接单、取件、上门送达并拍照留证，双方确认后结算。中英双语，微信小程序 + 微信云开发（CloudBase）。
 
 | 项 | 值 |
 | --- | --- |
@@ -31,7 +31,7 @@ uniearn/
 ├── utils/                         38 个客户端共享模块（含中英文案、共享样式）
 ├── cloudfunctions/                4 个云函数，每个目录独立部署
 │   ├── orderService/              订单 / 行程 / 奖励核心服务
-│   ├── studentAccount/            账户、帮手申请、管理后台、微信手机号
+│   ├── studentAccount/            账户、跑手申请、管理后台、微信手机号
 │   ├── parseParcelScreenshot/     快递截图 OCR 解析
 │   └── parseSmsScreenshot/        短信截图 OCR 解析
 ├── scripts/check.js               语法检查 + 依次执行 tests/

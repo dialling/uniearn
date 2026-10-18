@@ -8,7 +8,7 @@
 
 ## 1. 一句话定位
 
-XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代拿外卖 / 其他任务**，校园帮手（Runner）顺路接单、取件、送达并拍照留证，双方确认后结算。中英双语，微信小程序 + 微信云开发。
+XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代拿外卖 / 其他任务**，跑手（Runner）顺路接单、取件、送达并拍照留证，双方确认后结算。中英双语，微信小程序 + 微信云开发。
 
 当前只开放 **XJTLU SIP 校区**；云函数对 `universityId === 'xjtlu' && campusId === 'sip'` 做了硬校验，太仓校区只记录意向、不开放下单接单。
 
@@ -27,7 +27,7 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
    ▼
 云函数（wx-server-sdk）
    ├── orderService            订单/行程/奖励的单一写入口（事务 + 幂等）
-   ├── studentAccount          账户、帮手申请与管理员审核、管理后台、微信手机号
+   ├── studentAccount          账户、跑手申请与管理员审核、管理后台、微信手机号
    ├── parseParcelScreenshot   快递截图 → 包裹字段（腾讯云 OCR）
    └── parseSmsScreenshot      短信截图 → 取件码候选（腾讯云 OCR）
    ▼
@@ -60,7 +60,7 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 | `pages/` | 27 个页面，见下表 |
 | `utils/` | 38 个客户端共享模块，见第 4 节 |
 | `cloudfunctions/orderService/` | 核心业务：订单、行程、奖励、聊天、支持工单 |
-| `cloudfunctions/studentAccount/` | 账户、帮手申请与管理员审核、管理后台 |
+| `cloudfunctions/studentAccount/` | 账户、跑手申请与管理员审核、管理后台 |
 | `cloudfunctions/parseParcelScreenshot/` | 快递截图 OCR |
 | `cloudfunctions/parseSmsScreenshot/` | 短信截图 OCR |
 | `scripts/check.js` | 全仓 JS/JSON 语法检查，然后依次执行 `tests/*.test.js` |
@@ -76,7 +76,7 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 | `welcome` | — | account, store, onboarding, orders | 欢迎、微信登录/注册、用户协议与隐私入口 |
 | `campus` | — | account, store, onboarding, orders | 学校/校区选择（SIP 开放，太仓记录意向） |
 | `guide` | — | app-guide | 新手引导（有单/无单两套内容） |
-| `jobs` | — | orders, domain, workflow, ui, runner-level, hall-copy, app-guide, onboarding, saved-routes | 任务大厅：筛选、展开选择、接单入口 |
+| `jobs` | — | orders, domain, workflow, ui, runner-level, hall-copy, app-guide, onboarding, saved-routes | 接单大厅：筛选、展开选择、接单入口 |
 | `job` | Choose parcels | orders, domain, catalog, account | 按件挑选包裹接单 |
 | `requests` / `request` | — | orders, workflow, domain, ui | 我的订单列表 / 订单详情（顾客侧） |
 | `posted` | — | store, orders, workflow | 我发布的订单 |
@@ -89,15 +89,15 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 | `trip` | Pick up & deliver | orders, domain, workflow, ui, runner-level | 取件与送达主流程 |
 | `join` | Join a trip | orders, domain, workflow | 加入别人的行程 |
 | `sms-scan` | Read pickup SMS | cloud, pickup-point, ocr | 读短信/截图取件码（另含 `parser.js`） |
-| `student-check` | — | store, account, runner-level, china-time | 校园帮手申请（真实姓名 + 手机号 + 学号），等待管理员审核 |
-| `admin` | — | account, china-time | 管理员登录后的后台：订单统计、用户/帮手数、申请审核 |
+| `student-check` | — | store, account, runner-level, china-time | 跑手申请（真实姓名 + 手机号 + 学号），等待管理员审核 |
+| `admin` | — | account, china-time | 管理员登录后的后台：订单统计、用户/跑手数、申请审核 |
 | `earnings` | — | orders, workflow, domain, catalog, earnings, runner-level | 收益汇总（周收入、单量、等级进度） |
 | `rewards` | — | orders, store, ui | 优惠券与活动 |
 | `routes` / `route-edit` | Route details | saved-routes, store, account, ui | 已保存路线列表 / 路线编辑 |
 | `chat` | — | orders, store, workflow | 订单内聊天（送达后 24h 关闭） |
 | `info` | — | store, rules-data | 规则与信息页 |
 | `help` | Help | store, orders, help-copy, help-faq | 帮助与支持工单 |
-| `profile` | — | store, domain, account, me-copy, orders, runner-level, earnings, yuni | 「我的」：资料、语言切换、认证状态、帮手等级 |
+| `profile` | — | store, domain, account, me-copy, orders, runner-level, earnings, yuni | 「我的」：资料、语言切换、认证状态、跑手等级 |
 
 `job` 与 `posted` 没有自己的 `.wxss`，复用 `utils/` 里的共享样式。
 
@@ -190,8 +190,8 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 | 履约 | `deliver` | 送达 + 必传照片（外卖还需 `sealChecked`） |
 | 履约 | `taskDone` | 任务完成：照片 + 3~500 字说明 |
 | 履约 | `sealBroken` | 取件时发现外卖封签已破 |
-| 履约 | `runnerCancel` | 帮手取消，带原因，影响信用 |
-| 顾客 | `raise` | 加价 ¥1 或 ¥2 |
+| 履约 | `runnerCancel` | 跑手取消，带原因，影响信用 |
+| 顾客 | `raise` | 加价 ¥1.88 / ¥2.66 / ¥5.55 / ¥6.66 / ¥8.88 |
 | 顾客 | `cancel` | 取消未接单订单（模拟退款） |
 | 顾客 | `confirm` | 确认收货 |
 | 顾客 | `report` | 报问题（照片/说明按原因必填） |
@@ -206,11 +206,11 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 **Runner 动作门禁**（`accept` `acceptBoxes` `startTrip` `pickup` `deliver` `runnerCancel` `leave` `endEmpty` `taskDone` `sealBroken`）
 
 1. 学生认证通过（`verification.status === 'verified'`）
-2. 已接受帮手规则（`runnerRulesAcceptedAt`）
+2. 已接受跑手规则（`runnerRulesAcceptedAt`）
 3. 姓名 ≥ 2 字且手机号为中国大陆号码
 4. 未被信用暂停
 
-**容量上限**：订单 ≤ 200 条、行程 ≤ 200 条、单文档 ≤ 850 KB。每个用户最多 10 个进行中的订单、每天最多发布 30 单。已完成/取消/退款的订单 8 天后由 `archiveFinished()`（每小时一次、独立事务）移到 `uniearn_order_archive`，帮手累计单数/准时/收入和奖励判断所需的事实保留在 `members` 上。照片通过 `cloud.getTempFileURL` 下发的临时链接有效 **600 秒**，只下发当前快照中真正可见的照片。
+**容量上限**：订单 ≤ 200 条、行程 ≤ 200 条、单文档 ≤ 850 KB。每个用户最多 10 个进行中的订单、每天最多发布 30 单。已完成/取消/退款的订单 8 天后由 `archiveFinished()`（每小时一次、独立事务）移到 `uniearn_order_archive`，跑手累计单数/准时/收入和奖励判断所需的事实保留在 `members` 上。照片通过 `cloud.getTempFileURL` 下发的临时链接有效 **600 秒**，只下发当前快照中真正可见的照片。
 
 ### 5.2 studentAccount
 
@@ -218,10 +218,10 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 | --- | --- |
 | `wechatLogin` | 用微信手机号授权码换手机号；仅接受中国大陆号；写入 `profile`、`loggedOut: false`、`authRevision+1` |
 | `status` / `saveProfile` / `saveDorm` / `logout` 等 | 账户资料 |
-| `apply` | 提交校园帮手申请：真实姓名、手机号、学号。学号在待审核/已认证账户之间唯一；被拒后可重新申请 |
-| `agreeRules` | 同意校园帮手规则 |
+| `apply` | 提交跑手申请：真实姓名、手机号、学号。学号在待审核/已认证账户之间唯一；被拒后可重新申请 |
+| `agreeRules` | 同意跑手规则 |
 | `adminLogin` / `adminLogout` / `adminStatus` | 管理员登录（账号密码来自环境变量），会话 12 小时；连续 5 次失败锁定 15 分钟 |
-| `adminDashboard` / `adminOrders` / `review` | 订单统计（总数、待接单、未付款＝已送达未确认、已完成，含已归档）、用户数、帮手数、订单列表（隐藏手机号与取件码）、审核申请（拒绝时备注作为原因） |
+| `adminDashboard` / `adminOrders` / `review` | 订单统计（总数、待接单、未付款＝已送达未确认、已完成，含已归档）、用户数、跑手数、订单列表（隐藏手机号与取件码）、审核申请（拒绝时备注作为原因） |
 
 - 集合 `uniearn_accounts`，文档 ID = `sha256(openid)`；完整学号只存在服务端，客户端只拿到后 4 位
 - 字段：`profile`、`verification`、`authRevision`、`admin`、`loggedOut`
@@ -274,16 +274,18 @@ waiting ──accept──► taken ──pickup──► collected ──delive
 
 | 尺寸 | 价格 | 重量 | 单次上限 |
 | --- | --- | --- | --- |
-| Small | ¥3 | < 1 kg | 3 |
-| Medium | ¥4 | 1 ~ <3 kg | 3 |
-| Large | ¥5 | 3 ~ <10 kg | 1 |
-| Extra large | ¥10 | 10–20 kg | 1 |
+| 小件 · Small | ¥3 | < 1 kg | 3 |
+| 中件 · Medium | ¥4 | 1 ~ <3 kg | 3 |
+| 大件 · Large | ¥5 | 3 ~ <10 kg | 1 |
+| 超大件 · Extra large | ¥10 | 10–20 kg | 1 |
 
-- **服务费**：快递 ¥0.5/件；外卖固定 ¥0.5
-- **合计** = 悬赏 + 服务费 − 优惠券抵扣
-- 快递可按件计价（最多 5 件，每件一个取件码），悬赏 = 各件价格之和 + 小费（小费 0~3 元，按件均摊）
-- 不按件时：每件单价下限快递 ¥2、外卖 ¥3；快递 ≤3 件且大件只能 1 件；外卖 ≤5 袋
-- 任务：单个任务，价格即悬赏，服务费 ¥0.5
+- **服务费**：免收（¥0）。历史订单里的旧服务费照常展示/结算
+- **合计** = 赏金 + 服务费（0）− 优惠券抵扣
+- 快递可按件计价（最多 5 件，每件一个取件码），赏金 = 各件价格之和 + 小费（小费 0 / 1.88 / 2.66 / 5.55 / 6.66 / 8.88 元，按件均摊到分）
+- 不按件时：每件单价下限均为 ¥3；快递 ≤3 件且大件只能 1 件；外卖 ≤5 袋
+- 任务：单个任务，价格即赏金，服务费免收
+
+> 以上单价、服务费、小费/加价档位与同类型项目 `xjtlu-run-no-run`（XP跑了么）保持一致：基础 ¥3、快递档位 ¥3/4/5/10、服务费免收、自由加价 ¥1.88/2.66/5.55/6.66/8.88。
 
 ### 时限
 
@@ -305,7 +307,7 @@ waiting ──accept──► taken ──pickup──► collected ──delive
 - 加入截止 = 出发前 10 分钟；提醒 = 出发前 15 分钟
 - 外卖拼单要求所有到达时间**相差不超过 15 分钟**
 - 拼单按 站点 + 楼栋 + 分类 + 目的地 匹配，且受 Runner 额度限制
-- 帮手取消仅限**未取件**的订单；取消原因 `missing` / `quantity` / `personal` / `mismatch`
+- 跑手取消仅限**未取件**的订单；取消原因 `missing` / `quantity` / `personal` / `mismatch`
   - 外卖「没拿到餐」须等到达后 10 分钟
   - 外卖「个人原因」在 ETA 被改过之后不允许；且须在到达前 15 分钟以上
   - 任务单只有 `mismatch` 不算信用标记
@@ -320,7 +322,7 @@ waiting ──accept──► taken ──pickup──► collected ──delive
 | Trusted | ≥10 单、≤1 个标记 | ¥25 |
 | New | 其他 | ¥10 |
 
-**暂停**：14 天内 ≥5 个标记 → 从最后一个标记起暂停 **7 天**。额度同时限制单条订单与整条行程的悬赏总额。
+**暂停**：14 天内 ≥5 个标记 → 从最后一个标记起暂停 **7 天**。额度同时限制单条订单与整条行程的赏金总额。
 
 ### 优惠券与奖金
 
@@ -336,7 +338,7 @@ waiting ──accept──► taken ──pickup──► collected ──delive
 - **周奖**：每周（周一起算，中国时区）完成 5 单 → ¥5
 - **高峰加价**：北门 11:30–13:00 接的外卖单 +¥1
 - **邀请**：邀请码 = 账户 ID 前 12 位；被邀请人须尚未下过单；首单确认后双方各得一张免配送费券
-- 抵扣金额 = `min(券上限, 券类型为配送费 ? 悬赏 : 悬赏 + 服务费)`
+- 抵扣金额 = `min(券上限, 券类型为配送费 ? 赏金 : 赏金 + 服务费)`
 
 ---
 
@@ -414,7 +416,7 @@ waiting ──accept──► taken ──pickup──► collected ──delive
 | 账户与认证 | `dorm-profile`、`logout`、`student-check`、`v8-email`、`onboarding-campus` |
 | 快递与 OCR | `ocr`、`pickup-point`、`sms`、`sms-flow`、`parcel-address`、`non-dorm-orders`、`categories` |
 | 页面与流程 | `pages`、`takeaway-pages`、`task-post-controls`、`task-no-address`、`saved-routes`、`read-coupons`、`rules-full-page` |
-| 任务大厅 | `jobs-navigation`、`jobs-selection`、`bilingual-hall` |
+| 接单大厅 | `jobs-navigation`、`jobs-selection`、`bilingual-hall` |
 | 界面与文案 | `ui-bindings`、`wxss`、`help-template`、`me-copy-compatibility`、`me-sticker-inline`、`final-english` |
 | 引导与提示 | `guide-replay`、`yuni-support` |
 | 审查修复 | `review-fixes`（中国时区显示、页面栈安全跳转、已存照片清理） |
