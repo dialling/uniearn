@@ -16,6 +16,19 @@ t.toggle(page);
 assert.equal(t.lang(),'zh','toggle switches Chinese back on');
 assert.equal(titles.at(-1),'接单大厅','toggle re-applies the localized title');
 assert.equal(localized,1,'toggle re-runs the page localization');
+// a missing, odd or {path}-shaped route must never throw
+assert.equal(t.titleOf({}),'');
+assert.equal(t.titleOf(null),'');
+assert.equal(t.titleOf({route:123}),'');
+store.update(s=>{s.language='en';});
+assert.equal(t.titleOf({route:{path:'/pages/jobs/index'}}),'Jobs','object route falls back to its path');
+assert.equal(t.titleOf({route:{}}),'');
+// the page stack may contain an entry without a usable route
+global.getCurrentPages=()=>[{route:undefined},{route:'/pages/jobs/index'}];
+assert.equal(t.current().route,'/pages/jobs/index');
+global.getCurrentPages=()=>[];
+assert.equal(t.current(),null);
+store.update(s=>{s.language='zh';});
 // every page carries a title in both languages
 for(const dir of fs.readdirSync('pages')){
   for(const language of ['zh','en']){

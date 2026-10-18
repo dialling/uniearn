@@ -157,6 +157,10 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 | 中英文案 | `order-copy.js`（订单状态/标签）、`create-copy.js`、`post-copy.js`、`runner-copy.js`、`orders-copy.js`（各页面）、`onboarding.js`、`app-guide.js`（引导）、`hall-copy.js`（大厅）、`me-copy.js`（我的）、`help-copy.js` + `help-faq.js`（帮助）、`rules-data.js` + `rules.json`（规则） |
 | 交互辅助 | `ui.js`（toast、照片本地保存；`cleanSaved()` 清理 24 小时前或超过 6 MB 的已保存照片）、`image-input.js`（选图）、`yuni.js`（吉祥物定义）、`yuni-events.js`（按 key 去重的事件队列）、`ocr.js`（OCR 调用） |
 | 业务辅助 | `earnings.js`（周收益汇总）、`saved-routes.js`（已保存地址与路线）、`pickup-point.js`（从通知里抽取真实驿站名，**从不默认到某个校区**） |
+| 快递档位 | 小件/中件/大件/超大件，单价 ¥3/4/5/10；每档的中文说明（如「小件：文件、钥匙、小药盒」+ 完整举例描述）逐字取自 mini program 1，英文同步提供 |
+| 多件快递 | 每单最多 12 件、单档最多 9 件（来源 mini program 1 的 MAX_TOTAL_ITEMS/MAX_SIZE_QTY）；每件仍需一个取件码，价格按件叠加 |
+| 楼层加价 | 文星宿舍区 3 楼及以上每单 +¥1；A05 有电梯免收；文缘/文萃/文荟不加价。金额在 `domain.createRequest` 里按「宿舍区 + 楼层（缺省时从房间号解析，如 1201 → 12 楼）+ 楼栋」计算，下单页预览与云端保持一致 |
+| 地址表单 | 「常用路线」编辑页按 mini program 1 补齐：宿舍区（文缘/文星/文萃/文荟）→ 楼栋（按区过滤）→ 楼层（按楼栋 1–23 层）→ 房间号；保存 `area/building/floor/room`，列表显示「文星 A05 12楼 1201」。`locker` 字段保留以兼容老数据，mini program 1 已把输入框去掉，这里同样不再收集 |
 | 校园数据 | `campus.js`：4 个宿舍区（文缘/文星/文萃/文荟）、31 栋楼（D01–D06、A01–A05、C01–C10、B01–B10）、楼层（文缘/文萃/文荟 23 层，文星 A05 20 层、其余 6 层）、9 个真实取件点，全部中英双语；来源 mini program 1（xjtlu-run-no-run） |
 | 外观 | `appearance.js`：读取 `meAppearance`，设置原生导航栏、窗口背景，并给当前页根节点加 `.page-dark`；26 个页面在 `app.wxss` 里有统一深色覆盖（浅底→深底、深字→浅字），底部导航同步换色；「我的」页切换后立即生效 |
 | 共享样式 | `flow.wxss`、`final.wxss`、`v8.wxss`、`post-form.wxss` |

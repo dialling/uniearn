@@ -1,4 +1,5 @@
 const catalog=require('./catalog');
+const campus=require('./campus');
 const demo = [
   {id:'r1',owner:'Nicha',station:'Station A',dorm:'Dorm 7',room:'412',small:2,big:0,codes:['88-2-4417','88-2-4418'],phone:'138 0102 6092',note:'Leave it at the front desk, thanks!',deadline:'12:30',reward:10,status:'waiting',runnerId:null,collected:[],photo:''},
   {id:'r2',owner:'Minjun',station:'Station A',dorm:'Dorm 7',room:'208',small:1,big:0,codes:['31-5-0926'],phone:'138 0102 3381',note:'Call me when you are downstairs',deadline:'12:45',reward:4,status:'waiting',runnerId:null,collected:[],photo:''},
@@ -16,11 +17,12 @@ function createRequest(s, data) {
   if(!['parcel','takeout'].includes(data.category))throw Error('Choose a pickup category');
   const place=data.category==='takeout'&&data.destinationType==='place';
   if (!data.station || !data.dorm || (place?!String(data.deliveryAddress||'').trim():!data.room) || !/^1\d{10}$/.test((data.phone||'').replace(/\s/g,''))) throw Error(place?'Add the pickup point, exact delivery address and a valid phone number':'Complete station, dorm, room and a valid phone number');
+  if(data.floor&&campus.isBuilding(data.dorm)&&(Number(data.floor)<1||Number(data.floor)>campus.maxFloorOf(data.dorm)))throw Error('That floor does not exist in this building');
   let reward;
   if(data.category==='parcel' && Array.isArray(data.parcelItems)) {
-    if(!data.parcelItems.length||data.parcelItems.length>5)throw Error('Choose between 1 and 5 parcels');
+    if(!data.parcelItems.length||data.parcelItems.length>12)throw Error('Choose between 1 and 12 parcels');
     data.parcelItems=data.parcelItems.map(item=>{const size=catalog.sizes.find(x=>x.id===item.size);if(!size||!String(item.code||'').trim())throw Error('Add one pickup code per parcel');return {size:size.id,code:String(item.code).trim(),price:size.price};});
-    data.codes=data.parcelItems.map(x=>x.code);data.big=data.parcelItems.filter(x=>['large','oversized'].includes(x.size)).length;data.small=data.parcelItems.length-data.big;
+    const sizeCounts={};data.parcelItems.forEach(x=>{sizeCounts[x.size]=(sizeCounts[x.size]||0)+1;if(sizeCounts[x.size]>9)throw Error('Up to 9 items of one size');});data.codes=data.parcelItems.map(x=>x.code);data.big=data.parcelItems.filter(x=>['large','oversized'].includes(x.size)).length;data.small=data.parcelItems.length-data.big;
     if(![0,188,266,555,666,888].includes(Math.round(Number(data.tip||0)*100)))throw Error('Choose a valid tip');
     reward=data.parcelItems.reduce((sum,x)=>sum+x.price,0)+Number(data.tip||0);
   } else {
@@ -32,7 +34,11 @@ function createRequest(s, data) {
     if(!wholeCents(data.pricePerBox)||Number(data.pricePerBox)<3||Number(data.pricePerBox)>MAX_PRICE_PER_BOX)throw Error('Choose an offer between the minimum and ¥'+MAX_PRICE_PER_BOX+' per item');
     reward=Math.round(boxes(data)*Number(data.pricePerBox)*100)/100;
   }
-  const r={...data,id:'r'+s.nextId++,status:'waiting',runnerId:null,collected:[],photo:'',reward,createdAt:Date.now(),isMine:true,ownerId:s.profile.accountId||'local',serviceFee:serviceFee()};
+  const areaId=data.area||(campus.areaOfBuilding(data.dorm)||{}).id||'';
+  const floor=Number(data.floor)||campus.floorOfRoom(data.room);
+  const floorSurcharge=campus.highFloor(areaId,floor,data.dorm)?1:0;
+  reward=Math.round((Number(reward)+floorSurcharge)*100)/100;
+  const r={...data,area:areaId,floor,floorSurcharge,id:'r'+s.nextId++,status:'waiting',runnerId:null,collected:[],photo:'',reward,createdAt:Date.now(),isMine:true,ownerId:s.profile.accountId||'local',serviceFee:serviceFee()};
   s.requests.unshift(r); return r;
 }
 function eligible(s, trip) { return s.requests.filter(r=>r.status==='waiting' && r.station===trip.station && r.dorm===trip.dorm && catalog.category(r)===catalog.category(trip) && boxes(r)<=trip.capacity); }

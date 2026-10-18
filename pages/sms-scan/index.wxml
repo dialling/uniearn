@@ -6,7 +6,7 @@
  <view wx:if="{{busy}}" class="note">{{zh?'正在识别短信…':'Reading messages…'}}</view>
  <view wx:if="{{error}}" class="error">{{error}}</view>
  <view wx:if="{{note}}" class="note">{{note}} {{zh?'你可以勾选、取消勾选或修改取件码。':'You can select, deselect and edit codes.'}}</view>
- <view wx:if="{{candidates.length}}" class="row"><text class="strong">{{zh?'已选 '+selectedCount+' 个':selectedCount+' selected'}}</text><text>{{zh?'每单最多 5 个':'Maximum 5 per request'}}</text></view>
+ <view wx:if="{{candidates.length}}" class="row"><text class="strong">{{zh?'已选 '+selectedCount+' 个':selectedCount+' selected'}}</text><text>{{zh?'每单最多 12 个':'Maximum 12 per request'}}</text></view>
  <view wx:for="{{candidates}}" wx:key="id" class="candidate {{item.selected?'selected':''}}">
   <view class="row"><view class="pick" data-i="{{index}}" bindtap="toggle"><text class="box">{{item.selected?'☑':'☐'}}</text><text>{{labels[item.label]||item.label}}</text></view></view>
   <input value="{{item.code}}" data-i="{{index}}" bindinput="editCode" placeholder="{{zh?'取件码':'Pickup code'}}" maxlength="40"/>
