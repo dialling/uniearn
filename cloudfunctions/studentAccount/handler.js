@@ -12,11 +12,12 @@ function validateProfile(input) {
 }
 function validateApplication(input,zh) {
   const x=input||{};
-  const realName=String(x.realName||'').trim().replace(/\s+/g,' '),phone=String(x.phone||'').replace(/\s/g,''),studentId=String(x.studentId||'').replace(/\s/g,'');
+  const realName=String(x.realName||'').trim().replace(/\s+/g,' '),gender=String(x.gender||''),phone=String(x.phone||'').replace(/\s/g,''),studentId=String(x.studentId||'').replace(/\s/g,'');
   if(realName.length<2||realName.length>40)return {code:'INVALID_NAME',error:zh?'请填写真实姓名（2–40 个字）。':'Enter your real name (2–40 characters).'};
   if(!/^1\d{10}$/.test(phone))return {code:'INVALID_PHONE',error:zh?'请填写 11 位手机号。':'Enter an 11-digit mobile number.'};
+  if(!['male','female'].includes(gender))return {code:'INVALID_GENDER',error:zh?'请选择性别。':'Choose your gender.'};
   if(!/^\d{6,12}$/.test(studentId))return {code:'INVALID_STUDENT_ID',error:zh?'请填写正确的学号（6–12 位数字）。':'Enter your student ID (6–12 digits).'};
-  return {value:{realName,phone,studentId}};
+  return {value:{realName,gender,phone,studentId}};
 }
 // Hashing both sides first keeps timingSafeEqual usable for inputs of different length.
 const sameSecret=(a,b)=>crypto.timingSafeEqual(crypto.createHash('sha256').update(String(a||'')).digest(),crypto.createHash('sha256').update(String(b||'')).digest());
@@ -77,7 +78,7 @@ function createHandler({getOpenId,repo,env,now=Date.now}) {
         const app=checked.value;
         stage='check-student-id';
         if((await repo.findStudent(app.studentId)).some(owner=>owner!==id))return fail('STUDENT_ID_USED',zh?'该学号已被其他账号申请，请联系管理员。':'This student ID is already used by another account. Contact an admin.');
-        const verification={status:'pending',method:'application',realName:app.realName,phone:app.phone,studentId:app.studentId,studentName:app.realName,studentLast4:app.studentId.slice(-4),school:'XJTLU',submittedAt:now()};
+        const verification={status:'pending',method:'application',realName:app.realName,gender:app.gender,phone:app.phone,studentId:app.studentId,studentName:app.realName,studentLast4:app.studentId.slice(-4),school:'XJTLU',submittedAt:now()};
         stage='save-application';
         await repo.patch(id,{verification,updatedAt:now()});
         return {ok:true,account:publicAccount({...account,verification},id)};
@@ -108,7 +109,7 @@ function createHandler({getOpenId,repo,env,now=Date.now}) {
       if(action==='adminDashboard') {
         stage='load-dashboard';
         const [counts,requests,pending,archived]=await Promise.all([repo.accountCounts(),repo.orderRequests(),repo.applications(50),repo.archivedCounts?repo.archivedCounts():{total:0,completed:0}]);
-        const applications=pending.map(a=>({accountId:a._id,realName:a.verification.realName||a.verification.studentName||'',phone:a.verification.phone||'',studentId:a.verification.studentId||'',submittedAt:a.verification.submittedAt||null}));
+        const applications=pending.map(a=>({accountId:a._id,realName:a.verification.realName||a.verification.studentName||'',gender:a.verification.gender||'',phone:a.verification.phone||'',studentId:a.verification.studentId||'',submittedAt:a.verification.submittedAt||null}));
         // Finished orders older than about a week live in the archive collection; only finished orders are archived.
         const live=orderStats(requests);
         return {ok:true,stats:{...live,total:live.total+archived.total,completed:live.completed+archived.completed,users:counts.users,runners:counts.runners,pending:counts.pending},applications};

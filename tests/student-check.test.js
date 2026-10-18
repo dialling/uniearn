@@ -1,9 +1,9 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const {createHandler,idFor,validateApplication}=require('../cloudfunctions/studentAccount/handler');
-assert.equal(validateApplication({realName:'张三',phone:'13800000000',studentId:'2512345'}).value.studentId,'2512345');
-assert.equal(validateApplication({realName:'张',phone:'13800000000',studentId:'2512345'}).code,'INVALID_NAME');
-assert.equal(validateApplication({realName:'张三',phone:'1380000',studentId:'2512345'}).code,'INVALID_PHONE');
-assert.equal(validateApplication({realName:'张三',phone:'13800000000',studentId:'25A'}).code,'INVALID_STUDENT_ID');
+assert.equal(validateApplication({realName:'张三',gender:'male',phone:'13800000000',studentId:'2512345'}).value.studentId,'2512345');
+assert.equal(validateApplication({realName:'张',gender:'female',phone:'13800000000',studentId:'2512345'}).code,'INVALID_NAME');
+assert.equal(validateApplication({realName:'张三',gender:'male',phone:'1380000',studentId:'2512345'}).code,'INVALID_PHONE');
+assert.equal(validateApplication({realName:'张三',gender:'female',phone:'13800000000',studentId:'25A'}).code,'INVALID_STUDENT_ID');
 (async()=>{
  const records={};let clock=1000000;
  const orders=[{id:'1',status:'waiting',reward:4,createdAt:1},{id:'2',status:'delivered',reward:5,createdAt:2,phone:'13800000009',codes:['1-2-3']},{id:'3',status:'confirmed',reward:6,createdAt:3},{id:'4',status:'confirmed',reward:7,createdAt:4},{id:'5',status:'cancelled',reward:8,createdAt:5}];
@@ -19,7 +19,7 @@ assert.equal(validateApplication({realName:'张三',phone:'13800000000',studentI
  };
  let caller='student';
  const handle=createHandler({getOpenId:()=>caller,repo,env:{ADMIN_USERNAME:'boss',ADMIN_PASSWORD:'correct-horse'},now:()=>clock});
- const app={realName:'张三',phone:'13800000000',studentId:'2512345'};
+ const app={realName:'张三',gender:'male',phone:'13800000000',studentId:'2512345'};
  assert.equal((await handle({action:'apply',application:app})).code,'LOGIN_REQUIRED');
  await handle({action:'saveProfile',profile:{name:'张三',phone:'13800000000'}});
  assert.equal((await handle({action:'apply',application:{...app,studentId:'x'}})).code,'INVALID_STUDENT_ID');
@@ -29,7 +29,7 @@ assert.equal(validateApplication({realName:'张三',phone:'13800000000',studentI
  assert.equal((await handle({action:'agreeRules',accepted:true})).code,'NOT_VERIFIED');
  caller='other';await handle({action:'saveProfile',profile:{name:'李四',phone:'13900000000'}});
  assert.equal((await handle({action:'apply',application:{...app,realName:'李四'}})).code,'STUDENT_ID_USED');
- r=await handle({action:'apply',application:{realName:'李四',phone:'13900000000',studentId:'2512346'}});assert.equal(r.account.verification.status,'pending');
+ r=await handle({action:'apply',application:{realName:'李四',gender:'female',phone:'13900000000',studentId:'2512346'}});assert.equal(r.account.verification.status,'pending');
 
  caller='student';
  assert.equal((await handle({action:'adminDashboard'})).code,'FORBIDDEN');
@@ -57,7 +57,7 @@ assert.equal(validateApplication({realName:'张三',phone:'13800000000',studentI
  r=await handle({action:'status'});assert.equal(r.account.verification.status,'verified');
  assert.equal((await handle({action:'agreeRules',accepted:true})).account.runnerRulesAccepted,true);
  caller='other';r=await handle({action:'status'});assert.equal(r.account.verification.status,'rejected');assert.equal(r.account.verification.reason,'学号与姓名不符');
- assert.equal((await handle({action:'apply',application:{realName:'李四',phone:'13900000000',studentId:'2512347'}})).account.verification.status,'pending','rejected applicants can apply again');
+ assert.equal((await handle({action:'apply',application:{realName:'李四',gender:'male',phone:'13900000000',studentId:'2512347'}})).account.verification.status,'pending','rejected applicants can apply again');
  caller='admin';await handle({action:'adminLogout'});assert.equal((await handle({action:'adminDashboard'})).code,'FORBIDDEN');
  await handle({action:'adminLogin',username:'boss',password:'correct-horse'});await repo.patch(idFor('admin'),{authRevision:1});
  assert.equal((await handle({action:'adminStatus'})).admin,false,'signing in again ends the admin session');
@@ -77,9 +77,9 @@ assert.equal(validateApplication({realName:'张三',phone:'13800000000',studentI
  });
  const page={...def,data:structuredClone(def.data),setData(v){for(const [k,val] of Object.entries(v)){const parts=k.split('.');let t=this.data;parts.slice(0,-1).forEach(p=>t=t[p]);t[parts.at(-1)]=val;}}};
  await page.onShow();assert.equal(page.data.stage,'apply');assert.equal(page.data.form.realName,'张三');assert.equal(page.data.form.phone,'13800000000');
- await page.submit();assert.match(page.data.error,/学号/);assert.equal(calls.filter(c=>c.action==='apply').length,0);
+ await page.submit();assert.match(page.data.error,/性别/);assert.equal(calls.filter(c=>c.action==='apply').length,0);page.chooseGender({currentTarget:{dataset:{gender:'female'}}});await page.submit();assert.match(page.data.error,/学号/);assert.equal(calls.filter(c=>c.action==='apply').length,0);
  page.field({currentTarget:{dataset:{field:'studentId'}},detail:{value:'2512345'}});await page.submit();
- assert.deepEqual(JSON.parse(JSON.stringify(calls.at(-1))),{action:'apply',application:{realName:'张三',phone:'13800000000',studentId:'2512345'}});assert.equal(page.data.stage,'pending');assert.equal(page.data.busy,false);
+ assert.deepEqual(JSON.parse(JSON.stringify(calls.at(-1))),{action:'apply',application:{realName:'张三',gender:'female',phone:'13800000000',studentId:'2512345'}});assert.equal(page.data.stage,'pending');assert.equal(page.data.busy,false);
  page.reapply();assert.equal(page.data.stage,'apply');
  console.log('Student check page: prefilled form, client validation, submit to pending and edit again passed.');
 })().catch(e=>{console.error(e);process.exitCode=1});

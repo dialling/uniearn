@@ -4,7 +4,7 @@
 
 .welcome-header{position:relative;min-height:62rpx;padding-right:140rpx}.welcome-header .language-switch{position:absolute;right:0;top:0;display:inline-flex;align-items:center;justify-content:center;width:120rpx;min-width:0;max-width:120rpx;height:54rpx;min-height:0;margin:0;padding:0;flex:0 0 120rpx;font-size:22rpx;line-height:54rpx;border-radius:28rpx;white-space:nowrap}
 
-.welcome-agreement{text-align:center;color:#85857d;font-size:22rpx;line-height:1.6;margin-top:24rpx}.welcome-agreement .link{text-decoration:underline}
+.welcome-agreement{display:flex;align-items:center;justify-content:center;gap:12rpx;text-align:left;color:#85857d;font-size:22rpx;line-height:1.6;margin-top:24rpx}.welcome-agreement .link{text-decoration:underline}
 
 @keyframes welcome-yuni{0%{opacity:0;transform:translate3d(0,30rpx,0) scale(.8) rotate(-6deg)}60%{opacity:1;transform:translate3d(0,-8rpx,0) scale(1.05) rotate(2deg)}100%{opacity:1;transform:translate3d(0,0,0) scale(1) rotate(0)}}
 @keyframes welcome-bubble{from{opacity:.4;transform:translate3d(-20rpx,0,0) scale(.96)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
@@ -12,3 +12,5 @@
 .hello{animation:welcome-bubble .36s cubic-bezier(.22,.8,.3,1) .08s backwards}
 .headline,.intro,.feature{animation:ue-settle .32s cubic-bezier(.22,.8,.3,1) .1s backwards}
 .feature+.feature{animation-delay:.14s}.feature+.feature+.feature{animation-delay:.18s}
+
+.welcome-check{display:inline-flex;align-items:center;justify-content:center;flex:none;width:32rpx;height:32rpx;border:2rpx solid #aaa89b;border-radius:8rpx;background:#fff;color:#fff;font-size:24rpx;line-height:1}.welcome-check.checked{background:#41775b;border-color:#41775b}
