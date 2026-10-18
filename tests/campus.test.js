@@ -53,4 +53,14 @@ assert.equal(stale.status,'cancelled');assert.equal(stale.cancelReason,'expired'
 assert.equal(staleParcel.status,'waiting','parcels are never auto-cancelled');
 assert.equal(fresh.status,'waiting');
 assert.equal(d.sweepExpired(s3),0,'sweeping twice is a no-op');
+
+// night market orders: fixed ¥4, shop name required
+const s4=d.initial();s4.requests=[];
+const takeBase={category:'takeout',station:'North gate',dorm:'D01',room:'101',phone:'13800000000',small:1,codes:[''],pricePerBox:3,owner:'A',deadline:'18:00'};
+assert.throws(()=>d.createRequest(s4,{...takeBase,night:true}),/shop|stall/i,'night orders need a shop name');
+const night=d.createRequest(s4,{...takeBase,night:true,shop:'Wang',bags:3,price:9});
+assert.equal(night.reward,4,'night orders are ¥4 regardless of bags/price');
+assert.equal(night.pricePerBox,4);
+assert.equal(night.shop,'Wang');
+assert.equal(d.createRequest(s4,{...takeBase}).reward,3,'normal takeout keeps its own price');
 console.log('Campus data: 31 real buildings, floors, lift rule and bilingual pickup points passed.');

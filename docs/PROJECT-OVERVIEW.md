@@ -157,6 +157,7 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 | 中英文案 | `order-copy.js`（订单状态/标签）、`create-copy.js`、`post-copy.js`、`runner-copy.js`、`orders-copy.js`（各页面）、`onboarding.js`、`app-guide.js`（引导）、`hall-copy.js`（大厅）、`me-copy.js`（我的）、`help-copy.js` + `help-faq.js`（帮助）、`rules-data.js` + `rules.json`（规则） |
 | 交互辅助 | `ui.js`（toast、照片本地保存；`cleanSaved()` 清理 24 小时前或超过 6 MB 的已保存照片）、`image-input.js`（选图）、`yuni.js`（吉祥物定义）、`yuni-events.js`（按 key 去重的事件队列）、`ocr.js`（OCR 调用） |
 | 业务辅助 | `earnings.js`（周收益汇总）、`saved-routes.js`（已保存地址与路线）、`pickup-point.js`（从通知里抽取真实驿站名，**从不默认到某个校区**） |
+| 夜间代买 | 外卖页可切换「夜市代买」：固定 ¥4/单（不按袋计），必须填店名/摊位；同样享受 1 小时无人接单自动取消；客厅展示与普通外卖一致 |
 | 自动取消 | 外卖类订单发布后 1 小时无人接单自动取消（对应 mini program 1 的 `food`/`night` 计时规则）；快递、任务类不自动取消。`domain.sweepExpired` 在启动/回到前台时清扫，状态显示「1 小时无人接单，已自动取消」 |
 | 快递档位 | 小件/中件/大件/超大件，单价 ¥3/4/5/10；每档的中文说明（如「小件：文件、钥匙、小药盒」+ 完整举例描述）逐字取自 mini program 1，英文同步提供 |
 | 多件快递 | 每单最多 12 件、单档最多 9 件（来源 mini program 1 的 MAX_TOTAL_ITEMS/MAX_SIZE_QTY）；每件仍需一个取件码，价格按件叠加 |
