@@ -3,6 +3,7 @@ global.Page=x=>def=x;global.wx={getStorageSync:()=>null,setStorageSync:()=>{},sh
 function load(name){const file=require.resolve('../pages/'+name+'/index.js');delete require.cache[file];require(file);const p={...def,data:structuredClone(def.data)};p.setData=function(values){for(const [key,value]of Object.entries(values)){const parts=key.replace(/\[(\d+)\]/g,'.$1').split('.');let target=this.data;parts.slice(0,-1).forEach(k=>target=target[k]);target[parts.at(-1)]=value;}};return p;}
 const ev=data=>({currentTarget:{dataset:data}}),store=require('../utils/store'),account=require('../utils/account');
 (async()=>{
+ assert.ok(!require('fs').readFileSync(require.resolve('../components/nav/index.wxml'),'utf8').includes('夜市代买'),'night market lives in the order page tabs, not the create sheet');
  const orders=require('../utils/orders');let posted;orders.act=async(action,args)=>{posted={action,...args};return{id:'cloud-request'};};orders.upload=async x=>x;
  const profile=load('profile');profile.refresh();assert.equal(profile.data.editing,true);
  account.call=async(action,params)=>{if(action==='saveProfile'){store.update(s=>{s.profile={...s.profile,...params.profile,onboarded:true,verification:{status:'unverified'}};});return {ok:true};}return {account:{id:'id',profile:store.get().profile.onboarded?store.get().profile:null,verification:store.get().profile.verification}};};
