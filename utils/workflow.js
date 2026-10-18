@@ -6,7 +6,22 @@ function fee(r){return Number(r.serviceFee===undefined?d.serviceFee(d.boxes(r)):
 function total(r){return Math.max(0,Math.round((r.reward+fee(r)-Number(r.discount||0))*100)/100);}
 function hours(r){return c.category(r)==='task'?24:c.category(r)==='takeout'?1:48;}
 function event(r,label,at=Date.now()){(r.history||(r.history=[])).push({label,at});}
-function migrate(s){s.installationId=s.installationId||('local-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));s.routes=s.routes||[];s.profile.marks=s.profile.marks||[];s.agreements=s.agreements||{};return s;}
+function migrate(s){
+ s.installationId=s.installationId||('local-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));
+ s.routes=s.routes||[];
+ if(!s.deliveryAddressesUnified){
+  const owner=s.profile.accountId||'',routes=s.routes.map(x=>({...x,accountId:x.accountId||owner}));
+  for(const address of s.parcelRoutes||[]){
+   const x={...address,accountId:address.accountId||owner};
+   const same=routes.find(r=>r.accountId===x.accountId&&r.destinationType===x.destinationType&&r.dorm===x.dorm&&r.room===x.room&&r.deliveryAddress===x.deliveryAddress&&r.owner===x.owner&&r.phone===x.phone);
+   if(same){if(!same.deliveryNote)same.deliveryNote=x.deliveryNote||'';continue;}
+   routes.push({...x,default:false});
+  }
+  for(const accountId of new Set(routes.map(x=>x.accountId))){const own=routes.filter(x=>x.accountId===accountId);const preferred=own.find(x=>x.default)||own[0];own.forEach(x=>x.default=x===preferred);}
+  s.routes=routes;delete s.parcelRoutes;s.deliveryAddressesUnified=true;
+ }
+ s.profile.marks=s.profile.marks||[];s.agreements=s.agreements||{};return s;
+}
 function expire(s,now=Date.now()){
  let changed=false;
  for(const r of s.requests){

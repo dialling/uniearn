@@ -21,7 +21,7 @@ function validateApplication(input,zh) {
 }
 // Hashing both sides first keeps timingSafeEqual usable for inputs of different length.
 const sameSecret=(a,b)=>crypto.timingSafeEqual(crypto.createHash('sha256').update(String(a||'')).digest(),crypto.createHash('sha256').update(String(b||'')).digest());
-function publicAccount(a,id){if(a.loggedOut)return {id,loggedOut:true,hasProfile:!!a.profile,profile:null,verification:{status:'unverified'}};return {id,runnerRulesAccepted:!!a.runnerRulesAcceptedAt,profile:a.profile||null,verification:a.verification?{status:a.verification.status,method:a.verification.method||'',checkedAt:a.verification.checkedAt||null,submittedAt:a.verification.submittedAt||null,studentName:a.verification.studentName||'',school:a.verification.school||'',studentLast4:a.verification.studentLast4||'',reason:a.verification.reason||''}:{status:'unverified'}};}
+function publicAccount(a,id){if(a.loggedOut)return {id,loggedOut:true,hasProfile:!!a.profile,profile:null,verification:{status:'unverified'}};return {id,runnerRulesAccepted:!!a.runnerRulesAcceptedAt,profile:a.profile||null,wechatPhone:a.wechatPhone||(a.profile&&a.profile.wechatPhone)||'',verification:a.verification?{status:a.verification.status,method:a.verification.method||'',checkedAt:a.verification.checkedAt||null,submittedAt:a.verification.submittedAt||null,studentName:a.verification.studentName||'',school:a.verification.school||'',studentLast4:a.verification.studentLast4||'',reason:a.verification.reason||'',phoneVerified:!!a.verification.phoneVerified}:{status:'unverified'}};}
 function orderStats(requests){const count=list=>requests.filter(r=>list.includes(r.status)).length;return {total:requests.length,waiting:count(ORDER_BUCKETS.waiting),unpaid:count(ORDER_BUCKETS.unpaid),completed:count(ORDER_BUCKETS.completed)};}
 function orderRow(r){return {id:String(r.id||''),category:r.category||'',status:r.status||'',title:String(r.title||'').slice(0,60),station:r.station||'',dorm:r.dorm||'',reward:Number(r.reward)||0,createdAt:r.createdAt||null};}
 function createHandler({getOpenId,repo,env,now=Date.now}) {
@@ -78,7 +78,10 @@ function createHandler({getOpenId,repo,env,now=Date.now}) {
         const app=checked.value;
         stage='check-student-id';
         if((await repo.findStudent(app.studentId)).some(owner=>owner!==id))return fail('STUDENT_ID_USED',zh?'该学号已被其他账号申请，请联系管理员。':'This student ID is already used by another account. Contact an admin.');
-        const verification={status:'pending',method:'application',realName:app.realName,gender:app.gender,phone:app.phone,studentId:app.studentId,studentName:app.realName,studentLast4:app.studentId.slice(-4),school:'XJTLU',submittedAt:now()};
+        stage='check-phone';
+        if(repo.findPhone&&(await repo.findPhone(app.phone)).some(owner=>owner!==id))return fail('PHONE_USED',zh?'该手机号已被其他跑手账号使用，请联系管理员处理。':'This phone number is already used by another runner account. Contact an admin.');
+        const wechatPhone=account.wechatPhone||(account.profile&&account.profile.wechatPhone)||'',phoneVerified=!!wechatPhone&&wechatPhone===app.phone;
+        const verification={status:'pending',method:'application',realName:app.realName,gender:app.gender,phone:app.phone,phoneVerified,phoneSource:phoneVerified?'wechat':'manual',studentId:app.studentId,studentName:app.realName,studentLast4:app.studentId.slice(-4),school:'XJTLU',submittedAt:now()};
         stage='save-application';
         await repo.patch(id,{verification,updatedAt:now()});
         return {ok:true,account:publicAccount({...account,verification},id)};
@@ -109,7 +112,7 @@ function createHandler({getOpenId,repo,env,now=Date.now}) {
       if(action==='adminDashboard') {
         stage='load-dashboard';
         const [counts,requests,pending,archived]=await Promise.all([repo.accountCounts(),repo.orderRequests(),repo.applications(50),repo.archivedCounts?repo.archivedCounts():{total:0,completed:0}]);
-        const applications=pending.map(a=>({accountId:a._id,realName:a.verification.realName||a.verification.studentName||'',gender:a.verification.gender||'',phone:a.verification.phone||'',studentId:a.verification.studentId||'',submittedAt:a.verification.submittedAt||null}));
+        const applications=pending.map(a=>({accountId:a._id,realName:a.verification.realName||a.verification.studentName||'',gender:a.verification.gender||'',phone:a.verification.phone||'',phoneVerified:!!a.verification.phoneVerified,studentId:a.verification.studentId||'',submittedAt:a.verification.submittedAt||null}));
         // Finished orders older than about a week live in the archive collection; only finished orders are archived.
         const live=orderStats(requests);
         return {ok:true,stats:{...live,total:live.total+archived.total,completed:live.completed+archived.completed,users:counts.users,runners:counts.runners,pending:counts.pending},applications};

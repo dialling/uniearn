@@ -14,7 +14,7 @@ const e=data=>({currentTarget:{dataset:data}});
 async function login(name){h.user=name;orders.invalidate();store.reset();const a=h.accounts[h.engine.idFor(name)];store.update(s=>{s.language='en';s.profile={...s.profile,...a.profile,onboarded:true,studentVerified:true,accountId:h.engine.idFor(name)};});await orders.sync();}
 (async()=>{
  await login('customer');assert.equal(store.get().requests.length,0,'no demo orders uploaded');
- const p=load('takeaway');p.setData({arrived:true,agreed:true,bags:2});p.totals();assert.equal(p.data.total,'6.00');p.setData({station:'North gate'});p.autoSaveDorm();assert.equal(store.get().routes.length,1);
+ const p=load('takeaway');p.setData({arrived:true,agreed:true,bags:2});p.totals();assert.equal(p.data.total,'6.00');assert.equal(p.data.addressReady,true,'posting does not require selecting a gate');p.autoSaveDorm();assert.equal(store.get().routes.length,1);
  failAfterCommit=true;await p.post();assert.equal(h.state.requests.length,1,'lost response retry does not duplicate post');
  const rid=h.state.requests[0].id;assert.match(navigation,/posted\/index\?id=/);
  const mine=load('requests');mine.refresh();assert.equal(mine.data.active.length,1);

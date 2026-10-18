@@ -11,6 +11,7 @@ assert.equal(validateApplication({realName:'张三',gender:'female',phone:'13800
   get:async id=>records[id]?structuredClone(records[id]):null,
   patch:async(id,v)=>{records[id]={...records[id],...structuredClone(v)};},
   logout:async id=>{records[id].loggedOut=true;records[id].authRevision=(records[id].authRevision||0)+1;},
+  findPhone:async ph=>Object.entries(records).filter(([,a])=>a.verification&&a.verification.phone===ph&&['pending','verified'].includes(a.verification.status)).map(([id])=>id),
   findStudent:async sid=>Object.entries(records).filter(([,a])=>a.verification&&a.verification.studentId===sid&&['pending','verified'].includes(a.verification.status)).map(([id])=>id),
   applications:async()=>Object.entries(records).filter(([,a])=>a.verification&&a.verification.status==='pending').map(([_id,a])=>({_id,...a})),
   accountCounts:async()=>{const all=Object.values(records);return {users:all.filter(a=>a.profile).length,runners:all.filter(a=>a.verification&&a.verification.status==='verified').length,pending:all.filter(a=>a.verification&&a.verification.status==='pending').length};},
@@ -66,6 +67,10 @@ assert.equal(validateApplication({realName:'张三',gender:'female',phone:'13800
  const noSetup=createHandler({getOpenId:()=>'admin',repo,env:{},now:()=>clock});
  assert.equal((await noSetup({action:'adminLogin',username:'',password:''})).code,'ADMIN_SETUP');
  assert.equal((await noSetup({action:'scan'})).code,'INVALID_ACTION','student-card scanning is removed');
+ caller='third';await handle({action:'saveProfile',profile:{name:'王五',phone:'13700000000'}});
+ assert.equal((await handle({action:'apply',application:{realName:'王五',gender:'male',phone:'13800000000',studentId:'2512399'}})).code,'PHONE_USED','a runner phone cannot be reused by another account');
+ await handle({action:'apply',application:{realName:'王五',gender:'male',phone:'13700000000',studentId:'2512399'}});assert.equal(records[idFor('third')].verification.phoneVerified,false);assert.equal(records[idFor('third')].verification.phoneSource,'manual');
+ await repo.patch(idFor('third'),{wechatPhone:'13700000000'});r=await handle({action:'apply',application:{realName:'王五',gender:'male',phone:'13700000000',studentId:'2512399'}});assert.equal(records[idFor('third')].verification.phoneVerified,true);assert.equal(r.account.verification.phoneVerified,true);assert.equal(r.account.wechatPhone,'13700000000');
  caller='';assert.equal((await handle()).code,'AUTH_REQUIRED');
  console.log('Runner application: validation, unique student ID, admin login lockout and session, dashboard counts, private order list, approve/reject and re-apply passed.');
 

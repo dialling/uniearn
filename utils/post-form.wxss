@@ -47,3 +47,23 @@
 .post-page .post-agreement .link{font-size:22rpx}
 .post-page .post-submit{display:block;width:100%;height:88rpx;line-height:88rpx;padding:0 16rpx;margin:0;background:#ad5a35;color:#fff;border-radius:20rpx;font-size:27rpx;font-weight:700;white-space:nowrap}
 .post-page .post-submit[disabled]{background:#e5e3dd;color:#92928b;opacity:1}
+
+/* Visual refresh shared by the takeaway and parcel forms. */
+.ue-ph{color:#b3b1a9;font-weight:400}
+.post-page .flow-card,.post-page .step-card{padding:28rpx 26rpx;border:0;border-radius:28rpx;box-shadow:0 6rpx 24rpx rgba(60,48,36,.06)}
+.post-page .flow-head,.post-page .step-head{margin-bottom:16rpx;font-size:30rpx}
+.post-page .field{border:2rpx solid transparent;border-radius:18rpx;background:#f6f5f1;transition:background .2s ease,border-color .2s ease}
+.post-page .soft,.post-page .delivery-box{background:#f8f7f3;border-radius:22rpx}
+.post-page .pill,.post-page .address-chip{padding:12rpx 26rpx;border:2rpx solid transparent;background:#f3f2ee;color:#4a4a45;font-weight:600;transition:background .2s ease,color .2s ease,transform .15s ease,box-shadow .2s ease}
+.post-page .pill:active,.post-page .address-chip:active{transform:scale(.95)}
+.post-page .pill.selected,.post-page .pill.chosen,.post-page .address-chip.chosen{box-shadow:0 6rpx 16rpx rgba(173,90,53,.25)}
+.post-page .pill.link,.post-page .address-chip.new{background:#fff;border-color:#e2c7b7}
+.post-page .stepper{border:0;background:#f3f2ee}
+.page-dark .ue-ph{color:#7f8a83}.page-dark.post-page .field{background:#232926!important;color:#edf1ed}.page-dark.post-page .flow-card,.page-dark.post-page .step-card{box-shadow:none}
+/* Inputs: no vertical padding, otherwise the native caret and the placeholder sit on different lines. */
+.post-page input.field,.post-page .code-input{box-sizing:border-box;height:88rpx;min-height:88rpx;padding-top:0;padding-bottom:0;line-height:normal}
+.post-page input.field{padding:0 24rpx}
+.post-page .ue-select{display:flex!important;align-items:center;justify-content:space-between;gap:12rpx;min-height:88rpx;padding:0 24rpx;text-align:left}
+.post-page .ue-select-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.post-page .ue-chev{flex:none;width:14rpx;height:14rpx;margin:-8rpx 4rpx 0 0;border-right:3rpx solid #a9a8a1;border-bottom:3rpx solid #a9a8a1;transform:rotate(45deg)}
+.post-page .empty .ue-select-text{color:#b3b1a9}

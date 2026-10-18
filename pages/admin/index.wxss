@@ -4,3 +4,5 @@
 .admin-note{margin:16rpx 4rpx 0;font-size:21rpx}
 .apply-card .row{align-items:center}.apply-name{font-size:30rpx}.apply-line{padding:14rpx 0;border-bottom:1rpx solid #eeeee8}.apply-line .hint{margin:0}.mono{font-family:monospace;font-weight:700;font-size:27rpx}.apply-card .action-row{display:flex;gap:16rpx;margin-top:18rpx}.apply-card .action-row .btn{flex:1;margin:0}.btn.light{background:#eff6f4;color:#41775b}
 .order-list{padding:6rpx 26rpx}.order-row{display:flex;align-items:center;gap:16rpx;padding:20rpx 0;border-bottom:1rpx solid #eeeee8}.order-row:last-child{border-bottom:0}.order-main{flex:1;min-width:0}.order-main .strong{font-size:26rpx;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.order-main .hint{margin:6rpx 0 0;font-size:21rpx}.order-badge{margin-left:10rpx;font-weight:400;vertical-align:middle}.order-side{flex:none;text-align:right}.order-money{font-size:28rpx}.order-status{font-size:21rpx;font-weight:700;margin-top:4rpx}
+
+.phone-tag{margin-left:auto;margin-right:12rpx;padding:2rpx 12rpx;border-radius:8rpx;font-size:20rpx;font-weight:700}.phone-tag.ok{background:#e3f2e8;color:#2f7a4c}.phone-tag.warn{background:#fdf1d8;color:#a06a10}
