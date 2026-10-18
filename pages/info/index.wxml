@@ -19,7 +19,7 @@
     </view>
    </view>
   </view>
-  <button wx:if="{{tab==='privacy'}}" class="delete-button" bindtap="deletion">{{labels.deletion}}</button>
+  <view wx:if="{{tab==='privacy'}}" class="hint terms-link" bindtap="fullTerms">{{labels.fullTerms}} ›</view><button wx:if="{{tab==='privacy'}}" class="delete-button" bindtap="deletion">{{labels.deletion}}</button>
  </view>
 </view>
 <yuni-assistant/>

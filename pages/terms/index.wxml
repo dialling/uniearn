@@ -1,0 +1,13 @@
+<lang-switch/>
+<view class="flow-page terms-page {{darkClass}}">
+ <view class="terms-tabs"><text wx:for="{{tabs}}" wx:key="id" class="terms-tab {{index===tab?'on':''}}" data-i="{{index}}" bindtap="choose">{{item.label}}</text></view>
+ <view class="flow-card terms-doc">
+  <view class="flow-title">{{doc.title}}</view>
+  <view class="flow-sub">{{doc.intro}}</view>
+  <block wx:for="{{doc.sections}}" wx:key="h">
+   <view class="terms-h">{{item.h}}</view>
+   <view class="terms-p" wx:for="{{item.ps}}" wx:for-item="p" wx:key="*this">{{p}}</view>
+  </block>
+ </view>
+ <view class="hint terms-foot">{{updated}}</view>
+</view>

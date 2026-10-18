@@ -1,0 +1,8 @@
+.terms-page{padding:20rpx 26rpx 70rpx}
+.terms-tabs{display:flex;gap:10rpx;overflow-x:auto;padding:4rpx 2rpx 16rpx;white-space:nowrap}
+.terms-tab{flex:none;padding:12rpx 22rpx;border:1rpx solid #deded7;border-radius:999rpx;background:#fff;font-size:24rpx;color:#5e6058}
+.terms-tab.on{background:#41775b;border-color:#41775b;color:#fff;font-weight:750}
+.terms-doc{padding:26rpx 26rpx 30rpx}
+.terms-h{font-size:27rpx;font-weight:800;margin:26rpx 0 10rpx}
+.terms-p{font-size:25rpx;line-height:1.72;color:#4b4d47;margin-bottom:10rpx}
+.terms-foot{text-align:center;margin-top:26rpx;font-size:21rpx}

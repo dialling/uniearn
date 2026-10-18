@@ -31,6 +31,7 @@ const MAP={
   info:['平台规则','Platform rules'],
   help:['帮助与支持','Help & support'],
   'notify-guide':['微信通知设置','WeChat notifications'],
+  terms:['用户协议与隐私','Terms & privacy'],
   profile:['我的','Me']
 };
 function lang(){return store.get().language==='en'?'en':'zh';}
