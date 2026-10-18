@@ -10,9 +10,9 @@
 
 </view>
 <view class="nav {{active==='profile'?'me-nav':''}} {{dark?'nav-dark':''}}">
- <view class="item {{active==='jobs'?'selected':''}}" data-key="jobs" hover-class="nav-press" hover-stay-time="90" bindtap="go"><image class="nav-icon" mode="aspectFit" src="{{active==='jobs'?'/assets/jobs-active.png':'/assets/jobs.png'}}"/><text class="nav-label">{{zh?"接单大厅":"Jobs"}}</text></view>
- <view class="item nav-orders {{active==='requests'?'selected':''}}" data-key="requests" hover-class="nav-press" hover-stay-time="90" bindtap="go"><image class="nav-icon" mode="aspectFit" src="{{active==='requests'?'/assets/orders-active.png':'/assets/orders.png'}}"/><text class="nav-label">{{zh?"我的订单":"My orders"}}</text></view>
+ <view class="item {{active==='jobs'?'selected':''}}" data-key="jobs" hover-class="nav-press" hover-stay-time="90" bindtap="go"><image class="nav-icon" mode="aspectFit" src="{{active==='jobs'?'/assets/nav/jobs-active.png':'/assets/nav/jobs.png'}}"/><text class="nav-label">{{zh?"接单大厅":"Jobs"}}</text></view>
+ <view class="item nav-orders {{active==='requests'?'selected':''}}" data-key="requests" hover-class="nav-press" hover-stay-time="90" bindtap="go"><image class="nav-icon" mode="aspectFit" src="{{active==='requests'?'/assets/nav/orders-active.png':'/assets/nav/orders.png'}}"/><text class="nav-label">{{zh?"我的订单":"My orders"}}</text></view>
  <view class="plus nav-plus" data-key="create" hover-class="nav-press" hover-stay-time="120" bindtap="go">＋</view>
- <view class="item {{active==='rewards'?'selected':''}}" data-key="rewards" hover-class="nav-press" hover-stay-time="90" bindtap="go"><image class="nav-icon" mode="aspectFit" src="{{active==='rewards'?'/assets/rewards-active.png':'/assets/rewards.png'}}"/><text class="nav-label">{{zh?"动态":"News"}}</text></view>
- <view class="item nav-me {{active==='profile'?'selected':''}}" data-key="profile" hover-class="nav-press" hover-stay-time="90" bindtap="go"><image class="nav-icon" mode="aspectFit" src="{{active==='profile'?'/assets/profile-green.svg':'/assets/profile.png'}}"/><text class="nav-label">{{zh?"我的":"Me"}}</text></view>
+ <view class="item {{active==='rewards'?'selected':''}}" data-key="rewards" hover-class="nav-press" hover-stay-time="90" bindtap="go"><image class="nav-icon" mode="aspectFit" src="{{active==='rewards'?'/assets/nav/rewards-active.png':'/assets/nav/rewards.png'}}"/><text class="nav-label">{{zh?"动态":"News"}}</text></view>
+ <view class="item nav-me {{active==='profile'?'selected':''}}" data-key="profile" hover-class="nav-press" hover-stay-time="90" bindtap="go"><image class="nav-icon" mode="aspectFit" src="{{active==='profile'?'/assets/profile-green.svg':'/assets/nav/profile.png'}}"/><text class="nav-label">{{zh?"我的":"Me"}}</text></view>
 </view>
