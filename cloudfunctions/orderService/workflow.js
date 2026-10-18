@@ -19,8 +19,8 @@ function createTakeaway(s,data,now=Date.now()){
  const arrivalAt=data.arrived?now:todayAt(data.arrivalTime,now);
  if(!data.arrived&&arrivalAt<now)throw Error('Choose an arrival time later today');
  if(!String(data.owner||'').trim())throw Error('Add the name on your order');
- let deliverBy='';if(data.arrived&&data.deliverBy){let at=todayAt(data.deliverBy,now);if(at<now-60000)at+=24*3600000;if(at>now+65*60000)throw Error('Choose a delivery time within 1 hour');deliverBy=clock(at);}
- const r=d.createRequest(s,{...data,deliverBy,category:'takeout',small:Number(data.bags),big:0,codes:[],pricePerBox:Number(data.price),deadline:clock(arrivalAt+30*MIN),arrivalAt,arrived:!!data.arrived,closesAt:arrivalAt+30*MIN,soup:!!data.soup,riderPhoto:data.riderPhoto||''});
+ let deliverBy='',closeAt=arrivalAt+30*MIN;if(data.arrived&&data.deliverBy){let at=todayAt(data.deliverBy,now);if(at<now-60000)at+=24*3600000;if(at>now+65*60000)throw Error('Choose a delivery time within 1 hour');deliverBy=clock(at);closeAt=Math.max(at,now+10*MIN);}
+ const r=d.createRequest(s,{...data,deliverBy,category:'takeout',small:Number(data.bags),big:0,codes:[],pricePerBox:Number(data.price),deadline:clock(closeAt),arrivalAt,arrived:!!data.arrived,closesAt:closeAt,soup:!!data.soup,riderPhoto:data.riderPhoto||''});
  r.createdAt=now;r.baseReward=r.reward;event(r,'Posted',now);return r;
 }
 function raise(s,id,amount){const r=s.requests.find(x=>x.id===id);if(!r||r.status!=='waiting')throw Error('This request is no longer waiting');if(![188,266,555,666,888].includes(Math.round(amount*100)))throw Error('Choose ¥1.88, ¥2.66, ¥5.55, ¥6.66 or ¥8.88');r.reward=Math.round((r.reward+amount)*100)/100;r.raised=(r.raised||0)+amount;event(r,'Offer raised by ¥'+amount);return r;}

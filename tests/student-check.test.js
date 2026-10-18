@@ -19,7 +19,7 @@ assert.equal(validateApplication({realName:'张三',gender:'female',phone:'13800
   review:async(id,expected,verification)=>{const v=records[id].verification;if(v.status!=='pending'||v.submittedAt!==expected.submittedAt)return false;records[id].verification=verification;return true;}
  };
  let caller='student';
- const handle=createHandler({getOpenId:()=>caller,repo,env:{ADMIN_USERNAME:'boss',ADMIN_PASSWORD:'correct-horse'},now:()=>clock});
+ const handle=createHandler({getOpenId:()=>caller,repo,env:{ADMIN_USERNAME:'boss',ADMIN_PASSWORD:'correct-horse',ADMIN_ACCOUNTS:'ops:second-pass-1;short:1234567'},now:()=>clock});
  const app={realName:'张三',gender:'male',phone:'13800000000',studentId:'2512345'};
  assert.equal((await handle({action:'apply',application:app})).code,'LOGIN_REQUIRED');
  await handle({action:'saveProfile',profile:{name:'张三',phone:'13800000000'}});
@@ -64,6 +64,7 @@ assert.equal(validateApplication({realName:'张三',gender:'female',phone:'13800
  assert.equal((await handle({action:'adminStatus'})).admin,false,'signing in again ends the admin session');
  clock+=1;assert.equal((await handle({action:'adminLogin',username:'boss',password:'correct-horse'})).admin,true);clock+=12*3600000+1;
  assert.equal((await handle({action:'adminStatus'})).admin,false,'admin session expires');
+ {const multi=createHandler({getOpenId:()=>'multi-admin',repo,env:{ADMIN_ACCOUNTS:'ops:second-pass-1;short:1234567'},now:()=>clock});assert.equal((await multi({action:'adminLogin',username:'ops',password:'second-pass-1'})).admin,true,'extra admin accounts can log in');assert.equal((await multi({action:'adminLogin',username:'short',password:'1234567'})).code,'ADMIN_INVALID','passwords under 8 characters are ignored');assert.equal((await multi({action:'adminLogin',username:'ops',password:'correct-horse'})).code,'ADMIN_INVALID','passwords do not cross accounts');}
  const noSetup=createHandler({getOpenId:()=>'admin',repo,env:{},now:()=>clock});
  assert.equal((await noSetup({action:'adminLogin',username:'',password:''})).code,'ADMIN_SETUP');
  assert.equal((await noSetup({action:'scan'})).code,'INVALID_ACTION','student-card scanning is removed');

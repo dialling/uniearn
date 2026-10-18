@@ -399,7 +399,8 @@ waiting ──accept──► taken ──pickup──► collected ──delive
 | `TENCENT_SECRET_ID` / `TENCENT_SECRET_KEY` | 腾讯云 OCR 密钥（缺失时 OCR 直接报未配置） |
 | `TENCENT_OCR_REGION` | OCR 区域，默认 `ap-shanghai` |
 | `REVIEWER_OPENIDS` | 逗号分隔的审核人 `openid`，拥有 `resolveDispute` 与管理后台权限 |
-| `ADMIN_USERNAME` / `ADMIN_PASSWORD` | studentAccount 的管理员账号密码（密码至少 8 位），未配置时管理员登录不可用 |
+| `ADMIN_ACCOUNTS` | studentAccount 的多个管理员账号，格式 `账号:密码;账号2:密码2`（密码至少 8 位，不能含 `;`） |
+| `ADMIN_USERNAME` / `ADMIN_PASSWORD` | 旧的单个管理员账号，仍然可用；两者都未配置时管理员登录不可用 |
 
 ### 步骤
 

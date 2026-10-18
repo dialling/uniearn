@@ -20,6 +20,8 @@ function validateApplication(input,zh) {
   return {value:{realName,gender,phone,studentId}};
 }
 // Hashing both sides first keeps timingSafeEqual usable for inputs of different length.
+// ADMIN_ACCOUNTS holds several logins as "name:password;name2:password2"; ADMIN_USERNAME/ADMIN_PASSWORD still works as one more.
+const adminAccounts=env=>String(env.ADMIN_ACCOUNTS||'').split(/[;\n]/).map(x=>{const i=x.indexOf(':');return i>0?{username:x.slice(0,i).trim(),password:x.slice(i+1).trim()}:null;}).filter(Boolean).concat(env.ADMIN_USERNAME?[{username:String(env.ADMIN_USERNAME),password:String(env.ADMIN_PASSWORD||'')}]:[]).filter(x=>x.username&&x.password.length>=8);
 const sameSecret=(a,b)=>crypto.timingSafeEqual(crypto.createHash('sha256').update(String(a||'')).digest(),crypto.createHash('sha256').update(String(b||'')).digest());
 function publicAccount(a,id){if(a.loggedOut)return {id,loggedOut:true,hasProfile:!!a.profile,profile:null,verification:{status:'unverified'}};return {id,runnerRulesAccepted:!!a.runnerRulesAcceptedAt,profile:a.profile||null,wechatPhone:a.wechatPhone||(a.profile&&a.profile.wechatPhone)||'',verification:a.verification?{status:a.verification.status,method:a.verification.method||'',checkedAt:a.verification.checkedAt||null,submittedAt:a.verification.submittedAt||null,studentName:a.verification.studentName||'',school:a.verification.school||'',studentLast4:a.verification.studentLast4||'',reason:a.verification.reason||'',phoneVerified:!!a.verification.phoneVerified}:{status:'unverified'}};}
 function orderStats(requests){const count=list=>requests.filter(r=>list.includes(r.status)).length;return {total:requests.length,waiting:count(ORDER_BUCKETS.waiting),unpaid:count(ORDER_BUCKETS.unpaid),completed:count(ORDER_BUCKETS.completed)};}
@@ -94,17 +96,17 @@ function createHandler({getOpenId,repo,env,now=Date.now}) {
       }
       if(action==='adminStatus')return {ok:true,admin:isAdmin};
       if(action==='adminLogin') {
-        const username=String(env.ADMIN_USERNAME||''),password=String(env.ADMIN_PASSWORD||'');
-        if(!username||password.length<8)return fail('ADMIN_SETUP',zh?'管理员账号尚未配置，请在云函数环境变量中设置 ADMIN_USERNAME 和 ADMIN_PASSWORD。':'Admin login is not configured. Set ADMIN_USERNAME and ADMIN_PASSWORD on the cloud function.');
+        const admins=adminAccounts(env);
+        if(!admins.length)return fail('ADMIN_SETUP',zh?'管理员账号尚未配置，请在云函数环境变量中设置 ADMIN_ACCOUNTS。':'Admin login is not configured. Set ADMIN_ACCOUNTS on the cloud function.');
         const tries=account.adminLogin||{};
         if(tries.lockedUntil>now())return fail('ADMIN_LOCKED',zh?'尝试次数过多，请 15 分钟后再试。':'Too many attempts. Try again in 15 minutes.');
-        const userOk=sameSecret(event.username,username),passOk=sameSecret(event.password,password);
-        if(!userOk||!passOk){
+        let matched=null;for(const a of admins){const ok=sameSecret(event.username,a.username)&sameSecret(event.password,a.password);if(ok&&!matched)matched=a;}
+        if(!matched){
           const fails=(tries.fails||0)+1,locked=fails>=ADMIN_MAX_FAILS;
           await repo.patch(id,{adminLogin:{fails:locked?0:fails,lockedUntil:locked?now()+ADMIN_LOCK:0}});
           return fail('ADMIN_INVALID',zh?'账号或密码错误。':'Incorrect username or password.');
         }
-        await repo.patch(id,{admin:{until:now()+ADMIN_TTL,revision:account.authRevision||0,at:now()},adminLogin:{fails:0,lockedUntil:0}});
+        await repo.patch(id,{admin:{until:now()+ADMIN_TTL,revision:account.authRevision||0,at:now(),by:matched.username},adminLogin:{fails:0,lockedUntil:0}});
         return {ok:true,admin:true};
       }
       if(action==='adminLogout'){if(account.admin)await repo.patch(id,{admin:null});return {ok:true,admin:false};}
