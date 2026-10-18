@@ -8,7 +8,7 @@
  <block wx:else>
   <view class="post-header"><view class="post-tabs"><button class="post-tab {{category==='takeout'?'active':''}}" data-category="takeout" bindtap="service" disabled="{{scanBusy || categoryLocked}}">{{ui['Takeaway']}}</button><button class="post-tab {{category==='parcel'?'active':''}}" data-category="parcel" bindtap="service" disabled="{{scanBusy || categoryLocked}}">{{ui['Parcels']}}</button></view></view>
 
-  <block wx:if="{{mode==='request' && category==='parcel'}}"><yuni-tip tip-key="parcel-post" pose="think" text="{{ui['Upload your pickup screenshot or paste the SMS, and I’ll read the station and codes for you.']}}"/>
+  <block wx:if="{{mode==='request' && category==='parcel'}}">
    <view class="step-card notice-card">
     <view class="step-head"><text class="step-number">1</text><text class="step-title">{{ui['Add the pickup notice']}}</text><text class="badge">{{foundCodes?(zh?'已识别 '+foundCodes+' 个取件码':foundCodes+' '+(foundCodes===1?'code':'codes')+' found'):ui['No codes yet']}}</text></view>
     <view class="hint">{{ui['Pick one. We fill in the station and the pickup codes for you.']}}</view>
@@ -63,4 +63,4 @@
   <block wx:else><view class="row"><view class="half"><view class="field-label">{{ui['Collect from']}}</view><picker range="{{stationLabels}}" value="{{stationIndex}}" bindchange="station"><view class="field">{{stationLabels[stationIndex]}}　›</view></picker></view><view class="half"><view class="field-label">{{ui['Deliver to']}}</view><picker range="{{dormLabels}}" value="{{dormIndex}}" bindchange="dorm"><view class="field">{{dormLabels[dormIndex]}}　›</view></picker></view></view><view class="section">{{ui['When are you going?']}}</view><view class="row"><text class="chip {{depart==='Now'?'green':''}}" data-value="Now" bindtap="setDepart">{{ui['Now']}}</text><text class="chip {{depart==='Later today'?'green':''}}" data-value="Later today" bindtap="setDepart">{{ui['Later today']}}</text></view><view class="card row"><text>{{ui['Room for']}}</text><view class="stepper"><text data-delta="-1" bindtap="setCapacity">−</text>{{capacity}}<text data-delta="1" bindtap="setCapacity">＋</text></view></view><view class="card"><view class="strong">{{ui['Waiting on this route']}}</view><view class="route">{{waitingCount}} {{ui['items']}} · ¥{{waitingReward}}</view></view><button class="btn" bindtap="start">{{ui['Start trip']}}</button></block>
  </block>
 </view>
-<yuni-assistant topic=""/>
+<yuni-assistant topic="parcel-post" intro="{{ui['Upload your pickup screenshot or paste the SMS, and I’ll read the station and codes for you.']}}" floating="{{mode==='request' && category==='parcel'}}"/>
