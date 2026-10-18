@@ -63,4 +63,13 @@ assert.equal(night.reward,4,'night orders are ¥4 regardless of bags/price');
 assert.equal(night.pricePerBox,4);
 assert.equal(night.shop,'Wang');
 assert.equal(d.createRequest(s4,{...takeBase}).reward,3,'normal takeout keeps its own price');
+
+// source tiers (mini program 1 server/src/level.js)
+const rl=require('../utils/runner-level');
+assert.equal(rl.tier(0).zh,'青铜');assert.equal(rl.tier(0).en,'Bronze');
+assert.equal(rl.tier(4).next.remain,1);
+assert.equal(rl.tier(5).zh,'白银');
+assert.equal(rl.tier(20).zh,'黄金');
+assert.equal(rl.tier(50).zh,'铂金');
+assert.equal(rl.tier(100).zh,'钻石');assert.equal(rl.tier(100).next,null);
 console.log('Campus data: 31 real buildings, floors, lift rule and bilingual pickup points passed.');
