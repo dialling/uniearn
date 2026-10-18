@@ -26,7 +26,8 @@
     "pages/help/index",
     "pages/route-edit/index",
     "pages/address/index",
-    "pages/admin/index"
+    "pages/admin/index",
+    "pages/notify-guide/index"
   ],
   "window": {
     "navigationBarTitleText": "UniEarn",

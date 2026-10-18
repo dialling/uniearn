@@ -1,0 +1,14 @@
+<lang-switch/>
+<view class="flow-page notify-page {{darkClass}}">
+ <view class="flow-title">{{zh?'微信通知设置':'WeChat notifications'}}</view>
+ <view class="flow-sub">{{zh?'开启后，有人接单、有人发消息，即使关掉小程序也会在微信「服务通知」里提醒你。':'Once enabled, a new job or a message still reaches you in WeChat Service Notifications, even with the mini program closed.'}}</view>
+ <view class="flow-card step-card" wx:for="{{steps}}" wx:key="n">
+  <view class="step-head"><text class="step-no">{{item.n}}</text><text class="strong">{{item.title}}</text></view>
+  <view class="hint">{{item.body}}</view>
+ </view>
+ <view class="flow-card">
+  <view class="strong">{{zh?'第 4 步找不到「抢单提醒」？':'Can’t find “New job alert” in step 4?'}}</view>
+  <view class="hint">{{zh?'微信只会把你授权过的通知列在设置里。先在弹窗里点「允许」授权一次，再回到这里就能看到两项。':'WeChat only lists notifications you have already authorised. Allow one in the pop-up first, then come back and both entries will appear.'}}</view>
+ </view>
+ <button class="btn" bindtap="openSettings">{{zh?'打开设置':'Open settings'}}</button>
+</view>

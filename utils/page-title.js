@@ -30,6 +30,7 @@ const MAP={
   chat:['聊天','Chat'],
   info:['平台规则','Platform rules'],
   help:['帮助与支持','Help & support'],
+  'notify-guide':['微信通知设置','WeChat notifications'],
   profile:['我的','Me']
 };
 function lang(){return store.get().language==='en'?'en':'zh';}
