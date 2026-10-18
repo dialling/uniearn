@@ -14,3 +14,24 @@
 .takeaway-page .phone-invalid{border:2rpx solid #cc6e40}.phone-error{font-size:24rpx;font-weight:650;color:#ae3324;margin:12rpx 0 18rpx}
 
 .takeaway-page .place-tag{background:#fff;border-color:#dfdfd8;color:#65645d}.formatted-phone{font-weight:600;letter-spacing:1rpx}
+
+.addr-label{display:flex;align-items:center;margin:20rpx 0 12rpx;font-size:24rpx;color:#73736c;font-weight:650}.addr-manage{margin-left:auto;color:#ad5a35;font-size:23rpx}
+.takeaway-page .pill.locked{opacity:.6}
+.addr-scroll{width:auto;margin:0 -24rpx;white-space:nowrap}.addr-track{display:inline-flex;gap:18rpx;padding:6rpx 24rpx 14rpx}
+.addr-chip{position:relative;display:inline-flex;flex-direction:column;justify-content:center;min-width:250rpx;max-width:360rpx;height:136rpx;padding:0 28rpx;box-sizing:border-box;border:2rpx solid #e3e1da;border-radius:22rpx;background:#faf9f6;transition:border-color .22s ease,background .22s ease,box-shadow .22s ease,transform .18s ease}
+.addr-chip:active{transform:scale(.97)}
+.addr-chip.selected{border-color:#ad5a35;background:#fff6f0;box-shadow:0 10rpx 24rpx rgba(173,90,53,.16)}
+.addr-chip.dim{opacity:.45}
+.addr-chip-name{font-size:28rpx;font-weight:800;color:#202126;transition:color .22s}.addr-chip.selected .addr-chip-name{color:#ad5a35}
+.addr-chip-tag{margin-left:10rpx;padding:1rpx 10rpx;border-radius:8rpx;background:#f0efeb;color:#73736c;font-size:19rpx;font-weight:600;vertical-align:middle}
+.addr-chip-place{margin-top:6rpx;font-size:25rpx;color:#5e5d57;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.addr-chip-check{position:absolute;top:-2rpx;right:-2rpx;width:40rpx;height:40rpx;line-height:40rpx;text-align:center;border-radius:0 22rpx 0 18rpx;background:#ad5a35;color:#fff;font-size:20rpx;opacity:0;transform:scale(.6);transition:opacity .2s ease,transform .25s cubic-bezier(.3,1.5,.5,1)}
+.addr-chip.selected .addr-chip-check{opacity:1;transform:scale(1)}
+.addr-chip.add{min-width:136rpx;width:136rpx;align-items:center;border-style:dashed;background:#fff}
+.addr-plus{color:#ad5a35;font-size:44rpx;font-weight:300;line-height:1}.addr-plus.big{flex:none;width:76rpx;height:76rpx;line-height:76rpx;text-align:center;border-radius:20rpx;background:#fff1e7}
+.addr-empty-card{display:flex;align-items:center;gap:20rpx;padding:24rpx;border:2rpx dashed #d9bba9;border-radius:22rpx;background:#fffaf6;transition:transform .18s}.addr-empty-card .hint{margin:2rpx 0 0}
+.addr-press{transform:scale(.97)}
+.addr-summary{display:flex;align-items:center;gap:18rpx;margin:8rpx 0 18rpx;padding:22rpx 24rpx;border-radius:22rpx;background:#f6efe9;animation:ue-settle .26s cubic-bezier(.22,.8,.3,1) backwards}
+.addr-send{flex:none;width:48rpx;height:48rpx;line-height:48rpx;text-align:center;border-radius:12rpx;background:#ad5a35;color:#fff;font-size:23rpx;font-weight:800}
+.addr-summary-body{flex:1;min-width:0}.addr-summary-place{font-size:30rpx;font-weight:800}.addr-summary .hint{margin:4rpx 0 0}
+.page-dark .addr-chip,.page-dark .addr-empty-card,.page-dark .addr-summary{background:#2c332f;border-color:#465149}.page-dark .addr-chip.selected{border-color:#d0835c;background:#3a332d}.page-dark .addr-chip-name{color:#edf1ed}.page-dark .addr-chip-place{color:#c3c9c4}

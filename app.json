@@ -25,6 +25,7 @@
     "pages/guide/index",
     "pages/help/index",
     "pages/route-edit/index",
+    "pages/address/index",
     "pages/admin/index"
   ],
   "window": {
