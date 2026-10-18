@@ -3,25 +3,25 @@
 .post-page .post-header{background:#fff;margin:0 -30rpx 20rpx;padding:18rpx 30rpx 22rpx;border-bottom:1rpx solid #e1e1da}
 .post-page .post-tabs{display:flex;gap:0;padding:6rpx;border-radius:20rpx;background:#f1e7da}
 .post-page .post-tab{display:block;flex:1;min-width:0;height:72rpx;line-height:72rpx;padding:0;margin:0;border-radius:16rpx;background:transparent;color:#85857e;font-size:26rpx;font-weight:700}
-.post-page .post-tab.active{background:#ad5a35;color:#fff}
+.post-page .post-tab.active{background:#8b1e2b;color:#fff}
 .post-page .post-tab[disabled]{opacity:.65}
 .post-page .flow-card,.post-page .step-card{width:100%;padding:24rpx;margin:0 0 20rpx;border:1rpx solid #e7d9cb;border-radius:24rpx;background:#fff}
 .post-page .flow-head,.post-page .step-head{display:flex;align-items:center;gap:12rpx;min-height:40rpx;margin:0 0 12rpx;font-size:28rpx;font-weight:750;line-height:1.35}
 .post-page .step-title{flex:1;min-width:0;font-size:28rpx;font-weight:750}
 .post-page .flow-head .link,.post-page .step-head .link{flex:none;margin-left:auto;font-size:23rpx;font-weight:600}
 .post-page .flow-head .badge,.post-page .step-head .badge,.post-page .step-count{flex:none;margin-left:auto;font-size:20rpx;font-weight:400}
-.post-page .step,.post-page .step-number{display:inline-flex;align-items:center;justify-content:center;flex:none;min-width:40rpx;width:40rpx;height:40rpx;line-height:40rpx;border-radius:9rpx;background:#ad5a35;color:#fff;font-size:23rpx;font-weight:750}
+.post-page .step,.post-page .step-number{display:inline-flex;align-items:center;justify-content:center;flex:none;min-width:40rpx;width:40rpx;height:40rpx;line-height:40rpx;border-radius:9rpx;background:#8b1e2b;color:#fff;font-size:23rpx;font-weight:750}
 .post-page .step.dark,.post-page .step-number.dark{background:#2e211a}
 .post-page .hint,.post-page .tiny{font-size:23rpx;color:#8a7768;line-height:1.5;margin:8rpx 0}
 .post-page .strong{font-size:26rpx;font-weight:700}
-.post-page .link{color:#ad5a35;font-size:24rpx}
+.post-page .link{color:#8b1e2b;font-size:24rpx}
 .post-page .badge{display:inline-block;padding:5rpx 10rpx;margin:0;background:#f5ede3;border-radius:9rpx;color:#8a7768;font-size:20rpx;font-weight:400;line-height:1.4}
 .post-page .row{display:flex;align-items:center;justify-content:space-between;gap:14rpx;min-width:0;line-height:1.5}
 .post-page .half{width:calc(50% - 7rpx);min-width:0}
 .post-page .pills,.post-page .address-chips,.post-page .pill-row{display:flex;flex-wrap:wrap;gap:12rpx;margin:18rpx 0}
 .post-page .pill,.post-page .address-chip{display:inline-block;padding:12rpx 20rpx;min-height:60rpx;border:1rpx solid #e7d9cb;border-radius:40rpx;background:#fff;color:#393a36;font-size:24rpx;line-height:1.5}
-.post-page .pill.selected,.post-page .pill.chosen,.post-page .address-chip.chosen{background:#ad5a35;border-color:#ad5a35;color:#fff;font-weight:600}
-.post-page .pill.link,.post-page .address-chip.new{color:#ad5a35;border-style:dashed}
+.post-page .pill.selected,.post-page .pill.chosen,.post-page .address-chip.chosen{background:#8b1e2b;border-color:#8b1e2b;color:#fff;font-weight:600}
+.post-page .pill.link,.post-page .address-chip.new{color:#8b1e2b;border-style:dashed}
 .post-page .soft,.post-page .delivery-box{padding:20rpx;margin:18rpx 0;background:#f8f2e9;border-radius:18rpx}
 .post-page .field{display:block;box-sizing:border-box;width:100%;min-height:80rpx;margin:12rpx 0;padding:18rpx;border:1rpx solid #e1e0da;border-radius:16rpx;background:#fff;color:#3b2a20;font-size:26rpx;line-height:1.5;font-weight:400}
 .post-page input.field{height:80rpx}
@@ -32,20 +32,20 @@
 .post-page .divider{height:1rpx;background:#e7e6df;margin:18rpx 0}
 .post-page .stepper{display:flex;flex:none;align-items:center;gap:10rpx;margin:0;padding:6rpx 10rpx;height:56rpx;border:1rpx solid #deddd7;border-radius:36rpx;background:#fff}
 .post-page .stepper text{display:inline-block;min-width:32rpx;height:42rpx;line-height:42rpx;text-align:center;font-size:27rpx}
-.post-page .stepper text:nth-child(2){color:#ad5a35;font-weight:750}
+.post-page .stepper text:nth-child(2){color:#8b1e2b;font-weight:750}
 .post-page .check,.post-page .post-check{display:inline-flex;align-items:center;justify-content:center;flex:none;width:32rpx;height:32rpx;border:2rpx solid #a8a89e;border-radius:5rpx;background:#fff;font-size:24rpx;line-height:1}
-.post-page .check.checked,.post-page .post-check.checked{background:#ad5a35;color:#fff;border-color:#ad5a35}
+.post-page .check.checked,.post-page .post-check.checked{background:#8b1e2b;color:#fff;border-color:#8b1e2b}
 .post-page .green-note,.post-page .scan-status{padding:18rpx;margin:18rpx 0 0;background:#e8f1ea;color:#3f7a52;border-radius:16rpx;font-size:23rpx;line-height:1.5}
 .post-page .totals-card .row{font-size:26rpx;margin:12rpx 0;color:#62635e}
 .post-page .totals-card .row text:last-child{color:#3b2a20;font-weight:700;white-space:nowrap}
 .post-page .totals-card .total-line{font-size:28rpx;font-weight:750;color:#3b2a20;margin:16rpx 0}
 .post-page .total-line text:last-child{font-size:36rpx}
-.post-page .btn{display:block;width:100%;min-height:80rpx;padding:18rpx;margin:16rpx 0 0;border-radius:18rpx;background:#ad5a35;color:#fff;font-size:26rpx;line-height:1.5;font-weight:700}
-.post-page .btn.outline{background:white;border:1rpx solid #deddd7;color:#ad5a35}
+.post-page .btn{display:block;width:100%;min-height:80rpx;padding:18rpx;margin:16rpx 0 0;border-radius:18rpx;background:#8b1e2b;color:#fff;font-size:26rpx;line-height:1.5;font-weight:700}
+.post-page .btn.outline{background:white;border:1rpx solid #deddd7;color:#8b1e2b}
 .post-page .post-footer{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:16rpx 30rpx calc(18rpx + env(safe-area-inset-bottom));border-top:1rpx solid #e1e0da;background:#fff}
 .post-page .post-agreement{display:flex;align-items:flex-start;gap:12rpx;margin:0 0 14rpx;font-size:22rpx;line-height:1.5;color:#62635e}
 .post-page .post-agreement .link{font-size:22rpx}
-.post-page .post-submit{display:block;width:100%;height:88rpx;line-height:88rpx;padding:0 16rpx;margin:0;background:#ad5a35;color:#fff;border-radius:20rpx;font-size:27rpx;font-weight:700;white-space:nowrap}
+.post-page .post-submit{display:block;width:100%;height:88rpx;line-height:88rpx;padding:0 16rpx;margin:0;background:#8b1e2b;color:#fff;border-radius:20rpx;font-size:27rpx;font-weight:700;white-space:nowrap}
 .post-page .post-submit[disabled]{background:#e5e3dd;color:#92928b;opacity:1}
 
 /* Visual refresh shared by the takeaway and parcel forms. */
@@ -56,7 +56,7 @@
 .post-page .soft,.post-page .delivery-box{background:#f8f7f3;border-radius:22rpx}
 .post-page .pill,.post-page .address-chip{padding:12rpx 26rpx;border:2rpx solid transparent;background:#f3f2ee;color:#4a4a45;font-weight:600;transition:background .2s ease,color .2s ease,transform .15s ease,box-shadow .2s ease}
 .post-page .pill:active,.post-page .address-chip:active{transform:scale(.95)}
-.post-page .pill.selected,.post-page .pill.chosen,.post-page .address-chip.chosen{box-shadow:0 6rpx 16rpx rgba(173,90,53,.25)}
+.post-page .pill.selected,.post-page .pill.chosen,.post-page .address-chip.chosen{box-shadow:0 6rpx 16rpx rgba(139,30,43,.25)}
 .post-page .pill.link,.post-page .address-chip.new{background:#fff;border-color:#e2c7b7}
 .post-page .stepper{border:0;background:#f3f2ee}
 .page-dark .ue-ph{color:#7f8a83}.page-dark.post-page .field{background:#232926!important;color:#edf1ed}.page-dark.post-page .flow-card,.page-dark.post-page .step-card{box-shadow:none}
