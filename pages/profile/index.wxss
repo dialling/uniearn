@@ -15,8 +15,9 @@
 .header-badge-row{margin:14rpx 0 0 116rpx}
 .header-badge{font-size:21rpx;line-height:1.6;padding:6rpx 15rpx;background:#f0efeb;border-radius:26rpx;font-weight:650;color:#63665d;display:inline-block;white-space:nowrap}
 .header-badge.verified{background:#e7f1eb;color:#3f7a52}
-.edit-button{margin:0;padding:0;min-width:0;flex:none;width:104rpx;height:44rpx;line-height:44rpx;display:flex;align-items:center;justify-content:center;gap:6rpx;border:1rpx solid #7bb08f;border-radius:40rpx;background:transparent;color:#ecf5f0;font-size:20rpx;font-weight:650}
-.edit-button image{width:18rpx;height:18rpx}
+.edit-button{margin:0;padding:0 12rpx;min-width:0;flex:none;width:auto;height:40rpx;line-height:40rpx;display:flex;align-items:center;justify-content:center;gap:5rpx;border:1rpx solid #7bb08f;border-radius:20rpx;background:transparent;color:#ecf5f0;font-size:19rpx;font-weight:650}
+.edit-button::after{border:0}
+.edit-button image{width:16rpx;height:16rpx}
 .runner-tag{flex:none;font-size:20rpx;font-weight:700;color:#41775b;background:#ecf5f0;border-radius:26rpx;padding:8rpx 14rpx;line-height:1.4}
 .badge-row{display:flex;gap:16rpx;margin:24rpx 0 22rpx}
 .tier-badge{font-size:23rpx;font-weight:650;color:#ecf5f0;border:1rpx solid #7bb08f;border-radius:26rpx;padding:10rpx 22rpx}
