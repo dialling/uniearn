@@ -131,6 +131,14 @@ function execute(s, actor, account, event, now = Date.now()) {
     check(m.supportTickets.filter(t=>now-t.createdAt<86400000).length<10,'You can send up to 10 support requests a day.');
     const ticket={id:'support-'+s.nextId++,topic:event.topic,createdAt:now,status:'open'};
     m.supportTickets.push(ticket);m.supportTickets=m.supportTickets.slice(-50);value={ticket};
+  } else if (action === 'supportMessage') {
+    const m=s.members[actor];m.supportTickets=m.supportTickets||[];
+    const text=String(event.text||'').trim().slice(0,500);
+    check(text.length>0,'Enter a message.');
+    let t=m.supportTickets.filter(x=>x.status==='open').at(-1);
+    if(!t){check(m.supportTickets.filter(x=>now-x.createdAt<86400000).length<10,'You can send up to 10 support requests a day.');t={id:'support-'+s.nextId++,topic:'other',createdAt:now,status:'open'};m.supportTickets.push(t);m.supportTickets=m.supportTickets.slice(-50);}
+    check((t.messages||[]).filter(msg=>now-msg.at<86400000).length<50,'Too many messages today. Please wait for the team to reply.');
+    t.messages=t.messages||[];t.messages.push({text,at:now,mine:true});value={ticket:t};
   } else if (action === 'create') {
     check(s.requests.filter(r => r.ownerId === actor && OPEN_STATUSES.includes(r.status)).length < MAX_OPEN_PER_USER, 'You have '+MAX_OPEN_PER_USER+' open orders. Wait for some to finish before posting more.');
     check(s.requests.filter(r => r.ownerId === actor && r.createdAt > now - 86400000).length < MAX_CREATES_PER_DAY, 'You can post up to '+MAX_CREATES_PER_DAY+' orders a day.');
@@ -197,7 +205,7 @@ function execute(s, actor, account, event, now = Date.now()) {
   } else if(action==='collectCoupon'){rewards.collect(s,actor,event.campaignId,now);
   } else if(action==='rewardsInit'){
   } else if(action==='invite'){rewards.invite(s,actor,String(event.code||''));
-  } else if(action==='preferences'){const m=s.members[actor];m.preferences=m.preferences||{};for(const k of ['newJobs','orderUpdates','nearbyTrip','deliveredUpdates','skillsInterested'])if(typeof event.values?.[k]==='boolean')m.preferences[k]=event.values[k];if(typeof event.values?.exam==='boolean')m.preferences.examUntil=event.values.exam?now+7*86400000:0;
+  } else if(action==='preferences'){const m=s.members[actor];m.preferences=m.preferences||{};for(const k of ['newJobs','orderUpdates','nearbyTrip','deliveredUpdates','skillsInterested'])if(typeof event.values?.[k]==='boolean')m.preferences[k]=event.values[k];
   } else if(action==='message'||action==='readMessages'){
     const r=s.requests.find(x=>x.id===event.id),t=r&&s.trips.find(x=>x.id===r.runnerId);check(r&&t&&(r.ownerId===actor||t.runnerAccountId===actor),'Only the current order participants can open this chat.');
     const key=r.id+':'+t.id;const threads=s.threads||(s.threads={});const thread=threads[key]||(threads[key]={messages:[],read:{}});
@@ -218,7 +226,7 @@ function snapshot(s, actor, account, now = Date.now()) {
     if (isMine || isRunner) {
       const out = clone(r); delete out.splitOriginal; delete out.ownerId;
       const rt=s.trips.find(t=>t.id===r.runnerId),thread=rt&&(s.threads||{})[r.id+':'+rt.id];
-      out.runnerPhone=rt&&rt.runnerPhone||'';out.runnerStats=rt?stats(s,rt.runnerAccountId):{};out.unread=thread?thread.messages.filter(m=>m.sender!==actor&&m.at>(thread.read[actor]||0)).length:0;
+      out.runnerPhone=rt&&rt.runnerPhone||'';out.runnerStats=rt?(()=>{const st=stats(s,rt.runnerAccountId);return{jobsDone:st.jobsDone,onTime:st.onTime};})():{};out.unread=thread?thread.messages.filter(m=>m.sender!==actor&&m.at>(thread.read[actor]||0)).length:0;
       out.messages=thread?thread.messages.map(m=>({id:m.id,text:m.text,at:m.at,mine:m.sender===actor})):[];
       return { ...out, runnerName:(s.trips.find(t=>t.id===r.runnerId)||{}).runnerName||'', ownerId: isMine ? actor : '', isMine, isRunner };
     }

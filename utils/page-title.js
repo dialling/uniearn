@@ -29,6 +29,7 @@ const MAP={
   'address':['常用配送地址','Saved addresses'],
   'coupon-pick':['选择优惠券','Choose a coupon'],
   chat:['聊天','Chat'],
+  'support-chat':['联系客服','Support chat'],
   info:['平台规则','Platform rules'],
   help:['帮助与支持','Help & support'],
   'notify-guide':['微信通知设置','WeChat notifications'],

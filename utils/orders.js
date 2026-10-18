@@ -15,13 +15,13 @@ function apply(snapshot) {
   if (previous && previous.accountId === snapshot.accountId) {
     const prefs=state.preferences||{},newMessage=snapshot.requests.some(r=>r.unread>(previous.unread?.[r.id]||0)),newRoute=(snapshot.publicTrips||[]).some(t=>!previous.tripIds?.includes(t.id)&&snapshot.requests.some(r=>r.isMine&&r.status==='waiting'&&r.station===t.station&&r.dorm===t.dorm));
     if(newMessage&&prefs.orderUpdates!==false)tell('New order message · open My orders');
-    if(newRoute&&prefs.nearbyTrip&&!(prefs.examUntil>Date.now()))tell('A runner opened a trip on your route');
+    if(newRoute&&prefs.nearbyTrip)tell('A runner opened a trip on your route');
     const changes = snapshot.requests.filter(r => (r.isMine||r.isRunner) && previous.status[r.id] && previous.status[r.id] !== r.status && (r.status!=='delivered'||prefs.deliveredUpdates!==false));
     const joined=snapshot.requests.some(r=>r.isRunner&&!previous.status[r.id]);
     const newJobs = snapshot.requests.filter(r => !r.isMine && r.status==='waiting' && !previous.status[r.id]);
     if (changes.length && state.preferences?.orderUpdates!==false && foreground) changes.forEach(r=>yuniEvents.status(r,snapshot.revision));
     else if(joined&&state.preferences?.orderUpdates!==false)tell('A customer joined your trip');
-    else if (state.profile.studentVerified && newJobs.length && state.preferences?.newJobs!==false && !(state.preferences?.examUntil>Date.now())) tell('New pickup jobs available');
+    else if (state.profile.studentVerified && newJobs.length && state.preferences?.newJobs!==false) tell('New pickup jobs available');
   }
   previous = {accountId:snapshot.accountId,unread:pairMap(snapshot.requests,r=>r.unread||0),tripIds:(snapshot.publicTrips||[]).map(t=>t.id),status:pairMap(snapshot.requests,r=>r.status)};
   store.update(s=>{

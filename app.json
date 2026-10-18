@@ -18,6 +18,7 @@
     "pages/rewards/index",
     "pages/posted/index",
     "pages/chat/index",
+    "pages/support-chat/index",
     "pages/info/index",
     "pages/task/index",
     "pages/public-job/index",
@@ -33,9 +34,9 @@
   ],
   "window": {
     "navigationBarTitleText": "UniEarn",
-    "navigationBarBackgroundColor": "#f6efe4",
+    "navigationBarBackgroundColor": "#ffffff",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#f1e7da"
+    "backgroundColor": "#eeede8"
   },
   "style": "v2",
   "usingComponents": {

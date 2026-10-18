@@ -1,5 +1,5 @@
 .notify-page{padding:28rpx 30rpx 80rpx}
 .step-card{margin-top:18rpx}
 .step-head{display:flex;align-items:center;gap:14rpx;margin-bottom:8rpx}
-.step-no{width:42rpx;height:42rpx;border-radius:50%;background:#8b1e2b;color:#fff;font-size:23rpx;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
+.step-no{width:42rpx;height:42rpx;border-radius:50%;background:#41775b;color:#fff;font-size:23rpx;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
 .notify-page .btn{margin-top:24rpx}
