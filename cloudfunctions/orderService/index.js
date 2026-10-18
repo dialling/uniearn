@@ -38,8 +38,8 @@ exports.main = async (event = {}) => {
       try { state = (await ref.get()).data; } catch (_) { throw Error('Create uniearn_order_state / team-test using the deployment instructions first.'); }
       if (!state || !Array.isArray(state.requests) || !state.receipts) throw Error('Invalid team-test database document.');
       delete state._id;
-      const account = await getAccount(tx, actor);account._reviewer=String(process.env.REVIEWER_OPENIDS||'').split(',').map(x=>x.trim()).includes(openid);
-      const before = JSON.stringify(state), now = Date.now();
+      const now = Date.now(), account = await getAccount(tx, actor);account._reviewer=String(process.env.REVIEWER_OPENIDS||'').split(',').map(x=>x.trim()).includes(openid);account._admin=!!(account.admin&&account.admin.until>now&&account.admin.revision===(account.authRevision||0));
+      const before = JSON.stringify(state);
       engine.expire(state, now);require('./rewards').settle(state,now);
       let value = {};
       if (action === 'prepareUpload') {
