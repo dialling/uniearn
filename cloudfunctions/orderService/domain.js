@@ -139,5 +139,19 @@ function cancelTrip(s,id) {
 function cancelRequest(s,id) {
   const r=s.requests.find(x=>x.id===id);if(!r||r.status!=='waiting')throw Error('Only an unclaimed request can be cancelled here');r.status='cancelled';r.refundAmount=Math.max(0,Math.round((r.reward+(r.serviceFee===undefined?serviceFee(boxes(r)):r.serviceFee)-Number(r.discount||0))*100)/100);r.cancelledAt=Date.now();
 }
+const EXPIRE_MS=3600000;
+function sweepExpired(s,now=Date.now()) {
+  let n=0;
+  for(const r of s.requests){
+    if(r.status!=='waiting'||r.runnerId)continue;
+    if(r.category!=='takeout')continue;
+    const t0=r.createdAt||0;
+    if(!t0||now-t0<EXPIRE_MS)continue;
+    r.status='cancelled';r.cancelledAt=now;r.cancelReason='expired';
+    r.refundAmount=Math.max(0,Math.round((r.reward+(r.serviceFee===undefined?serviceFee(boxes(r)):r.serviceFee)-Number(r.discount||0))*100)/100);
+    n++;
+  }
+  return n;
+}
 function initial() { const now=Date.now(),food=[{id:'food1',owner:'Ming Li',station:'North gate',dorm:'Dorm 7',room:'412',small:2,big:0,codes:['',''],phone:'13801026092',note:'Leave at the desk',category:'takeout',reward:8,serviceFee:0,status:'waiting',runnerId:null,collected:[],photo:'',arrivalAt:now+20*60000,closesAt:now+50*60000,deadline:'',soup:true,price:4,createdAt:now},{id:'food2',owner:'Minjun',station:'North gate',dorm:'Dorm 7',room:'208',small:1,big:0,codes:[''],phone:'13801023381',note:'',category:'takeout',reward:4,serviceFee:0,status:'waiting',runnerId:null,collected:[],photo:'',arrivalAt:now,closesAt:now+30*60000,deadline:'',arrived:true,price:4,createdAt:now}];return {nextId:10,requests:JSON.parse(JSON.stringify(demo)).concat(food),trips:[],profile:{name:'',phone:'',dorm:'',room:'',onboarded:false,studentVerified:false,verification:{status:'unverified'},jobsDone:0,paid:0}}; }
-module.exports={initial,boxes,limit,serviceFee,wholeCents,MAX_PRICE_PER_BOX,createRequest,eligible,assign,startTrip,acceptJob,acceptBoxes,abandonUncollectedTrip,collect,deliver,confirm,cancelTrip,cancelRequest};
+module.exports={sweepExpired,initial,boxes,limit,serviceFee,wholeCents,MAX_PRICE_PER_BOX,createRequest,eligible,assign,startTrip,acceptJob,acceptBoxes,abandonUncollectedTrip,collect,deliver,confirm,cancelTrip,cancelRequest};

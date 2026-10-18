@@ -41,4 +41,16 @@ const tenSmall=Array.from({length:10},(_,i)=>({size:'small',code:'D'+i}));
 assert.throws(()=>d.createRequest(s2,{...parcelBase,parcelItems:tenSmall}),/9 items/);
 const twelve=Array.from({length:12},(_,i)=>({size:i%2?'small':'medium',code:'E'+i}));
 assert.equal(d.createRequest(s2,{...parcelBase,parcelItems:twelve}).parcelItems.length,12);
+
+// 1-hour auto-cancel: unaccepted takeout orders expire, parcels do not
+const s3=d.initial();s3.requests=[];
+const take=(extra)=>d.createRequest(s3,{category:'takeout',station:'North gate',dorm:'D01',room:'101',phone:'13800000000',small:1,codes:[''],pricePerBox:3,owner:'A',deadline:'18:00',...extra});
+const stale=take({});stale.createdAt=Date.now()-2*3600000;
+const staleParcel=d.createRequest(s3,{category:'parcel',parcelSize:'small',station:'North gate',dorm:'D01',room:'101',phone:'13800000000',small:1,big:0,codes:['C1'],owner:'A',deadline:'18:00',pricePerBox:3});staleParcel.createdAt=Date.now()-2*3600000;
+const fresh=take({});
+assert.equal(d.sweepExpired(s3),1,'only the stale takeout order expires');
+assert.equal(stale.status,'cancelled');assert.equal(stale.cancelReason,'expired');
+assert.equal(staleParcel.status,'waiting','parcels are never auto-cancelled');
+assert.equal(fresh.status,'waiting');
+assert.equal(d.sweepExpired(s3),0,'sweeping twice is a no-op');
 console.log('Campus data: 31 real buildings, floors, lift rule and bilingual pickup points passed.');
