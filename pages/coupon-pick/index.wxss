@@ -5,8 +5,8 @@
 .cp-empty{padding:80rpx 20rpx;text-align:center;color:#888780}
 .cp-card{position:relative;display:flex;align-items:center;margin-bottom:20rpx;border-radius:24rpx;background:#fff;overflow:hidden;border:2rpx solid transparent;animation:ue-settle .3s cubic-bezier(.22,.8,.3,1) backwards;transition:border-color .2s,box-shadow .2s,transform .15s}
 .cp-card:active{transform:scale(.98)}.cp-card.on{border-color:#41775b;box-shadow:0 10rpx 26rpx rgba(139,30,43,.15)}.cp-card.off{opacity:.55}
-.cp-left{flex:none;width:200rpx;padding:30rpx 0;text-align:center;background:#f4faf6;border-right:2rpx dashed #ecd4c4}
-.cp-amt{color:#41775b;font-size:46rpx;font-weight:800;line-height:1.1}.cp-yen{font-size:26rpx;margin-right:2rpx}.cp-sub{margin-top:6rpx;color:#b07a5c;font-size:21rpx}
+.cp-left{flex:none;width:200rpx;padding:30rpx 0;text-align:center;background:#f4faf6;border-right:2rpx dashed #cfe3d6}
+.cp-amt{color:#41775b;font-size:46rpx;font-weight:800;line-height:1.1}.cp-yen{font-size:26rpx;margin-right:2rpx}.cp-sub{margin-top:6rpx;color:#4e8a68;font-size:21rpx}
 .cp-right{flex:1;min-width:0;padding:0 24rpx}.cp-name{font-size:29rpx;font-weight:800}.cp-until{margin-top:8rpx;color:#888780;font-size:22rpx}
 .cp-best{margin-left:12rpx;padding:2rpx 10rpx;border-radius:8rpx;background:#41775b;color:#fff;font-size:19rpx;vertical-align:middle}
 .cp-radio{flex:none;width:40rpx;height:40rpx;margin-right:26rpx;line-height:38rpx;text-align:center;border-radius:50%;border:2rpx solid #d7d4ca;color:#fff;font-size:22rpx;box-sizing:border-box;transition:background .2s,border-color .2s}.cp-card.on .cp-radio{background:#41775b;border-color:#41775b}

@@ -1,5 +1,5 @@
 /* Uniearn「我的」页面 — 按 design/profile_final_long.png 定稿重构 */
-.me-page{background:#eeede8;padding:38rpx 38rpx 190rpx;min-height:100vh;color:#33231a}
+.me-page{background:#eeede8;padding:38rpx 38rpx 190rpx;min-height:100vh;color:#345c55}
 .me-page .title{display:none}
 .me-page .flow-card{padding:27rpx;border:1rpx solid #deded7;border-radius:27rpx;margin-bottom:20rpx}
 
@@ -8,25 +8,25 @@
 .me-header-top{display:flex;align-items:center;gap:18rpx}
 .avatar{width:108rpx;height:108rpx;line-height:108rpx;font-size:43rpx}
 .header-avatar{width:96rpx;height:96rpx;line-height:96rpx;font-size:38rpx;background:#4e8a68;color:#fff;border-radius:50%;text-align:center;flex:none}
-.customer-avatar{background:#ad4920}
+.customer-avatar{background:#41775b}
 .runner-avatar{background:#41775b}
 .header-main{flex:none;max-width:330rpx}
 .header-name{font-size:37rpx;font-weight:800;line-height:96rpx;white-space:nowrap;overflow:visible}
 .header-badge-row{margin:14rpx 0 0 116rpx}
 .header-badge{font-size:21rpx;line-height:1.6;padding:6rpx 15rpx;background:#f0efeb;border-radius:26rpx;font-weight:650;color:#63665d;display:inline-block;white-space:nowrap}
 .header-badge.verified{background:#e7f1eb;color:#3f7a52}
-.edit-button{margin:0;padding:0;min-width:0;flex:none;width:104rpx;height:44rpx;line-height:44rpx;display:flex;align-items:center;justify-content:center;gap:6rpx;border:1rpx solid #d9a99a;border-radius:40rpx;background:transparent;color:#ecf5f0;font-size:20rpx;font-weight:650}
+.edit-button{margin:0;padding:0;min-width:0;flex:none;width:104rpx;height:44rpx;line-height:44rpx;display:flex;align-items:center;justify-content:center;gap:6rpx;border:1rpx solid #7bb08f;border-radius:40rpx;background:transparent;color:#ecf5f0;font-size:20rpx;font-weight:650}
 .edit-button image{width:18rpx;height:18rpx}
 .runner-tag{flex:none;font-size:20rpx;font-weight:700;color:#41775b;background:#ecf5f0;border-radius:26rpx;padding:8rpx 14rpx;line-height:1.4}
 .badge-row{display:flex;gap:16rpx;margin:24rpx 0 22rpx}
-.tier-badge{font-size:23rpx;font-weight:650;color:#ecf5f0;border:1rpx solid #d9a99a;border-radius:26rpx;padding:10rpx 22rpx}
+.tier-badge{font-size:23rpx;font-weight:650;color:#ecf5f0;border:1rpx solid #7bb08f;border-radius:26rpx;padding:10rpx 22rpx}
 .header-level{display:flex;align-items:center;gap:14rpx}
-.hl-label{font-size:22rpx;color:#d9a99a;font-weight:650;flex:none}
+.hl-label{font-size:22rpx;color:#7bb08f;font-weight:650;flex:none}
 .hl-next{flex:1;min-width:0;font-size:22rpx;color:#ecf5f0;text-align:right}
 .hl-caret{flex:none;color:#ecf5f0;font-size:28rpx}
 .hl-track{height:10rpx;background:#5c2830;border-radius:10rpx;overflow:hidden;margin:16rpx 0 12rpx}
 .hl-fill{height:100%;background:#ecf5f0;border-radius:10rpx}
-.hl-tiers{display:flex;justify-content:space-between;font-size:20rpx;color:#d9a99a}
+.hl-tiers{display:flex;justify-content:space-between;font-size:20rpx;color:#7bb08f}
 .hl-tiers .cur{color:#ecf5f0;font-weight:750}
 .level-detail{margin-top:18rpx;border-top:1rpx solid #5c2830;padding-top:20rpx}
 .level-detail .level-grid .hint{color:#c9b3a2}
@@ -37,7 +37,7 @@
 /* ② 数据卡 */
 .me-stats{display:flex;gap:15rpx;margin-bottom:20rpx}
 .me-stats>view{flex:1;min-width:0;border:1rpx solid #deded7;border-radius:23rpx;background:#fff;padding:19rpx 21rpx;display:flex;flex-direction:column;gap:8rpx;color:#75766d;font-size:23rpx}
-.me-stats .stats-number{font-size:37rpx;line-height:1.3;color:#33231a;font-weight:800}
+.me-stats .stats-number{font-size:37rpx;line-height:1.3;color:#345c55;font-weight:800}
 
 /* ③ 收益卡 */
 .earnings-summary{border:2rpx solid #41775b!important}
@@ -83,7 +83,7 @@
 .level-grid .hint{font-size:20rpx;line-height:1.45;margin:16rpx 0}
 .level-nudge{background:#f4faf6;color:#41775b;border-radius:20rpx;padding:22rpx;font-size:23rpx;line-height:1.6;margin:12rpx 0 24rpx}
 .mark-note{display:flex;align-items:flex-start;gap:15rpx;font-size:22rpx;line-height:1.7;color:#66675e}
-.mark-count{background:#fcf1e6;color:#ad4920;font-weight:800;border-radius:50%;width:42rpx;height:42rpx;line-height:42rpx;text-align:center;flex:none}
+.mark-count{background:#e8f3ed;color:#41775b;font-weight:800;border-radius:50%;width:42rpx;height:42rpx;line-height:42rpx;text-align:center;flex:none}
 .mark-note .hint{font-size:20rpx}
 
 /* 编辑卡内的隐私提示 */
@@ -92,12 +92,12 @@
 
 /* ⑥ 邀请同学 */
 .invite-card{display:flex;align-items:center;gap:21rpx}
-.invite-icon{background:#fcf1e6;width:75rpx;height:75rpx;border-radius:22rpx;display:flex;align-items:center;justify-content:center;flex:none}
+.invite-icon{background:#e8f3ed;width:75rpx;height:75rpx;border-radius:22rpx;display:flex;align-items:center;justify-content:center;flex:none}
 .invite-icon image{width:36rpx;height:36rpx}
 .invite-copy{flex:1;min-width:0}
 .invite-copy .strong{font-size:27rpx}
 .invite-copy .hint{font-size:22rpx;margin-bottom:0}
-.invite-card .invite-button{flex:none;width:120rpx;min-width:0;height:70rpx;margin:0;padding:0;background:#ad4920;color:white;border-radius:40rpx;font-size:24rpx;font-weight:750;line-height:70rpx}
+.invite-card .invite-button{flex:none;width:120rpx;min-width:0;height:70rpx;margin:0;padding:0;background:#41775b;color:white;border-radius:40rpx;font-size:24rpx;font-weight:750;line-height:70rpx}
 
 /* 菜单组 */
 .settings-icon{width:60rpx;height:60rpx;background:#f0efeb;border-radius:17rpx;display:flex;align-items:center;justify-content:center;flex:none}
@@ -130,7 +130,7 @@
 .me-dark .menu-row{border-color:#465149}
 .me-dark .address-privacy{border-color:#465149}
 .me-dark .hint,.me-dark .setting-value{color:#bfc6bd}
-.me-dark .green-text,.me-dark .earnings-total,.me-dark .sticker-count{color:#d9a99a}
+.me-dark .green-text,.me-dark .earnings-total,.me-dark .sticker-count{color:#7bb08f}
 .me-dark .me-header{background:#40121b}
 .me-dark .header-badge{background:#bdc4bb}
 .me-dark .header-badge.verified{background:#e7f1eb;color:#3f7a52}
