@@ -13,8 +13,8 @@ assert.deepEqual(calls.at(-1),['bg','#f6efe4','#f6efe4'],'light window backgroun
 store.update(s=>{s.meAppearance='dark';});
 assert.equal(appearance.isDark(),true);
 appearance.apply();
-assert.deepEqual(calls.at(-2),['nav','#f5e9dc','#221610'],'dark nav bar is dark brown with cream text');
-assert.deepEqual(calls.at(-1),['bg','#221610','#221610'],'dark window background is dark brown');
+assert.deepEqual(calls.at(-2),['nav','#f3ebe3','#191411'],'dark nav bar is near-black with warm white text');
+assert.deepEqual(calls.at(-1),['bg','#191411','#191411'],'dark window background is near-black');
 let def;global.Component=d=>{def=d;};
 require('../components/nav/index.js');
 const inst={data:{...def.data},setData(v){Object.assign(this.data,v);},...def.methods};

@@ -22,4 +22,4 @@
 .addr-actions{display:flex;align-items:center;justify-content:space-between;margin-top:20rpx;padding-top:18rpx;border-top:1rpx solid #f4ece2}
 .addr-default{color:#8b1e2b;font-size:23rpx;font-weight:650}.addr-btns{display:flex;gap:14rpx}
 .addr-btn{padding:8rpx 24rpx;border-radius:30rpx;background:#f5ede3;font-size:23rpx;font-weight:650}.addr-btn:active{opacity:.6}.addr-btn.danger{background:#fdf2f0;color:#7a1a26}
-.page-dark .addr-item{background:#33231a;border-color:#4e3a2c}.page-dark .addr-page .field{background:#232926;color:#f5e9dc}.page-dark .addr-actions{border-top-color:#4e3a2c}.page-dark .addr-btn{background:#3a423d;color:#f5e9dc}.page-dark .addr-empty{border-color:#4e3a2c}
+.page-dark .addr-item{background:#241d18;border-color:#3b3029}.page-dark .addr-page .field{background:#232926;color:#f3ebe3}.page-dark .addr-actions{border-top-color:#3b3029}.page-dark .addr-btn{background:#3a423d;color:#f3ebe3}.page-dark .addr-empty{border-color:#3b3029}

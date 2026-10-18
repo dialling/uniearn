@@ -59,7 +59,7 @@
 .post-page .pill.selected,.post-page .pill.chosen,.post-page .address-chip.chosen{box-shadow:0 6rpx 16rpx rgba(139,30,43,.25)}
 .post-page .pill.link,.post-page .address-chip.new{background:#fff;border-color:#e2c7b7}
 .post-page .stepper{border:0;background:#f3f2ee}
-.page-dark .ue-ph{color:#7f8a83}.page-dark.post-page .field{background:#232926!important;color:#edf1ed}.page-dark.post-page .flow-card,.page-dark.post-page .step-card{box-shadow:none}
+.page-dark .ue-ph{color:#7f8a83}.page-dark.post-page .field{background:#232926!important;color:#f3ebe3}.page-dark.post-page .flow-card,.page-dark.post-page .step-card{box-shadow:none}
 /* Inputs: no vertical padding, otherwise the native caret and the placeholder sit on different lines. */
 .post-page input.field,.post-page .code-input{box-sizing:border-box;height:88rpx;min-height:88rpx;padding-top:0;padding-bottom:0;line-height:normal}
 .post-page input.field{padding:0 24rpx}

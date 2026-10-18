@@ -31,4 +31,9 @@
 .guide-complete{animation:guide-toast-in .4s cubic-bezier(.22,.9,.3,1.15) backwards}
 
 .order-toggle-row{margin:20rpx 0;gap:16rpx}.order-toggle{flex:none;font-size:24rpx;font-weight:700;color:#55574f;padding:12rpx 0 12rpx 24rpx}.selectable-order{display:flex;align-items:center;gap:18rpx;padding:22rpx;border:1rpx solid #e4e4de;border-radius:20rpx;background:#fafaf7;margin:12rpx 0}.order-check{flex:none;width:34rpx;height:34rpx;border:2rpx solid #c7c7bd;border-radius:50%;background:white;display:flex;align-items:center;justify-content:center;color:white;font-size:23rpx}.order-check.checked{background:#8b1e2b;border-color:#8b1e2b}.order-summary{flex:1;min-width:0}.order-summary .hint{margin:6rpx 0 0}.individual-parcels{display:block;color:#8b1e2b;text-align:center;font-size:23rpx;padding:18rpx 0 0}.jobs-page .btn[disabled]{background:#e5e5df;color:#999a91}
-.order-note{margin-top:6rpx;padding:8rpx 14rpx;border-radius:12rpx;background:#f6f5f1;color:#5e5d57;font-size:23rpx;line-height:1.45;word-break:break-all}.page-dark .order-note{background:#2c332f;color:#c3c9c4}
+.order-note{margin-top:6rpx;padding:8rpx 14rpx;border-radius:12rpx;background:#f6f5f1;color:#5e5d57;font-size:23rpx;line-height:1.45;word-break:break-all}.page-dark .order-note{background:#241d18;color:#c3c9c4}
+
+.guide-modal.guide-dark{background:#241d18!important;color:#f3ebe3!important;border:1rpx solid #3b3029}
+.guide-modal.guide-dark .guide-title,.guide-modal.guide-dark .strong,.guide-modal.guide-dark .guide-text{color:#f3ebe3!important}
+.guide-modal.guide-dark .guide-example{background:#241d18!important;border-color:#3b3029!important}
+.guide-modal.guide-dark .btn.light{background:#33261e!important;color:#f3ebe3!important}

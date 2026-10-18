@@ -34,7 +34,7 @@
 .addr-summary{display:flex;align-items:center;gap:18rpx;margin:8rpx 0 18rpx;padding:22rpx 24rpx;border-radius:22rpx;background:#f6efe9;animation:ue-settle .26s cubic-bezier(.22,.8,.3,1) backwards}
 .addr-send{flex:none;width:48rpx;height:48rpx;line-height:48rpx;text-align:center;border-radius:12rpx;background:#8b1e2b;color:#fff;font-size:23rpx;font-weight:800}
 .addr-summary-body{flex:1;min-width:0}.addr-summary-place{font-size:30rpx;font-weight:800}.addr-summary .hint{margin:4rpx 0 0}
-.page-dark .addr-chip,.page-dark .addr-empty-card,.page-dark .addr-summary{background:#33231a;border-color:#4e3a2c}.page-dark .addr-chip.selected{border-color:#c25a5a;background:#3a332d}.page-dark .addr-chip-name{color:#f5e9dc}.page-dark .addr-chip-place{color:#c3c9c4}
+.page-dark .addr-chip,.page-dark .addr-empty-card,.page-dark .addr-summary{background:#241d18;border-color:#3b3029}.page-dark .addr-chip.selected{border-color:#c25a5a;background:#3a332d}.page-dark .addr-chip-name{color:#f3ebe3}.page-dark .addr-chip-place{color:#c3c9c4}
 
 
 .note-soup{margin-top:14rpx}.soup-inline{min-height:0;padding:16rpx 18rpx;border:0;background:#f8f7f3;border-radius:18rpx}.soup-inline .check{flex:none}
