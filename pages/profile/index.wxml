@@ -81,9 +81,9 @@
 <!-- ⑦ 通知与提醒（已删除考试模式） -->
 <view class="section">{{ui.notifyGroup}}</view>
 <view class="flow-card menu-card notifications-card">
- <view class="menu-row"><view><view class="strong">{{ui.tips}}</view><view class="hint">{{ui.tipsHelp}}</view></view><switch checked="{{tips}}" color="#41775b" bindchange="tipToggle"/></view>
- <block wx:if="{{isRunner}}"><view class="menu-row"><view><view class="strong">{{ui.near}}</view><view class="hint">{{ui.nearHelp}}</view></view><switch color="#41775b" checked="{{preferences.newJobs!==false}}" data-key="newJobs" bindchange="preference"/></view></block>
- <view class="menu-row"><view><view class="strong">{{ui.updates}}</view><view class="hint">{{ui.updatesHelp}}</view><text class="link" catchtap="notifyGuide">{{ui.notifyGuide}} ›</text></view><switch color="#41775b" checked="{{preferences.orderUpdates!==false}}" data-key="orderUpdates" bindchange="preference"/></view>
+ <view class="menu-row"><view><view class="strong">{{ui.tips}}</view><view class="hint">{{ui.tipsHelp}}</view></view><switch checked="{{tips}}" color="#8b1e2b" bindchange="tipToggle"/></view>
+ <block wx:if="{{isRunner}}"><view class="menu-row"><view><view class="strong">{{ui.near}}</view><view class="hint">{{ui.nearHelp}}</view></view><switch color="#8b1e2b" checked="{{preferences.newJobs!==false}}" data-key="newJobs" bindchange="preference"/></view></block>
+ <view class="menu-row"><view><view class="strong">{{ui.updates}}</view><view class="hint">{{ui.updatesHelp}}</view><text class="link" catchtap="notifyGuide">{{ui.notifyGuide}} ›</text></view><switch color="#8b1e2b" checked="{{preferences.orderUpdates!==false}}" data-key="orderUpdates" bindchange="preference"/></view>
 </view>
 <!-- ⑧ 账户 -->
 <view class="section">{{ui.accountGroup}}</view>
