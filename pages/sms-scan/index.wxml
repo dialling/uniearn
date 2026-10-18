@@ -1,18 +1,18 @@
 <view class="sms-page">
  <view class="heading">{{heading}}</view>
- <view class="intro">{{mode==='sms'?'Choose a screenshot of your pickup messages.':'Upload the full screenshot. Review the pickup point and select your parcels.'}}</view>
- <view class="actions"><button disabled="{{busy}}" data-source="album" bindtap="capture">Choose screenshot</button></view>
- <view wx:if="{{busy}}" class="note">Reading messages…</view>
+ <view class="intro">{{mode==='sms'?(zh?'选择一张取件短信的截图。':'Choose a screenshot of your pickup messages.'):(zh?'上传完整截图，核对取件点并选择你的包裹。':'Upload the full screenshot. Review the pickup point and select your parcels.')}}</view>
+ <view class="actions"><button disabled="{{busy}}" data-source="album" bindtap="capture">{{zh?'选择截图':'Choose screenshot'}}</button></view>
+ <view wx:if="{{busy}}" class="note">{{zh?'正在识别短信…':'Reading messages…'}}</view>
  <view wx:if="{{error}}" class="error">{{error}}</view>
- <view wx:if="{{note}}" class="note">{{note}} You can select, deselect and edit codes.</view>
- <view wx:if="{{candidates.length}}" class="row"><text class="strong">{{selectedCount}} selected</text><text>Maximum 5 per request</text></view>
+ <view wx:if="{{note}}" class="note">{{note}} {{zh?'你可以勾选、取消勾选或修改取件码。':'You can select, deselect and edit codes.'}}</view>
+ <view wx:if="{{candidates.length}}" class="row"><text class="strong">{{zh?'已选 '+selectedCount+' 个':selectedCount+' selected'}}</text><text>{{zh?'每单最多 5 个':'Maximum 5 per request'}}</text></view>
  <view wx:for="{{candidates}}" wx:key="id" class="candidate {{item.selected?'selected':''}}">
-  <view class="row"><view class="pick" data-i="{{index}}" bindtap="toggle"><text class="box">{{item.selected?'☑':'☐'}}</text><text>{{item.label}}</text></view></view>
-  <input value="{{item.code}}" data-i="{{index}}" bindinput="editCode" placeholder="Pickup code" maxlength="40"/>
-  <view class="point">{{item.point || 'Pickup point unclear'}}</view>
+  <view class="row"><view class="pick" data-i="{{index}}" bindtap="toggle"><text class="box">{{item.selected?'☑':'☐'}}</text><text>{{labels[item.label]||item.label}}</text></view></view>
+  <input value="{{item.code}}" data-i="{{index}}" bindinput="editCode" placeholder="{{zh?'取件码':'Pickup code'}}" maxlength="40"/>
+  <view class="point">{{item.point || (zh?'取件点不清晰':'Pickup point unclear')}}</view>
  </view>
- <view wx:if="{{candidates.length}}" class="paste-box"><view>Pickup point</view><input value="{{pickupPoint}}" data-field="pickupPoint" bindinput="field" placeholder="Confirm the station or shop"/><view>Address (optional)</view><input value="{{pickupAddress}}" data-field="pickupAddress" bindinput="field" placeholder="Add any address details"/></view>
- <button class="confirm" bindtap="confirm" disabled="{{busy || !selectedCount || selectedCount > 5}}">Use {{selectedCount}} codes</button>
- <view class="intro">This replaces the codes currently in your request. Check the parcel sizes after confirming.</view>
+ <view wx:if="{{candidates.length}}" class="paste-box"><view>{{zh?'取件点':'Pickup point'}}</view><input value="{{pickupPoint}}" data-field="pickupPoint" bindinput="field" placeholder="{{zh?'确认驿站或店铺':'Confirm the station or shop'}}"/><view>{{zh?'地址（选填）':'Address (optional)'}}</view><input value="{{pickupAddress}}" data-field="pickupAddress" bindinput="field" placeholder="{{zh?'补充地址详情':'Add any address details'}}"/></view>
+ <button class="confirm" bindtap="confirm" disabled="{{busy || !selectedCount || selectedCount > 5}}">{{zh?'使用这 '+selectedCount+' 个取件码':'Use '+selectedCount+' codes'}}</button>
+ <view class="intro">{{zh?'这会替换订单中现有的取件码。确认后请核对包裹尺寸。':'This replaces the codes currently in your request. Check the parcel sizes after confirming.'}}</view>
 </view>
 <yuni-assistant topic=""/>

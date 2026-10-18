@@ -27,13 +27,14 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
    ▼
 云函数（wx-server-sdk）
    ├── orderService            订单/行程/奖励的单一写入口（事务 + 幂等）
-   ├── studentAccount          账户、学生认证、邮箱验证码、微信手机号
+   ├── studentAccount          账户、帮手申请与管理员审核、管理后台、微信手机号
    ├── parseParcelScreenshot   快递截图 → 包裹字段（腾讯云 OCR）
    └── parseSmsScreenshot      短信截图 → 取件码候选（腾讯云 OCR）
    ▼
 云数据库 / 云存储
    ├── uniearn_order_state     单文档 team-test，全局订单与行程状态
    ├── uniearn_accounts        每账户一文档
+   ├── uniearn_order_archive   完成 8 天后移出主文档的订单
    ├── uniearn_ocr_limits      OCR 频控计数
    └── 云存储 order-photos/ · ocr-temp/ · sms-temp/
 ```
@@ -52,7 +53,7 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 | `app.js` / `app.json` / `app.wxss` | 入口、页面注册（26 个页面 + 3 个全局组件）、全局样式 |
 | `sitemap.json` | 微信搜索索引配置 |
 | `project.config.json` | 微信开发者工具配置。`miniprogramRoot: "./"`、`cloudfunctionRoot: "cloudfunctions/"`、AppID `wxf6d43df037493a8c`、基础库 3.7.0 |
-| `assets/` | 78 个图标、插画与「云宝」吉祥物（`yuni-*` 系列共 14 组 PNG+SVG） |
+| `assets/` | 图标、插画与「云宝」吉祥物（`yuni-*.png`，按姿势名动态引用） |
 | `components/nav/` | 底部导航栏 |
 | `components/yuni/` | 「云宝」轻提示 |
 | `components/yuni-assistant/` | 「云宝」助手浮层 |
@@ -63,7 +64,7 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 | `cloudfunctions/parseParcelScreenshot/` | 快递截图 OCR |
 | `cloudfunctions/parseSmsScreenshot/` | 短信截图 OCR |
 | `scripts/check.js` | 全仓 JS/JSON 语法检查，然后依次执行 `tests/*.test.js` |
-| `tests/` | 36 个回归测试 + `helpers/order-cloud.js`，无框架，`node` 直跑 |
+| `tests/` | 35 个回归测试 + `helpers/order-cloud.js`，无框架，`node` 直跑 |
 | `docs/` | 本文档、版本更新说明、自检原始输出 |
 
 > 小程序根目录就是仓库根目录，因此 `app.*`、`assets/`、`components/`、`pages/`、`utils/` 必须在顶层，不能收进 `src/`。
@@ -88,7 +89,8 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 | `trip` | Pick up & deliver | orders, domain, workflow, ui, runner-level | 取件与送达主流程 |
 | `join` | Join a trip | orders, domain, workflow | 加入别人的行程 |
 | `sms-scan` | Read pickup SMS | cloud, pickup-point, ocr | 读短信/截图取件码（另含 `parser.js`） |
-| `student-check` | — | store, account, image-input, domain, runner-level | 学生认证（学生卡 OCR + 邮箱验证码） |
+| `student-check` | — | store, account, runner-level, china-time | 校园帮手申请（真实姓名 + 手机号 + 学号），等待管理员审核 |
+| `admin` | — | account, china-time | 管理员登录后的后台：订单统计、用户/帮手数、申请审核 |
 | `earnings` | — | orders, workflow, domain, catalog, earnings, runner-level | 收益汇总（周收入、单量、等级进度） |
 | `rewards` | — | orders, store, ui | 优惠券与活动 |
 | `routes` / `route-edit` | Route details | saved-routes, store, account, ui | 已保存路线列表 / 路线编辑 |
@@ -111,7 +113,9 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 | `ocr-config.js` | 只放公开的云环境 ID（`cloud1-d1g757cev03375e35`），注释明确写着**绝不放密钥** |
 | `store.js` | 本地缓存：内存 + `wx` 存储，`get` / `update` / `reset`；缓存键 `uniearn_cloud_cache_v1`；无 profile 时重建为空态 |
 | `orders.js` | **核心同步层**，见下 |
-| `account.js` | `call()` 调 `studentAccount`；`requireRunner()` 接单前门禁；`scan()` 上传 + 识别学生卡 |
+| `account.js` | `call()` 调 `studentAccount`（附带 `lang`）；`requireRunner()` 接单前门禁 |
+| `nav.js` | `navigateTo()`：目标页已在栈中就返回过去，栈满（≥9 层）改用 `redirectTo`，避免页面栈循环与溢出 |
+| `china-time.js` | 所有显示时间统一按中国时区（UTC+8）格式化，不受设备时区影响 |
 
 `orders.js` 的几个要点：
 
@@ -122,7 +126,7 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
   - 发送前把 `{at, signature, data}`（含生成的 `operationId`）写进本地 `pendingOrderOperation`
   - 网络失败**重试一次**；业务错误（`result.ok === false`）直接抛给页面，并清掉 pending
   - 恢复不确定请求时若 `signature` 变了，会拒绝静默重放，提示用户先核对订单
-  - pending 超过 24 小时会报错要求先核对
+  - pending 超过 20 小时（`STALE_OPERATION_MS`）视为过期：丢弃并重新同步，提示用户核对订单，不再永久锁死
 - `upload(path)`：先 `prepareUpload` 拿路径再上传；同一路径的并发上传会合并成一次。
 - `bind(page, method)` / `unbind`：页面订阅刷新；快照应用后统一 `page.refresh()`。
 - `apply(snapshot)`：`revision` 落后于本地则丢弃；比对前后状态后按 `preferences` 触发「云宝」事件或 toast（新消息 `orderUpdates`、订单状态变化、新行程 `nearbyTrip`、新任务 `newJobs`），并遵守考试周免打扰（`examUntil`）。
@@ -148,8 +152,8 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 
 | 类别 | 模块 |
 | --- | --- |
-| 中英文案 | `onboarding.js`、`app-guide.js`（引导）、`hall-copy.js`（大厅）、`me-copy.js`（我的）、`help-copy.js` + `help-faq.js`（帮助）、`rules-data.js` + `rules.json`（规则） |
-| 交互辅助 | `ui.js`（toast 等）、`image-input.js`（选图）、`yuni.js`（吉祥物定义）、`yuni-events.js`（按 key 去重的事件队列）、`ocr.js`（OCR 调用） |
+| 中英文案 | `order-copy.js`（订单状态/标签）、`create-copy.js`、`post-copy.js`、`runner-copy.js`、`orders-copy.js`（各页面）、`onboarding.js`、`app-guide.js`（引导）、`hall-copy.js`（大厅）、`me-copy.js`（我的）、`help-copy.js` + `help-faq.js`（帮助）、`rules-data.js` + `rules.json`（规则） |
+| 交互辅助 | `ui.js`（toast、照片本地保存；`cleanSaved()` 清理 24 小时前或超过 6 MB 的已保存照片）、`image-input.js`（选图）、`yuni.js`（吉祥物定义）、`yuni-events.js`（按 key 去重的事件队列）、`ocr.js`（OCR 调用） |
 | 业务辅助 | `earnings.js`（周收益汇总）、`saved-routes.js`（已保存地址与路线）、`pickup-point.js`（从通知里抽取真实驿站名，**从不默认到某个校区**） |
 | 共享样式 | `flow.wxss`、`final.wxss`、`v8.wxss`、`post-form.wxss` |
 
@@ -206,21 +210,24 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 3. 姓名 ≥ 2 字且手机号为中国大陆号码
 4. 未被信用暂停
 
-**容量上限**：订单 ≤ 200 条、行程 ≤ 200 条、单文档 ≤ 850 KB。照片通过 `cloud.getTempFileURL` 下发的临时链接有效 **600 秒**，只下发当前快照中真正可见的照片。
+**容量上限**：订单 ≤ 200 条、行程 ≤ 200 条、单文档 ≤ 850 KB。每个用户最多 10 个进行中的订单、每天最多发布 30 单。已完成/取消/退款的订单 8 天后由 `archiveFinished()`（每小时一次、独立事务）移到 `uniearn_order_archive`，帮手累计单数/准时/收入和奖励判断所需的事实保留在 `members` 上。照片通过 `cloud.getTempFileURL` 下发的临时链接有效 **600 秒**，只下发当前快照中真正可见的照片。
 
 ### 5.2 studentAccount
 
 | action | 说明 |
 | --- | --- |
 | `wechatLogin` | 用微信手机号授权码换手机号；仅接受中国大陆号；写入 `profile`、`loggedOut: false`、`authRevision+1` |
-| `sendEmailCode` / `checkEmailCode` / `agreeRules` | 邮箱验证码与规则同意（转 `email.js`） |
-| `scan` / `status` 等 | 转 `handler.js` 的学生卡扫描流程 |
+| `status` / `saveProfile` / `saveDorm` / `logout` 等 | 账户资料 |
+| `apply` | 提交校园帮手申请：真实姓名、手机号、学号。学号在待审核/已认证账户之间唯一；被拒后可重新申请 |
+| `agreeRules` | 同意校园帮手规则 |
+| `adminLogin` / `adminLogout` / `adminStatus` | 管理员登录（账号密码来自环境变量），会话 12 小时；连续 5 次失败锁定 15 分钟 |
+| `adminDashboard` / `adminOrders` / `review` | 订单统计（总数、待接单、未付款＝已送达未确认、已完成，含已归档）、用户数、帮手数、订单列表（隐藏手机号与取件码）、审核申请（拒绝时备注作为原因） |
 
-- 集合 `uniearn_accounts`，文档 ID = `sha256(openid)`
-- 字段：`profile`、`verification`、`authRevision`、`scanLock`、`loggedOut`
-- 并发控制：`authRevision` 乐观锁；`claimScan` / `releaseScan` 用 **65 秒**租约防同一账户并发扫描；写 `scanLock` 时整体 `set` 而不做子字段更新（代码里有注释说明原因）
+- 集合 `uniearn_accounts`，文档 ID = `sha256(openid)`；完整学号只存在服务端，客户端只拿到后 4 位
+- 字段：`profile`、`verification`、`authRevision`、`admin`、`loggedOut`
+- `REVIEWER_OPENIDS` 中的账户同样视为管理员
 - `config.json` 声明了 `phonenumber.getPhoneNumber` 权限
-- 依赖：`wx-server-sdk`、`tencentcloud-sdk-nodejs-ocr`、`nodemailer`
+- 依赖：`wx-server-sdk`
 
 ### 5.3 parseParcelScreenshot / parseSmsScreenshot
 
@@ -352,7 +359,9 @@ waiting ──accept──► taken ──pickup──► collected ──delive
 
 初始化用 `cloudfunctions/orderService/initial-state.json`。
 
-**`uniearn_accounts/<sha256(openid)>`** —— `profile`、`verification`、`authRevision`、`scanLock`、`loggedOut`
+**`uniearn_accounts/<sha256(openid)>`** —— `profile`、`verification`、`authRevision`、`admin`、`loggedOut`
+
+**`uniearn_order_archive`** —— 归档的订单行（完成 8 天后写入）
 
 **`uniearn_ocr_limits/<sha256(openid)>`** —— `lastAt`、`day`、`count`
 
@@ -372,20 +381,19 @@ waiting ──accept──► taken ──pickup──► collected ──delive
 | --- | --- |
 | `TENCENT_SECRET_ID` / `TENCENT_SECRET_KEY` | 腾讯云 OCR 密钥（缺失时 OCR 直接报未配置） |
 | `TENCENT_OCR_REGION` | OCR 区域，默认 `ap-shanghai` |
-| `REVIEWER_OPENIDS` | 逗号分隔的审核人 `openid`，拥有 `resolveDispute` 权限 |
-| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` / `SMTP_FROM` | 学生邮箱验证码发信 |
+| `REVIEWER_OPENIDS` | 逗号分隔的审核人 `openid`，拥有 `resolveDispute` 与管理后台权限 |
+| `ADMIN_USERNAME` / `ADMIN_PASSWORD` | studentAccount 的管理员账号密码（密码至少 8 位），未配置时管理员登录不可用 |
 
 ### 步骤
 
 1. 微信开发者工具导入本项目，填自己的 AppID，开通云开发环境
 2. 把云环境 ID 写进 `utils/ocr-config.js` 的 `envId`（该文件只放公开 ID，**不要放密钥**）
-3. 建三个集合：`uniearn_order_state`、`uniearn_accounts`、`uniearn_ocr_limits`
+3. 建四个集合：`uniearn_order_state`、`uniearn_accounts`、`uniearn_ocr_limits`、`uniearn_order_archive`
 4. 在 `uniearn_order_state` 里新建文档 `team-test`，内容用 `cloudfunctions/orderService/initial-state.json`
 5. 部署 4 个云函数，选「上传并部署：云端安装依赖」
    - `wx-server-sdk ~3.0.1`
-   - `tencentcloud-sdk-nodejs-ocr ^4.0.345`（三个函数）
-   - `nodemailer ^7.0.0`（studentAccount）
-6. 给需要 OCR / 发信的云函数配上表里的环境变量
+   - `tencentcloud-sdk-nodejs-ocr ^4.0.345`（两个截图识别函数）
+6. 给 OCR 云函数和 studentAccount 配上表里的环境变量
 7. 确认 `studentAccount` 的 `config.json` 权限已随部署生效（微信手机号）
 
 ---
@@ -394,7 +402,7 @@ waiting ──accept──► taken ──pickup──► collected ──delive
 
 `npm test` → `node scripts/check.js`：先遍历全仓做 JS 语法检查与 JSON 解析，再按文件名顺序 `node` 执行每个 `tests/*.test.js`。
 
-**当前 36 个测试文件全部通过，退出码 0**，输出 `Syntax checked: 114 JS files, 40 JSON files`。
+**当前 35 个测试文件全部通过，退出码 0**，输出 `Syntax checked: 119 JS files, 42 JSON files`。
 
 > 输出里出现 `Coupon refresh failed Error: offline`、`studentAccount failure { ... }` 是**故意构造的失败路径**，用于验证离线降级与错误提示，不是失败。判断标准只看退出码。
 

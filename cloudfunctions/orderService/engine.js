@@ -6,13 +6,43 @@ const rewards=require('./rewards');
 const clone = x => JSON.parse(JSON.stringify(x));
 const idFor = openid => crypto.createHash('sha256').update(openid).digest('hex');
 function check(ok, message) { if (!ok) throw Error(message); }
+// One shared document holds every order, so each student gets a fair share of it.
+const OPEN_STATUSES = ['waiting','taken','collected','delivered','disputed'], MAX_OPEN_PER_USER = 10, MAX_CREATES_PER_DAY = 30, MAX_TASK_PRICE = 500;
 function initial() { return { nextId: 1, requests: [], trips: [], members: {}, receipts: {}, revision: 0 }; }
+const onTime = r => r.category==='task'?r.deliveredAt<=r.dueAt:r.deliveredAt-r.collectedAt<=15*60000;
 function stats(s, id) {
   const ownTrips = new Set(s.trips.filter(t => t.runnerAccountId === id).map(t => t.id));
   const paid = s.requests.filter(r => r.status === 'confirmed' && ownTrips.has(r.runnerId));
   const done=s.requests.filter(r=>ownTrips.has(r.runnerId)&&['delivered','confirmed'].includes(r.status));
-  return { jobsDone: done.length, onTime:done.filter(r=>r.category==='task'?r.deliveredAt<=r.dueAt:r.deliveredAt-r.collectedAt<=15*60000).length, paid: Math.round(paid.reduce((n, r) => n + r.reward+Number(r.runnerBonus||0), 0) * 100) / 100,
+  const old = (s.members[id] || {}).archived || {};
+  return { jobsDone: done.length+(old.jobsDone||0), onTime:done.filter(onTime).length+(old.onTime||0), paid: Math.round((paid.reduce((n, r) => n + r.reward+Number(r.runnerBonus||0), 0)+(old.paid||0)) * 100) / 100,
     marks: (s.members[id] || {}).marks || [] };
+}
+// Finished orders leave the shared document after ARCHIVE_AFTER. That window is longer than a
+// week so weekly bonuses and the 7-day earnings chart still see them. Runner totals and the
+// facts that rewards depend on are kept on the member record.
+const FINISHED = ['confirmed','cancelled','refunded'], ARCHIVE_AFTER = 8 * 86400000;
+const finishedAt = r => r.confirmedAt || r.refundedAt || r.cancelledAt || r.createdAt || 0;
+function archive(s, now = Date.now()) {
+  const old = s.requests.filter(r => FINISHED.includes(r.status) && now - finishedAt(r) >= ARCHIVE_AFTER);
+  if (!old.length) return [];
+  const ids = new Set(old.map(r => r.id)), member = id => s.members[id] || (s.members[id] = { marks: [] });
+  for (const r of old) {
+    if (r.ownerId) {
+      const m = member(r.ownerId); m.archivedOrders = (m.archivedOrders || 0) + 1;
+      if (r.status === 'confirmed') { const month = new Date(r.createdAt + 28800000).toISOString().slice(0, 7); m.confirmedMonths = [...new Set([...(m.confirmedMonths || []), month])].sort().slice(-3); }
+    }
+    const t = r.status === 'confirmed' && s.trips.find(x => x.id === r.runnerId);
+    if (t && t.runnerAccountId) {
+      const runner = member(t.runnerAccountId), a = runner.archived || (runner.archived = { jobsDone: 0, onTime: 0, paid: 0 });
+      a.jobsDone++; if (onTime(r)) a.onTime++; a.paid = Math.round((a.paid + r.reward + Number(r.runnerBonus || 0)) * 100) / 100;
+    }
+  }
+  s.requests = s.requests.filter(r => !ids.has(r.id));
+  const used = new Set(s.requests.map(r => r.runnerId).filter(Boolean));
+  s.trips = s.trips.filter(t => used.has(t.id) || now - (t.createdAt || now) < ARCHIVE_AFTER);
+  if (s.threads) for (const key of Object.keys(s.threads)) if (ids.has(key.split(':')[0])) delete s.threads[key];
+  return old;
 }
 function profile(s, id, account) { return { ...(account.profile || {}), ...stats(s, id), accountId: id }; }
 function ownRequest(s, id, actor) {
@@ -50,9 +80,9 @@ function input(data, actor) {
     check(!out.destinationType||['dorm','place'].includes(out.destinationType),'Choose a valid destination type.');
     if(out.destinationType==='place'){check(!!out.deliveryAddress,'Describe exactly where to deliver.');out.dorm=/library|图书馆/i.test(out.deliveryAddress)?'Library':/classroom|教室/i.test(out.deliveryAddress)?'Classroom':/sports|体育/i.test(out.deliveryAddress)?'Sports centre':'Campus meeting point';out.destinationKey=crypto.createHash('sha256').update(out.deliveryAddress.toLowerCase().replace(/\s+/g,' ').trim()).digest('hex');out.room='';out.dropNote='Meet at the stated location';}
     check(Number.isInteger(out.bags) && out.bags >= 1 && out.bags <= 5, 'Choose 1–5 bags.');
-    check(Number.isInteger(out.price) && out.price >= 3 && Number.isSafeInteger(out.price*100), 'Choose at least ¥3 per bag.');
+    check(Number.isInteger(out.price) && out.price >= 3 && out.price <= d.MAX_PRICE_PER_BOX, 'Choose ¥3–'+d.MAX_PRICE_PER_BOX+' per bag.');
   } else if(out.category==='task'){
-    out.title=String(data.title||'').trim();check(out.title.length>=5&&out.title.length<=4000,'Describe your task (5–4000 characters).');check(Number.isFinite(out.price)&&out.price>=3&&Number.isSafeInteger(out.price*100),'Set a price of at least ¥3.');out.dueAt=Number(data.dueAt);check(Number.isFinite(out.dueAt)&&out.dueAt>Date.now(),'Choose a future deadline.');
+    out.title=String(data.title||'').trim();check(out.title.length>=5&&out.title.length<=4000,'Describe your task (5–4000 characters).');check(d.wholeCents(out.price)&&out.price>=3&&out.price<=MAX_TASK_PRICE,'Set a price from ¥3 to ¥'+MAX_TASK_PRICE+'.');out.price=Math.round(out.price*100)/100;out.dueAt=Number(data.dueAt);check(Number.isFinite(out.dueAt)&&out.dueAt>Date.now(),'Choose a future deadline.');
   } else {
     check(Array.isArray(data.parcelItems) && data.parcelItems.length >= 1 && data.parcelItems.length <= 5, 'Choose 1–5 parcels.');
     out.parcelItems = data.parcelItems.map(p => {
@@ -101,7 +131,9 @@ function execute(s, actor, account, event, now = Date.now()) {
     const ticket={id:'support-'+s.nextId++,topic:event.topic,createdAt:now,status:'open'};
     m.supportTickets.push(ticket);m.supportTickets=m.supportTickets.slice(-50);value={ticket};
   } else if (action === 'create') {
-    check(s.requests.length < 200, 'Team test is limited to 200 orders. Export and archive the test data before a new round.');
+    check(s.requests.filter(r => r.ownerId === actor && OPEN_STATUSES.includes(r.status)).length < MAX_OPEN_PER_USER, 'You have '+MAX_OPEN_PER_USER+' open orders. Wait for some to finish before posting more.');
+    check(s.requests.filter(r => r.ownerId === actor && r.createdAt > now - 86400000).length < MAX_CREATES_PER_DAY, 'You can post up to '+MAX_CREATES_PER_DAY+' orders a day.');
+    check(s.requests.length < 200, 'The order board is full right now. Please try again later.');
     const data = input(event.data, actor);
     let r;if(data.category==='task'){data.dorm='';data.room='';r={...data,id:'r'+s.nextId++,small:1,big:0,codes:[''],reward:Math.round(data.price*100)/100,serviceFee:.5,status:'waiting',runnerId:null,collected:[],photo:'',closesAt:data.dueAt,deadline:f.clock(data.dueAt),station:'Task',createdAt:now};s.requests.unshift(r);f.event(r,'Posted',now);}else r=data.category==='takeout'?f.createTakeaway(s,data,now):d.createRequest(s,data);
     r.createdAt = now; r.campusId=campusId;r.universityId='xjtlu';r.ownerId = actor; r.isMine = true;
@@ -134,7 +166,7 @@ function execute(s, actor, account, event, now = Date.now()) {
     t.requestIds.forEach(id => f.event(s.requests.find(r => r.id === id), 'Runner accepted', now)); value = { id: t.id };
   } else if (['raise','cancel','confirm','report','riderPhoto'].includes(action)) {
     const r = ownRequest(s, event.id, actor);
-    if (action === 'raise') { check((r.raised || 0) <= 100, 'Offer increase limit reached.'); f.raise(s, r.id, event.amount); }
+    if (action === 'raise') { check((r.raised || 0) + Number(event.amount || 0) <= 100, 'Offer increase limit reached.'); f.raise(s, r.id, event.amount); }
     if (action === 'cancel') { d.cancelRequest(s, r.id); f.event(r, 'Cancelled · demo refund', now); }
     if (action === 'confirm') { d.confirm(s, r.id); f.event(r, 'Confirmed', now); }
     if (action === 'report') { check(r.category!=='takeout'||now<=r.deliveredAt+30*60000,'Report takeaway problems within 30 minutes of delivery.'); check(typeof event.note === 'string' && event.note.length <= 500, 'Keep the note under 500 characters.'); f.report(s, r.id, event.reason, photo(event.photo, actor), event.note); }
@@ -206,4 +238,4 @@ function snapshot(s, actor, account, now = Date.now()) {
     adjustments:loggedIn?(s.adjustments||[]).filter(a=>a.runnerAccountId===actor).map(({runnerAccountId,...a})=>a):[],rewards:loggedIn?rewards.view(s,actor,now):null,preferences:loggedIn?(s.members[actor]||{}).preferences||{}:{},
     supportTickets:loggedIn?((s.members[actor]||{}).supportTickets||[]):[],stats:loggedIn ? stats(s,actor) : {jobsDone:0,paid:0,marks:[]} };
 }
-module.exports = { initial, idFor, execute, expire, snapshot, photo };
+module.exports = { initial, idFor, execute, expire, snapshot, photo, archive, ARCHIVE_AFTER };

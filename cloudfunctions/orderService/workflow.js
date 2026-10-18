@@ -3,7 +3,7 @@ const HOUR=3600000,MIN=60000;
 function clock(ts){if(!ts)return '—';const t=new Date(ts+8*3600000);return String(t.getUTCHours()).padStart(2,'0')+':'+String(t.getUTCMinutes()).padStart(2,'0');}
 function todayAt(value,now=Date.now()){const parts=String(value).split(':').map(Number);if(parts.length!==2||parts[0]<0||parts[0]>23||parts[1]<0||parts[1]>59||parts.some(x=>!Number.isInteger(x)))throw Error('Choose a valid time');const t=new Date(now+8*3600000);return Date.UTC(t.getUTCFullYear(),t.getUTCMonth(),t.getUTCDate(),parts[0]-8,parts[1],0,0);}
 function fee(r){return Number(r.serviceFee===undefined?(c.category(r)==='takeout'?0.5:d.serviceFee(d.boxes(r))):r.serviceFee);}
-function total(r){return Math.round((r.reward+fee(r)-Number(r.discount||0))*100)/100;}
+function total(r){return Math.max(0,Math.round((r.reward+fee(r)-Number(r.discount||0))*100)/100);}
 function hours(r){return c.category(r)==='task'?24:c.category(r)==='takeout'?1:48;}
 function event(r,label,at=Date.now()){(r.history||(r.history=[])).push({label,at});}
 function migrate(s){s.installationId=s.installationId||('local-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));s.routes=s.routes||[];s.profile.marks=s.profile.marks||[];s.agreements=s.agreements||{};return s;}

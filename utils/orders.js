@@ -4,7 +4,7 @@ const yuniEvents=require('./yuni-events');
 function pairMap(rows,value){const result={};rows.forEach(r=>{result[r.id]=value(r);});return result;}
 let queue = Promise.resolve(), syncing = null, mutating = false, timer = null;
 let previous = null, lastError = '', foreground = true, generation = 0;
-const subscribers = new Set(), uploads = new Map();
+const subscribers = new Set(), uploads = new Map(), STALE_OPERATION_MS = 20 * 3600000;
 function enqueue(fn) { const p = queue.then(fn); queue = p.catch(()=>{}); return p; }
 function tell(title) { if (foreground) wx.showToast({title,icon:'none',duration:2500}); }
 function apply(snapshot) {
@@ -55,7 +55,13 @@ async function act(action, payload = {}) {
     return await enqueue(async()=>{
       const s=store.get(), signature=JSON.stringify({action,...payload});
       let pending=s.pendingOrderOperation;
-      if (pending && Date.now()-pending.at>=86400000) throw Error('An old operation is unresolved. Check your orders before clearing the local cache in Me.');
+      // The server keeps retry receipts for 24 hours. Replaying an older operation could run it twice,
+      // so drop it, refresh, and let the student check before trying again.
+      if (pending && Date.now()-pending.at>=STALE_OPERATION_MS) {
+        store.update(x=>{delete x.pendingOrderOperation;});
+        try { await call({action:'sync'}); } catch (_) {}
+        throw Error(store.get().language==='en'?'Your last action could not be confirmed. Orders were refreshed. Check them, then try again.':'上一次操作未能确认，订单已刷新。请先检查订单，再重新操作。');
+      }
       // Resume an uncertain request before sending a second mutation.
       const recovering=!!pending;
       if (!pending) {

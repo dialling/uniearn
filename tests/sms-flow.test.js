@@ -3,11 +3,11 @@ const root=path.resolve(__dirname,'..');
 let definition,emitted,back=false;
 const parser=require('../cloudfunctions/parseSmsScreenshot/parser');
 vm.runInNewContext(fs.readFileSync(path.join(root,'pages/sms-scan/index.js'),'utf8'),{
- require:n=>n==='./parser'?parser:n==='../../utils/pickup-point'?require('../utils/pickup-point'):{ensureCloud:()=>({})},Page:p=>definition=p,
+ require:n=>n==='./parser'?parser:n==='../../utils/pickup-point'?require('../utils/pickup-point'):n==='../../utils/store'?{get:()=>({language:'en'})}:{ensureCloud:()=>({})},Page:p=>definition=p,
  wx:{navigateBack:()=>{back=true;}}
 });
 const page={...definition,data:JSON.parse(JSON.stringify(definition.data)),setData(v){Object.assign(this.data,v);},getOpenerEventChannel(){return{emit:(name,v)=>{emitted={name,v};}};}};
-page.applyResult({candidates:[{id:'0',code:'1-2-8011',selected:true,point:'Station One'},{id:'1',code:'1-1-0881',selected:true,point:'Station One'}]});
+page.onShow();page.applyResult({candidates:[{id:'0',code:'1-2-8011',selected:true,point:'Station One'},{id:'1',code:'1-1-0881',selected:true,point:'Station One'}]});
 assert.equal(page.data.selectedCount,2);
 page.toggle({currentTarget:{dataset:{i:1}}});assert.equal(page.data.selectedCount,1);
 page.confirm();assert.equal(emitted.name,'smsSelected');assert.equal(emitted.v.codes.join(','),'1-2-8011');assert.ok(back);

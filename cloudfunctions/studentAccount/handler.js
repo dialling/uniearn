@@ -1,7 +1,8 @@
 const crypto=require('crypto');
-const {readCard}=require('./card');
 const idFor=openId=>crypto.createHash('sha256').update(openId).digest('hex');
 const fail=(code,error)=>({ok:false,code,error});
+const ADMIN_TTL=12*3600000,ADMIN_MAX_FAILS=5,ADMIN_LOCK=15*60000;
+const ORDER_BUCKETS={all:null,waiting:['waiting'],unpaid:['delivered'],completed:['confirmed']};
 function validateProfile(input) {
   const p={};
   for(const key of ['name','phone','dorm','room','pickup'])p[key]=String((input||{})[key]||'').trim();
@@ -9,14 +10,29 @@ function validateProfile(input) {
   if(p.name.length<2||p.name.length>60||!/^1\d{10}$/.test(p.phone)||[p.dorm,p.room,p.pickup].some(v=>v.length>100))throw Error('Enter your name and an 11-digit phone number.');
   return p;
 }
-function publicAccount(a,id){if(a.loggedOut)return {id,loggedOut:true,hasProfile:!!a.profile,profile:null,verification:{status:'unverified'}};return {id,runnerRulesAccepted:!!a.runnerRulesAcceptedAt,profile:a.profile||null,verification:a.verification?{status:a.verification.status,checkedAt:a.verification.checkedAt||null,submittedAt:a.verification.submittedAt||null,studentName:a.verification.studentName||'',school:a.verification.school||'',studentLast4:a.verification.studentLast4||'',reason:a.verification.reason||''}:{status:'unverified'}};}
-function createHandler({getOpenId,repo,ocr,env,loadImage,deleteImage,now=Date.now}) {
+function validateApplication(input,zh) {
+  const x=input||{};
+  const realName=String(x.realName||'').trim().replace(/\s+/g,' '),phone=String(x.phone||'').replace(/\s/g,''),studentId=String(x.studentId||'').replace(/\s/g,'');
+  if(realName.length<2||realName.length>40)return {code:'INVALID_NAME',error:zh?'请填写真实姓名（2–40 个字）。':'Enter your real name (2–40 characters).'};
+  if(!/^1\d{10}$/.test(phone))return {code:'INVALID_PHONE',error:zh?'请填写 11 位手机号。':'Enter an 11-digit mobile number.'};
+  if(!/^\d{6,12}$/.test(studentId))return {code:'INVALID_STUDENT_ID',error:zh?'请填写正确的学号（6–12 位数字）。':'Enter your student ID (6–12 digits).'};
+  return {value:{realName,phone,studentId}};
+}
+// Hashing both sides first keeps timingSafeEqual usable for inputs of different length.
+const sameSecret=(a,b)=>crypto.timingSafeEqual(crypto.createHash('sha256').update(String(a||'')).digest(),crypto.createHash('sha256').update(String(b||'')).digest());
+function publicAccount(a,id){if(a.loggedOut)return {id,loggedOut:true,hasProfile:!!a.profile,profile:null,verification:{status:'unverified'}};return {id,runnerRulesAccepted:!!a.runnerRulesAcceptedAt,profile:a.profile||null,verification:a.verification?{status:a.verification.status,method:a.verification.method||'',checkedAt:a.verification.checkedAt||null,submittedAt:a.verification.submittedAt||null,studentName:a.verification.studentName||'',school:a.verification.school||'',studentLast4:a.verification.studentLast4||'',reason:a.verification.reason||''}:{status:'unverified'}};}
+function orderStats(requests){const count=list=>requests.filter(r=>list.includes(r.status)).length;return {total:requests.length,waiting:count(ORDER_BUCKETS.waiting),unpaid:count(ORDER_BUCKETS.unpaid),completed:count(ORDER_BUCKETS.completed)};}
+function orderRow(r){return {id:String(r.id||''),category:r.category||'',status:r.status||'',title:String(r.title||'').slice(0,60),station:r.station||'',dorm:r.dorm||'',reward:Number(r.reward)||0,createdAt:r.createdAt||null};}
+function createHandler({getOpenId,repo,env,now=Date.now}) {
   return async function(event={}) {
     const openId=getOpenId();if(!openId)return fail('AUTH_REQUIRED','Open this Mini Program in WeChat to continue.');
-    const id=idFor(openId),action=event.action||'status';
-    let scanToken='',cleanupFile='',stage='load-account';
+    const id=idFor(openId),action=event.action||'status',zh=event.lang!=='en';
+    let stage='load-account';
     try {
       const account=await repo.get(id)||{};
+      const reviewers=String(env.REVIEWER_OPENIDS||'').split(',').map(x=>x.trim()).filter(Boolean);
+      // An admin session is bound to authRevision, so logging out or signing in again ends it.
+      const isAdmin=reviewers.includes(openId)||!!(account.admin&&account.admin.until>now()&&account.admin.revision===(account.authRevision||0));
       if(action==='sessionLogin'){
         const profile=account.profile||{name:'',phone:'',dorm:'',room:'',pickup:''};
         const patch={profile,loggedOut:false,authRevision:(account.authRevision||0)+1,updatedAt:now()};
@@ -47,63 +63,82 @@ function createHandler({getOpenId,repo,ocr,env,loadImage,deleteImage,now=Date.no
         const profile={...account.profile,...address};const patch={profile,updatedAt:now()};await repo.patch(id,patch);return {ok:true,account:publicAccount({...account,...patch},id)};
       }
       if(action==='saveProfile') {
-        if(account.loggedOut)return fail('LOGIN_REQUIRED','Upload your student card to log in first.');
+        if(account.loggedOut)return fail('LOGIN_REQUIRED','Sign in first.');
         const profile={...(account.profile||{}),...validateProfile(event.profile)};
-        // Name changes revoke approval; a new OCR submission and review are required.
+        // Name changes revoke approval; a new runner application and admin review are required.
         const patch={profile,updatedAt:now()};
         if(account.profile&&account.profile.name!==profile.name)patch.verification={status:'unverified'};
         await repo.patch(id,patch);return {ok:true,account:publicAccount({...account,...patch},id)};
       }
+      if(action==='apply') {
+        if(account.loggedOut||!account.profile)return fail('LOGIN_REQUIRED',zh?'请先登录并填写个人信息。':'Sign in and save your profile first.');
+        if(account.verification&&account.verification.status==='verified')return {ok:true,account:publicAccount(account,id)};
+        const checked=validateApplication(event.application,zh);if(checked.error)return fail(checked.code,checked.error);
+        const app=checked.value;
+        stage='check-student-id';
+        if((await repo.findStudent(app.studentId)).some(owner=>owner!==id))return fail('STUDENT_ID_USED',zh?'该学号已被其他账号申请，请联系管理员。':'This student ID is already used by another account. Contact an admin.');
+        const verification={status:'pending',method:'application',realName:app.realName,phone:app.phone,studentId:app.studentId,studentName:app.realName,studentLast4:app.studentId.slice(-4),school:'XJTLU',submittedAt:now()};
+        stage='save-application';
+        await repo.patch(id,{verification,updatedAt:now()});
+        return {ok:true,account:publicAccount({...account,verification},id)};
+      }
+      if(action==='agreeRules') {
+        if(account.loggedOut||!account.verification||account.verification.status!=='verified')return fail('NOT_VERIFIED','Complete student verification first.');
+        if(event.accepted!==true)return fail('RULES_REQUIRED','Agree to all five rules.');
+        const patch={runnerRulesAcceptedAt:now(),runnerRulesVersion:'1.0'};await repo.patch(id,patch);
+        return {ok:true,account:publicAccount({...account,...patch},id)};
+      }
+      if(action==='adminStatus')return {ok:true,admin:isAdmin};
+      if(action==='adminLogin') {
+        const username=String(env.ADMIN_USERNAME||''),password=String(env.ADMIN_PASSWORD||'');
+        if(!username||password.length<8)return fail('ADMIN_SETUP',zh?'管理员账号尚未配置，请在云函数环境变量中设置 ADMIN_USERNAME 和 ADMIN_PASSWORD。':'Admin login is not configured. Set ADMIN_USERNAME and ADMIN_PASSWORD on the cloud function.');
+        const tries=account.adminLogin||{};
+        if(tries.lockedUntil>now())return fail('ADMIN_LOCKED',zh?'尝试次数过多，请 15 分钟后再试。':'Too many attempts. Try again in 15 minutes.');
+        const userOk=sameSecret(event.username,username),passOk=sameSecret(event.password,password);
+        if(!userOk||!passOk){
+          const fails=(tries.fails||0)+1,locked=fails>=ADMIN_MAX_FAILS;
+          await repo.patch(id,{adminLogin:{fails:locked?0:fails,lockedUntil:locked?now()+ADMIN_LOCK:0}});
+          return fail('ADMIN_INVALID',zh?'账号或密码错误。':'Incorrect username or password.');
+        }
+        await repo.patch(id,{admin:{until:now()+ADMIN_TTL,revision:account.authRevision||0,at:now()},adminLogin:{fails:0,lockedUntil:0}});
+        return {ok:true,admin:true};
+      }
+      if(action==='adminLogout'){if(account.admin)await repo.patch(id,{admin:null});return {ok:true,admin:false};}
+      if(['adminDashboard','adminOrders','review'].includes(action)&&!isAdmin)return fail('FORBIDDEN',zh?'请先登录管理员账号。':'Admin login required.');
+      if(action==='adminDashboard') {
+        stage='load-dashboard';
+        const [counts,requests,pending,archived]=await Promise.all([repo.accountCounts(),repo.orderRequests(),repo.applications(50),repo.archivedCounts?repo.archivedCounts():{total:0,completed:0}]);
+        const applications=pending.map(a=>({accountId:a._id,realName:a.verification.realName||a.verification.studentName||'',phone:a.verification.phone||'',studentId:a.verification.studentId||'',submittedAt:a.verification.submittedAt||null}));
+        // Finished orders older than about a week live in the archive collection; only finished orders are archived.
+        const live=orderStats(requests);
+        return {ok:true,stats:{...live,total:live.total+archived.total,completed:live.completed+archived.completed,users:counts.users,runners:counts.runners,pending:counts.pending},applications};
+      }
+      if(action==='adminOrders') {
+        if(!Object.prototype.hasOwnProperty.call(ORDER_BUCKETS,event.bucket))return fail('INVALID_BUCKET','Unknown order list.');
+        stage='load-orders';
+        const statuses=ORDER_BUCKETS[event.bucket],requests=await repo.orderRequests();
+        const rows=requests.filter(r=>!statuses||statuses.includes(r.status)).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,50).map(orderRow);
+        return {ok:true,orders:rows};
+      }
       if(action==='review') {
-        const admins=String(env.REVIEWER_OPENIDS||'').split(',').map(x=>x.trim()).filter(Boolean);
-        if(!admins.includes(openId))return fail('FORBIDDEN','Reviewer access required.');
         if(!/^[a-f0-9]{64}$/.test(event.accountId||'')||!['approve','reject'].includes(event.decision))return fail('INVALID_REVIEW','Invalid review.');
         const target=await repo.get(event.accountId);
-        if(!target||!target.verification||target.verification.status!=='pending')return fail('NOT_PENDING','This account is not awaiting review.');
+        if(!target||!target.verification||target.verification.status!=='pending')return fail('NOT_PENDING',zh?'该申请已处理或已撤回，请刷新。':'This application is no longer pending. Refresh the list.');
         const note=String(event.note||'').trim();
-        if(note.length<10||note.length>300)return fail('REVIEW_NOTE','Record how you independently checked this student (10–300 characters).');
-        const verification={...target.verification,status:event.decision==='approve'?'verified':'rejected',checkedAt:now(),reviewerId:id,reviewNote:note,reason:event.decision==='reject'?'Please contact support to complete your student check.':''};
-        if(!await repo.review(event.accountId,target.verification,verification))return fail('REVIEW_CHANGED','The student check changed. Reload it before reviewing.');return {ok:true};
+        if(note.length>300)return fail('REVIEW_NOTE',zh?'备注最多 300 字。':'Keep the note under 300 characters.');
+        const rejected=event.decision==='reject';
+        const verification={...target.verification,status:rejected?'rejected':'verified',checkedAt:now(),reviewerId:id,reviewNote:note,reason:rejected?(note||(zh?'信息未通过审核，请核对后重新提交。':'Your details could not be confirmed. Check them and apply again.')):''};
+        if(!await repo.review(event.accountId,target.verification,verification))return fail('REVIEW_CHANGED',zh?'申请内容已变化，请刷新后再审核。':'The application changed. Reload it before reviewing.');
+        return {ok:true};
       }
-      if(action==='prepareUpload'){
-        if(!account.profile)return fail('PROFILE_REQUIRED','Save your information in Me first.');
-        return {ok:true,cloudPath:'student-temp/'+id+'/'+crypto.randomBytes(16).toString('hex')+'.jpg'};
-      }
-      if(action!=='scan')return fail('INVALID_ACTION','Unknown action.');
-      if(!account.profile)return fail('PROFILE_REQUIRED','Save your information in Me first.');
-      if(!account.loggedOut&&account.verification&&account.verification.status==='verified')return {ok:true,account:publicAccount(account,id)};
-      if(event.consent!==true)return fail('CONSENT_REQUIRED','Agree to send your card image for text recognition.');
-      if(!env.STUDENT_HASH_SECRET||env.STUDENT_HASH_SECRET.length<32)return fail('SETUP_REQUIRED','Student check is not configured yet.');
-      const fileID=event.fileID;
-      const filePath=typeof fileID==='string'&&fileID.match(/^cloud:\/\/[^/]+\/(.+)$/);
-      const prefix='student-temp/'+id+'/';
-      if(!filePath||!filePath[1].startsWith(prefix)||!/^[a-f0-9]{32}\.jpg$/.test(filePath[1].slice(prefix.length)))return fail('INVALID_IMAGE','Please upload your student card again.');
-      const token=crypto.randomBytes(16).toString('hex');
-      stage='scan-lock';
-      if(!await repo.claimScan(id,now(),token))return fail('SCAN_IN_PROGRESS','Your previous photo is still being processed. Please let it finish before submitting another.');
-      scanToken=token;cleanupFile=fileID;
-      stage='download-photo';
-      const image=await loadImage(fileID);
-      if(typeof image!=='string'||image.length<16||image.length>8388608||!/^[A-Za-z0-9+/]+={0,2}$/.test(image))return fail('INVALID_IMAGE','Choose a JPG or PNG image smaller than 6 MB.');
-      stage='ocr';
-      const read=readCard(await ocr(image),account.profile.name);
-      if(!read.readable)return {ok:true,readable:false,reason:read.reason,photoStored:false};
-      const studentHash=crypto.createHmac('sha256',env.STUDENT_HASH_SECRET).update(read.school+':'+read.studentNumber).digest('hex');
-      const verification={status:'verified',method:'ocr',studentName:read.studentName,checkedAt:now(),studentHash,studentLast4:read.studentNumber.slice(-4),school:read.school,submittedAt:now()};
-      stage='save-verification';
-      if(!await repo.completeScan(id,account.authRevision||0,verification))return fail('SESSION_CHANGED','Your account was logged out while this photo was being processed. Please log in again.');
-      // Do not return/store the raw image or complete student number.
-      return {ok:true,readable:true,photoStored:false,account:publicAccount({...account,loggedOut:false,verification},id)};
+      return fail('INVALID_ACTION','Unknown action.');
     } catch(error) {
       if(error.message&&error.message.startsWith('Enter your name'))return fail('INVALID_PROFILE',error.message);
       const code=String(error.code||error.errCode||'UNKNOWN').replace(/[^A-Za-z0-9_.-]/g,'').slice(0,80);
       const message=String(error.message||error.errMsg||'').replace(/cloud:\/\/\S+/g,'[file]').replace(/[A-Za-z0-9+/=_-]{32,}/g,'[redacted]').replace(/\d{7,}/g,'[number]').slice(0,600);
       console.error('studentAccount failure',{action,stage,code,message});
-      return fail('SERVICE_UNAVAILABLE','Student check failed at '+stage+' ('+code+'). Please contact support if retrying fails.');
-    } finally {
-      if(cleanupFile)try{await deleteImage(cleanupFile);}catch(_){}
-      if(scanToken)try{await repo.releaseScan(id,scanToken);}catch(_){}
+      return fail('SERVICE_UNAVAILABLE','Account service failed at '+stage+' ('+code+'). Please contact support if retrying fails.');
     }
   };
 }
-module.exports={createHandler,validateProfile,idFor,publicAccount};
+module.exports={createHandler,validateProfile,validateApplication,orderStats,idFor,publicAccount};

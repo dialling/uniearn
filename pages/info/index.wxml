@@ -2,8 +2,9 @@
  <view class="rules-header">
   <view class="flow-title">{{labels.title}}</view>
   <view class="hint">{{labels.version}} · {{agreement}}</view>
-  <view class="final-tabs">
-   <text wx:for="{{tabs}}" wx:key="id" class="{{tab===item.id?'active':''}}" data-tab="{{item.id}}" bindtap="choose">{{item.label}}</text>
+  <view class="final-tabs glass">
+   <view class="glass-thumb of-3" style="transform:translateX({{(tab==='students'?0:tab==='runners'?1:2)*100}}%)"><view wx:for="{{[tab]}}" wx:key="*this" class="glass-blob"/></view>
+   <text wx:for="{{tabs}}" wx:key="id" class="{{tab===item.id?'active':''}}" hover-class="glass-press" data-tab="{{item.id}}" bindtap="choose">{{item.label}}</text>
   </view>
  </view>
  <view class="rules-body">

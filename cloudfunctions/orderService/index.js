@@ -8,6 +8,24 @@ async function getAccount(tx, actor) {
   try { return (await tx.collection('uniearn_accounts').doc(actor).get()).data || {}; }
   catch (e) { if (/not exist|not found|does not exist/i.test(e.message || '')) return {}; throw e; }
 }
+const ARCHIVE_CHECK_MS = 3600000;
+// Runs in its own transaction so a missing archive collection never blocks orders.
+// Archived rows are written in the same transaction that removes them, so nothing is lost.
+async function archiveFinished() {
+  try {
+    await db.runTransaction(async tx => {
+      const ref = tx.collection('uniearn_order_state').doc('team-test');
+      const state = (await ref.get()).data; delete state._id;
+      const now = Date.now();
+      if (now - (state.archiveCheckedAt || 0) <= ARCHIVE_CHECK_MS) return;
+      const removed = engine.archive(state, now);
+      for (const r of removed) await tx.collection('uniearn_order_archive').doc(r.id + '-' + (r.createdAt || 0)).set({data:json({...r,archivedAt:now})});
+      state.archiveCheckedAt = now;
+      if (removed.length) state.revision = (state.revision || 0) + 1;
+      await ref.set({data:json(state)});
+    });
+  } catch (e) { console.error('orderService archive', e.code || e.errCode || '', e.message); }
+}
 exports.main = async (event = {}) => {
   const openid = cloud.getWXContext().OPENID;
   if (!openid) return {ok:false,error:'Open this mini program in WeChat to continue.'};
@@ -47,10 +65,12 @@ exports.main = async (event = {}) => {
         if (Buffer.byteLength(JSON.stringify(state)) > 850000) throw Error('Team test storage is full. Export and archive test data first.');
         await ref.set({data:json(state)});
       }
-      return {ok:true,value,snapshot:json(engine.snapshot(state,actor,account,now))};
+      return {ok:true,value,archiveDue:now-(state.archiveCheckedAt||0)>ARCHIVE_CHECK_MS,snapshot:json(engine.snapshot(state,actor,account,now))};
     });
     // wx-server-sdk versions may return the callback result directly or under result.
     const response = result && result.ok ? result : result.result;
+    if (response.archiveDue) await archiveFinished();
+    delete response.archiveDue;
     // Private storage remains private. Only photos in this authorized snapshot get URLs.
     const ids = new Set();
     for (const r of response.snapshot.requests) {
