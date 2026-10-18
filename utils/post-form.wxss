@@ -1,6 +1,6 @@
 /* Shared dimensions and typography for both pickup forms. */
 .post-page{min-height:100vh;padding:0 30rpx calc(230rpx + env(safe-area-inset-bottom));background:#f1e7da;color:#3b2a20;font-size:26rpx;line-height:1.5}
-.post-page .post-header{background:#fff;margin:0 -30rpx 20rpx;padding:18rpx 30rpx 22rpx;border-bottom:1rpx solid #e1e1da}
+.post-page .post-header{background:transparent;margin:0 -30rpx 20rpx;padding:18rpx 30rpx 22rpx;border-bottom:1rpx solid #e1e1da}
 .post-page .post-tabs{display:flex;gap:0;padding:6rpx;border-radius:20rpx;background:#f1e7da}
 .post-page .post-tab{display:block;flex:1;min-width:0;height:72rpx;line-height:72rpx;padding:0;margin:0;border-radius:16rpx;background:transparent;color:#85857e;font-size:26rpx;font-weight:700}
 .post-page .post-tab.active{background:#8b1e2b;color:#fff}

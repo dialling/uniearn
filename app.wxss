@@ -31,3 +31,7 @@ button{white-space:normal;word-break:normal;overflow-wrap:break-word;line-height
 .page-dark .language-switch{background:#33231a!important;color:#d9a99a!important;border:1rpx solid #4e3a2c!important}
 .page-dark .campus-brand,.page-dark .headline,.page-dark .intro,.page-dark .brand{color:#f5e9dc!important}
 .page-dark .bottom{background:#33231a!important;border-top-color:#4e3a2c!important}
+
+/* Page headers share the page background instead of sitting on a white band. */
+.page-dark .orders-header,.page-dark .jobs-header,.page-dark .summary-head,.page-dark .earnings-header,.page-dark .task-header,.page-dark .help-header,.page-dark .post-header,.page-dark .editor-heading{background:transparent!important;box-shadow:none!important}
+.page-dark .rules-header{background:#221610!important}
