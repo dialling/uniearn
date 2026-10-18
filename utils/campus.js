@@ -24,6 +24,7 @@ const STATIONS=[
   {value:'East gate JD point',zh:'东门京东快递点',en:'East gate JD point'}
 ];
 function buildings(){return AREAS.reduce((a,x)=>a.concat(x.buildings),[]);}
+function buildingsOf(areaId){const a=AREAS.find(x=>x.id===areaId);return a?a.buildings.slice():[];}
 function areaOfBuilding(code){const b=String(code||'').trim().toUpperCase();return AREAS.find(a=>a.buildings.indexOf(b)>=0)||null;}
 function isBuilding(code){return !!areaOfBuilding(code);}
 function areaLabel(areaId,lang){const a=AREAS.find(x=>x.id===areaId);return a?(lang==='en'?a.en:a.zh):'';}
@@ -35,4 +36,4 @@ function floorOfRoom(room){const m=String(room||'').trim().match(/^(\d{3,4})$/);
 function highFloor(areaId,floor,code){const b=String(code||'').trim().toUpperCase();return areaId===HIGH_FLOOR_AREA&&Number(floor)>=HIGH_FLOOR_MIN&&NO_FLOOR_SURCHARGE.indexOf(b)<0;}
 function stationLabel(value,lang){const s=STATIONS.find(x=>x.value===value);return s?(lang==='en'?s.en:s.zh):String(value||'');}
 function stationValues(){return STATIONS.map(x=>x.value);}
-module.exports={AREAS,FLOORS,FLOOR_MAX,NO_FLOOR_SURCHARGE,HIGH_FLOOR_AREA,HIGH_FLOOR_MIN,HIGH_FLOOR_CENTS,STATIONS,buildings,areaOfBuilding,isBuilding,areaLabel,buildingLabel,maxFloorOf,floorsOf,floorOfRoom,highFloor,stationLabel,stationValues,areas:AREAS};
+module.exports={AREAS,FLOORS,FLOOR_MAX,NO_FLOOR_SURCHARGE,HIGH_FLOOR_AREA,HIGH_FLOOR_MIN,HIGH_FLOOR_CENTS,STATIONS,buildings,buildingsOf,areaOfBuilding,isBuilding,areaLabel,buildingLabel,maxFloorOf,floorsOf,floorOfRoom,highFloor,stationLabel,stationValues,areas:AREAS};
