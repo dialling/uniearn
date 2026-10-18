@@ -19,4 +19,16 @@ assert.equal(c.highFloor('wenxing',2,'A01'),false);
 assert.equal(c.stationLabel('North gate','zh'),'北门');
 assert.equal(c.stationLabel('Wenyuan Cainiao station','zh'),'文缘菜鸟驿站');
 assert.equal(r.stationLabel('East gate JD point','en'),'East gate JD point');
+
+// floor surcharge: Wenxing floor 3+ costs +1, A05 (lift) and Wenyuan are free
+const d=require('../utils/domain');
+const s=d.initial();s.requests=[];
+const mk=(extra)=>d.createRequest(s,{category:'takeout',station:'North gate',dorm:'A01',room:'1201',phone:'13800000000',small:1,pricePerBox:3,codes:[''],owner:'A',deadline:'18:00',...extra});
+assert.equal(mk({}).reward,4,'Wenxing floor 12 pays +1');
+assert.equal(mk({dorm:'A05'}).reward,3,'A05 has a lift');
+assert.equal(mk({dorm:'A01',floor:2}).reward,3,'floor 2 has no surcharge');
+assert.equal(mk({dorm:'D01'}).reward,3,'Wenyuan has no surcharge');
+assert.throws(()=>mk({dorm:'A01',floor:99}),/floor/i,'nonexistent floor is rejected');
+assert.equal(r.validate({destinationType:'dorm',station:'North gate',dorm:'D01',room:'101',floor:23,owner:'A',phone:'13800000000'}).area,'wenyuan');
+assert.throws(()=>r.validate({destinationType:'dorm',station:'North gate',dorm:'D01',room:'101',floor:24,owner:'A',phone:'13800000000'}),/floor/i);
 console.log('Campus data: 31 real buildings, floors, lift rule and bilingual pickup points passed.');
