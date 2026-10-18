@@ -32,3 +32,8 @@ image.action-icon{width:38rpx;height:38rpx;display:block;margin:0 auto 12rpx}
 .preview-line{border-radius:18rpx;background:#f6f5f1;transition:background .2s}.preview-line .code-input{flex:1;font-weight:600;color:#202126}.private-head{font-size:23rpx;color:#5e5d57}.private-head .link{padding:6rpx 18rpx;border-radius:24rpx;background:#edf6f1}
 .page-dark .preview-line .code-input{color:#edf1ed}
 .preview-line{min-height:88rpx;padding:0 24rpx!important}.preview-line .code-input{height:80rpx;min-height:80rpx}
+.station-row{display:flex;align-items:center;gap:16rpx;height:76rpx;padding:0 22rpx;margin:12rpx 0;border-radius:16rpx;background:#f6f5f1;font-size:24rpx;color:#5e5d57;white-space:nowrap}.station-label{flex:none}.station-value{flex:1;min-width:0;text-align:right;overflow:hidden;text-overflow:ellipsis;font-weight:650;color:#202126}.station-value.empty{font-weight:400;color:#b3b1a9}.station-arrow{flex:none;font-size:30rpx;line-height:1;color:#a9a8a1;transform:rotate(90deg)}.station-row:active{background:#efeee9}
+.station-other{height:76rpx!important;min-height:76rpx!important;margin:0 0 12rpx!important;font-size:24rpx}
+.page-dark .station-row{background:#2c332f;color:#c3c9c4}.page-dark .station-value{color:#edf1ed}
+.fragile-toggle{display:flex;align-items:center;gap:16rpx;margin-top:14rpx;padding:16rpx 18rpx;border-radius:18rpx;background:#f8f7f3;transition:background .2s}.fragile-toggle.on{background:#f4faf6}.fragile-toggle .check{flex:none}.fragile-copy{flex:1;min-width:0}.fragile-copy .hint{margin:2rpx 0 0}.page-dark .fragile-toggle{background:#2c332f}
+.pill.passed{opacity:.4}.period-tip{margin-top:14rpx!important}

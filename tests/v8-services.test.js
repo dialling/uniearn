@@ -3,6 +3,7 @@ const now=Date.now(),accounts={c:{profile:{universityId:'xjtlu',campusId:'sip',n
 let s=engine.initial();const ids=Object.fromEntries(Object.keys(accounts).map(k=>[k,engine.idFor(k)]));
 function act(who,action,p={},at=now){const copy=structuredClone(s);const value=engine.execute(copy,ids[who],accounts[who],{action,...p},at);s=copy;return value;}
 const food={category:'takeout',owner:'Customer',phone:'13800000001',station:'Test gate',dorm:'Dorm 7',room:'412',bags:2,price:4,arrived:true};
+{const nid=act('c','create',{data:{...food,bags:1,night:true,shop:'Wang cold noodles',pickupCode:'A23'}}).id,nr=s.requests.find(r=>r.id===nid);assert.equal(nr.night,true);assert.equal(nr.shop,'Wang cold noodles');assert.equal(nr.reward,4);assert.equal(nr.pickupCode,'A23');assert.throws(()=>act('c','create',{data:{...food,bags:1,night:true,shop:''}}),/shop/);act('c','cancel',{id:nid});}
 act('c','rewardsInit');const coupons=engine.snapshot(s,ids.c,accounts.c,now).rewards.coupons;assert.equal(coupons.length,2);act('c','rewardsInit');assert.equal(s.members[ids.c].coupons.length,2);
 let id=act('c','create',{data:food,couponId:'welcome-free'}).id;let r=s.requests.find(r=>r.id===id);assert.equal(r.reward,8);assert.equal(f.total(r),0);assert.throws(()=>act('c','create',{data:food,couponId:'welcome-free'}),/coupon/);assert.throws(()=>act('x','create',{data:food,couponId:'not-their-coupon'}),/coupon/);
 act('c','cancel',{id});assert.equal(s.requests.find(r=>r.id===id).refundAmount,0);assert.ok(!s.members[ids.c].coupons[0].usedBy);

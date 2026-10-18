@@ -68,14 +68,15 @@ function photo(value, actor, required = false) {
 }
 function input(data, actor) {
   data = data || {}; const out = {};
-  for (const key of ['destinationType','deliveryAddress','owner','station','dorm','room','phone','note','description','pickupPoint','pickupAddress','pickupNote','dropNote','deadline','deliveryDate','arrivalTime','pickupCode','deliverBy']) {
+  for (const key of ['destinationType','deliveryAddress','owner','station','dorm','room','phone','note','description','pickupPoint','pickupAddress','pickupNote','dropNote','deadline','deliveryDate','arrivalTime','pickupCode','deliverBy','shop']) {
     check(data[key] === undefined || typeof data[key] === 'string', 'Invalid ' + key);
     out[key] = (data[key] || '').trim(); check(out[key].length <= 500, key + ' is too long.');
   }
   check(out.pickupCode.length <= 20, 'Keep the pickup code under 20 characters.');
+  check(out.shop.length <= 60, 'Keep the shop name under 60 characters.');
   check(['parcel','takeout','task'].includes(data.category), 'Choose takeaway or parcel.');
   out.category = data.category;
-  out.arrived = data.arrived === true; out.soup = data.soup === true;
+  out.arrived = data.arrived === true; out.soup = data.soup === true; out.fragile = data.category === 'parcel' && data.fragile === true; out.night = data.category === 'takeout' && data.night === true;
   for (const key of ['bags','price','tip']) out[key] = Number(data[key] || 0);
   if (out.category === 'takeout') {
     check(!out.destinationType||['dorm','place'].includes(out.destinationType),'Choose a valid destination type.');
@@ -232,7 +233,7 @@ function snapshot(s, actor, account, now = Date.now()) {
     }
     // Allowlist public fields. Never send pickup codes, phone, room or photo IDs. Takeaway notes are public by design.
     const out = {};
-    for (const k of ['destinationKey','destinationType','id','campusId','universityId','category','station','dorm','small','big','reward','serviceFee','status','deadline','deliveryDate','createdAt','arrivalAt','closesAt','arrived','deliverBy','soup','raised','tip','parcelSize']) if (r[k] !== undefined) out[k] = r[k];
+    for (const k of ['destinationKey','destinationType','id','campusId','universityId','category','station','dorm','small','big','reward','serviceFee','status','deadline','deliveryDate','createdAt','arrivalAt','closesAt','arrived','deliverBy','soup','fragile','night','shop','raised','tip','parcelSize']) if (r[k] !== undefined) out[k] = r[k];
     if (r.category === 'takeout' && r.note) out.note = r.note;
     return { ...out, owner:'Request', phone:'', room:'', codes:Array(d.boxes(r)).fill(''), collected:[], photo:'',
       parcelItems:r.parcelItems && r.parcelItems.map(p => ({size:p.size, price:p.price, code:''})), isMine:false, isRunner:false };
@@ -243,7 +244,7 @@ function snapshot(s, actor, account, now = Date.now()) {
     runnerJobs:stats(s,t.runnerAccountId).jobsDone, departAt:t.departAt, joinUntil:t.joinUntil, phase:t.phase,
     cancelled:false, remaining:t.capacity-t.requestIds.reduce((n,id)=>n+d.boxes(s.requests.find(r=>r.id===id)),0)
   }));
-  const publicJobs=s.requests.filter(r=>inCampus(r)&&!['cancelled','refunded','disputed'].includes(r.status)).map(r=>{const o={};for(const k of ['destinationKey','destinationType','id','campusId','universityId','category','station','dorm','small','big','reward','status','arrivalAt','closesAt','deadline','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','arrived','deliverBy','soup','raised','title','dueAt'])if(r[k]!==undefined)o[k]=r[k];return o;});
+  const publicJobs=s.requests.filter(r=>inCampus(r)&&!['cancelled','refunded','disputed'].includes(r.status)).map(r=>{const o={};for(const k of ['destinationKey','destinationType','id','campusId','universityId','category','station','dorm','small','big','reward','status','arrivalAt','closesAt','deadline','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','arrived','deliverBy','soup','fragile','night','shop','raised','title','dueAt'])if(r[k]!==undefined)o[k]=r[k];return o;});
   return {revision:s.revision,serverTime:now,publicJobs,deliveredThisWeek:s.requests.filter(r=>inCampus(r)&&r.deliveredAt>now-7*86400000).length,requests,trips,publicTrips,accountId:actor,
     adjustments:loggedIn?(s.adjustments||[]).filter(a=>a.runnerAccountId===actor).map(({runnerAccountId,...a})=>a):[],rewards:loggedIn?rewards.view(s,actor,now):null,preferences:loggedIn?(s.members[actor]||{}).preferences||{}:{},
     supportTickets:loggedIn?((s.members[actor]||{}).supportTickets||[]):[],stats:loggedIn ? stats(s,actor) : {jobsDone:0,paid:0,marks:[]} };

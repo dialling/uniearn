@@ -1,5 +1,12 @@
 const DAY = 86400000;
 const codePattern = /(?:^|[^A-Za-z0-9])(\d{1,3}\s*-\s*\d{1,3}\s*-\s*\d{3,6})(?!\d)/g;
+// Locker and station codes without the shelf-dash format, e.g. 丰巢 取件码12345678 or 取件码：A12-3456、A12-3457.
+const keywordPattern = /(?:取件码|取货码|提货码|取件号|开箱码)\s*(?:[:：]|为|是)?\s*([A-Za-z0-9]+(?:-[A-Za-z0-9]+)*(?:\s*[、,，及和]\s*[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)*)/g;
+function keywordCodes(text) {
+  const out = [], re = new RegExp(keywordPattern.source, 'g'); let m;
+  while ((m = re.exec(text))) m[1].split(/\s*[、,，及和]\s*/).forEach(code => { if (code.length >= 4 && code.length <= 20 && /\d/.test(code)) out.push(code); });
+  return out;
+}
 function clean(s) { return String(s || '').replace(/[—–－−]/g, '-').replace(/\s+/g, ' ').trim(); }
 function dateOf(s, now) {
   const today = Math.floor((now + 8 * 3600000) / DAY);
@@ -51,6 +58,7 @@ function parseSms(detections, now = Date.now()) {
     const text = g.lines.join(' '), codes = [];
     const re = new RegExp(codePattern.source,'g'); let match;
     while ((match = re.exec(text))) codes.push(match[1].replace(/\s/g,''));
+    keywordCodes(text).forEach(code => { if (!codes.includes(code)) codes.push(code); });
     return {...g, text, codes:[...new Set(codes)], point:pointOf(text), index:i};
   }).filter(g=>g.codes.length);
   if (!messages.length) return {candidates:[], note:'No pickup codes found. Try a clearer photo or paste the SMS.'};

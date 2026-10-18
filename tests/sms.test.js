@@ -22,4 +22,5 @@ assert.equal(eng.candidates[0].point,'Store No. 21, Qingcao Lane Square');
 const {dateOf}=require('../cloudfunctions/parseSmsScreenshot/parser');
 assert.equal(dateOf('2026年9月29日 11:00',now),dateOf('Today 11:00',now));
 assert.equal(dateOf('Yesterday 12:33',now)+1,dateOf('Today 11:00',now));
+{const codes=t=>parseSms(t).candidates.map(x=>x.code);assert.deepEqual(codes('【丰巢】取件码12345678，您的快递已存入南门丰巢柜'),['12345678']);assert.deepEqual(codes('【兔喜生活】您有2个包裹，取件码：A12-3456、A12-3457'),['A12-3456','A12-3457']);assert.deepEqual(codes('【菜鸟驿站】请凭取件码 3-2-1024 取件'),['3-2-1024']);assert.deepEqual(codes('取件码已发送，请查收'),[]);}
 console.log('SMS parser: screenshot fixture, deduplication, date gap, unknown dates, OCR order, English and Chinese dates passed.');

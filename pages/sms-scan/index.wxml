@@ -13,7 +13,7 @@
   <view class="point">{{item.point || (zh?'取件点不清晰':'Pickup point unclear')}}</view>
  </view>
  <view wx:if="{{candidates.length}}" class="paste-box"><view>{{zh?'取件点':'Pickup point'}}</view><input value="{{pickupPoint}}" data-field="pickupPoint" bindinput="field" placeholder="{{zh?'确认驿站或店铺':'Confirm the station or shop'}}"/><view>{{zh?'地址（选填）':'Address (optional)'}}</view><input value="{{pickupAddress}}" data-field="pickupAddress" bindinput="field" placeholder="{{zh?'补充地址详情':'Add any address details'}}"/></view>
- <button class="confirm" bindtap="confirm" disabled="{{busy || !selectedCount || selectedCount > 5}}">{{zh?'使用这 '+selectedCount+' 个取件码':'Use '+selectedCount+' codes'}}</button>
+ <button class="confirm" bindtap="confirm" disabled="{{busy || !selectedCount || selectedCount > 12}}">{{zh?'使用这 '+selectedCount+' 个取件码':'Use '+selectedCount+' codes'}}</button>
  <view class="intro">{{zh?'这会替换订单中现有的取件码。确认后请核对包裹尺寸。':'This replaces the codes currently in your request. Check the parcel sizes after confirming.'}}</view>
 </view>
 <yuni-assistant topic=""/>
