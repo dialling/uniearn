@@ -1,5 +1,5 @@
 <lang-switch/>
-<view class="help-page">
+<view class="help-page {{darkClass}}">
 <view class="help-header">
 <view class="help-title">{{labels.title}}</view>
 <view class="hint">{{labels.label1}}</view>

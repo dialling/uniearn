@@ -1,5 +1,5 @@
 <lang-switch/>
-<view class="sms-page">
+<view class="sms-page {{darkClass}}">
  <view class="heading">{{heading}}</view>
  <view class="intro">{{mode==='sms'?(zh?'选择一张取件短信的截图。':'Choose a screenshot of your pickup messages.'):(zh?'上传完整截图，核对取件点并选择你的包裹。':'Upload the full screenshot. Review the pickup point and select your parcels.')}}</view>
  <view class="actions"><button disabled="{{busy}}" data-source="album" bindtap="capture">{{zh?'选择截图':'Choose screenshot'}}</button></view>

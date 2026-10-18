@@ -1,5 +1,5 @@
 <lang-switch/>
-<view class="rules-page">
+<view class="rules-page {{darkClass}}">
  <view class="rules-header">
   <view class="flow-title">{{labels.title}}</view>
   <view class="hint">{{labels.version}} · {{agreement}}</view>

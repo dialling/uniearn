@@ -1,5 +1,5 @@
 <lang-switch/>
-<view class="post-page takeaway-page" wx:if="{{!unavailable}}">
+<view class="post-page takeaway-page {{darkClass}}" wx:if="{{!unavailable}}">
  <view class="post-header"><view class="post-tabs"><button class="post-tab active">{{ui.tabTakeaway}}</button><button class="post-tab" bindtap="parcels" disabled="{{routeLocked}}">{{ui.tabParcels}}</button></view></view>
  <yuni-tip text="{{ui.tip}}" tip-key="takeaway-post"/>
  <view class="campus-proof" bindtap="doneJobs"><text class="proof-icon">✓</text><view><view>{{zh?'本周校园内已送达 '+week+' 单。':week+' '+(week===1?'order':'orders')+' delivered on campus this week.'}}</view><view>{{ui.seeDone}}</view></view><text>›</text></view>

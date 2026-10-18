@@ -1,2 +1,2 @@
 <lang-switch/>
-<view class="flow-page"><view class="hint">{{zh?'正在打开新手引导…':'Opening the app guide…'}}</view></view>
+<view class="flow-page {{darkClass}}"><view class="hint">{{zh?'正在打开新手引导…':'Opening the app guide…'}}</view></view>

@@ -5,7 +5,8 @@ const store=require('./store');
 const DARK={bar:'#202522',front:'#ffffff',window:'#202522'};
 const LIGHT={bar:'#ffffff',front:'#000000',window:'#f7f7f4'};
 function isDark(){return store.get().meAppearance==='dark';}
-function apply(){
+function apply(page){
+  if(page&&page.setData)page.setData({darkClass:isDark()?'page-dark':''});
   if(typeof wx==='undefined')return;
   const c=isDark()?DARK:LIGHT;
   if(wx.setNavigationBarColor)wx.setNavigationBarColor({frontColor:c.front,backgroundColor:c.bar,animation:{duration:0}});

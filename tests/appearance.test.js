@@ -1,4 +1,4 @@
-const assert=require('node:assert/strict');
+const assert=require('node:assert/strict'),fs=require('node:fs');
 const calls=[];
 global.wx={getStorageSync:()=>null,setStorageSync(){},showToast(){},
   setNavigationBarColor(o){calls.push(['nav',o.frontColor,o.backgroundColor]);},
@@ -24,4 +24,18 @@ assert.equal(inst.data.zh,true);
 store.update(s=>{s.meAppearance='light';});
 inst.localize();
 assert.equal(inst.data.dark,false,'bottom nav returns to light');
-console.log('Appearance: navigation bar, window background and bottom nav follow light/dark passed.');
+// every page root carries the dark class binding (profile keeps its own me-dark)
+for(const dir of fs.readdirSync("pages")){
+  const xml=fs.readFileSync("pages/"+dir+"/index.wxml","utf8");
+  if(dir==="profile")continue;
+  assert.ok(xml.includes("{{darkClass}}"),"page root missing dark class: "+dir);
+}
+// apply(page) toggles the root class together with the nav colours
+const page={value:null,setData(v){this.value=v.darkClass;}};
+store.update(s=>{s.meAppearance="dark";});
+appearance.apply(page);
+assert.equal(page.value,"page-dark");
+store.update(s=>{s.meAppearance="light";});
+appearance.apply(page);
+assert.equal(page.value,"");
+console.log('Appearance: navigation bar, window background, bottom nav and page dark class follow light/dark passed.');

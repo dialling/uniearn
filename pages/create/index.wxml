@@ -1,5 +1,5 @@
 <lang-switch/>
-<view class="post-page create-page">
+<view class="post-page create-page {{darkClass}}">
  <view wx:if="{{mode==='choose'}}">
   <view class="title">{{ui['What do you want to do?']}}</view>
   <view class="card choice" data-mode="request" bindtap="choose"><view class="route">{{ui['Pick up food or parcels　›']}}</view><view class="muted">{{ui['Someone collects it and brings it to your dorm.']}}</view></view>

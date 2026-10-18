@@ -1,5 +1,5 @@
 <lang-switch/>
-<view class="post-page route-editor">
+<view class="post-page route-editor {{darkClass}}">
  <view class="editor-heading"><view class="editor-title">{{title}}</view><view class="hint">{{subtitle}}</view></view>
  <view wx:if="{{mode==='order'}}" class="order-only">{{zh?'只修改这笔订单，你的常用路线保持不变。':'Only this order changes. Your saved route stays the same.'}}</view>
  <view class="flow-card">
