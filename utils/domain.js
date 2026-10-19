@@ -17,7 +17,7 @@ function createRequest(s, data) {
   if(!['parcel','takeout'].includes(data.category))throw Error('Choose a pickup category');
   const place=data.category==='takeout'&&data.destinationType==='place';
   if (!data.station || !data.dorm || (place?!String(data.deliveryAddress||'').trim():!data.room) || !/^1\d{10}$/.test((data.phone||'').replace(/\s/g,''))) throw Error(place?'Add the pickup point, exact delivery address and a valid phone number':'Complete station, dorm, room and a valid phone number');
-  if(data.category==='takeout'&&data.night){if(!String(data.shop||'').trim())throw Error('Add the shop or stall name');data.pricePerBox=4;data.small=1;data.big=0;}
+  if(data.category==='takeout'&&data.night){if(!String(data.shop||'').trim())throw Error('Add the shop or stall name');if(!wholeCents(data.pricePerBox)||Number(data.pricePerBox)<4||Number(data.pricePerBox)>MAX_PRICE_PER_BOX)throw Error('Choose a night market offer between ¥4 and ¥'+MAX_PRICE_PER_BOX);data.small=1;data.big=0;}
   if(data.floor&&campus.isBuilding(data.dorm)&&(Number(data.floor)<1||Number(data.floor)>campus.maxFloorOf(data.dorm)))throw Error('That floor does not exist in this building');
   let reward;
   if(data.category==='parcel' && Array.isArray(data.parcelItems)) {
