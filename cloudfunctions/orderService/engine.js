@@ -76,6 +76,7 @@ function input(data, actor) {
   check(out.shop.length <= 60, 'Keep the shop name under 60 characters.');
   check(['parcel','takeout','task'].includes(data.category), 'Choose takeaway or parcel.');
   out.category = data.category;
+  if(data.deliverAt!==undefined){check(Number.isSafeInteger(data.deliverAt),'Invalid delivery time');out.deliverAt=data.deliverAt;}
   out.arrived = data.arrived === true; out.soup = data.soup === true; out.fragile = data.category === 'parcel' && data.fragile === true; out.night = data.category === 'takeout' && data.night === true;
   for (const key of ['bags','price','tip']) out[key] = Number(data[key] || 0);
   if (out.category === 'takeout') {

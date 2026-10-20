@@ -34,7 +34,7 @@ function createTakeaway(s,data,now=Date.now()){
  const arrivalAt=data.arrived?now:todayAt(data.arrivalTime,now);
  if(!data.arrived&&arrivalAt<now)throw Error('Choose an arrival time later today');
  if(!String(data.owner||'').trim())throw Error('Add the name on your order');
- let deliverBy='',closeAt=arrivalAt+30*MIN;if(data.arrived&&data.deliverBy){let at=todayAt(data.deliverBy,now);if(at<now-60000)at+=24*3600000;if(at>now+65*60000)throw Error('Choose a delivery time within 1 hour');deliverBy=clock(at);closeAt=Math.max(at,now+10*MIN);}
+ let deliverBy='',closeAt=arrivalAt+30*MIN;if(data.arrived&&data.deliverBy){let at=data.deliverAt===undefined?todayAt(data.deliverBy,now):Number(data.deliverAt);if(data.deliverAt===undefined&&at<now-60000)at+=24*3600000;if(!Number.isSafeInteger(at)||at<=now||at>now+65*60000)throw Error('Choose a future delivery time within 1 hour');deliverBy=clock(at);closeAt=at;}
  const r=d.createRequest(s,{...data,deliverBy,category:'takeout',small:Number(data.bags),big:0,codes:[],pricePerBox:Number(data.price),deadline:clock(closeAt),arrivalAt,arrived:!!data.arrived,closesAt:closeAt,soup:!!data.soup,riderPhoto:data.riderPhoto||''});
  r.createdAt=now;r.baseReward=r.reward;event(r,'Posted',now);return r;
 }
@@ -75,7 +75,7 @@ function plan(s,cfg,now=Date.now()){
 }
 function previewTrip(s,cfg,now=Date.now()){
  const t=plan(s,cfg,now),ids=[];let boxes=0,reward=0;
- for(const r of candidates(s,t,now).sort((a,b)=>(a.arrivalAt||0)-(b.arrivalAt||0))){if(boxes+d.boxes(r)<=t.capacity&&reward+r.reward<=d.limit(s.profile)){const first=ids.length&&s.requests.find(x=>x.id===ids[0]);if(t.category==='takeout'&&first&&Math.abs(r.arrivalAt-first.arrivalAt)>15*MIN)continue;ids.push(r.id);boxes+=d.boxes(r);reward+=r.reward;}}
+ for(const r of candidates(s,t,now).sort((a,b)=>(a.arrivalAt||0)-(b.arrivalAt||0))){if(boxes+d.boxes(r)<=t.capacity&&reward+r.reward<=d.limit(s.profile)){const first=ids.length&&s.requests.find(x=>x.id===ids[0]);if(first&&(r.destinationKey||'')!==(first.destinationKey||''))continue;if(t.category==='takeout'&&first&&Math.abs(r.arrivalAt-first.arrivalAt)>15*MIN)continue;ids.push(r.id);boxes+=d.boxes(r);reward+=r.reward;}}
  return {trip:t,ids,boxes,reward};
 }
 function startTrip(s,cfg,now=Date.now()){const p=previewTrip(s,cfg,now),t={...p.trip,id:'t'+s.nextId++};d.assign(s,t,p.ids);s.trips.unshift(t);return t;}

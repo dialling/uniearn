@@ -7,9 +7,26 @@ function eligible(s,id,c,now){if(c.start&&now<Date.parse(c.start)||c.end&&now>=D
 function collect(s,id,cid,now){const m=init(s,id,now),c=config.campaigns.find(x=>x.id===cid&&!x.automatic);if(!c||!eligible(s,id,c,now))throw Error('This campaign is not available to your account.');if(c.daily){const key='-'+day(now);issue(m,c,now,key);}else for(let i=0;i<(c.count||1);i++)issue(m,c,now,'-'+i);}
 function available(c,now){const h=new Date(now+28800000).getUTCHours()+new Date(now+28800000).getUTCMinutes()/60;return !c.usedBy&&now<c.expiresAt&&(!c.hours||h>=c.hours[0]&&h<c.hours[1])&&(!c.daily||day(c.issuedAt)===day(now));}
 function discount(c,reward,fee){return Math.round(Math.min(c.max,c.kind==='delivery'?reward:reward+fee)*100)/100;}
-function apply(s,id,r,cid,now){if(!cid)return;const m=init(s,id,now),c=m.coupons.find(x=>x.id===cid);if(!c||!available(c,now))throw Error('This coupon is used, expired, or outside its time window.');if(c.dailyOrderLimit&&s.requests.filter(x=>x.couponId&&x.couponId.startsWith('golden2026-')&&day(x.createdAt)===day(now)&&!['cancelled','refunded'].includes(x.status)).length>=c.dailyOrderLimit)throw Error('This evening’s first 30 promotional orders have been claimed.');r.discount=discount(c,r.reward,r.serviceFee);r.couponId=c.id;r.couponTitle=c.short;c.usedBy=r.id;}
-function restore(s,r){const m=s.members[r.ownerId],c=m&&(m.coupons||[]).find(x=>x.id===r.couponId);if(c&&c.usedBy===r.id&&!r.splitParentId&&!r.splitOriginal)delete c.usedBy;}
-function settle(s,now){for(const r of s.requests){if(['cancelled','refunded'].includes(r.status))restore(s,r);if(r.status!=='confirmed')continue;const m=member(s,r.ownerId);if(m.invitedBy&&!m.inviteRewarded){m.inviteRewarded=true;const c={id:'invite-'+r.ownerId,title:'Invite reward · free delivery',short:'Invite free',face:'FREE',sub:'delivery',max:8,kind:'delivery',days:30,description:'Thanks for inviting a classmate'};issue(m,c,now);issue(member(s,m.invitedBy),c,now);}}
+function apply(s,id,r,cid,now){if(!cid)return;const m=init(s,id,now),c=m.coupons.find(x=>x.id===cid);if(!c||!available(c,now))throw Error('This coupon is used, expired, or outside its time window.');if(c.dailyOrderLimit&&s.requests.filter(x=>x.couponId&&x.couponId.startsWith('golden2026-')&&day(x.createdAt)===day(now)&&!['cancelled','refunded'].includes(x.status)).length>=c.dailyOrderLimit)throw Error('This evening’s first 30 promotional orders have been claimed.');r.discount=discount(c,r.reward,r.serviceFee);r.couponId=c.id;r.couponTitle=c.short;r.couponUseId=r.id;c.usedBy=r.id;delete c.usedByCompleted;}
+function couponGroup(s,r,c){
+ const original=s.requests.find(x=>x.id===c.usedBy&&x.ownerId===r.ownerId&&x.couponId===r.couponId);
+ if(!original)return [];
+ const group=[original],ids=new Set([original.id]);
+ for(let i=0;i<group.length;i++){
+  const row=group[i];
+  // A removed split may have completed and been archived; never refund blindly.
+  if(row.splitOriginal&&!s.requests.some(x=>x.id===row.splitOriginal.extraId))return [];
+  for(const x of s.requests)if(x.ownerId===r.ownerId&&x.couponId===r.couponId&&(x.splitParentId===row.id||x.couponUseId===c.usedBy)&&!ids.has(x.id)){ids.add(x.id);group.push(x);}
+ }
+ return ids.has(r.id)?group:[];
+}
+function restore(s,r){
+ const m=s.members[r.ownerId],c=m&&(m.coupons||[]).find(x=>x.id===r.couponId);
+ if(!c||!c.usedBy||c.usedByCompleted)return;
+ const group=couponGroup(s,r,c);
+ if(group.length&&group.every(x=>['cancelled','refunded'].includes(x.status)))delete c.usedBy;
+}
+function settle(s,now){for(const r of s.requests){if(['cancelled','refunded'].includes(r.status))restore(s,r);if(r.status!=='confirmed')continue;const m=member(s,r.ownerId);const used=(m.coupons||[]).find(c=>c.id===r.couponId);if(used&&used.usedBy&&(r.couponUseId===used.usedBy||couponGroup(s,r,used).length))used.usedByCompleted=true;if(m.invitedBy&&!m.inviteRewarded){m.inviteRewarded=true;const c={id:'invite-'+r.ownerId,title:'Invite reward · free delivery',short:'Invite free',face:'FREE',sub:'delivery',max:8,kind:'delivery',days:30,description:'Thanks for inviting a classmate'};issue(m,c,now);issue(member(s,m.invitedBy),c,now);}}
 }
 function invite(s,id,code){const m=member(s,id);if(m.invitedBy||m.archivedOrders||s.requests.some(r=>r.ownerId===id))throw Error('Invitations apply before your first order.');const inviter=Object.keys(s.members).find(x=>x.slice(0,12)===code);if(!inviter||inviter===id)throw Error('Invalid invitation code.');m.invitedBy=inviter;}
 function bonus(s,id,now){const cfg=config.weekly,n=new Date(now+28800000),weekday=(n.getUTCDay()+6)%7;n.setUTCHours(0,0,0,0);const start=n.getTime()-28800000-weekday*86400000;const ts=new Set(s.trips.filter(t=>t.runnerAccountId===id).map(t=>t.id));const done=s.requests.filter(r=>ts.has(r.runnerId)&&['delivered','confirmed'].includes(r.status)&&r.deliveredAt>=start);return {target:cfg.target,count:done.length,amount:cfg.amount,earned:cfg.enabled&&done.length>=cfg.target,segments:Array.from({length:cfg.target},(_,i)=>i<done.length)};}
