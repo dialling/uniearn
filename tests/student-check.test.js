@@ -10,6 +10,7 @@ assert.equal(validateApplication({realName:'张三',gender:'female',phone:'13800
  const repo={
   get:async id=>records[id]?structuredClone(records[id]):null,
   patch:async(id,v)=>{records[id]={...records[id],...structuredClone(v)};},
+  submitApplication:async(id,expected,verification,updatedAt)=>{records[id]={...records[id],verification:structuredClone(verification),updatedAt};return '';},
   logout:async id=>{records[id].loggedOut=true;records[id].authRevision=(records[id].authRevision||0)+1;},
   findPhone:async ph=>Object.entries(records).filter(([,a])=>a.verification&&a.verification.phone===ph&&['pending','verified'].includes(a.verification.status)).map(([id])=>id),
   findStudent:async sid=>Object.entries(records).filter(([,a])=>a.verification&&a.verification.studentId===sid&&['pending','verified'].includes(a.verification.status)).map(([id])=>id),

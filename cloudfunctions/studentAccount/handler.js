@@ -85,7 +85,8 @@ function createHandler({getOpenId,repo,env,now=Date.now}) {
         const wechatPhone=account.wechatPhone||(account.profile&&account.profile.wechatPhone)||'',phoneVerified=!!wechatPhone&&wechatPhone===app.phone;
         const verification={status:'pending',method:'application',realName:app.realName,gender:app.gender,phone:app.phone,phoneVerified,phoneSource:phoneVerified?'wechat':'manual',studentId:app.studentId,studentName:app.realName,studentLast4:app.studentId.slice(-4),school:'XJTLU',submittedAt:now()};
         stage='save-application';
-        await repo.patch(id,{verification,updatedAt:now()});
+        const saved=await repo.submitApplication(id,account,verification,now());
+        if(saved)return fail(saved,saved==='STUDENT_ID_USED'?(zh?'该学号已被其他账号申请，请联系管理员。':'This student ID is already used by another account. Contact an admin.'):(zh?'账号信息已变化，请刷新后重新申请。':'Your account changed. Refresh and apply again.'));
         return {ok:true,account:publicAccount({...account,verification},id)};
       }
       if(action==='agreeRules') {
@@ -133,6 +134,7 @@ function createHandler({getOpenId,repo,env,now=Date.now}) {
         const note=String(event.note||'').trim();
         if(note.length>300)return fail('REVIEW_NOTE',zh?'备注最多 300 字。':'Keep the note under 300 characters.');
         const rejected=event.decision==='reject';
+        if(!rejected&&(await repo.findStudent(target.verification.studentId)).some(owner=>owner!==event.accountId))return fail('STUDENT_ID_USED',zh?'该学号存在其他申请或认证，请先核实重复记录。':'Another application or verified account uses this student ID. Resolve the duplicate first.');
         const verification={...target.verification,status:rejected?'rejected':'verified',checkedAt:now(),reviewerId:id,reviewNote:note,reason:rejected?(note||(zh?'信息未通过审核，请核对后重新提交。':'Your details could not be confirmed. Check them and apply again.')):''};
         if(!await repo.review(event.accountId,target.verification,verification))return fail('REVIEW_CHANGED',zh?'申请内容已变化，请刷新后再审核。':'The application changed. Reload it before reviewing.');
         return {ok:true};
