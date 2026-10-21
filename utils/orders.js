@@ -97,10 +97,11 @@ function bind(page, method='refresh') {
   page._orderRender=()=>page[method](); subscribers.add(page._orderRender);
   page[method](); sync().catch(()=>{});
 }
+function subscribe(fn) { subscribers.add(fn); return ()=>subscribers.delete(fn); }
 function unbind(page) { if(page._orderRender)subscribers.delete(page._orderRender);page._orderRender=null; }
 function start() { foreground=true;stopTimer();sync().catch(()=>{});timer=setInterval(()=>sync().catch(()=>{}),10000); }
 function stopTimer() { if(timer)clearInterval(timer);timer=null; }
 function stop() { foreground=false;stopTimer(); }
 function photoURL(path) { return store.get().photoURLs[path] || path; }
 function invalidate(){yuniEvents.reset();generation++;previous=null;uploads.clear();}
-module.exports={invalidate,sync,act,upload,bind,unbind,start,stop,photoURL};
+module.exports={invalidate,sync,act,upload,bind,unbind,subscribe,start,stop,photoURL};

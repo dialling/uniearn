@@ -110,4 +110,4 @@
 <view class="flow-card menu-card admin-entry"><view class="menu-row" bindtap="admin"><view class="settings-icon"><image src="/assets/shield-outline.svg"/></view><view class="menu-copy">{{ui.adminLogin}}<view class="hint">{{ui.adminHelp}}</view></view><text class="setting-chevron">›</text></view></view>
 <view class="me-footer">{{ui.footer}}<view>Uniearn v{{version}}</view></view>
 </block></view><app-nav active="profile"/>
-<yuni-assistant id="me-yuni" topic="me" language="{{language}}"/>
+<level-up/><yuni-assistant id="me-yuni" topic="me" language="{{language}}"/>

@@ -43,7 +43,8 @@
     "app-nav": "/components/nav/index",
     "yuni-tip": "/components/yuni/index",
     "yuni-assistant": "/components/yuni-assistant/index",
-    "lang-switch": "/components/lang-switch/index"
+    "lang-switch": "/components/lang-switch/index",
+    "level-up": "/components/level-up/index"
   },
   "entryPagePath": "pages/jobs/index",
   "lazyCodeLoading": "requiredComponents",

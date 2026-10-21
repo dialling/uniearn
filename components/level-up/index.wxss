@@ -1,0 +1,31 @@
+.lv-mask{position:fixed;left:0;top:0;right:0;bottom:0;z-index:1000;background:rgba(13,27,20,.56);display:flex;align-items:center;justify-content:center;animation:lv-fade .4s ease-out both}
+.lv-pop{width:668rpx;padding:36rpx 34rpx 30rpx;border-radius:42rpx;background:#fffdfa;color:#1f2a24;box-shadow:0 40rpx 100rpx rgba(10,28,18,.36);display:flex;flex-direction:column;align-items:center;animation:lv-rise .68s cubic-bezier(.34,1.4,.64,1) .12s both}
+.lv-eyebrow{height:40rpx;line-height:40rpx;padding:0 20rpx;border-radius:999rpx;background:#fcf1d8;color:#9a6b12;font-size:19rpx;font-weight:700;letter-spacing:3rpx;animation:lv-in .34s ease-out .36s both}
+.lv-title{margin-top:14rpx;font-size:48rpx;font-weight:700;letter-spacing:2rpx;animation:lv-in .38s ease-out .44s both}
+.lv-sub{margin-top:6rpx;font-size:25rpx;color:#7c867f;animation:lv-in .38s ease-out .52s both}
+.lv-stage{margin-top:24rpx;width:600rpx;height:449rpx;border-radius:30rpx;overflow:hidden;background:#e8f3ed;display:flex;align-items:center;justify-content:center;animation:lv-in .42s ease-out .56s both}
+.lv-video{display:block;width:600rpx;height:449rpx}
+.lv-still{width:300rpx;height:338rpx;animation:lv-hop 1.2s ease-in-out .8s infinite}
+.lv-xp{width:600rpx;margin-top:22rpx;display:flex;justify-content:space-between;font-size:22rpx;font-weight:650;color:#4a5a50;animation:lv-in .36s ease-out .66s both}
+.lv-xp-num{color:#41775b}
+.lv-bar{width:600rpx;height:12rpx;margin-top:10rpx;border-radius:999rpx;background:#e3ebe5;overflow:hidden;animation:lv-in .36s ease-out .66s both}
+.lv-fill{height:100%;border-radius:999rpx;background:linear-gradient(90deg,#5d9274,#41775b);animation:lv-charge .82s cubic-bezier(.4,0,.2,1) .9s both}
+.lv-tagline{margin-top:16rpx;display:flex;align-items:center;gap:12rpx;font-size:24rpx;animation:lv-in .36s ease-out .74s both}
+.lv-chip{height:44rpx;line-height:44rpx;padding:0 16rpx;border-radius:12rpx;background:#41775b;color:#fff;font-size:22rpx;font-weight:700;animation:lv-flip .5s cubic-bezier(.3,1.6,.6,1) 1.6s both}
+.lv-tag-name{font-weight:650}
+.lv-tag-done{color:#9aa59b;font-size:21rpx}
+.lv-result{width:600rpx;margin-top:22rpx;padding:20rpx 22rpx;border-radius:24rpx;background:#f6f9f6;border:1rpx solid #e3ebe5;display:flex;align-items:center;gap:18rpx;animation:lv-in .4s ease-out 3.4s both}
+.lv-medal{width:60rpx;height:60rpx;flex:none;border-radius:50%;background:#fcf1d8;color:#d99a1e;font-size:28rpx;display:flex;align-items:center;justify-content:center}
+.lv-result-main{flex:1;min-width:0}
+.lv-result-title{font-size:28rpx;font-weight:700}
+.lv-result-sub{margin-top:4rpx;font-size:21rpx;color:#7c867f}
+.lv-plus{flex:none;height:40rpx;line-height:40rpx;padding:0 14rpx;border-radius:999rpx;background:#fcf1d8;color:#9a6b12;font-size:20rpx;font-weight:700}
+.lv-cta{width:600rpx;height:92rpx;margin-top:24rpx;border-radius:26rpx;background:#41775b;color:#fff;display:flex;align-items:center;justify-content:center;gap:10rpx;font-size:31rpx;font-weight:650;letter-spacing:1.5rpx;box-shadow:0 16rpx 32rpx rgba(65,119,91,.24);animation:lv-in .42s ease-out 4.2s both,lv-pulse 1.6s ease-in-out 4.8s infinite}
+.lv-arrow{font-size:34rpx;opacity:.86}
+@keyframes lv-fade{from{opacity:0}to{opacity:1}}
+@keyframes lv-rise{from{opacity:0;transform:translateY(120rpx) scale(.94)}to{opacity:1;transform:none}}
+@keyframes lv-in{from{opacity:0;transform:translateY(14rpx)}to{opacity:1;transform:none}}
+@keyframes lv-charge{from{width:72%}to{width:100%}}
+@keyframes lv-flip{from{transform:rotateX(90deg)}to{transform:none}}
+@keyframes lv-hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-16rpx)}}
+@keyframes lv-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
