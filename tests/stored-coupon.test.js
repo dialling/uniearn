@@ -1,0 +1,20 @@
+const assert=require('node:assert/strict'),rewards=require('../cloudfunctions/orderService/rewards');
+const now=Date.parse('2030-01-02T12:00:00+08:00'),s={members:{},requests:[],trips:[]};
+const inviter='inviter-account-1',friend='friend-account-2';
+rewards.init(s,inviter,now);rewards.init(s,friend,now);
+rewards.invite(s,friend,inviter.slice(0,12),now);
+assert.equal(s.members[friend].inviteRewarded,true,'reward is issued as soon as the code is entered');
+s.requests.push({id:'r0',ownerId:friend,status:'confirmed',reward:3,serviceFee:0,createdAt:now});
+rewards.settle(s,now);assert.equal(s.members[inviter].coupons.filter(c=>c.id.startsWith('invite-')).length,1,'settling later does not issue a second reward');
+const coupon=id=>s.members[id].coupons.find(c=>c.id.startsWith('invite-'));
+for(const id of [inviter,friend]){const c=coupon(id);assert.equal(c.balance,3.9);assert.equal(c.stored,true);assert.equal(c.expiresAt,now+30*86400000,'valid for 30 days from issue');}
+const c=coupon(inviter),order=(id,reward)=>{const r={id,ownerId:inviter,reward,serviceFee:0,status:'waiting'};s.requests.push(r);rewards.apply(s,inviter,r,c.id,now);return r;};
+const a=order('r1',3);assert.equal(a.discount,3);assert.equal(c.balance,0.9);assert.ok(!c.usedBy,'balance left, coupon stays usable');
+assert.equal(rewards.view(s,inviter,now).coupons.find(x=>x.id===c.id).face,'¥0.9');
+const b=order('r2',4);assert.equal(b.discount,0.9);assert.equal(c.balance,0);assert.equal(c.usedBy,'r2');
+assert.throws(()=>order('r3',4),/used/);
+b.status='cancelled';rewards.restore(s,b);assert.equal(c.balance,0.9);assert.ok(!c.usedBy);rewards.restore(s,b);assert.equal(c.balance,0.9,'restore is idempotent');
+const d=order('r4',4);assert.equal(d.discount,0.9);
+const fresh={...coupon(friend)};const big={id:'r5',ownerId:friend,reward:4,serviceFee:0,status:'waiting'};s.requests.push(big);rewards.apply(s,friend,big,fresh.id,now);assert.equal(big.discount,3.9,'a ¥4 order uses the full ¥3.9');
+assert.throws(()=>{const late={id:'r6',ownerId:inviter,reward:3,serviceFee:0};const x=coupon(inviter);x.balance=1;delete x.usedBy;rewards.apply(s,inviter,late,x.id,now+31*86400000);},/expired/);
+console.log('Stored-value invite coupon: ¥3.9 balance, partial use, refund back to balance and 30-day validity passed.');

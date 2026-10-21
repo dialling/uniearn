@@ -1,0 +1,50 @@
+<view class="iv-page">
+ <view class="iv-bg">
+  <text class="iv-mark m1">UniEarn</text>
+  <text class="iv-mark m2">UniEarn</text>
+  <text class="iv-mark m3">UniEarn</text>
+  <view class="iv-streaks"></view>
+  <view class="iv-glow"></view>
+ </view>
+
+ <view class="iv-nav" style="padding-top:{{navTop}}px;height:{{navHeight}}px"><view class="iv-back" hover-class="iv-press" bindtap="back"><view class="iv-back-arrow"></view></view></view>
+
+ <view class="iv-body">
+  <view class="iv-title">{{zh?'邀请同学，一起省配送费':'Invite a classmate, both save on delivery'}}</view>
+
+  <view class="iv-label">{{zh?'你和同学各得':'You each get'}}</view>
+  <view class="iv-big">¥3.9</view>
+  <view class="iv-unit">{{zh?'配送券':'delivery credit'}}</view>
+
+  <view class="iv-rows">
+   <view class="iv-row"><image class="iv-row-icon" src="/assets/invite/check.svg"/><text>{{zh?'新同学填写邀请码后，你们各得 ¥3.9，马上就能用，可分多单抵扣配送费':'Once a new user enters your code, you each get ¥3.9 to use right away, across orders until it runs out'}}</text></view>
+   <view class="iv-row"><image class="iv-row-icon" src="/assets/invite/check.svg"/><text>{{zh?'发放后 30 天内有效，有效期可在优惠券里查看':'Valid for 30 days after it is issued. See the dates in your coupons'}}</text></view><view class="iv-row"><image class="iv-row-icon" src="/assets/invite/gift.svg"/><text>{{zh?'邀请码仅限未下过单的新用户使用':'Only for new users who have never placed an order'}}</text></view>
+  </view>
+
+  <view class="iv-line"></view>
+
+  <view class="iv-sub">{{zh?'你的邀请码':'Your invitation code'}}</view>
+  <view class="iv-card iv-code-card">
+   <block wx:if="{{inviteCode}}"><text class="iv-code" user-select>{{inviteCode}}</text><view class="iv-chip" hover-class="iv-press" bindtap="copy">{{zh?'复制':'Copy'}}</view></block>
+   <block wx:else><text class="iv-muted">{{zh?'完成注册后获得你的邀请码':'Register to get your code'}}</text><view class="iv-chip" hover-class="iv-press" bindtap="register">{{zh?'去注册':'Register'}}</view></block>
+  </view>
+
+  <view class="iv-sub">{{zh?'收到同学的邀请码？':'Got a classmate’s code?'}}</view>
+  <view class="iv-card iv-redeem">
+   <input class="iv-input" value="{{inviteInput}}" bindinput="input" placeholder="{{zh?'输入邀请码':'Enter the code'}}" placeholder-class="iv-ph" maxlength="20"/>
+   <view class="iv-chip solid {{redeeming?'busy':''}}" hover-class="iv-press" bindtap="redeem">{{zh?'使用':'Use'}}</view>
+  </view>
+ </view>
+
+ <view class="iv-dock">
+  <view class="iv-action">
+   <button wx:if="{{inviteCode}}" class="iv-circle" hover-class="iv-press" open-type="share"><image src="/assets/invite/wechat.svg"/></button>
+   <button wx:else class="iv-circle" hover-class="iv-press" bindtap="register"><image src="/assets/invite/wechat.svg"/></button>
+   <text>{{zh?'微信好友':'WeChat'}}</text>
+  </view>
+  <view class="iv-action">
+   <button class="iv-circle" hover-class="iv-press" bindtap="copy"><image src="/assets/invite/copy.svg"/></button>
+   <text>{{zh?'复制邀请码':'Copy code'}}</text>
+  </view>
+ </view>
+</view>

@@ -16,7 +16,6 @@
     "pages/takeaway/index",
     "pages/trip-start/index",
     "pages/rewards/index",
-    "pages/posted/index",
     "pages/chat/index",
     "pages/support-chat/index",
     "pages/info/index",
@@ -28,6 +27,7 @@
     "pages/route-edit/index",
     "pages/address/index",
     "pages/coupon-pick/index",
+    "pages/invite/index",
     "pages/admin/index",
     "pages/notify-guide/index",
     "pages/terms/index"
@@ -44,5 +44,30 @@
     "yuni-tip": "/components/yuni/index",
     "yuni-assistant": "/components/yuni-assistant/index",
     "lang-switch": "/components/lang-switch/index"
+  },
+  "entryPagePath": "pages/jobs/index",
+  "lazyCodeLoading": "requiredComponents",
+  "subpackages": [
+    {
+      "root": "pages/posted",
+      "name": "yuni",
+      "pages": [
+        "index"
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/takeaway/index": {
+      "network": "all",
+      "packages": [
+        "yuni"
+      ]
+    },
+    "pages/create/index": {
+      "network": "all",
+      "packages": [
+        "yuni"
+      ]
+    }
   }
 }

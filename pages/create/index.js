@@ -102,7 +102,7 @@ Page({
   const orderPictures=[];for(const path of a.orderPictures)orderPictures.push(await orders.upload(path));
   const data={category:'parcel',parcelItems,tip:a.tip,owner:a.name||store.get().profile.name,station:a.pickupPoint||a.stations[a.stationIndex],dorm:a.dorms[a.dormIndex],room:a.room,area:a.area,floor:a.floor,phone:a.phone,note:a.note,dropNote:a.dropNote,destinationType:a.destinationType,deliveryAddress:a.deliveryAddress,description:a.description,fragile:!!a.fragile,pickupPoint:a.pickupPoint,pickupAddress:a.pickupAddress,noticePhoto:await orders.upload(a.scanImages[0]||''),orderPictures,deadline:a.deadline,deliveryDate:a.date};
   const r=await orders.act('create',{data,couponId:a.couponId||'',tripId:this.tripId||''});
-  wx.redirectTo({url:'/pages/posted/index?id='+r.id});
+  wx.redirectTo({url:'/pages/posted/index?celebrate=1&id='+r.id});
  }catch(e){wx.showToast({title:e.message,icon:'none'});}finally{this.posting=false;}},
  start(){wx.redirectTo({url:'/pages/trip-start/index?category=parcel'});}
 });

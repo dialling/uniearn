@@ -1,0 +1,23 @@
+const assert=require('node:assert/strict'),fs=require('node:fs');
+let def;global.Page=d=>{def=d;};
+global.wx={getStorageSync:()=>null,setStorageSync(){},showToast(){},redirectTo(){},reLaunch(){}};
+require('../pages/posted/index');
+const page={...def,data:structuredClone(def.data),setData(v){Object.assign(this.data,v);}};
+page.onLoad({id:'r1',celebrate:'1'});
+assert.equal(page.data.celebrate,true,'popup opens after posting');
+page.closeCelebrate();
+assert.equal(page.data.celebrate,false,'tapping the mask closes the popup');
+const plain={...def,data:structuredClone(def.data),setData(v){Object.assign(this.data,v);}};
+plain.onLoad({id:'r1'});
+assert.equal(plain.data.celebrate,false,'reopening the posted page does not replay the popup');
+for(const p of ['takeaway','create'])assert.match(fs.readFileSync('pages/'+p+'/index.js','utf8'),/posted\/index\?celebrate=1&id=/);
+const xml=fs.readFileSync('pages/posted/index.wxml','utf8');
+assert.match(xml,/<video[^>]*src="\{\{videoSrc\}\}" autoplay muted loop="\{\{false\}\}"/);
+assert.match(xml,/binderror="videoError"/);
+for(const v of ['yuni-takeout.mp4','yuni-express.mp4']){assert.ok(fs.statSync('pages/posted/yuni/'+v).size<400000,v+' stays small for the main package');}
+(async()=>{const files={'/pages/posted/yuni/yuni-express.mp4':'clip'};global.wx={env:{USER_DATA_PATH:'wxfile://usr'},getFileSystemManager:()=>({access:o=>files[o.path]?o.success():o.fail(),readFile:o=>files[o.filePath]?o.success({data:files[o.filePath]}):o.fail(new Error('missing')),writeFile:o=>{files[o.filePath]=o.data;o.success();}})};
+const video=require('../utils/yuni-video');
+assert.equal(await video.prepare('express'),'wxfile://usr/yuni-express-v1.mp4','package clip is copied to a playable user path');
+assert.equal(files['wxfile://usr/yuni-express-v1.mp4'],'clip');
+await assert.rejects(video.prepare('takeout'),'missing clip falls back to the still image');
+console.log('Order success popup: opens once after posting, plays the right Yuni video, closes on mask tap.');})().catch(e=>{console.error(e);process.exitCode=1;});

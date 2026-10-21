@@ -1,0 +1,21 @@
+.yuni-mask{position:fixed;left:0;top:0;right:0;bottom:0;z-index:999;background:rgba(13,27,20,.56);display:flex;align-items:center;justify-content:center;animation:yuni-fade .42s ease-out both}
+.yuni-pop{position:relative;width:660rpx;padding:40rpx 34rpx 32rpx;border-radius:42rpx;background:#fffdfa;color:#1f2a24;box-shadow:0 40rpx 100rpx rgba(10,28,18,.36);display:flex;flex-direction:column;align-items:center;animation:yuni-rise .64s cubic-bezier(.34,1.45,.64,1) .12s both}
+.yuni-badge{position:absolute;top:34rpx;right:34rpx;height:44rpx;line-height:44rpx;padding:0 20rpx;border-radius:999rpx;background:#e8f3ed;color:#41775b;font-size:21rpx;font-weight:650;letter-spacing:1rpx;animation:yuni-in .34s ease-out .5s both}
+.yuni-mark{width:84rpx;height:84rpx;border-radius:50%;background:#41775b;display:flex;align-items:center;justify-content:center;box-shadow:0 12rpx 26rpx rgba(65,119,91,.24);animation:yuni-pop .4s cubic-bezier(.3,1.8,.6,1) .34s both}
+.yuni-tick{width:20rpx;height:36rpx;margin-top:-8rpx;border-right:7rpx solid #fff;border-bottom:7rpx solid #fff;border-radius:2rpx;transform:rotate(45deg)}
+.yuni-title{margin-top:18rpx;font-size:48rpx;font-weight:700;letter-spacing:2rpx;animation:yuni-in .38s ease-out .42s both}
+.yuni-sub{margin-top:8rpx;font-size:25rpx;color:#7c867f;animation:yuni-in .38s ease-out .5s both}
+.yuni-stage{margin-top:26rpx;width:592rpx;height:445rpx;border-radius:30rpx;overflow:hidden;background:#e8f3ed;animation:yuni-in .42s ease-out .55s both}
+.yuni-stage{display:flex;align-items:center;justify-content:center}.yuni-video{display:block;width:592rpx;height:445rpx}.yuni-still{width:300rpx;height:338rpx;animation:yuni-hop 1.2s ease-in-out .8s infinite}
+.yuni-foot{width:592rpx;margin-top:26rpx;padding-top:22rpx;border-top:1rpx solid #ece9e2;display:flex;align-items:center;justify-content:space-between;gap:16rpx;animation:yuni-in .4s ease-out .66s both}
+.yuni-foot-main{min-width:0;flex:1}
+.yuni-route{font-size:29rpx;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.yuni-meta{margin-top:6rpx;font-size:22rpx;color:#8b938c}
+.yuni-pill{flex:none;height:46rpx;line-height:46rpx;padding:0 20rpx;border-radius:999rpx;background:#e8f3ed;color:#41775b;font-size:22rpx;font-weight:650}
+.yuni-cta{width:592rpx;height:92rpx;margin-top:24rpx;border-radius:26rpx;background:#41775b;color:#fff;display:flex;align-items:center;justify-content:center;gap:10rpx;font-size:31rpx;font-weight:650;letter-spacing:1.5rpx;box-shadow:0 16rpx 32rpx rgba(65,119,91,.24);animation:yuni-in .42s ease-out .74s both,yuni-pulse 1.6s ease-in-out 5.2s infinite}
+.yuni-arrow{font-size:34rpx;opacity:.86}
+@keyframes yuni-fade{from{opacity:0}to{opacity:1}}
+@keyframes yuni-rise{from{opacity:0;transform:translateY(120rpx) scale(.94)}to{opacity:1;transform:none}}
+@keyframes yuni-pop{from{transform:scale(0)}to{transform:scale(1)}}
+@keyframes yuni-in{from{opacity:0;transform:translateY(14rpx)}to{opacity:1;transform:none}}
+@keyframes yuni-hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-16rpx)}}@keyframes yuni-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}

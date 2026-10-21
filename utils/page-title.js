@@ -28,6 +28,7 @@ const MAP={
   'route-edit':['路线详情','Route details'],
   'address':['常用配送地址','Saved addresses'],
   'coupon-pick':['选择优惠券','Choose a coupon'],
+  invite:['邀请同学','Invite a classmate'],
   chat:['聊天','Chat'],
   'support-chat':['联系客服','Support chat'],
   info:['平台规则','Platform rules'],

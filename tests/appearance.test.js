@@ -27,7 +27,7 @@ assert.equal(inst.data.dark,false,'bottom nav returns to light');
 // every page root carries the dark class binding (profile keeps its own me-dark)
 for(const dir of fs.readdirSync("pages")){
   const xml=fs.readFileSync("pages/"+dir+"/index.wxml","utf8");
-  if(dir==="profile")continue;
+  if(dir==="profile"||dir==="invite")continue; // invite is always dark, so it skips the theme class
   assert.ok(xml.includes("{{darkClass}}"),"page root missing dark class: "+dir);
 }
 // apply(page) toggles the root class together with the nav colours

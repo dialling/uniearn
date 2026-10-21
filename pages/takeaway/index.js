@@ -54,6 +54,6 @@ Page({
  async post(){if(this.data.posting||!this.data.agreed)return;if(!this.data.routeLocked&&!this.data.dorm&&!this.data.deliveryAddress){ui.toast(this.data.zh?'请先添加常用配送地址':'Add a delivery address first');return this.addAddress();}if(!this.validatePhone())return;this.setData({posting:true});try{
   const address=savedRoutes.validate(this.draft());this.autoSaveDorm();await this.persistDorm();this.syncArrival();if(!this.data.arrived){let late=false;try{late=f.todayAt(this.data.arrivalTime)<Date.now();}catch(e){late=true;}if(late){ui.toast(this.data.zh?'预计送达时间已过，请重新选择':'That arrival time has passed. Choose a new one.');return;}}const a=this.data,data={pickupCode:a.night?String(a.mealCode||'').trim():String(a.pickupCode||a.phone||'').replace(/\s/g,''),destinationType:a.destinationType,deliveryAddress:a.deliveryAddress,category:'takeout',owner:a.owner,phone:a.phone,station:address.station,dorm:a.dorm.trim(),room:a.room.trim(),area:a.area,floor:a.floor,note:a.note,pickupNote:a.pickupNote,dropNote:a.dropNote,arrived:a.arrived,arrivalTime:a.arrivalTime,deliverBy:a.arrived?a.deliverBy:'',bags:a.bags,price:a.price,night:a.night,shop:(a.shop||'').trim(),soup:a.soup,riderPhoto:await orders.upload(a.riderPhoto)};
   const r=await orders.act('create',{data,couponId:a.couponId||'',tripId:a.tripId||''});store.update(s=>{s.agreements.pickup=true;});
-  wx.redirectTo({url:'/pages/posted/index?id='+r.id});
+  wx.redirectTo({url:'/pages/posted/index?celebrate=1&id='+r.id});
  }catch(e){ui.toast(e);}finally{this.setData({posting:false});}}
 });

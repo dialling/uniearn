@@ -214,7 +214,7 @@ function execute(s, actor, account, event, now = Date.now()) {
     const r=ownRequest(s,event.id,actor);check(['waiting','taken'].includes(r.status)&&r.category==='takeout'&&!r.etaMoved&&now<=(r.arrivalAt+600000),'Move arrival once, before the original ETA + 10 minutes.');const at=f.todayAt(event.time,now);check(at>r.arrivalAt&&at<=r.arrivalAt+1800000,'Move arrival later by at most 30 minutes.');r.originalArrivalAt=r.arrivalAt;r.arrivalAt=at;r.closesAt=at+1800000;r.etaMoved=true;r.etaChangedAfterAccept=r.status==='taken';f.event(r,'Arrival moved to '+f.clock(at),now);
   } else if(action==='collectCoupon'){rewards.collect(s,actor,event.campaignId,now);
   } else if(action==='rewardsInit'){
-  } else if(action==='invite'){rewards.invite(s,actor,String(event.code||''));
+  } else if(action==='invite'){rewards.invite(s,actor,String(event.code||''),now);
   } else if(action==='preferences'){const m=s.members[actor];m.preferences=m.preferences||{};for(const k of ['newJobs','orderUpdates','nearbyTrip','deliveredUpdates','skillsInterested'])if(typeof event.values?.[k]==='boolean')m.preferences[k]=event.values[k];
   } else if(action==='message'||action==='readMessages'){
     const r=s.requests.find(x=>x.id===event.id),t=r&&s.trips.find(x=>x.id===r.runnerId);check(r&&t&&(r.ownerId===actor||t.runnerAccountId===actor),'Only the current order participants can open this chat.');
