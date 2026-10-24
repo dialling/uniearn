@@ -4,7 +4,7 @@
 .me-page .flow-card{padding:27rpx;border:1rpx solid #deded7;border-radius:27rpx;margin-bottom:20rpx}
 
 /* ① 顶部大卡：资料 + 双徽章 + 等级进度 */
-.me-header{background:#41775b;color:#fff;border-radius:27rpx;padding:30rpx 27rpx 26rpx;margin-bottom:20rpx}
+.me-header{background:#4b8263;color:#fff;border-radius:27rpx;padding:30rpx 27rpx 26rpx;margin-bottom:20rpx}
 .me-header-top{display:flex;align-items:center;gap:18rpx}
 .avatar{width:108rpx;height:108rpx;line-height:108rpx;font-size:43rpx}
 .header-avatar{width:96rpx;height:96rpx;line-height:96rpx;font-size:38rpx;background:#4e8a68;color:#fff;border-radius:50%;text-align:center;flex:none}
@@ -15,19 +15,20 @@
 .header-badge-row{margin:14rpx 0 0 116rpx}
 .header-badge{font-size:21rpx;line-height:1.6;padding:6rpx 15rpx;background:#f0efeb;border-radius:26rpx;font-weight:650;color:#63665d;display:inline-block;white-space:nowrap}
 .header-badge.verified{background:#e7f1eb;color:#3f7a52}
-.edit-button{margin:0;padding:0 12rpx;min-width:0;flex:none;width:auto;height:40rpx;line-height:40rpx;display:flex;align-items:center;justify-content:center;gap:5rpx;border:1rpx solid #7bb08f;border-radius:20rpx;background:transparent;color:#ecf5f0;font-size:19rpx;font-weight:650}
+.edit-button{margin:0;padding:0;min-width:84rpx;max-width:84rpx;flex:0 0 84rpx;width:84rpx;height:44rpx;line-height:42rpx;display:flex;align-items:center;justify-content:center;gap:5rpx;border:1rpx solid #7bb08f;border-radius:999rpx;background:transparent;color:#ecf5f0;font-size:19rpx;font-weight:650;box-sizing:border-box}
 .edit-button::after{border:0}
-.edit-button image{width:16rpx;height:16rpx}
+.edit-button image{width:15rpx;height:15rpx}
 .runner-tag{flex:none;font-size:20rpx;font-weight:700;color:#41775b;background:#ecf5f0;border-radius:26rpx;padding:8rpx 14rpx;line-height:1.4}
 .badge-row{display:flex;gap:16rpx;margin:24rpx 0 22rpx}
 .tier-badge{font-size:23rpx;font-weight:650;color:#ecf5f0;border:1rpx solid #7bb08f;border-radius:26rpx;padding:10rpx 22rpx}
 .header-level{display:flex;align-items:center;gap:14rpx}
-.hl-label{font-size:22rpx;color:#7bb08f;font-weight:650;flex:none}
+.hl-label{font-size:22rpx;color:#ecf5f0;font-weight:700;flex:none}
 .hl-next{flex:1;min-width:0;font-size:22rpx;color:#ecf5f0;text-align:right}
 .hl-caret{flex:none;color:#ecf5f0;font-size:28rpx}
-.hl-track{height:10rpx;background:#f4f7f4;border-radius:10rpx;overflow:hidden;margin:16rpx 0 12rpx}
-.hl-fill{height:100%;background:#69d39a;border-radius:10rpx}
-.hl-tiers{display:flex;justify-content:space-between;font-size:20rpx;color:#7bb08f}
+.hl-track{height:10rpx;background:#f4f7f4;border-radius:10rpx;overflow:hidden;margin:16rpx 0 8rpx}
+.hl-fill{height:100%;background:#2f6b49;border-radius:10rpx}
+.hl-tiers{display:flex;justify-content:space-between;font-size:18rpx;color:#7bb08f}
+.hl-tiers text{flex:1;text-align:left}.hl-tiers .hl-end{text-align:right}
 .hl-tiers .cur{color:#ecf5f0;font-weight:750}
 .level-detail{margin-top:18rpx;border-top:1rpx solid #ffffff42;padding-top:20rpx}
 .level-detail .level-grid .hint{color:#c9b3a2}
