@@ -1,0 +1,75 @@
+{
+  "pages": [
+    "pages/welcome/index",
+    "pages/campus/index",
+    "pages/jobs/index",
+    "pages/requests/index",
+    "pages/create/index",
+    "pages/earnings/index",
+    "pages/profile/index",
+    "pages/request/index",
+    "pages/trip/index",
+    "pages/join/index",
+    "pages/job/index",
+    "pages/student-check/index",
+    "pages/sms-scan/index",
+    "pages/takeaway/index",
+    "pages/trip-start/index",
+    "pages/rewards/index",
+    "pages/chat/index",
+    "pages/support-chat/index",
+    "pages/info/index",
+    "pages/task/index",
+    "pages/public-job/index",
+    "pages/routes/index",
+    "pages/guide/index",
+    "pages/help/index",
+    "pages/route-edit/index",
+    "pages/address/index",
+    "pages/coupons/index",
+    "pages/coupon-pick/index",
+    "pages/invite/index",
+    "pages/admin/index",
+    "pages/notify-guide/index",
+    "pages/terms/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "UniEarn",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#eeede8"
+  },
+  "style": "v2",
+  "usingComponents": {
+    "app-nav": "/components/nav/index",
+    "yuni-tip": "/components/yuni/index",
+    "yuni-assistant": "/components/yuni-assistant/index",
+    "lang-switch": "/components/lang-switch/index",
+    "level-up": "/components/level-up/index"
+  },
+  "entryPagePath": "pages/jobs/index",
+  "lazyCodeLoading": "requiredComponents",
+  "subpackages": [
+    {
+      "root": "pages/posted",
+      "name": "yuni",
+      "pages": [
+        "index"
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/takeaway/index": {
+      "network": "all",
+      "packages": [
+        "yuni"
+      ]
+    },
+    "pages/create/index": {
+      "network": "all",
+      "packages": [
+        "yuni"
+      ]
+    }
+  }
+}
