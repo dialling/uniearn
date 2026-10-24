@@ -37,12 +37,13 @@ function page(name){
  assert.equal(noPickup.data.addressReady,true,'shared delivery addresses work without selecting a takeaway gate');
  store.update(s=>{s.profile.pickup='North gate';});
  parcel.manageAddresses();assert.match(navigation.url,/\/pages\/address\/index\?pick=1/);
- takeaway.addAddress();assert.match(navigation.url,/\/pages\/address\/index\?pick=1/);
+ takeaway.manage();assert.match(navigation.url,/\/pages\/address\/index\?pick=1/);
+ takeaway.addAddress();assert.match(navigation.url,/\/pages\/address-add\/index/);
  const place=parcelRoutes.save({name:'Library',destinationType:'place',deliveryAddress:'Library front desk',owner:'Roommate',phone:'13900139000'});
  const manager=page('address');manager.setData({zh:true});manager.refresh();
  assert.equal(manager.data.list.length,3);
  assert.equal(manager.data.list.find(x=>x.id===place.id).place,'Library front desk','shared manager includes other delivery places');
- manager.edit({currentTarget:{dataset:{id:place.id}}});assert.match(navigation.url,/service=parcel&id=/);
+ manager.edit({currentTarget:{dataset:{id:place.id}}});assert.match(navigation.url,/\/pages\/address-edit\/index\?id=/);
  parcel.chooseAddress({currentTarget:{dataset:{id:place.id}}});
  assert.equal(parcel.data.deliveryAddress,'Library front desk');
  assert.equal(parcel.data.pickupPoint,'Actual parcel station','changing destination does not change parcel pickup');

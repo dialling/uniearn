@@ -1,9 +1,10 @@
 /* Shared dimensions and typography for both pickup forms. */
 .post-page{min-height:100vh;padding:0 30rpx calc(230rpx + env(safe-area-inset-bottom));background:#eeede8;color:#202126;font-size:26rpx;line-height:1.5}
 .post-page .post-header{background:transparent;margin:0 -30rpx 20rpx;padding:18rpx 30rpx 22rpx;border-bottom:1rpx solid #e1e1da}
-.post-page .post-tabs{display:flex;gap:0;padding:6rpx;border-radius:20rpx;background:#eeede8}
-.post-page .post-tab{display:block;flex:1;min-width:0;height:72rpx;line-height:72rpx;padding:0;margin:0;border-radius:16rpx;background:transparent;color:#85857e;font-size:26rpx;font-weight:700}
-.post-page .post-tab.active{background:#41775b;color:#fff}
+.post-page .post-tabs{display:flex;gap:0;margin-top:0;padding:5rpx;border-radius:23rpx;background:#efeee9}
+.post-page .post-tab{position:relative;z-index:1;display:block;flex:1;min-width:0;height:72rpx;line-height:72rpx;padding:0;margin:0;border-radius:19rpx;background:transparent;color:#77756d;font-size:26rpx;font-weight:700;transition:color .3s ease,transform .3s cubic-bezier(.34,1.5,.55,1)}
+.post-page .post-tabs.glass .post-tab.active{background:transparent;color:#191b1d;box-shadow:none}
+.post-page .post-tabs .glass-thumb{pointer-events:none}
 .post-page .post-tab[disabled]{opacity:.65}
 .post-page .flow-card,.post-page .step-card{width:100%;padding:24rpx;margin:0 0 20rpx;border:1rpx solid #deded7;border-radius:24rpx;background:#fff}
 .post-page .flow-head,.post-page .step-head{display:flex;align-items:center;gap:12rpx;min-height:40rpx;margin:0 0 12rpx;font-size:28rpx;font-weight:750;line-height:1.35}

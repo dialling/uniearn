@@ -4,9 +4,9 @@ page{background:#080906}
 
 .iv-bg{position:fixed;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;z-index:0}
 .iv-mark{position:absolute;white-space:nowrap;font-weight:900;letter-spacing:-6rpx;color:#f2e8d5;line-height:1}
-.iv-mark.m1{top:40rpx;left:780rpx;font-size:300rpx;opacity:.09;transform:rotate(90deg);transform-origin:left top;filter:blur(10rpx)}
-.iv-mark.m2{top:330rpx;left:-60rpx;font-size:230rpx;opacity:.07;filter:blur(16rpx)}
-.iv-mark.m3{top:700rpx;left:180rpx;font-size:200rpx;opacity:.065;filter:blur(6rpx)}
+.iv-mark.m1{top:40rpx;left:780rpx;font-size:300rpx;opacity:.16;transform:rotate(90deg);transform-origin:left top;filter:blur(10rpx)}
+.iv-mark.m2{top:330rpx;left:-100rpx;font-size:230rpx;opacity:.09;filter:blur(16rpx)}
+.iv-mark.m3{top:700rpx;left:140rpx;font-size:200rpx;opacity:.08;filter:blur(6rpx)}
 .iv-streaks{position:absolute;left:0;top:0;right:0;height:1100rpx;background:repeating-linear-gradient(90deg,rgba(242,232,213,.025) 0,rgba(242,232,213,.025) 3rpx,transparent 3rpx,transparent 46rpx,rgba(242,232,213,.015) 46rpx,rgba(242,232,213,.015) 50rpx,transparent 50rpx,transparent 118rpx);filter:blur(4rpx);-webkit-mask-image:linear-gradient(180deg,#000 0%,#000 55%,transparent 100%);mask-image:linear-gradient(180deg,#000 0%,#000 55%,transparent 100%)}
 .iv-glow{position:absolute;left:-200rpx;top:260rpx;width:720rpx;height:720rpx;border-radius:50%;background:radial-gradient(circle,rgba(228,71,45,.12) 0%,rgba(228,71,45,0) 70%)}
 

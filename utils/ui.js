@@ -21,4 +21,9 @@ async function photo(source=['album']){
   return new Promise(resolve=>wx.saveFile({tempFilePath:path,success:r=>resolve(r.savedFilePath),fail:()=>resolve(path)}));
 }
 function preview(path){if(path)wx.previewImage({urls:[path],current:path});}
-module.exports={toast,confirm,photo,preview,cleanSaved};
+async function photos(source=['album'],count=3){
+ const paths=await images.chooseImages(source,count);
+ try{await cleanSaved();}catch(_){}
+ return Promise.all(paths.map(path=>new Promise(resolve=>wx.saveFile({tempFilePath:path,success:r=>resolve(r.savedFilePath),fail:()=>resolve(path)}))));
+}
+module.exports={toast,confirm,photo,photos,preview,cleanSaved};

@@ -61,3 +61,9 @@
 .nav-dark .sheet-choice.parcel{background:#3a2f29;border-color:#41775b;color:#7bb08f}
 .nav-dark .sheet-choice.task{background:#2f3140;border-color:#6b74c9;color:#a8b0f0}
 .nav-dark .sheet-choice.trip{background:#2c3a33;border-color:#41775b;color:#96c9aa}
+
+/* Keep the post label aligned with the other navigation labels. */
+.nav-create{gap:4rpx;margin-top:-50rpx;color:#41775b}
+.nav-create .plus{margin-top:0;flex:none}
+.nav-create.nav-press .plus{transform:rotate(90deg)}
+.nav-dark .nav-create{color:#96c9aa}

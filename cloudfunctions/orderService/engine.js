@@ -68,31 +68,38 @@ function photo(value, actor, required = false) {
 }
 function input(data, actor) {
   data = data || {}; const out = {};
-  for (const key of ['destinationType','deliveryAddress','owner','station','dorm','room','phone','note','description','pickupPoint','pickupAddress','pickupNote','dropNote','deadline','deliveryDate','arrivalTime','pickupCode','deliverBy','shop']) {
+  for (const key of ['destinationType','deliveryAddress','dormGender','recipientGender','owner','station','dorm','room','phone','note','description','pickupPoint','pickupAddress','pickupNote','dropNote','deadline','deliveryDate','arrivalTime','pickupCode','deliverBy','shop']) {
     check(data[key] === undefined || typeof data[key] === 'string', 'Invalid ' + key);
     out[key] = (data[key] || '').trim(); check(out[key].length <= 500, key + ' is too long.');
   }
+  check(['','male','female'].includes(out.dormGender),'Choose a valid dorm gender.');
+  if(out.destinationType==='place'||data.category==='task')out.dormGender='';
+  check(['','male','female'].includes(out.recipientGender),'Choose a valid recipient gender.');
+  if(out.destinationType!=='place'||data.category==='task')out.recipientGender='';
   check(out.pickupCode.length <= 20, 'Keep the pickup code under 20 characters.');
   check(out.shop.length <= 60, 'Keep the shop name under 60 characters.');
   check(['parcel','takeout','task'].includes(data.category), 'Choose takeaway or parcel.');
   out.category = data.category;
+  if(out.category!=='task'){
+    check(!out.destinationType||['dorm','place'].includes(out.destinationType),'Choose a valid destination type.');
+    if(out.destinationType==='place'){check(!!out.deliveryAddress,'Describe exactly where to deliver.');out.dorm=/library|图书馆/i.test(out.deliveryAddress)?'Library':/classroom|教室/i.test(out.deliveryAddress)?'Classroom':/sports|体育/i.test(out.deliveryAddress)?'Sports centre':'Campus meeting point';out.destinationKey=crypto.createHash('sha256').update(out.deliveryAddress.toLowerCase().replace(/\s+/g,' ').trim()).digest('hex');out.room='';out.dropNote='Meet at the stated location';}
+  }
   if(data.deliverAt!==undefined){check(Number.isSafeInteger(data.deliverAt),'Invalid delivery time');out.deliverAt=data.deliverAt;}
   out.arrived = data.arrived === true; out.soup = data.soup === true; out.fragile = data.category === 'parcel' && data.fragile === true; out.night = data.category === 'takeout' && data.night === true;
   for (const key of ['bags','price','tip']) out[key] = Number(data[key] || 0);
   if (out.category === 'takeout') {
     check(data.purchaseStatus===undefined||['ordered','needs_purchase'].includes(data.purchaseStatus),'Choose a valid food order status.');
     out.purchaseStatus=data.purchaseStatus===undefined?'ordered':data.purchaseStatus;
-    check(!out.destinationType||['dorm','place'].includes(out.destinationType),'Choose a valid destination type.');
-    if(out.destinationType==='place'){check(!!out.deliveryAddress,'Describe exactly where to deliver.');out.dorm=/library|图书馆/i.test(out.deliveryAddress)?'Library':/classroom|教室/i.test(out.deliveryAddress)?'Classroom':/sports|体育/i.test(out.deliveryAddress)?'Sports centre':'Campus meeting point';out.destinationKey=crypto.createHash('sha256').update(out.deliveryAddress.toLowerCase().replace(/\s+/g,' ').trim()).digest('hex');out.room='';out.dropNote='Meet at the stated location';}
     check(Number.isInteger(out.bags) && out.bags >= 1 && out.bags <= 5, 'Choose 1–5 bags.');
     check(Number.isInteger(out.price) && out.price >= 3 && out.price <= d.MAX_PRICE_PER_BOX, 'Choose ¥3–'+d.MAX_PRICE_PER_BOX+' per bag.');
   } else if(out.category==='task'){
     out.title=String(data.title||'').trim();check(out.title.length>=5&&out.title.length<=4000,'Describe your task (5–4000 characters).');check(d.wholeCents(out.price)&&out.price>=3&&out.price<=MAX_TASK_PRICE,'Set a price from ¥3 to ¥'+MAX_TASK_PRICE+'.');out.price=Math.round(out.price*100)/100;out.dueAt=Number(data.dueAt);check(Number.isFinite(out.dueAt)&&out.dueAt>Date.now(),'Choose a future deadline.');
   } else {
-    check(Array.isArray(data.parcelItems) && data.parcelItems.length >= 1 && data.parcelItems.length <= 5, 'Choose 1–5 parcels.');
+    check(Array.isArray(data.parcelItems) && data.parcelItems.length >= 1 && data.parcelItems.length <= 12, 'Choose 1–12 parcels.');
     out.parcelItems = data.parcelItems.map(p => {
       check(p && typeof p.size === 'string' && typeof p.code === 'string' && p.code.length <= 100, 'Invalid parcel code.');
-      return { size: p.size, code: p.code };
+      check(p.pickupPoint === undefined || typeof p.pickupPoint === 'string' && p.pickupPoint.trim().length > 0 && p.pickupPoint.length <= 100, 'Choose a valid station per parcel.');
+      return { size: p.size, code: p.code, pickupPoint: p.pickupPoint && p.pickupPoint.trim() };
     });
   }
   out.riderPhoto = photo(data.riderPhoto, actor);
@@ -186,12 +193,13 @@ function execute(s, actor, account, event, now = Date.now()) {
     const t = f.startTrip(tripState, { category: cfg.category, when: cfg.when, time: cfg.time, duration: cfg.duration, station: cfg.station, dorm: cfg.dorm, capacity: cfg.capacity }, now);s.nextId=tripState.nextId;
     t.campusId=campusId;t.universityId='xjtlu';t.runnerAccountId = actor; t.runnerName=account.profile.name; t.runnerPhone=account.profile.phone; t.createdAt = now;
     t.requestIds.forEach(id => f.event(s.requests.find(r => r.id === id), 'Runner accepted', now)); value = { id: t.id };
-  } else if (['raise','cancel','confirm','report','riderPhoto'].includes(action)) {
+  } else if (['raise','cancel','confirm','report','riderPhoto','foodArrived'].includes(action)) {
     const r = ownRequest(s, event.id, actor);
     if (action === 'raise') { check((r.raised || 0) + Number(event.amount || 0) <= 100, 'Offer increase limit reached.'); f.raise(s, r.id, event.amount); }
     if (action === 'cancel') { d.cancelRequest(s, r.id); f.event(r, 'Cancelled · demo refund', now); }
     if (action === 'confirm') { d.confirm(s, r.id); f.event(r, 'Confirmed', now); }
     if (action === 'report') { check(r.category!=='takeout'||now<=r.deliveredAt+30*60000,'Report takeaway problems within 30 minutes of delivery.'); check(typeof event.note === 'string' && event.note.length <= 500, 'Keep the note under 500 characters.'); f.report(s, r.id, event.reason, photo(event.photo, actor), event.note); }
+    if (action === 'foodArrived') { check(r.category==='takeout'&&['waiting','taken'].includes(r.status)&&!r.arrived, 'Only food awaiting pickup can be marked as arrived.'); r.arrived=true; r.arrivalAt=now; f.event(r,'Food is there now',now); }
     if (action === 'riderPhoto') { check(['waiting','taken'].includes(r.status), 'Pickup has already started.'); r.riderPhoto = photo(event.photo, actor, true); r.arrived = true; }
   } else if (['pickup','deliver','runnerCancel','taskDone','sealBroken'].includes(action)) {
     const r = runnerRequest(s, event.id, actor);
@@ -245,7 +253,7 @@ function snapshot(s, actor, account, now = Date.now()) {
     }
     // Allowlist public fields. Takeaway notes and locker locations are public; pickup codes, phone, room and photo IDs stay private.
     const out = {};
-    for (const k of ['destinationKey','destinationType','id','campusId','universityId','category','station','dorm','small','big','reward','serviceFee','status','deadline','deliveryDate','createdAt','arrivalAt','closesAt','arrived','deliverBy','soup','fragile','night','purchaseStatus','shop','raised','tip','parcelSize']) if (r[k] !== undefined) out[k] = r[k];
+    for (const k of ['destinationKey','destinationType','dormGender','id','campusId','universityId','category','station','dorm','small','big','reward','serviceFee','status','deadline','deliveryDate','createdAt','arrivalAt','closesAt','arrived','deliverBy','soup','fragile','night','purchaseStatus','shop','raised','tip','parcelSize']) if (r[k] !== undefined) out[k] = r[k];
     if (r.category === 'takeout' && r.note) out.note = r.note;
     if (r.category === 'takeout' && !r.night && r.pickupPoint) out.pickupPoint = r.pickupPoint;
     return { ...out, owner:'Request', phone:'', room:'', codes:Array(d.boxes(r)).fill(''), collected:[], photo:'',
@@ -257,7 +265,7 @@ function snapshot(s, actor, account, now = Date.now()) {
     runnerJobs:stats(s,t.runnerAccountId).jobsDone, departAt:t.departAt, joinUntil:t.joinUntil, phase:t.phase,
     cancelled:false, remaining:t.capacity-t.requestIds.reduce((n,id)=>n+d.boxes(s.requests.find(r=>r.id===id)),0)
   }));
-  const publicJobs=s.requests.filter(r=>inCampus(r)&&!['cancelled','refunded','disputed'].includes(r.status)).map(r=>{const o={};for(const k of ['destinationKey','destinationType','id','campusId','universityId','category','station','dorm','small','big','reward','status','arrivalAt','closesAt','deadline','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','arrived','deliverBy','soup','fragile','night','purchaseStatus','shop','raised','title','dueAt'])if(r[k]!==undefined)o[k]=r[k];if(r.category==='takeout'&&!r.night&&r.pickupPoint)o.pickupPoint=r.pickupPoint;return o;});
+  const publicJobs=s.requests.filter(r=>inCampus(r)&&!['cancelled','refunded','disputed'].includes(r.status)).map(r=>{const o={};for(const k of ['destinationKey','destinationType','dormGender','id','campusId','universityId','category','station','dorm','small','big','reward','status','arrivalAt','closesAt','deadline','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','arrived','deliverBy','soup','fragile','night','purchaseStatus','shop','raised','title','dueAt'])if(r[k]!==undefined)o[k]=r[k];if(r.category==='takeout'&&!r.night&&r.pickupPoint)o.pickupPoint=r.pickupPoint;return o;});
   const supportInbox=(account&&account._admin||account&&account._reviewer)?Object.entries(s.members).flatMap(([accountId,member])=>(member.supportTickets||[]).filter(t=>t.status==='open').map(t=>({...clone(t),accountId}))).sort((a,b)=>((b.messages||[]).at(-1)?.at||b.createdAt)-((a.messages||[]).at(-1)?.at||a.createdAt)).slice(0,50):[];
   return {revision:s.revision,serverTime:now,publicJobs,deliveredThisWeek:s.requests.filter(r=>inCampus(r)&&r.deliveredAt>now-7*86400000).length,requests,trips,publicTrips,accountId:actor,supportInbox,
     adjustments:loggedIn?(s.adjustments||[]).filter(a=>a.runnerAccountId===actor).map(({runnerAccountId,...a})=>a):[],rewards:loggedIn?rewards.view(s,actor,now):null,preferences:loggedIn?(s.members[actor]||{}).preferences||{}:{},
