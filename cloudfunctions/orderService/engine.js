@@ -80,6 +80,8 @@ function input(data, actor) {
   out.arrived = data.arrived === true; out.soup = data.soup === true; out.fragile = data.category === 'parcel' && data.fragile === true; out.night = data.category === 'takeout' && data.night === true;
   for (const key of ['bags','price','tip']) out[key] = Number(data[key] || 0);
   if (out.category === 'takeout') {
+    check(data.purchaseStatus===undefined||['ordered','needs_purchase'].includes(data.purchaseStatus),'Choose a valid food order status.');
+    out.purchaseStatus=data.purchaseStatus===undefined?'ordered':data.purchaseStatus;
     check(!out.destinationType||['dorm','place'].includes(out.destinationType),'Choose a valid destination type.');
     if(out.destinationType==='place'){check(!!out.deliveryAddress,'Describe exactly where to deliver.');out.dorm=/library|图书馆/i.test(out.deliveryAddress)?'Library':/classroom|教室/i.test(out.deliveryAddress)?'Classroom':/sports|体育/i.test(out.deliveryAddress)?'Sports centre':'Campus meeting point';out.destinationKey=crypto.createHash('sha256').update(out.deliveryAddress.toLowerCase().replace(/\s+/g,' ').trim()).digest('hex');out.room='';out.dropNote='Meet at the stated location';}
     check(Number.isInteger(out.bags) && out.bags >= 1 && out.bags <= 5, 'Choose 1–5 bags.');
@@ -241,10 +243,11 @@ function snapshot(s, actor, account, now = Date.now()) {
       out.messages=thread?thread.messages.map(m=>({id:m.id,text:m.text,at:m.at,mine:m.sender===actor})):[];
       return { ...out, runnerName:(s.trips.find(t=>t.id===r.runnerId)||{}).runnerName||'', ownerId: isMine ? actor : '', isMine, isRunner };
     }
-    // Allowlist public fields. Never send pickup codes, phone, room or photo IDs. Takeaway notes are public by design.
+    // Allowlist public fields. Takeaway notes and locker locations are public; pickup codes, phone, room and photo IDs stay private.
     const out = {};
-    for (const k of ['destinationKey','destinationType','id','campusId','universityId','category','station','dorm','small','big','reward','serviceFee','status','deadline','deliveryDate','createdAt','arrivalAt','closesAt','arrived','deliverBy','soup','fragile','night','shop','raised','tip','parcelSize']) if (r[k] !== undefined) out[k] = r[k];
+    for (const k of ['destinationKey','destinationType','id','campusId','universityId','category','station','dorm','small','big','reward','serviceFee','status','deadline','deliveryDate','createdAt','arrivalAt','closesAt','arrived','deliverBy','soup','fragile','night','purchaseStatus','shop','raised','tip','parcelSize']) if (r[k] !== undefined) out[k] = r[k];
     if (r.category === 'takeout' && r.note) out.note = r.note;
+    if (r.category === 'takeout' && !r.night && r.pickupPoint) out.pickupPoint = r.pickupPoint;
     return { ...out, owner:'Request', phone:'', room:'', codes:Array(d.boxes(r)).fill(''), collected:[], photo:'',
       parcelItems:r.parcelItems && r.parcelItems.map(p => ({size:p.size, price:p.price, code:''})), isMine:false, isRunner:false };
   });
@@ -254,7 +257,7 @@ function snapshot(s, actor, account, now = Date.now()) {
     runnerJobs:stats(s,t.runnerAccountId).jobsDone, departAt:t.departAt, joinUntil:t.joinUntil, phase:t.phase,
     cancelled:false, remaining:t.capacity-t.requestIds.reduce((n,id)=>n+d.boxes(s.requests.find(r=>r.id===id)),0)
   }));
-  const publicJobs=s.requests.filter(r=>inCampus(r)&&!['cancelled','refunded','disputed'].includes(r.status)).map(r=>{const o={};for(const k of ['destinationKey','destinationType','id','campusId','universityId','category','station','dorm','small','big','reward','status','arrivalAt','closesAt','deadline','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','arrived','deliverBy','soup','fragile','night','shop','raised','title','dueAt'])if(r[k]!==undefined)o[k]=r[k];return o;});
+  const publicJobs=s.requests.filter(r=>inCampus(r)&&!['cancelled','refunded','disputed'].includes(r.status)).map(r=>{const o={};for(const k of ['destinationKey','destinationType','id','campusId','universityId','category','station','dorm','small','big','reward','status','arrivalAt','closesAt','deadline','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','arrived','deliverBy','soup','fragile','night','purchaseStatus','shop','raised','title','dueAt'])if(r[k]!==undefined)o[k]=r[k];if(r.category==='takeout'&&!r.night&&r.pickupPoint)o.pickupPoint=r.pickupPoint;return o;});
   const supportInbox=(account&&account._admin||account&&account._reviewer)?Object.entries(s.members).flatMap(([accountId,member])=>(member.supportTickets||[]).filter(t=>t.status==='open').map(t=>({...clone(t),accountId}))).sort((a,b)=>((b.messages||[]).at(-1)?.at||b.createdAt)-((a.messages||[]).at(-1)?.at||a.createdAt)).slice(0,50):[];
   return {revision:s.revision,serverTime:now,publicJobs,deliveredThisWeek:s.requests.filter(r=>inCampus(r)&&r.deliveredAt>now-7*86400000).length,requests,trips,publicTrips,accountId:actor,supportInbox,
     adjustments:loggedIn?(s.adjustments||[]).filter(a=>a.runnerAccountId===actor).map(({runnerAccountId,...a})=>a):[],rewards:loggedIn?rewards.view(s,actor,now):null,preferences:loggedIn?(s.members[actor]||{}).preferences||{}:{},

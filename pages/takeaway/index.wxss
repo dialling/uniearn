@@ -1,4 +1,17 @@
 @import "../../utils/post-form.wxss";
+.purchase-options{display:flex;gap:16rpx}
+.purchase-option{flex:1;min-width:0;display:flex;align-items:center;gap:14rpx;min-height:112rpx;padding:20rpx;border:2rpx solid #e6e5df;border-radius:22rpx;background:#f6f5f1}
+.purchase-option.selected{border-color:#41775b;background:#edf6f1;color:#315e47}
+.purchase-radio{flex:none;display:flex;align-items:center;justify-content:center;width:30rpx;height:30rpx;border:2rpx solid #b3b4aa;border-radius:50%;font-size:20rpx;line-height:1}
+.purchase-option.selected .purchase-radio{border-color:#41775b;color:#41775b}
+.purchase-option .hint{margin:4rpx 0 0;font-size:23rpx;line-height:1.4}
+.purchase-help{margin:18rpx 0 0;line-height:1.5}
+.purchase-press{opacity:.8}
+.page-dark .purchase-option{background:#2c332f;border-color:#465149;color:#edf1ed}
+.page-dark .purchase-option.selected{background:#263c2f;border-color:#7bb08f}
+.page-dark .purchase-option.selected .purchase-radio{color:#a6d8b4;border-color:#7bb08f}
+.post-page .locker-select{padding-top:18rpx;padding-bottom:18rpx}
+.post-page .locker-select .ue-select-text{white-space:normal;overflow:visible;line-height:1.5}
 .route-line{border-left:3rpx solid #deded7;padding-left:24rpx;margin:18rpx 0}.route-line .value{margin-bottom:18rpx}
 .dash{border:2rpx dashed #7bb08f;border-radius:18rpx;padding:20rpx;margin:18rpx 0}.thumb{width:140rpx;height:140rpx;border-radius:16rpx}
 .bag-control{margin:18rpx 0}.bag-control>view:first-child{flex:1;min-width:0}.bag-control .hint{margin:4rpx 0}

@@ -76,6 +76,7 @@ try{
   '../../utils/account':{},'../../utils/orders':{upload:async p=>p,act:async(action,args)=>{payload=args;return{id:'new-order'};}},
   '../../utils/store':{get:()=>state,update:fn=>fn(state)},'../../utils/workflow':require('../utils/workflow'),
   '../../utils/ui':{toast:e=>toast=String(e)},'../../utils/post-copy':{postCopy:()=>({}),label:x=>x},
+  '../../utils/takeaway-lockers':require('../utils/takeaway-lockers'),
   '../../utils/campus':{areaOfBuilding:()=>({}),floorOfRoom:()=>1,highFloor:()=>false}
  };
  vm.runInNewContext(fs.readFileSync(require.resolve('../pages/takeaway/index.js'),'utf8'),{Date,Page:p=>definition=p,wx:{redirectTo(){}},require:n=>{assert.ok(n in dependencies,n);return dependencies[n];}});
