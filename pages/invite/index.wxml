@@ -17,8 +17,8 @@
   <view class="iv-unit">{{zh?'配送券':'delivery credit'}}</view>
 
   <view class="iv-rows">
-   <view class="iv-row"><image class="iv-row-icon" src="/assets/invite/check.svg"/><text>{{zh?'新同学填写邀请码后，你们各得 ¥3.9，马上就能用，可分多单抵扣配送费':'Once a new user enters your code, you each get ¥3.9 to use right away, across orders until it runs out'}}</text></view>
-   <view class="iv-row"><image class="iv-row-icon" src="/assets/invite/check.svg"/><text>{{zh?'发放后 30 天内有效，有效期可在优惠券里查看':'Valid for 30 days after it is issued. See the dates in your coupons'}}</text></view><view class="iv-row"><image class="iv-row-icon" src="/assets/invite/gift.svg"/><text>{{zh?'邀请码仅限未下过单的新用户使用':'Only for new users who have never placed an order'}}</text></view>
+   <view class="iv-row"><image class="iv-row-icon" src="/assets/invite/check.svg"/><text>{{zh?'同学填写邀请码后，你们各得 ¥3.9，马上就能用，可分多单抵扣配送费':'Once a classmate enters your code, you each get ¥3.9 to use right away, across orders until it runs out'}}</text></view>
+   <view class="iv-row"><image class="iv-row-icon" src="/assets/invite/check.svg"/><text>{{zh?'发放后 30 天内有效，有效期可在优惠券里查看':'Valid for 30 days after it is issued. See the dates in your coupons'}}</text></view><view class="iv-row"><image class="iv-row-icon" src="/assets/invite/gift.svg"/><text>{{zh?'每人只能绑定一次邀请码，下过单也能用':'One invitation code per person, even if you have ordered before'}}</text></view>
   </view>
 
   <view class="iv-line"></view>
@@ -29,7 +29,7 @@
    <block wx:else><text class="iv-muted">{{zh?'完成注册后获得你的邀请码':'Register to get your code'}}</text><view class="iv-chip" hover-class="iv-press" bindtap="register">{{zh?'去注册':'Register'}}</view></block>
   </view>
 
-  <view class="iv-sub">{{zh?'收到同学的邀请码？':'Got a classmate’s code?'}}</view>
+  <view class="iv-sub">{{zh?'填写邀请码':'Enter invite code'}}</view>
   <view class="iv-card iv-redeem">
    <input class="iv-input" value="{{inviteInput}}" bindinput="input" placeholder="{{zh?'输入邀请码':'Enter the code'}}" placeholder-class="iv-ph" maxlength="20"/>
    <view class="iv-chip solid {{redeeming?'busy':''}}" hover-class="iv-press" bindtap="redeem">{{zh?'使用':'Use'}}</view>

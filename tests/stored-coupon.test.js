@@ -18,3 +18,26 @@ const d=order('r4',4);assert.equal(d.discount,0.9);
 const fresh={...coupon(friend)};const big={id:'r5',ownerId:friend,reward:4,serviceFee:0,status:'waiting'};s.requests.push(big);rewards.apply(s,friend,big,fresh.id,now);assert.equal(big.discount,3.9,'a ¥4 order uses the full ¥3.9');
 assert.throws(()=>{const late={id:'r6',ownerId:inviter,reward:3,serviceFee:0};const x=coupon(inviter);x.balance=1;delete x.usedBy;rewards.apply(s,inviter,late,x.id,now+31*86400000);},/expired/);
 console.log('Stored-value invite coupon: ¥3.9 balance, partial use, refund back to balance and 30-day validity passed.');
+
+// Prior orders do not block a first binding; each person can still bind only once.
+{
+ const state={members:{},requests:[],trips:[]},host='host-account-001',other='other-account-01';
+ const people=['waiting-user-001','completed-user-01','archived-user-01'];
+ for(const id of [host,other,...people])rewards.init(state,id,now);
+ state.requests.push({id:'waiting',ownerId:people[0],status:'waiting'},{id:'completed',ownerId:people[1],status:'confirmed'});
+ state.members[people[2]].archivedOrders=5;
+ for(const id of people){
+  assert.throws(()=>rewards.invite(state,id,id.slice(0,12),now),/Invalid invitation/);
+  assert.throws(()=>rewards.invite(state,id,'missing-code',now),/Invalid invitation/);
+  assert.ok(!state.members[id].invitedBy,'rejected codes do not bind the account');
+  rewards.invite(state,id,host.slice(0,12),now);
+  assert.equal(state.members[id].invitedBy,host);
+  assert.throws(()=>rewards.invite(state,id,host.slice(0,12),now),/already linked/);
+  assert.throws(()=>rewards.invite(state,id,other.slice(0,12),now),/already linked/);
+  assert.equal(state.members[id].coupons.filter(c=>c.id.startsWith('invite-')).length,1);
+ }
+ rewards.settle(state,now);
+ assert.equal(state.members[host].coupons.filter(c=>c.id.startsWith('invite-')).length,people.length,'one inviter can earn rewards for several existing users');
+ assert.equal(state.members[other].coupons.filter(c=>c.id.startsWith('invite-')).length,0,'a rejected change does not reward another inviter');
+}
+console.log('Invitation binding: existing and archived orders allowed, self/unknown codes rejected, one binding per person and multiple invitees passed.');

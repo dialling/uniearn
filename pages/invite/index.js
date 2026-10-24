@@ -32,5 +32,5 @@ Page({
     catch(err){ui.toast(err);}
     finally{this.setData({redeeming:false});}
   },
-  onShareAppMessage(){return {title:this.data.zh?'加入 UniEarn，首单确认后我们都能免费配送一次':'Join UniEarn. After your first order we both get a free delivery',path:'/pages/invite/index?invite='+this.data.inviteCode};}
+  onShareAppMessage(){return {title:this.data.zh?'填写我的 UniEarn 邀请码，我们各得 ¥3.9 配送券':'Use my UniEarn invite code — we each get ¥3.9 delivery credit',path:'/pages/invite/index?invite='+this.data.inviteCode};}
 });
