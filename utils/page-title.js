@@ -31,6 +31,7 @@ const MAP={
   'address-add':['新增常用地址','New address'],
   'address-edit':['编辑常用地址','Edit address'],
   'coupon-pick':['选择优惠券','Choose a coupon'],
+  coupons:['优惠券','Coupons'],
   invite:['邀请同学','Invite a classmate'],
   chat:['聊天','Chat'],
   'support-chat':['联系客服','Support chat'],

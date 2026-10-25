@@ -15,6 +15,11 @@ const b=order('r2',4);assert.equal(b.discount,0.9);assert.equal(c.balance,0);ass
 assert.throws(()=>order('r3',4),/used/);
 b.status='cancelled';rewards.restore(s,b);assert.equal(c.balance,0.9);assert.ok(!c.usedBy);rewards.restore(s,b);assert.equal(c.balance,0.9,'restore is idempotent');
 const d=order('r4',4);assert.equal(d.discount,0.9);
+const expired={id:'expired-coupon',titleZh:'过期券',max:2,kind:'total',issuedAt:now-40*86400000,expiresAt:now-1};s.members[inviter].coupons.push(expired);
+const wallet=rewards.view(s,inviter,now);
+assert.equal(wallet.couponHistory.find(x=>x.id===c.id).status,'used','wallet history includes fully consumed coupons');
+assert.equal(wallet.couponHistory.find(x=>x.id===expired.id).status,'expired','wallet history includes expired coupons');
+assert.ok(!wallet.coupons.some(x=>x.id===c.id||x.id===expired.id),'order selection list remains limited to active coupons');
 const fresh={...coupon(friend)};const big={id:'r5',ownerId:friend,reward:4,serviceFee:0,status:'waiting'};s.requests.push(big);rewards.apply(s,friend,big,fresh.id,now);assert.equal(big.discount,3.9,'a ¥4 order uses the full ¥3.9');
 assert.throws(()=>{const late={id:'r6',ownerId:inviter,reward:3,serviceFee:0};const x=coupon(inviter);x.balance=1;delete x.usedBy;rewards.apply(s,inviter,late,x.id,now+31*86400000);},/expired/);
 console.log('Stored-value invite coupon: ¥3.9 balance, partial use, refund back to balance and 30-day validity passed.');
