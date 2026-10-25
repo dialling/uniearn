@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="760" viewBox="0 0 760 760">
+  <g fill="none" stroke="#d9ff63" stroke-opacity=".16" stroke-width="1.6">
+    <circle cx="380" cy="380" r="264"/>
+    <circle cx="380" cy="380" r="229" stroke-dasharray="3 11"/>
+    <circle cx="380" cy="380" r="56"/>
+    <g>
+      <path d="M380 168 C414 206 420 245 380 292 C340 245 346 206 380 168Z"/>
+      <path d="M380 592 C414 554 420 515 380 468 C340 515 346 554 380 592Z"/>
+      <path d="M168 380 C206 346 245 340 292 380 C245 420 206 414 168 380Z"/>
+      <path d="M592 380 C554 346 515 340 468 380 C515 420 554 414 592 380Z"/>
+      <path d="M232 232 C282 250 306 276 314 330 C260 332 230 306 232 232Z"/>
+      <path d="M528 528 C478 510 454 484 446 430 C500 428 530 454 528 528Z"/>
+      <path d="M528 232 C510 282 484 306 430 314 C428 260 454 230 528 232Z"/>
+      <path d="M232 528 C250 478 276 454 330 446 C332 500 306 530 232 528Z"/>
+    </g>
+    <path d="M380 300 C424 340 424 420 380 460 C336 420 336 340 380 300Z"/>
+    <path d="M318 380 C358 336 402 336 442 380 C402 424 358 424 318 380Z"/>
+    <path d="M302 302 L458 458" stroke-opacity=".55"/>
+    <path d="M458 302 L302 458" stroke-opacity=".55"/>
+    <path d="M120 380 H190 M570 380 H640 M380 120 V190 M380 570 V640"/>
+    <path d="M72 72 H132 V132 M628 72 H688 V132 M72 628 H132 V688 M628 628 H688 V688"/>
+  </g>
+  <g fill="#f2e8d5" fill-opacity=".12" font-family="Georgia, serif">
+    <text x="380" y="72" text-anchor="middle" font-size="22" letter-spacing="11">UNIEARN</text>
+    <text x="380" y="710" text-anchor="middle" font-size="13" letter-spacing="6">CAMPUS DELIVERY · EST. 2026</text>
+  </g>
+  <g fill="#d9ff63" fill-opacity=".18" font-family="Georgia, serif">
+    <text x="380" y="394" text-anchor="middle" font-size="26" letter-spacing="4">SAVE TOGETHER</text>
+  </g>
+</svg>
