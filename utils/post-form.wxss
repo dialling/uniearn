@@ -93,10 +93,10 @@
 .addr-chip-name{font-size:28rpx;font-weight:800;color:#16181c;transition:color .22s}.addr-chip.selected .addr-chip-name{color:#c2410c}
 .addr-chip-tag{margin-left:10rpx;padding:1rpx 10rpx;border-radius:8rpx;background:#f0efea;color:#6b6860;font-size:19rpx;font-weight:600;vertical-align:middle}
 .addr-chip-place{margin-top:6rpx;font-size:25rpx;color:#5e5c55;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.addr-chip-check{position:absolute;top:-2rpx;right:-2rpx;width:40rpx;height:40rpx;line-height:40rpx;text-align:center;border-radius:0 22rpx 0 18rpx;background:#c2410c;color:#fff;font-size:20rpx;opacity:0;transform:scale(.6);transition:opacity .2s ease,transform .25s cubic-bezier(.3,1.5,.5,1)}
+.addr-chip-check{position:absolute;top:-2rpx;right:-2rpx;width:40rpx;height:40rpx;padding:11rpx;box-sizing:border-box;border-radius:0 22rpx 0 18rpx;background:#c2410c;opacity:0;transform:scale(.6);transition:opacity .2s ease,transform .25s cubic-bezier(.3,1.5,.5,1)}
 .addr-chip.selected .addr-chip-check{opacity:1;transform:scale(1)}
 .addr-chip.add{min-width:136rpx;width:136rpx;align-items:center;border-style:dashed;background:#fff}
-.addr-plus{color:#c2410c;font-size:44rpx;font-weight:300;line-height:1}.addr-plus.big{flex:none;width:76rpx;height:76rpx;line-height:76rpx;text-align:center;border-radius:20rpx;background:#fff1e6}
+.addr-plus{display:block;width:34rpx;height:34rpx;flex:none}.addr-plus.big{flex:none;width:76rpx;height:76rpx;padding:22rpx;box-sizing:border-box;border-radius:20rpx;background:#fff1e6}
 .addr-empty-card{display:flex;align-items:center;gap:20rpx;padding:24rpx;border:2rpx dashed #f2b48a;border-radius:22rpx;background:#fdf6f2;transition:transform .18s}.addr-empty-card .hint{margin:2rpx 0 0}
 .addr-press{transform:scale(.97)}
 .addr-summary{display:flex;align-items:center;gap:18rpx;margin:8rpx 0 18rpx;padding:22rpx 24rpx;border-radius:22rpx;background:#fff1e6;animation:ue-settle .26s cubic-bezier(.22,.8,.3,1) backwards}

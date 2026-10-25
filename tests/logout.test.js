@@ -14,9 +14,21 @@ const {createHandler}=require('../cloudfunctions/studentAccount/handler');
  assert.equal(record.authRevision,1);
  let def,confirm=false,logoutCalls=0,modal;
  const state={requests:[],profile:{name:'李明',onboarded:true,studentVerified:true,jobsDone:0}};
+ // Only the store and the cloud call are faked; everything else loads for real,
+ // so a new util inside refresh() cannot quietly break this test.
+ const pageRequire=n=>{
+  if(n.includes('package.json'))return require('../package.json');
+  if(n==='../../utils/store')return {get:()=>state};
+  if(n==='../../utils/account')return {call:async action=>{assert.equal(action,'logout');logoutCalls++;state.profile={loggedOut:true,onboarded:false};}};
+  return require(require('path').resolve(__dirname,'../pages/profile',n));
+ };
+ // The page runs in a vm, but the utils it pulls in load for real, so they need
+ // the same wx stub on the global object.
+ const wxStub={getStorageSync:()=>null,setStorageSync(){},showModal:o=>{modal=o;o.success({confirm});}};
+ global.wx=wxStub;
  vm.runInNewContext(fs.readFileSync(require.resolve('../pages/profile/index.js'),'utf8'),{
- Page:v=>def=v,require:n=>n.includes('me-copy')?require('../utils/me-copy'):n.includes('package.json')?require('../package.json'):n.includes('store')?{get:()=>state}:n.includes('earnings')?{summary:()=>({})}:n.includes('domain')?{limit:()=>10}:n.includes('runner-level')?require('../utils/runner-level'):n.includes('yuni')?{stickers:()=>[]}:{call:async action=>{assert.equal(action,'logout');logoutCalls++;state.profile={loggedOut:true,onboarded:false};}},
- wx:{showModal:o=>{modal=o;o.success({confirm});}}
+ Page:v=>def=v,require:pageRequire,
+ wx:wxStub
  });
  const page={...def,data:{...def.data},setData(v){Object.assign(this.data,v);}};
  await page.logout();assert.equal(logoutCalls,0);assert.equal(state.profile.studentVerified,true);assert.equal(page.data.loggingOut,false);

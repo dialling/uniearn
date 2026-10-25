@@ -1,5 +1,5 @@
 const store=require('../../utils/store'),orders=require('../../utils/orders'),ui=require('../../utils/ui'),f=require('../../utils/workflow'),{postCopy}=require('../../utils/post-copy');
-const examples={zh:['帮我还图书馆的书','帮忙搬运重物','帮我把洗好的衣服拿上楼','帮我交一份表格'],en:['Return my library books','Carry something heavy','Bring my laundry up','Hand in a form']};
+const examples={zh:['帮我买一个枕头或一个盆儿','帮我完成作业','帮我拿一下课本','帮我去找一下老师','帮我签一下到'],en:['Buy me a pillow or a basin','Help me finish my assignment','Pick up my textbook','Go and find my teacher','Sign in for me']};
 function chinaDate(now){return new Date(now+28800000).toISOString().slice(0,10);}
 Page({data:{zh:true,ui:postCopy('taskPost','zh'),title:'',date:chinaDate(Date.now()),today:chinaDate(Date.now()),time:'18:00',price:3,priceText:'5',priceLabel:'5.00',total:'5.50',photo:'',agreed:true,busy:false,validTitle:false,validPrice:true,validDeadline:true,dueLabel:'',deadlineError:'',examples:examples.zh,prices:[3,5,8,15]},
  lang(){const language=store.get().language==='en'?'en':'zh';this.setData({zh:language==='zh',ui:postCopy('taskPost',language),examples:examples[language]});},

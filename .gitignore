@@ -3,6 +3,11 @@ project.private.config.json
 .env
 .env.*
 *.log
+
+# Local working files: agent memory, previews and sync backups stay off GitHub.
+.workbuddy-ai/
+outputs/
+
 cloudfunctions/adminService/order-engine/
 admin-web/.git/
 admin-web/.env
