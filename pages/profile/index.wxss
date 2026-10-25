@@ -10,12 +10,12 @@
 .header-avatar{width:96rpx;height:96rpx;line-height:96rpx;font-size:38rpx;background:#4e8a68;color:#fff;border-radius:50%;text-align:center;flex:none}
 .customer-avatar{background:#41775b}
 .runner-avatar{background:#41775b}
-.header-main{flex:none;max-width:330rpx}
-.header-name{font-size:37rpx;font-weight:800;line-height:96rpx;white-space:nowrap;overflow:visible}
+.header-main{flex:1;min-width:0}
+.header-name{font-size:37rpx;font-weight:800;line-height:96rpx;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .header-badge-row{margin:14rpx 0 0 116rpx}
 .header-badge{font-size:21rpx;line-height:1.6;padding:6rpx 15rpx;background:#f0efeb;border-radius:26rpx;font-weight:650;color:#63665d;display:inline-block;white-space:nowrap}
 .header-badge.verified{background:#e7f1eb;color:#3f7a52}
-.edit-button{margin:0;padding:0 12rpx;min-width:0;flex:none;width:auto;height:40rpx;line-height:40rpx;display:flex;align-items:center;justify-content:center;gap:5rpx;border:1rpx solid #7bb08f;border-radius:20rpx;background:transparent;color:#ecf5f0;font-size:19rpx;font-weight:650}
+.me-header-top .edit-button{margin:0;padding:0 12rpx;min-width:0;flex:none;width:auto;height:40rpx;line-height:40rpx;display:flex;align-items:center;justify-content:center;gap:5rpx;border:1rpx solid #7bb08f;border-radius:20rpx;background:transparent;color:#ecf5f0;font-size:19rpx;font-weight:650}
 .edit-button::after{border:0}
 .edit-button image{width:16rpx;height:16rpx}
 .runner-tag{flex:none;font-size:20rpx;font-weight:700;color:#41775b;background:#ecf5f0;border-radius:26rpx;padding:8rpx 14rpx;line-height:1.4}

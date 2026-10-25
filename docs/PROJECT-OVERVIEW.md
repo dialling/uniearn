@@ -84,7 +84,7 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 | `public-job` | — | orders, workflow | 公开任务/行程详情 |
 | `create` | Post a pick-up | saved-routes, pickup-point, rewards, orders, domain, ocr, catalog, account, image-input, workflow | 发布代取（快递） |
 | `takeaway` | Post a pick-up | rewards, saved-routes, account, orders, workflow, ui | 发布外卖代取 |
-| `task-post` | — | store, orders, ui, workflow | 发布其他校园任务 |
+| `task-post` | Something else | store, orders, ui, workflow | 发布其他校园任务（发布面板第三个选项框） |
 | `task` | — | orders, workflow, ui | 任务详情与完成 |
 | `trip-start` | Start a trip | orders, workflow, ui, account | 开一条行程（站点/楼栋/容量/出发时间） |
 | `trip` | Pick up & deliver | orders, domain, workflow, ui, runner-level | 取件与送达主流程 |
