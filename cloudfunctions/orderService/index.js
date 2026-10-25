@@ -34,7 +34,7 @@ async function autoSettle() {
       const state = (await ref.get()).data;
       if (!state || !Array.isArray(state.requests) || !state.receipts) throw Error('Invalid team-test database document.');
       delete state._id;
-      const before = JSON.stringify(state), now = Date.now();
+      const before = JSON.stringify(state), now = Date.now();state.loyaltyStartedAt=state.loyaltyStartedAt||now;
       engine.expire(state,now);require('./rewards').settle(state,now);require('./wallet').settle(state,now);
       if (JSON.stringify(state) !== before) {
         state.revision = (state.revision || 0) + 1;
@@ -62,7 +62,8 @@ exports.main = async (event = {}) => {
       if (!state || !Array.isArray(state.requests) || !state.receipts) throw Error('Invalid team-test database document.');
       delete state._id;
       const now = Date.now(), account = await getAccount(tx, actor);account._reviewer=String(process.env.REVIEWER_OPENIDS||'').split(',').map(x=>x.trim()).includes(openid);account._admin=!!(account.admin&&account.admin.until>now&&account.admin.revision===(account.authRevision||0));
-      const before = JSON.stringify(state);
+      const before = JSON.stringify(state);state.loyaltyStartedAt=state.loyaltyStartedAt||now;
+      if(account.profile&&!account.loggedOut)require('./rewards').dailyLogin(state,actor,now);
       engine.expire(state, now);require('./rewards').settle(state,now);require('./wallet').settle(state,now);
       let value = {};
       if (action === 'wallet') {

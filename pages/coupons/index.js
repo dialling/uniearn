@@ -12,11 +12,11 @@ Page({
    const status=c.status||(c.usedBy?'used':c.expiresAt&&c.expiresAt<=now?'expired':'available');
    const rawName=c.titleZh||c.title||c.short||'Coupon',name=zh?copy.coupon(rawName,language):rawName;
    const value=c.stored?Number(c.balance||0):Number(c.max||0);
-   const kind=zh?(c.kind==='delivery'?'配送费':'订单金额'):(c.kind==='delivery'?'Delivery fee':'Order total');
+   const kind=zh?(c.kind==='deliveryPercent'?'配送费 · 最高抵 ¥3.9':c.kind==='delivery'?'配送费':'订单金额'):(c.kind==='deliveryPercent'?'Delivery fee · up to ¥3.9':c.kind==='delivery'?'Delivery fee':'Order total');
    const description=c.descriptionZh||(zh?copy.coupon(c.description||'',language):c.description)||'';
-   return {...c,status,displayName:name,descriptionDisplay:description,displayAmount:value.toFixed(2),kindLabel:kind,expiryLabel:c.expiresAt?(zh?'有效期至 ':'Valid until ')+dateLabel(c.expiresAt):zh?'长期有效':'No expiry',statusLabel:status==='used'?(zh?'已使用':'Used'):status==='expired'?(zh?'已过期':'Expired'):(c.usable===false?(zh?'暂不可用':'Unavailable'):zh?'可使用':'Available')};
+   return {...c,status,displayName:name,descriptionDisplay:description,displayAmount:c.percent===50?'5折':value.toFixed(2),kindLabel:kind,expiryLabel:status==='pending'?(zh?'好友完成首单后生效，有效 30 天':'Unlock after their first completed order · valid for 30 days'):c.expiresAt?(zh?'有效期至 ':'Valid until ')+dateLabel(c.expiresAt):zh?'长期有效':'No expiry',statusLabel:status==='pending'?(zh?'待好友完成首单':'Waiting for first order'):status==='used'?(zh?'已使用':'Used'):status==='expired'?(zh?'已过期':'Expired'):(c.usable===false?(zh?'暂不可用':'Unavailable'):zh?'可使用':'Available')};
   });
-  const items=rows.filter(c=>c.status===this.data.tab);
+  const items=rows.filter(c=>this.data.tab==='available'?['available','pending'].includes(c.status):c.status===this.data.tab);
   this.setData({language,items,loading:false});
   if(wx.setNavigationBarTitle)wx.setNavigationBarTitle({title:zh?'优惠券':'Coupons'});
  },

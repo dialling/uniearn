@@ -9,7 +9,7 @@ const idFor = openid => crypto.createHash('sha256').update(openid).digest('hex')
 function check(ok, message) { if (!ok) throw Error(message); }
 // One shared document holds every order, so each student gets a fair share of it.
 const OPEN_STATUSES = ['waiting','taken','collected','delivered','disputed'], MAX_OPEN_PER_USER = 10, MAX_CREATES_PER_DAY = 30, MAX_TASK_PRICE = 500;
-function initial() { return { nextId: 1, requests: [], trips: [], members: {}, receipts: {}, revision: 0 }; }
+function initial() { return { nextId: 1, requests: [], trips: [], members: {}, receipts: {}, revision: 0, loyaltyStartedAt:Date.now() }; }
 const onTime = r => r.category==='task'?r.deliveredAt<=r.dueAt:r.deliveredAt-r.collectedAt<=15*60000;
 function stats(s, id) {
   const ownTrips = new Set(s.trips.filter(t => t.runnerAccountId === id).map(t => t.id));
@@ -138,7 +138,12 @@ function execute(s, actor, account, event, now = Date.now()) {
   s.members[actor] = s.members[actor] || { marks: [] };
   rewards.init(s,actor,now);
   let value = {};
-  if (action === 'walletWithdraw') {
+  if(action==='profileComplete'){
+    const p=account.profile||{};check(String(p.name||'').trim().length>=2&&/^1\d{10}$/.test(String(p.phone||'').replace(/\s/g,'')),'Complete your name and phone number first.');
+    value={awarded:rewards.profileCompleted(s,actor,now)};
+  } else if(action==='ackLoyaltyNotice') {
+    const noticeId=String(event.noticeId||'');check(noticeId.length<=100,'Invalid reward notice.');rewards.acknowledge(s,actor,noticeId);value={acknowledged:true};
+  } else if (action === 'walletWithdraw') {
     wallet.settle(s, now);
     value = wallet.withdraw(s, actor, event.amount_cents, event.operationId, now, process.env.WALLET_TEST_WITHDRAW_FAIL === '1');
   } else if (action === 'supportRequest') {
@@ -273,7 +278,7 @@ function snapshot(s, actor, account, now = Date.now()) {
   }));
   const publicJobs=s.requests.filter(r=>inCampus(r)&&!['cancelled','refunded','disputed'].includes(r.status)).map(r=>{const o={};for(const k of ['destinationKey','destinationType','dormGender','id','campusId','universityId','category','station','dorm','room','small','big','reward','status','arrivalAt','closesAt','deadline','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','arrived','deliverBy','soup','fragile','night','purchaseStatus','shop','raised','title','dueAt'])if(r[k]!==undefined)o[k]=r[k];if(r.category==='takeout'&&!r.night&&r.pickupPoint)o.pickupPoint=r.pickupPoint;if(r.category==='task'||r.destinationType==='place')delete o.room;return o;});
   const supportInbox=(account&&account._admin||account&&account._reviewer)?Object.entries(s.members).flatMap(([accountId,member])=>(member.supportTickets||[]).filter(t=>t.status==='open').map(t=>({...clone(t),accountId}))).sort((a,b)=>((b.messages||[]).at(-1)?.at||b.createdAt)-((a.messages||[]).at(-1)?.at||a.createdAt)).slice(0,50):[];
-  return {walletSummary:loggedIn?wallet.summary(s,actor):null,revision:s.revision,serverTime:now,publicJobs,deliveredThisWeek:s.requests.filter(r=>inCampus(r)&&r.deliveredAt>now-7*86400000).length,requests,trips,publicTrips,accountId:actor,supportInbox,
+  return {walletSummary:loggedIn?wallet.summary(s,actor):null,progression:loggedIn?rewards.loyaltyView(s.members[actor]||{}):null,revision:s.revision,serverTime:now,publicJobs,deliveredThisWeek:s.requests.filter(r=>inCampus(r)&&r.deliveredAt>now-7*86400000).length,requests,trips,publicTrips,accountId:actor,supportInbox,
     adjustments:loggedIn?(s.adjustments||[]).filter(a=>a.runnerAccountId===actor).map(({runnerAccountId,...a})=>a):[],rewards:loggedIn?rewards.view(s,actor,now):null,preferences:loggedIn?(s.members[actor]||{}).preferences||{}:{},
     supportTickets:loggedIn?((s.members[actor]||{}).supportTickets||[]):[],stats:loggedIn ? stats(s,actor) : {jobsDone:0,paid:0,marks:[]} };
 }

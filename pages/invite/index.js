@@ -14,13 +14,18 @@ Page({
     // Custom navigation: keep the status bar icons white on the dark page.
     if(wx.setNavigationBarColor)wx.setNavigationBarColor({frontColor:'#ffffff',backgroundColor:'#1b1c1a',animation:{duration:0}});
     orders.bind(this);
-    if(store.get().profile.onboarded)orders.act('rewardsInit').catch(()=>{});
+    if(store.get().profile.onboarded&&this.data.inviteInput){
+      if(!this._autoBinding){this._autoBinding=true;this.setData({redeeming:true});orders.sync().then(()=>{
+        if(store.get().rewards?.hasInvitedBy)return null;
+        return orders.act('invite',{code:String(this.data.inviteInput||'').trim()});
+      }).then(result=>{if(result){this.setData({inviteInput:''});wx.showToast({title:this.data.zh?'邀请绑定成功，双方各得 10 积分':'Invitation linked · 10 points each'});}}).catch(err=>{ui.toast(err);}).finally(()=>{this._autoBinding=false;this.setData({redeeming:false});});}
+    }else if(store.get().profile.onboarded)orders.act('rewardsInit').catch(()=>{});
   },
   onHide(){orders.unbind(this);},
   onUnload(){orders.unbind(this);},
   refresh(){const s=store.get();this.setData({inviteCode:(s.rewards||{}).inviteCode||'',registered:!!s.profile.onboarded});},
   back(){if(getCurrentPages().length>1)wx.navigateBack();else wx.reLaunch({url:'/pages/rewards/index'});},
-  register(){wx.reLaunch({url:'/pages/profile/index'});},
+  register(){const code=String(this.data.inviteInput||'').trim();wx.reLaunch({url:'/pages/profile/index'+(code?'?invite='+encodeURIComponent(code):'')});},
   copy(){if(!this.data.inviteCode)return this.register();wx.setClipboardData({data:this.data.inviteCode});},
   input(e){this.setData({inviteInput:e.detail.value});},
   async redeem(){
@@ -32,5 +37,5 @@ Page({
     catch(err){ui.toast(err);}
     finally{this.setData({redeeming:false});}
   },
-  onShareAppMessage(){return {title:this.data.zh?'填写我的 UniEarn 邀请码，我们各得 ¥3.9 配送券':'Use my UniEarn invite code — we each get ¥3.9 delivery credit',path:'/pages/invite/index?invite='+this.data.inviteCode};}
+  onShareAppMessage(){return {title:this.data.zh?'加入 UniEarn，双方各得 10 积分':'Join UniEarn — 10 points for both of us',path:'/pages/invite/index?invite='+this.data.inviteCode};}
 });

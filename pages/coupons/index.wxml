@@ -4,7 +4,7 @@
  <view wx:if="{{loading}}" class="wallet-empty">{{language==='zh'?'正在同步优惠券…':'Syncing coupons…'}}</view>
  <block wx:elif="{{items.length}}">
   <view wx:for="{{items}}" wx:key="id" class="coupon-card {{item.status!=='available'?'coupon-muted':''}}">
-   <view class="coupon-main"><view class="coupon-value"><text class="currency">¥</text>{{item.displayAmount}}</view><view class="coupon-copy"><view class="coupon-name">{{item.displayName}}</view><view class="coupon-kind">{{item.kindLabel}}</view><view class="coupon-expiry">{{item.expiryLabel}}</view></view><view class="coupon-status">{{item.statusLabel}}</view></view>
+   <view class="coupon-main"><view class="coupon-value"><text wx:if="{{item.percent!==50}}" class="currency">¥</text>{{item.displayAmount}}</view><view class="coupon-copy"><view class="coupon-name">{{item.displayName}}</view><view class="coupon-kind">{{item.kindLabel}}</view><view class="coupon-expiry">{{item.expiryLabel}}</view></view><view class="coupon-status">{{item.statusLabel}}</view></view>
    <view class="coupon-bottom"><view class="coupon-note">{{item.descriptionDisplay|| (language==='zh'?'适用范围以发布页面为准':'See service options when using')}}</view><button wx:if="{{item.status==='available'}}" class="use-button" data-id="{{item.id}}" bindtap="openUse">{{language==='zh'?'去使用':'Use now'}}</button><view wx:else class="used-stamp">{{item.statusLabel}}</view></view>
   </view>
  </block>
