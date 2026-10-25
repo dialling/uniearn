@@ -5,7 +5,7 @@ module.exports={
       {
         "n": "1",
         "title": "Pay through Uniearn",
-        "text": "This team test records a simulated payment. Confirmed orders settle in the test ledger. Automatic confirmation: takeaway 1 hour, parcels 48 hours, tasks 24 hours. No real WeChat Pay charge or transfer is connected."
+        "text": "This team test records a simulated payment. Confirmed orders settle in the test ledger. All orders become pending after delivery and credit on confirmation, or automatically 2 hours after delivery. No real WeChat Pay charge or transfer is connected."
       },
       {
         "n": "2",
@@ -75,7 +75,7 @@ module.exports={
       {
         "n": "2",
         "title": "Who sees your room and phone",
-        "text": "Only the assigned customer and runner can see contact details, room, codes and photos. This version uses direct phone calls, so participants can see the real phone number. Private-number calling is not connected."
+        "text": "The hall displays dorm area, building and room. Only the assigned customer and runner can see contact details, codes and photos. This version uses direct phone calls, so participants can see the real phone number. Private-number calling is not connected."
       },
       {
         "n": "3",
@@ -85,7 +85,7 @@ module.exports={
       {
         "n": "4",
         "title": "The public job hall",
-        "text": "Shows routes, prices and times only. Never names, rooms or phone numbers."
+        "text": "Shows routes, dorm gender, takeaway locker, dorm area, building, room, prices and times. Names, phone numbers and pickup codes stay private."
       }
     ]
   }

@@ -11,6 +11,8 @@ function normalize(a={}){
  for(const k of ['id','name','station','dorm','room','owner','phone','pickupNote','dropNote','deliveryAddress','deliveryNote','area','locker'])out[k]=String(a[k]||'').trim();
  out.floor=place?0:(Number(a.floor)||0);if(!out.area&&out.dorm){const ar=campus.areaOfBuilding(out.dorm);if(ar)out.area=ar.id;}
  out.phone=out.phone.replace(/\s/g,'');out.destinationType=place?'place':'dorm';
+ out.dormGender=!place&&['male','female'].includes(a.dormGender)?a.dormGender:'';
+ out.recipientGender=place&&['male','female'].includes(a.recipientGender)?a.recipientGender:'';
  out.name=out.name||(place?'Other':'My dorm');out.dropMode=place?'meet':(a.dropMode?a.dropMode==="lobby"?'lobby':'door':/lobby/i.test(out.dropNote)?'lobby':'door');
  if(place){out.room='';out.dorm=/library|图书馆/i.test(out.deliveryAddress)?'Library':/classroom|教室/i.test(out.deliveryAddress)?'Classroom':/sports|体育/i.test(out.deliveryAddress)?'Sports centre':'Campus meeting point';out.dropNote='Meet at the stated location';}
  else out.dropNote=out.dropMode==='lobby'?'Lobby · I’ll come down':'At my door';

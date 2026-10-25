@@ -4,7 +4,7 @@ function clock(ts){if(!ts)return '—';const t=new Date(ts+8*3600000);return Str
 function todayAt(value,now=Date.now()){const parts=String(value).split(':').map(Number);if(parts.length!==2||parts[0]<0||parts[0]>23||parts[1]<0||parts[1]>59||parts.some(x=>!Number.isInteger(x)))throw Error('Choose a valid time');const t=new Date(now+8*3600000);return Date.UTC(t.getUTCFullYear(),t.getUTCMonth(),t.getUTCDate(),parts[0]-8,parts[1],0,0);}
 function fee(r){return Number(r.serviceFee===undefined?d.serviceFee(d.boxes(r)):r.serviceFee);}
 function total(r){return Math.max(0,Math.round((r.reward+fee(r)-Number(r.discount||0))*100)/100);}
-function hours(r){return c.category(r)==='task'?24:c.category(r)==='takeout'?1:48;}
+function hours(){return 2;}
 function event(r,label,at=Date.now()){(r.history||(r.history=[])).push({label,at});}
 function migrate(s){s.installationId=s.installationId||('local-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));s.routes=s.routes||[];s.profile.marks=s.profile.marks||[];s.agreements=s.agreements||{};return s;}
 function expire(s,now=Date.now()){
@@ -19,7 +19,7 @@ function createTakeaway(s,data,now=Date.now()){
  const arrivalAt=data.arrived?now:todayAt(data.arrivalTime,now);
  if(!data.arrived&&arrivalAt<now)throw Error('Choose an arrival time later today');
  if(!String(data.owner||'').trim())throw Error('Add the name on your order');
- let deliverBy='',closeAt=arrivalAt+30*MIN;if(data.arrived&&data.deliverBy){let at=data.deliverAt===undefined?todayAt(data.deliverBy,now):Number(data.deliverAt);if(data.deliverAt===undefined&&at<now-60000)at+=24*3600000;if(!Number.isSafeInteger(at)||at<=now||at>now+65*60000)throw Error('Choose a future delivery time within 1 hour');deliverBy=clock(at);closeAt=at;}
+ const closeAt=arrivalAt+30*MIN;let deliverBy='';if(data.arrived&&data.deliverBy){let at=data.deliverAt===undefined?todayAt(data.deliverBy,now):Number(data.deliverAt);if(data.deliverAt===undefined&&at<now-60000)at+=24*3600000;if(!Number.isSafeInteger(at)||at<=now||at>now+65*60000)throw Error('Choose a future delivery time within 1 hour');deliverBy=clock(at);}
  const r=d.createRequest(s,{...data,deliverBy,category:'takeout',small:Number(data.bags),big:0,codes:[],pricePerBox:Number(data.price),deadline:clock(closeAt),arrivalAt,arrived:!!data.arrived,closesAt:closeAt,soup:!!data.soup,riderPhoto:data.riderPhoto||''});
  r.createdAt=now;r.baseReward=r.reward;event(r,'Posted',now);return r;
 }

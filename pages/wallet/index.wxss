@@ -1,0 +1,142 @@
+/* Reused wallet layout, with UniEarn palette and local component tokens. */
+.wallet-page{--r-lg:28rpx;--r-md:24rpx;--r-pill:999rpx;--ink:#16181c;--ink-2:#5e5c55;--ink-3:#6b6860;--ink-4:#8a877e;--line:#e2e0d9;--line-2:#eeede8;--surface:#fff;--surface-2:#f7f6f2;--brand:#0b7a55;--brand-100:#e7f3ed;--brand-200:#d6d2c6;--grad-brand:#0b7a55;--sh-1:none;--sh-brand:none;--danger:#b42318;--danger-bg:#fff1e6;--warn-bg:#fff1e6;--warn-ink:#c2410c;background:#eeede8;min-height:100vh;box-sizing:border-box;color:var(--ink)}
+.wallet-header{display:flex;align-items:center;justify-content:space-between;margin:4rpx 4rpx 24rpx}.wallet-title{font-size:36rpx;font-weight:750}.test-label{font-size:22rpx;background:var(--surface);color:var(--ink-3);padding:8rpx 18rpx;border-radius:999rpx}
+.wallet-test-note{font-size:23rpx;line-height:1.6;color:var(--ink-3);margin:20rpx 4rpx 0}.wallet-error,.wallet-debt{padding:24rpx;margin-bottom:20rpx;background:var(--warn-bg);border-radius:20rpx;color:var(--warn-ink);font-size:25rpx}.wallet-error button{font-size:24rpx;margin-top:12rpx;color:var(--brand);background:var(--surface)}.wallet-debt text{display:block;font-size:23rpx;margin-top:8rpx}.pending-amount{font-size:28rpx;color:var(--warn-ink);font-weight:650;white-space:nowrap}.empty{font-size:25rpx;color:var(--ink-3);padding:40rpx 10rpx;line-height:1.6}.earnings-link{font-size:25rpx;color:var(--brand);background:transparent;margin-top:28rpx}.earnings-link::after{border:0}
+.wallet-page { padding: 24rpx 28rpx 60rpx; }
+
+/* ---------------- 总资产卡：数字 + 余额曲线 ---------------- */
+.asset-card {
+  position: relative; overflow: hidden;
+  background: #fff;
+  border-radius: var(--r-lg); padding: 34rpx 32rpx 26rpx;
+  box-shadow: var(--sh-1);
+}
+.ac-top { display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 1; }
+.ac-label { display: flex; align-items: center; gap: 12rpx; font-size: 25rpx; color: var(--ink-2); }
+.ac-range {
+  font-size: 21rpx; color: var(--brand); font-weight: 600;
+  padding: 4rpx 16rpx; border-radius: var(--r-pill); background: rgba(11, 122, 85, .08);
+}
+
+/* 小眼睛：点一下隐藏 / 显示金额 */
+.eye {
+  position: relative; width: 30rpx; height: 18rpx; box-sizing: border-box;
+  border: 2.5rpx solid var(--ink-3); border-radius: 50% / 60%;
+}
+.eye-ball {
+  position: absolute; left: 50%; top: 50%; width: 9rpx; height: 9rpx; margin: -4.5rpx 0 0 -4.5rpx;
+  border-radius: 50%; background: var(--ink-3);
+}
+.eye.off::after {
+  content: ''; position: absolute; left: -4rpx; right: -4rpx; top: 50%; height: 2.5rpx; margin-top: -1.25rpx;
+  background: var(--ink-3); transform: rotate(-30deg);
+}
+
+.ac-num {
+  position: relative; z-index: 1;
+  font-size: 76rpx; font-weight: 800; letter-spacing: -2rpx; color: var(--ink);
+  margin: 14rpx 0 10rpx; font-variant-numeric: tabular-nums; line-height: 1.1;
+}
+.ac-cur { font-size: 40rpx; font-weight: 700; margin-right: 6rpx; }
+.ac-stats { display: flex; align-items: flex-start; gap: 16rpx; font-size: 22rpx; color: var(--ink-3); position: relative; z-index: 1; flex-wrap: wrap; }
+.ac-sep { width: 1rpx; height: 22rpx; background: var(--line); }
+.ac-up { color: #0b7a55; font-weight: 700; margin-left: 6rpx; font-variant-numeric: tabular-nums; }
+.ac-strong { color: var(--ink-2); font-weight: 700; margin-left: 6rpx; font-variant-numeric: tabular-nums; }
+
+.chart { position: relative; margin-top: 26rpx; height: 300rpx; }
+.chart-cv { width: 100%; height: 300rpx; display: block; }
+.chart-max {
+  position: absolute; left: 12rpx; top: -6rpx; z-index: 1;
+  font-size: 21rpx; color: var(--ink-3); font-variant-numeric: tabular-nums;
+}
+.chart-axis {
+  display: flex; justify-content: space-between; margin-top: 12rpx; padding: 0 4rpx 0 6rpx;
+  font-size: 20rpx; color: var(--ink-4);
+}
+.axis-val { color: var(--brand); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* ---------------- 提现按钮（下面不带说明小字） ---------------- */
+.wd-btn {
+  width: 100%; height: 92rpx; line-height: 92rpx; border-radius: var(--r-pill); margin: 28rpx 0 0; padding: 0;
+  background: var(--grad-brand); color: #fff; font-size: 31rpx; font-weight: 700; border: none;
+  box-shadow: var(--sh-brand); letter-spacing: 2rpx;
+}
+.wd-btn::after { border: none; }
+/* 盖过基础库给非 mini 按钮写死的 width: 184px */
+.wallet-page .wd-btn { width: 100%; }
+.wd-btn[disabled] { background: var(--brand-200); color: #fff; box-shadow: none; }
+
+.sec-title { font-size: 28rpx; font-weight: 700; color: var(--ink); margin: 40rpx 8rpx 16rpx; }
+
+/* ---------------- 记录列表 ---------------- */
+.list-card { background: var(--surface); border-radius: var(--r-md); box-shadow: var(--sh-1); padding: 4rpx 26rpx; }
+.wallet-row { display: flex; align-items: center; gap: 20rpx; padding: 24rpx 0; }
+.wallet-row + .wallet-row { border-top: 1rpx solid var(--line-2); }
+.row-ico {
+  width: 64rpx; height: 64rpx; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24rpx; font-weight: 700;
+}
+.row-ico.in { background: #e7f3ed; color: #0b7a55; }
+.row-ico.out { background: var(--surface-2); color: var(--ink-3); }
+.row-ico.wd { background: var(--brand-100); }
+.ico-arrow {
+  width: 16rpx; height: 16rpx; border-top: 4rpx solid var(--brand); border-right: 4rpx solid var(--brand);
+  transform: rotate(-45deg); margin-top: 6rpx;
+}
+.row-main { flex: 1; min-width: 0; }
+.row-t { font-size: 28rpx; font-weight: 600; color: var(--ink); }
+.row-time { font-size: 22rpx; color: var(--ink-4); margin-top: 6rpx; font-variant-numeric: tabular-nums; }
+.row-reason { font-size: 21rpx; color: var(--danger); margin-top: 6rpx; }
+
+.wd-status { flex-shrink: 1; font-size: 22rpx; font-weight: 600; padding: 6rpx 16rpx; border-radius: var(--r-pill); background: var(--brand-100); color: var(--brand); }
+.wd-status.pending, .wd-status.processing { background: var(--warn-bg); color: var(--warn-ink); }
+.wd-status.rejected { background: var(--danger-bg); color: var(--danger); }
+
+.tx-amt { font-size: 31rpx; font-weight: 800; font-variant-numeric: tabular-nums; }
+.tx-amt.pos { color: #0b7a55; }
+.tx-amt.neg { color: var(--ink-2); }
+
+/* ---------------- 提现规则：默认收起成一行蓝色链接，点开弹层看完整规则 ----------------
+   （微信审核要求提现页清晰展示提现规则；收起是为了不占版面） */
+.rules-link {
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 4rpx 4rpx 8rpx; padding: 4rpx 0;
+}
+.rules-link-t { flex: 1; font-size: 23rpx; color: #0b7a55; line-height: 1.5; }
+.rules-link-a { flex: none; margin-left: 12rpx; font-size: 23rpx; font-weight: 600; color: #0b7a55; }
+
+.rules-mask {
+  position: fixed; left: 0; right: 0; top: 0; bottom: 0; z-index: 1200;
+  background: rgba(12, 20, 36, .45); display: flex; align-items: flex-end;
+}
+.rules-sheet {
+  width: 100%; background: #fff; border-radius: 28rpx 28rpx 0 0;
+  padding: 28rpx 32rpx calc(24rpx + env(safe-area-inset-bottom));
+  max-height: 78vh; display: flex; flex-direction: column;
+}
+.rules-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12rpx; }
+.rules-hd-t { font-size: 32rpx; font-weight: 700; color: var(--ink); }
+.rules-hd-x { font-size: 30rpx; color: var(--ink-3); padding: 0 8rpx; }
+.rules-body { flex: 1; max-height: 62vh; }
+.rules-ok {
+  margin-top: 22rpx; height: 88rpx; line-height: 88rpx; text-align: center;
+  border-radius: 999rpx; font-size: 29rpx; font-weight: 600; color: #fff;
+  background: #0b7a55;
+}
+.rule-row { display: flex; align-items: flex-start; padding: 12rpx 0; }
+.rule-row + .rule-row { border-top: 1rpx solid #f2f4f8; }
+.rule-k {
+  flex: none; width: 168rpx; font-size: 24rpx; font-weight: 600; color: var(--ink);
+}
+.rule-v { flex: 1; font-size: 24rpx; line-height: 1.6; color: var(--ink-3); }
+.rule-note {
+  margin-top: 12rpx; padding-top: 14rpx; border-top: 1rpx solid #f2f4f8;
+  font-size: 22rpx; line-height: 1.6; color: var(--ink-3);
+}
+.ac-pending { color: var(--ink-3); font-weight: 700; margin-left: 6rpx; font-variant-numeric: tabular-nums; }
+.ac-pending.has { color: #c2410c; }   /* 有待入账时橙色，0 元时灰色 */
+
+.ac-stat{flex:1;min-width:0;display:flex;flex-direction:column;gap:10rpx}.ac-stat text:last-child{margin-left:0}.rules-sheet{box-sizing:border-box}.row-t{line-height:1.4}.wd-status{max-width:180rpx;line-height:1.4;text-align:center}.wallet-page .rules-ok{width:100%;flex-shrink:0}.wallet-page .wallet-row{min-width:0}.tx-amt{white-space:nowrap}.rules-link{padding-top:18rpx}.rules-body{height:58vh;flex:none}.page-dark.wallet-page{--ink:#edebe4;--ink-2:#c2bfb6;--ink-3:#aaa79f;--ink-4:#aaa79f;--line:#3a3b37;--line-2:#3a3b37;--surface:#242522;--surface-2:#1b1c1a;--brand:#6fd0a8;--brand-100:#183b2d;--brand-200:#3a3b37;--grad-brand:#0b7a55;--warn-bg:#3b2c20;--warn-ink:#f4a06e;--danger:#f4a06e;--danger-bg:#3b2c20;background:#1b1c1a}.page-dark .asset-card,.page-dark .rules-sheet{background:var(--surface)}.page-dark .ac-up,.page-dark .tx-amt.pos{color:#6fd0a8}.page-dark .row-ico.in{background:#183b2d;color:#6fd0a8}.page-dark .ac-pending.has{color:#f4a06e}.page-dark .rules-link-t,.page-dark .rules-link-a{color:#6fd0a8}.page-dark .rule-row+.rule-row,.page-dark .rule-note{border-color:#3a3b37}
+
+.wallet-page .wd-btn,.wallet-page .rules-ok{min-height:44px}.wallet-page .rules-hd-x{min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}

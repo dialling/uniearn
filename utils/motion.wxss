@@ -42,7 +42,7 @@ button.button-hover{transform:scale(.97)}
    re-mounted on every change (wx:key) so the squash-and-stretch keyframes replay. */
 @keyframes glass-liquid{0%{transform:scale(1,1)}28%{transform:scale(1.16,.88)}55%{transform:scale(.96,1.05)}78%{transform:scale(1.02,.99)}100%{transform:scale(1,1)}}
 @keyframes glass-shine{0%{opacity:0;transform:translate3d(-60%,0,0)}35%{opacity:.9}100%{opacity:0;transform:translate3d(60%,0,0)}}
-.final-tabs.glass,.service-tabs.glass{position:relative;overflow:hidden;box-shadow:inset 0 1rpx 4rpx rgba(0,0,0,.06)}
+.final-tabs.glass,.service-tabs.glass{position:relative;overflow:hidden;box-shadow:inset 0 1rpx 4rpx rgba(22,24,28,.06)}
 .service-tabs.glass{gap:0}
 .final-tabs.glass view,.final-tabs.glass text,.service-tabs.glass .service-tab{position:relative;z-index:1;background:transparent;box-shadow:none;transition:color .3s ease,transform .3s cubic-bezier(.34,1.5,.55,1)}
 .final-tabs.glass .active,.service-tabs.glass .service-tab.active{background:transparent;box-shadow:none;transform:scale(1.04)}
@@ -53,14 +53,14 @@ button.button-hover{transform:scale(.97)}
  background:linear-gradient(180deg,rgba(255,255,255,.95) 0%,rgba(255,255,255,.72) 55%,rgba(255,255,255,.86) 100%);
  -webkit-backdrop-filter:blur(12px) saturate(180%);backdrop-filter:blur(12px) saturate(180%);
  border:1rpx solid rgba(255,255,255,.9);
- box-shadow:0 6rpx 18rpx rgba(0,0,0,.08),0 1rpx 3rpx rgba(0,0,0,.06),inset 0 2rpx 1rpx rgba(255,255,255,1),inset 0 -4rpx 8rpx rgba(0,0,0,.035);
+ box-shadow:0 6rpx 18rpx rgba(22,24,28,.08),0 1rpx 3rpx rgba(22,24,28,.06),inset 0 2rpx 1rpx rgba(255,255,255,1),inset 0 -4rpx 8rpx rgba(22,24,28,.035);
  animation:glass-liquid .6s cubic-bezier(.3,.9,.4,1)}
 .glass-blob::before{content:'';position:absolute;left:8%;right:8%;top:6%;height:44%;border-radius:16rpx;background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,0))}
 .glass-blob::after{content:'';position:absolute;top:0;bottom:0;left:0;right:0;background:linear-gradient(105deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.85) 50%,rgba(255,255,255,0) 70%);opacity:0;animation:glass-shine .7s ease-out .05s}
 .glass-press{transform:scale(.94)}
 
 /* Depth: a soft neutral shadow under cards keeps the existing palette. */
-.flow-card,.card{box-shadow:0 2rpx 14rpx rgba(0,0,0,.035)}
+.flow-card,.card{box-shadow:0 2rpx 14rpx rgba(22,24,28,.035)}
 
 @media (prefers-reduced-motion:reduce){
  .flow-card,.card,.flow-sheet,.filter-panel,.selectable-order,.empty-yuni,.address-nudge,.done-proof,.glass-blob,.glass-blob::after{animation:none}

@@ -1,0 +1,2 @@
+.order-picture-list{display:flex;flex-wrap:wrap;gap:14rpx;margin:16rpx 0}
+.order-picture{width:160rpx;height:160rpx;border-radius:16rpx;flex:none}

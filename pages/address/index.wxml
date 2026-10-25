@@ -1,17 +1,7 @@
 <lang-switch/>
 <view class="post-page addr-page {{darkClass}}">
- <view class="flow-card addr-form">
-  <view class="addr-form-head"><text class="addr-title">{{editing?(zh?'编辑地址':'Edit address'):(zh?'新增常用地址':'New address')}}</text><text wx:if="{{editing}}" class="link" bindtap="cancelEdit">{{zh?'取消编辑':'Cancel'}}</text></view>
-  <view class="field-label">{{zh?'姓名':'Name'}}</view><input always-embed placeholder-class="ue-ph" class="field" value="{{form.owner}}" data-field="owner" bindinput="field" maxlength="40" placeholder="{{zh?'如：张三':'e.g. Ming Li'}}"/>
-  <view class="field-label">{{zh?'电话':'Phone'}}</view><input always-embed placeholder-class="ue-ph" class="field" type="number" maxlength="11" value="{{form.phone}}" data-field="phone" bindinput="field" placeholder="{{zh?'方便跑手联系':'So the runner can reach you'}}"/>
-  <view class="field-label">{{zh?'宿舍区':'Dorm area'}}</view><picker range="{{areaLabels}}" value="{{form.area}}" bindchange="area"><view class="field ue-select addr-select {{form.area<0?'empty':''}}"><text class="ue-select-text">{{form.area>=0?areaLabels[form.area]:(zh?'请选择宿舍区':'Choose an area')}}</text><text class="ue-chev"></text></view></picker>
-  <view class="field-label">{{zh?'楼栋':'Building'}}</view><picker range="{{buildingLabels}}" value="{{form.building}}" bindchange="building"><view class="field ue-select addr-select {{form.building<0?'empty':''}}"><text class="ue-select-text">{{form.building>=0?buildingLabels[form.building]:(zh?'请选择楼栋':'Choose a building')}}</text><text class="ue-chev"></text></view></picker>
-  <view class="field-label">{{zh?'房间号':'Room'}}</view><input always-embed placeholder-class="ue-ph" class="field" value="{{form.room}}" data-field="room" bindinput="field" maxlength="20" placeholder="{{zh?'如：1218，方便跑手上楼':'e.g. 1218'}}"/>
-  <button class="btn addr-save" bindtap="save" loading="{{saving}}" disabled="{{saving}}">{{editing?(zh?'保存修改':'Save changes'):(zh?'保存地址':'Save address')}}</button>
- </view>
- <view class="addr-list-head"><text>{{zh?'我的常用地址':'My addresses'}}</text><text class="addr-count">{{list.length}}</text><text wx:if="{{pick && list.length}}" class="hint addr-pick-hint">{{zh?'点选一个用于本单':'Tap one to use it'}}</text></view>
- <view class="other-place-link" bindtap="openPlace">{{zh?'＋　添加其他地点':'＋　Add another place'}}</view>
- <view wx:if="{{!list.length}}" class="addr-empty">{{zh?'还没有常用地址，填写上方信息保存一个吧。':'No saved addresses yet. Fill in the form above.'}}</view>
+ <view class="addr-list-head"><text>{{zh?'我的常用地址':'My addresses'}}</text><text class="addr-count">{{list.length}}</text><text wx:if="{{pick && list.length}}" class="hint addr-pick-hint">{{zh?'点选一个用于本单':'Tap one to use it'}}</text><text class="link addr-new" bindtap="add">＋</text></view>
+ <view wx:if="{{!list.length}}" class="addr-empty">{{zh?'还没有常用地址，点右上方的＋添加。':'No saved addresses yet. Tap + to add one.'}}</view>
  <view wx:for="{{list}}" wx:key="id" class="addr-item {{selectedId===item.id?'selected':''}} {{flash===item.id?'flash':''}}" style="animation-delay:{{index*40}}ms" data-id="{{item.id}}" bindtap="choose" hover-class="{{pick?'addr-press':''}}" hover-stay-time="80">
   <view class="addr-row"><text class="addr-name">{{item.owner}}</text><text wx:if="{{item.default}}" class="addr-badge">{{zh?'默认':'Default'}}</text><text wx:if="{{selectedId===item.id}}" class="addr-tick">✓</text></view>
   <view class="addr-phone">{{item.phoneText}}</view><view class="addr-place">{{item.place}}</view>

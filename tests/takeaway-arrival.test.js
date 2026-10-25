@@ -1,0 +1,34 @@
+const assert=require('node:assert/strict');
+const now=Date.parse('2030-01-02T18:00:00+08:00');Date.now=()=>now;
+const {harness}=require('./helpers/order-cloud');
+const h=harness();let definition,notices=[];
+global.Page=value=>definition=value;
+global.wx={getStorageSync:()=>null,setStorageSync(){},showToast:value=>notices.push(value.title),redirectTo(){},cloud:{init(){},async callFunction({data}){return{result:await h.client(data)};}}};
+const store=require('../utils/store'),orders=require('../utils/orders'),f=require('../utils/workflow');
+function page(name,args={}){delete require.cache[require.resolve('../pages/'+name+'/index')];require('../pages/'+name+'/index');const p={...definition,data:structuredClone(definition.data)};p.setData=value=>Object.assign(p.data,value);p.onLoad(args);return p;}
+const input=(p,part,value)=>p.inputArrival({currentTarget:{dataset:{part}},detail:{value}});
+const status=value=>({currentTarget:{dataset:{value}}});
+(async()=>{
+ const accountId=h.engine.idFor('customer');store.reset();store.update(s=>{s.language='en';s.profile={...s.profile,...h.accounts[accountId].profile,onboarded:true,accountId};});await orders.sync();
+ const p=page('takeaway');p.setData({firstRoute:false});p.customLocker({detail:{value:'Dorm 7 takeaway locker'}});
+ assert.equal(p.data.arrived,true);p.arrival(status('later'));assert.equal(p.data.arrivalTime,'');assert.equal(p.data.closeTime,'');
+ await p.post();assert.equal(h.state.requests.length,0);assert.match(notices.at(-1),/latest arrival time/);
+ input(p,'hour','24');input(p,'minute','60');assert.equal(p.data.arrivalTime,'');assert.equal(p.data.closeTime,'');
+ await p.post();assert.equal(h.state.requests.length,0);assert.match(notices.at(-1),/00–23/);
+ input(p,'hour','7');input(p,'minute','5');p.blurArrival({currentTarget:{dataset:{part:'hour'}}});p.blurArrival({currentTarget:{dataset:{part:'minute'}}});assert.equal(p.data.arrivalTime,'07:05');
+ input(p,'minute','');assert.equal(p.data.arrivalTime,'');assert.equal(p.data.closeTime,'');
+ input(p,'hour','17');input(p,'minute','59');await p.post();assert.equal(h.state.requests.length,0);assert.match(notices.at(-1),/passed/);
+ input(p,'hour','18');input(p,'minute','45');assert.equal(p.data.closeTime,'19:15');
+ p.arrival(status('now'));assert.equal(p.data.closeTime,'18:30');
+ p.arrival(status('later'));assert.equal(p.data.arrivalTime,'18:45','switching status preserves the user-entered ETA');assert.equal(p.data.closeTime,'19:15');
+ await p.post();const r=h.state.requests[0];assert.equal(r.arrived,false);assert.equal(r.arrivalAt,f.todayAt('18:45'));assert.equal(r.closesAt,f.todayAt('19:15'));assert.equal(r.deliverBy,'');
+ assert.equal((await h.call('other','foodArrived',{id:r.id})).ok,false,'another customer cannot change arrival status');
+ const taken=await h.call('runner','accept',{ids:[r.id]});assert.equal(taken.ok,true,taken.error);
+ await orders.sync();const detail=page('request',{id:r.id});detail.refresh();await detail.foodArrived();
+ const updated=h.state.requests.find(x=>x.id===r.id);assert.equal(updated.arrived,true);assert.equal(updated.arrivalAt,now);assert.equal(updated.status,'taken','arrival at the pickup point does not mark runner delivery complete');assert.equal(updated.closesAt,f.todayAt('19:15'));
+ assert.equal(detail.data.request.arrived,true);assert.equal(detail.data.request.arrivalLabel,'Food is there now');
+ const runnerView=await h.call('runner','sync');assert.equal(runnerView.snapshot.requests.find(x=>x.id===r.id).arrived,true);
+ assert.equal((await h.call('customer','foodArrived',{id:r.id})).ok,false,'an arrived order cannot be marked twice');
+ await h.call('runner','pickup',{id:r.id});assert.equal((await h.call('customer','foodArrived',{id:r.id})).ok,false,'pickup locks arrival changes');
+ console.log('Takeaway arrival: required ETA, expired ETA, preserved input, saved ETA/closure, early arrival update, runner visibility and ownership checks passed.');
+})().catch(e=>{console.error(e);process.exitCode=1;});

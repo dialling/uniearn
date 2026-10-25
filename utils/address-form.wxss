@@ -1,0 +1,10 @@
+@import "./post-form.wxss";
+.addr-page{padding-top:24rpx}
+.addr-form{padding:30rpx 28rpx!important;border-radius:28rpx!important}
+.addr-form-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6rpx}.addr-title{font-size:32rpx;font-weight:800}
+.addr-type-tabs{margin:24rpx 0 8rpx}
+.addr-page .addr-location{box-sizing:border-box;height:170rpx;min-height:170rpx;padding:22rpx;line-height:1.6}
+.addr-page .field-label{margin:22rpx 0 10rpx;font-size:24rpx;color:#6b6860;font-weight:600}
+.addr-page .field{background:#f6f5f1;border:1rpx solid transparent;border-radius:18rpx;transition:border-color .2s,background .2s}
+
+.addr-save{margin-top:34rpx!important;transition:transform .15s}.addr-save:active{transform:scale(.98)}

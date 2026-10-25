@@ -12,10 +12,9 @@ assert.equal(page.data.selectedCount,2);
 page.toggle({currentTarget:{dataset:{i:1}}});assert.equal(page.data.selectedCount,1);
 page.confirm();assert.equal(emitted.name,'smsSelected');assert.equal(emitted.v.codes.join(','),'1-2-8011');assert.ok(back);
 emitted=null;page.data.candidates=Array.from({length:13},(_,i)=>({code:'1-1-'+String(1000+i),selected:true,point:'Station One'}));page.confirm();assert.equal(emitted,null);
-page.data.candidates=[{code:'1-1-1001',selected:true,point:'A'},{code:'1-1-1002',selected:true,point:'B'}];page.confirm();assert.equal(emitted,null);
-assert.match(page.data.error,/different pickup points/);
+page.data.candidates=[{code:'1-1-1001',selected:true,point:'A'},{code:'1-1-1002',selected:true,point:'B'}];page.confirm();assert.deepEqual(Array.from(emitted.v.pickupPoints),['A','B']);assert.equal(emitted.v.pickupPoint,'A、B');
 assert.equal(parser.dateOf('Dec 31 at 12:00',Date.parse('2026-01-01T01:00:00Z')),Math.floor(Date.UTC(2025,11,31)/86400000));
-console.log('Review page: select/deselect, event payload, parcel cap, mixed-station guard; year boundary passed.');
+console.log('Review page: select/deselect, event payload, parcel cap and per-parcel stations; year boundary passed.');
 (async()=>{
  let input,deleted=[],downloads=0;const cloud={init(){},DYNAMIC_CURRENT_ENV:'test',getWXContext(){return{OPENID:'test-user'};},database(){return{runTransaction:async f=>f({collection:()=>({doc:()=>({get:async()=>({data:null}),set:async()=>{}})})})};},downloadFile:async()=>{downloads++;return{fileContent:Buffer.from('image-test')};},deleteFile:async({fileList})=>deleted.push(...fileList)};
  const module={exports:{}};

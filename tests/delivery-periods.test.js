@@ -1,0 +1,24 @@
+const assert=require('node:assert/strict');
+let now=Date.parse('2030-12-31T12:00:00+08:00');Date.now=()=>now;
+let definition;
+global.Page=value=>definition=value;global.wx={getStorageSync:()=>null,setStorageSync(){},showToast(){},redirectTo(){}};
+const store=require('../utils/store'),routes=require('../utils/saved-routes').forService('parcel'),orders=require('../utils/orders');
+const {harness}=require('./helpers/order-cloud'),h=harness();
+require('../pages/create/index');
+const p={...definition,data:structuredClone(definition.data),setData(values){Object.assign(this.data,values);}};
+const choose=value=>p.deadlineOption({currentTarget:{dataset:{value}}});
+(async()=>{
+ store.reset();const accountId=h.engine.idFor('customer');store.update(s=>{s.language='zh';s.profile={...s.profile,...h.accounts[accountId].profile,accountId,onboarded:true};});
+ routes.save({owner:'同学',phone:'13800138000',dorm:'D01',room:'101'});
+ p.onLoad({mode:'request',category:'parcel'});
+ assert.deepEqual(p.data.periods.map(x=>x.id),['noon','afternoon','evening','tomorrow']);assert.equal(p.data.periods.at(-1).zh,'明天');
+ choose('tomorrow');assert.equal(p.data.date,'2031-01-01');assert.equal(p.data.deadline,'23:59');
+ store.update(s=>s.language='en');p.localize();assert.equal(p.data.periods.at(-1).en,'Tomorrow');assert.equal(p.data.deadlineChoice,'tomorrow');assert.equal(p.data.date,'2031-01-01');
+ const act=orders.act;orders.act=async(action,args)=>{const result=await h.call('customer',action,args);assert.equal(result.ok,true,result.error);return result.value;};
+ p.setData({pickupPoint:'Parcel station',codes:['1-2-3456'],sizeOptions:p.data.sizeOptions.map((size,index)=>({...size,count:index===0?1:0}))});await p.post();orders.act=act;
+ assert.equal(h.state.requests.length,1);assert.equal(h.state.requests[0].deliveryDate,'2031-01-01');assert.equal(h.state.requests[0].closesAt,Date.parse('2031-01-01T23:59:00+08:00'));
+ choose('evening');assert.equal(p.data.date,'2030-12-31');
+ now=Date.parse('2030-12-31T23:59:00+08:00');p.syncPeriods();assert.equal(p.data.deadlineChoice,'tomorrow');assert.equal(p.data.date,'2031-01-01');assert.equal(p.data.periods.at(-1).passed,false);
+ now=Date.parse('2031-01-01T00:01:00+08:00');p.syncPeriods();assert.equal(p.data.today,'2031-01-01');assert.equal(p.data.date,'2031-01-02');
+ console.log('Delivery periods: tomorrow option, China-time year rollover, bilingual selection, actual cloud deadline and midnight refresh passed.');
+})().catch(error=>{console.error(error);process.exitCode=1;});

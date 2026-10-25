@@ -1,0 +1,34 @@
+<lang-switch/>
+<view class="wallet-page {{darkClass}}">
+ <view class="wallet-header"><text class="wallet-title">{{ui.title}}</text><text class="test-label">{{ui.test}}</text></view>
+ <view wx:if="{{error}}" class="wallet-error"><text>{{error}}</text><button bindtap="load">{{ui.refresh}}</button></view>
+ <view class="asset-card">
+  <view class="ac-top"><view class="ac-label" bindtap="toggleHide"><text>{{ui.balance}}</text><view class="eye {{hideAmount?'off':''}}"><view class="eye-ball"/></view></view><view class="ac-range">{{ui.range}}</view></view>
+  <view class="ac-num"><text class="ac-cur">¥</text>{{hideAmount?'****':balance}}</view>
+  <view class="ac-stats">
+   <view class="ac-stat"><text>{{ui.today}}</text><text class="ac-up">{{hideAmount?'***':'+¥'+todayIncome}}</text></view>
+   <view class="ac-stat"><text>{{ui.total}}</text><text class="ac-strong">{{hideAmount?'***':'¥'+totalIncome}}</text></view>
+   <view class="ac-stat"><text>{{ui.pending}}</text><text class="ac-pending {{pendingCents>0?'has':''}}">{{hideAmount?'***':'¥'+pendingYuan}}</text></view>
+  </view>
+  <view class="chart"><view class="chart-max">{{hideAmount||!chartMax?'':'¥'+chartMax}}</view><canvas type="2d" id="assetChart" class="chart-cv"/></view>
+  <view class="chart-axis"><text>{{chartStart}}</text><text>{{ui.todayAxis}}<text wx:if="{{!hideAmount}}" class="axis-val"> ¥{{balance}}</text></text></view>
+ </view>
+ <view class="wallet-test-note">{{ui.testNote}}</view>
+ <button class="wd-btn" bindtap="withdraw" loading="{{withdrawing}}" disabled="{{loading||withdrawing||!!error||balanceCents<=0}}">{{ui.withdraw}}</button>
+ <view class="rules-link" bindtap="openRules"><text class="rules-link-t">{{ui.ruleHint}}</text><text class="rules-link-a">{{ui.view}} ›</text></view>
+ <view wx:if="{{debtCents>0}}" class="wallet-debt"><view>{{ui.debt}} {{hideAmount?'***':'¥'+debt}}</view><text>{{ui.debtHint}}</text></view>
+ <block wx:if="{{pending.length}}"><view class="sec-title">{{ui.pending}}</view><view class="list-card"><view wx:for="{{pending}}" wx:key="id" class="wallet-row"><view class="row-main"><view class="row-t">{{item.title}}</view><view class="row-time">{{item.detail}}</view></view><text class="pending-amount">{{hideAmount?'***':'¥'+item.amount}}</text></view></view></block>
+ <block wx:if="{{withdrawals.length}}"><view class="sec-title">{{ui.records}}</view><view class="list-card"><view wx:for="{{withdrawals}}" wx:key="id" class="wallet-row"><view class="row-ico wd"><view class="ico-arrow"/></view><view class="row-main"><view class="row-t">{{ui.withdraw}} {{hideAmount?'***':'¥'+item.amountYuan}}</view><view class="row-time">{{item.created_at}}</view><view wx:if="{{item.reject_reason}}" class="row-reason">{{item.reject_reason}}</view></view><text class="wd-status {{item.status}}">{{item.statusText}}</text></view></view></block>
+ <view class="sec-title">{{ui.transactions}}</view>
+ <view class="list-card"><view wx:if="{{loading}}" class="empty">{{ui.loading}}</view><view wx:elif="{{!transactions.length}}" class="empty">{{ui.empty}}</view><view wx:for="{{transactions}}" wx:key="id" class="wallet-row"><view class="row-ico {{item.positive?'in':'out'}}"><text>{{item.positive?ui.receive:ui.spend}}</text></view><view class="row-main"><view class="row-t">{{item.kindText}}</view><view class="row-time">{{item.created_at}}</view></view><view class="tx-amt {{item.positive?'pos':'neg'}}">{{hideAmount?'***':(item.positive?'+':'−')+item.amountYuan}}</view></view></view>
+ <button class="earnings-link" bindtap="earnings">{{ui.earnings}} ›</button>
+ <view wx:if="{{rulesVisible}}" class="rules-mask" bindtap="closeRules"><view class="rules-sheet" catchtap="noop"><view class="rules-hd"><text class="rules-hd-t">{{ui.rules}}</text><text class="rules-hd-x" bindtap="closeRules">✕</text></view><scroll-view scroll-y class="rules-body">
+  <view class="rule-row"><text class="rule-k">{{ui.scope}}</text><text class="rule-v">{{rules.scope}}</text></view>
+  <view class="rule-row"><text class="rule-k">{{ui.limit}}</text><text class="rule-v">{{rules.limit_text}}</text></view>
+  <view class="rule-row"><text class="rule-k">{{ui.time}}</text><text class="rule-v">{{rules.time_window}}</text></view>
+  <view class="rule-row"><text class="rule-k">{{ui.arrive}}</text><text class="rule-v">{{rules.arrive}}</text></view>
+  <view class="rule-row"><text class="rule-k">{{ui.channel}}</text><text class="rule-v">{{rules.channel}}</text></view>
+  <view class="rule-row"><text class="rule-k">{{ui.fee}}</text><text class="rule-v">{{rules.fee}}</text></view>
+  <view class="rule-note">{{ui.notice}}：{{rules.notice}}</view>
+ </scroll-view><button class="rules-ok" bindtap="closeRules">{{ui.close}}</button></view></view>
+</view>

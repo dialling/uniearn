@@ -1,25 +1,21 @@
 @import "../../utils/post-form.wxss";
 .addr-page{padding-top:24rpx}
-.addr-form{padding:30rpx 28rpx!important;border-radius:28rpx!important}
-.addr-form-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6rpx}.addr-title{font-size:32rpx;font-weight:800}
-.addr-page .field-label{margin:22rpx 0 10rpx;font-size:24rpx;color:#888780;font-weight:600}
-.addr-page .field{background:#f6f5f1;border:1rpx solid transparent;border-radius:18rpx;transition:border-color .2s,background .2s}
-
-.addr-save{margin-top:34rpx!important;transition:transform .15s}.addr-save:active{transform:scale(.98)}
 .addr-list-head{display:flex;align-items:center;gap:12rpx;margin:34rpx 6rpx 16rpx;font-size:28rpx;font-weight:800}
-.addr-count{min-width:36rpx;height:36rpx;line-height:36rpx;padding:0 8rpx;text-align:center;border-radius:18rpx;background:#f4faf6;color:#41775b;font-size:22rpx}
+.addr-count{min-width:36rpx;height:36rpx;line-height:36rpx;padding:0 8rpx;text-align:center;border-radius:18rpx;background:#fdf6f2;color:#c2410c;font-size:22rpx}
 .addr-pick-hint{margin:0 0 0 auto!important;font-weight:400}
-.addr-empty{padding:40rpx 24rpx;text-align:center;color:#888780;border:2rpx dashed #deded7;border-radius:24rpx}
-.addr-item{position:relative;padding:26rpx 28rpx;margin-bottom:18rpx;background:#fff;border:2rpx solid #e6e4dd;border-radius:24rpx;animation:ue-settle .3s cubic-bezier(.22,.8,.3,1) backwards;transition:border-color .22s,box-shadow .22s,transform .18s}
-.addr-item.selected{border-color:#41775b;box-shadow:0 10rpx 28rpx rgba(65,119,91,.14)}
+.addr-empty{padding:40rpx 24rpx;text-align:center;color:#6b6860;border:2rpx dashed #e2e0d9;border-radius:24rpx}
+.addr-item{position:relative;padding:26rpx 28rpx;margin-bottom:18rpx;background:#fff;border:2rpx solid #e2e0d9;border-radius:24rpx;animation:ue-settle .3s cubic-bezier(.22,.8,.3,1) backwards;transition:border-color .22s,box-shadow .22s,transform .18s}
+.addr-item.selected{border-color:#c2410c;box-shadow:0 10rpx 28rpx rgba(194,65,12,.14)}
 .addr-item.flash{animation:addr-flash .9s ease}
-@keyframes addr-flash{0%{box-shadow:0 0 0 0 rgba(65,119,91,.35)}60%{box-shadow:0 0 0 14rpx rgba(65,119,91,0)}}
+@keyframes addr-flash{0%{box-shadow:0 0 0 0 rgba(194,65,12,.35)}60%{box-shadow:0 0 0 14rpx rgba(194,65,12,0)}}
 .addr-press{transform:scale(.985)}
 .addr-row{display:flex;align-items:center;gap:12rpx}.addr-name{font-size:30rpx;font-weight:800}
-.addr-badge{padding:2rpx 12rpx;border-radius:8rpx;background:#41775b;color:#fff;font-size:20rpx;font-weight:700}
-.addr-tick{margin-left:auto;width:40rpx;height:40rpx;line-height:40rpx;text-align:center;border-radius:50%;background:#41775b;color:#fff;font-size:22rpx;animation:ue-pop .25s ease backwards}
-.addr-phone{margin-top:8rpx;color:#888780;font-size:24rpx;letter-spacing:1rpx}.addr-place{margin-top:10rpx;font-size:28rpx;font-weight:650}
-.addr-actions{display:flex;align-items:center;justify-content:space-between;margin-top:20rpx;padding-top:18rpx;border-top:1rpx solid #efeee9}
-.addr-default{color:#41775b;font-size:23rpx;font-weight:650}.addr-btns{display:flex;gap:14rpx}
-.addr-btn{padding:8rpx 24rpx;border-radius:30rpx;background:#f0efeb;font-size:23rpx;font-weight:650}.addr-btn:active{opacity:.6}.addr-btn.danger{background:#f4faf6;color:#3a6a50}
-.page-dark .addr-item{background:#2c332f;border-color:#465149}.page-dark .addr-page .field{background:#232926;color:#edf1ed}.page-dark .addr-actions{border-top-color:#465149}.page-dark .addr-btn{background:#3a423d;color:#edf1ed}.page-dark .addr-empty{border-color:#465149}
+.addr-badge{padding:2rpx 12rpx;border-radius:8rpx;background:#c2410c;color:#fff;font-size:20rpx;font-weight:700}
+.addr-tick{margin-left:auto;width:40rpx;height:40rpx;line-height:40rpx;text-align:center;border-radius:50%;background:#c2410c;color:#fff;font-size:22rpx;animation:ue-pop .25s ease backwards}
+.addr-phone{margin-top:8rpx;color:#6b6860;font-size:24rpx;letter-spacing:1rpx}.addr-place{margin-top:10rpx;font-size:28rpx;font-weight:650}
+.addr-actions{display:flex;align-items:center;justify-content:space-between;margin-top:20rpx;padding-top:18rpx;border-top:1rpx solid #f0efea}
+.addr-default{color:#c2410c;font-size:23rpx;font-weight:650}.addr-btns{display:flex;gap:14rpx}
+.addr-btn{padding:8rpx 24rpx;border-radius:30rpx;background:#f0efea;font-size:23rpx;font-weight:650}.addr-btn:active{opacity:.6}.addr-btn.danger{background:#fdf6f2;color:#0b7a55}
+.page-dark .addr-item{background:#242522;border-color:#3a3b37}.page-dark .addr-page .field{background:#242522;color:#edebe4}.page-dark .addr-actions{border-top-color:#3a3b37}.page-dark .addr-btn{background:#3a3b37;color:#edebe4}.page-dark .addr-empty{border-color:#3a3b37}
+
+.addr-new{margin-left:auto;font-size:36rpx;padding:0 8rpx}.addr-list-head{margin-top:8rpx}

@@ -64,7 +64,8 @@ try{
   assert.deepEqual(new Set(started.requestIds),new Set([east.id,east2.id]));
   const target=Date.parse('2030-01-03T00:10:00+08:00'),late=Date.parse('2030-01-02T23:55:00+08:00');
   const timed=f.createTakeaway(s,{...base,deliveryAddress:'Library east entrance',deliverBy:'00:10',deliverAt:target},late);
-  assert.equal(timed.closesAt,target,'absolute delivery target survives midnight');
+  assert.equal(timed.deliverBy,'00:10','absolute delivery target survives midnight');
+  assert.equal(timed.closesAt,late+30*60000,'cancellation remains 30 minutes after posting across midnight');
   assert.throws(()=>f.createTakeaway(s,{...base,deliverBy:'00:10',deliverAt:target},target+1),/future delivery/);
  }
  // Exercise the real page, including its submission payload, with a controllable clock.
@@ -82,15 +83,13 @@ try{
  vm.runInNewContext(fs.readFileSync(require.resolve('../pages/takeaway/index.js'),'utf8'),{Date,Page:p=>definition=p,wx:{redirectTo(){}},require:n=>{assert.ok(n in dependencies,n);return dependencies[n];}});
  const p={...definition,data:{...definition.data,zh:false,phone:'13800000000',dorm:'D01',room:'101',firstRoute:false,night:true,price:4}};
  p.setData=v=>Object.assign(p.data,v);
- p.syncArrival();p.totals();
- const chosen=p.data.deliverAt,display=p.data.deliverBy;
- now+=5*60000;p.totals();
- assert.equal(p.data.closeTime,display);assert.equal(p.data.deliverBy,display);
+ p.totals();
+ now+=5*60000;p.updateCancelClock();
+ assert.equal(p.data.closeTime,require('../utils/workflow').clock(now+30*60000));
  (async()=>{
-  await p.post();assert.equal(payload.data.deliverAt,chosen,'posting keeps the selected timestamp');
-  payload=null;now=chosen+1;await p.post();assert.equal(payload,null,'expired delivery time must not submit');assert.match(toast,/passed/);
-  p.pickDoor({detail:{},currentTarget:{dataset:{index:p.data.doorIndex}}});
-  assert.ok(p.data.deliverAt>now,'tapping the same duration refreshes an expired selection');
-  console.log('Review fixes: nested split refunds, coupon reuse, completion, precise-address grouping and fixed delivery timestamps passed.');
+  await p.post();assert.ok(payload);assert.equal(payload.data.deliverAt,undefined);assert.equal(payload.data.deliverBy,undefined,'removed delivery selector must not leave a hidden deadline');
+  payload=null;now+=60*60000;p.updateCancelClock();await p.post();assert.ok(payload,'idle form can still post without an expired hidden delivery target');
+  assert.equal(p.data.closeTime,require('../utils/workflow').clock(now+30*60000));
+  console.log('Review fixes: nested split refunds, coupon reuse, completion, precise-address grouping and live cancellation preview passed.');
  })().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>{Date.now=realNow;});
 }catch(e){Date.now=realNow;throw e;}
