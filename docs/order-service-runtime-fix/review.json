@@ -4,13 +4,13 @@
     "engine.js"
   ],
   "baseline_engine_sha256": "0965ec7be878ca09cb87c54f2d73c8ceac7944abca0a019d5ca7b9caf07e7745",
-  "patched_engine_sha256": "a7b507dbe8126746c2eddbbb138e46e31a0bcf964717571544d0312df5f8c105",
+  "patched_engine_sha256": "c3fab24fe5ace563fa6b0d923844153fd8963667dcc38a0c19d37023fbe1b411",
   "other_files_preserved": 11,
   "deployment": {
     "status": "deployed_and_download_verified",
     "verifiedAt": "2026-10-25T14:33:00+08:00",
     "method": "WeChat DevTools UI incremental engine.js upload",
-    "downloaded_engine_sha256": "a7b507dbe8126746c2eddbbb138e46e31a0bcf964717571544d0312df5f8c105",
+    "downloaded_engine_sha256": "c3fab24fe5ace563fa6b0d923844153fd8963667dcc38a0c19d37023fbe1b411",
     "changed_files": [
       "engine.js"
     ],
@@ -18,7 +18,8 @@
     "missingGendersRestoredFromSavedAddresses": 3,
     "verifiedRunnerWithEmptyGeneralContactPassedContactGate": true,
     "liveNewAcceptanceNavigationVerified": false,
-    "limitation": "No waiting jobs were available in the live hall."
+    "limitation": "No waiting jobs were available in the live hall.",
+    "taskWithoutDeadlineSourceVerified": true
   },
   "tests": {
     "passed": 60,
