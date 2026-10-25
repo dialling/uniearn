@@ -15,6 +15,7 @@ Page({
  async authorizePhone(e){if(this.data.phoneBusy)return;if(!e.detail.code){ui.toast(this.data.ui.phoneAuth);return;}this.setData({phoneBusy:true});try{await account.call('wechatLogin',{code:e.detail.code});this.phoneInfo();this.usePhone();}catch(e){ui.toast(e);}finally{this.setData({phoneBusy:false});}},
  addressView(){const lang=this.data.zh?'zh':'en',cards=savedRoutes.list().map(x=>({id:x.id,owner:x.owner,default:x.default,place:x.destinationType==='place'?x.deliveryAddress:savedRoutes.dormLabel(x.dorm,lang)+(x.room?' '+x.room:'')})),sel=cards.findIndex(x=>x.id===this.data.routeId);this.setData({addrCards:cards,addrInto:sel>0?'ad'+(sel-1):''});const a=this.data,dorms=savedRoutes.dorms.includes(a.dorm)||!a.dorm?savedRoutes.dorms:savedRoutes.dorms.concat(a.dorm);const language=this.data.zh?'zh':'en';this.setData({dorms,dormLabels:dorms.map(x=>savedRoutes.dormLabel(x,language)),dormIndex:Math.max(0,dorms.indexOf(a.dorm)),destinationDisplay:a.destinationType==='place'?a.deliveryAddress:(a.dorm||'')+' · '+(a.room||'—')+(this.data.zh?' 室':'')});this.syncLockers();},
  syncLockers(){
+  if(this.data.routeLocked){const point=this.data.station||'';this.setData({lockerChoice:'trip',lockerOptions:[{id:'trip',value:point,label:lockers.label(point,this.data.zh?'zh':'en')}],lockerIndex:0,lockerChosen:true,lockerCustom:false,lockerManual:false,pickupPoint:point,lockerReady:!!point&&point.length<=200});return;}
   const config=lockers.options(this.data,this.data.zh?'zh':'en');
   let choice=this.data.lockerChoice,custom=this.data.lockerCustomText;
   const scope=lockers.memoryScope();if(this._lockerGroup!==config.group||this._lockerAccount!==scope){const saved=lockers.recall(this.data);choice=saved?saved.choice:'';custom=saved?saved.custom:'';this._lockerGroup=config.group;this._lockerAccount=scope;}
@@ -23,9 +24,9 @@ Page({
   const point=isCustom?String(custom||'').trim():index>=0?config.items[index].value:'';
   this.setData({lockerChoice:choice,lockerCustomText:custom,lockerOptions:config.items,lockerIndex:Math.max(0,index),lockerChosen:index>=0,lockerCustom:isCustom,lockerManual:config.manual,pickupPoint:point,lockerReady:!!point&&point.length<=200});
  },
- pickLocker(e){const option=this.data.lockerOptions[Number(e.detail.value)];if(!option)return;this.setData({lockerChoice:option.id});this.syncLockers();this.rememberLocker();},
- customLocker(e){this.setData({lockerCustomText:e.detail.value});this.syncLockers();this.rememberLocker();},
- rememberLocker(){if(!this.data.night&&this.data.lockerReady)lockers.remember(this.data,this.data.lockerChoice,this.data.lockerCustomText);},
+ pickLocker(e){if(this.data.routeLocked)return;const option=this.data.lockerOptions[Number(e.detail.value)];if(!option)return;this.setData({lockerChoice:option.id});this.syncLockers();this.rememberLocker();},
+ customLocker(e){if(this.data.routeLocked)return;this.setData({lockerCustomText:e.detail.value});this.syncLockers();this.rememberLocker();},
+ rememberLocker(){if(this.data.routeLocked)return;if(!this.data.night&&this.data.lockerReady)lockers.remember(this.data,this.data.lockerChoice,this.data.lockerCustomText);},
  restoreLocker(value){this.syncLockers();if(!value)return;const config=lockers.options(this.data),match=config.items.find(x=>x.value===value);if(match)this.setData({lockerChoice:match.id});else if(config.manual||config.items.some(x=>x.id==='other'))this.setData({lockerChoice:'other',lockerCustomText:value});this.syncLockers();},
  draft(){return savedRoutes.normalize({...this.data,id:this.data.routeId,name:this.data.routeName,station:this.data.station||'Takeaway pickup'});},
  autoSaveDorm(){if(this.data.tripId||!this.data.firstRoute||!this.data.saveDorm||this.data.destinationType!=='dorm')return;try{const a=this.draft();a.id=this.data.dormRouteId||'';a.name='My dorm';const route=savedRoutes.save(a);this.setData({dormRouteId:route.id,routes:savedRoutes.list()});}catch(e){}},

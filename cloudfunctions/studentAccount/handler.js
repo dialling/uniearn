@@ -38,7 +38,7 @@ function createHandler({getOpenId,repo,env,now=Date.now}) {
       const isAdmin=reviewers.includes(openId)||!!(account.admin&&account.admin.until>now()&&account.admin.revision===(account.authRevision||0));
       if(action==='sessionLogin'){
         const profile=account.profile||{name:'',phone:'',dorm:'',room:'',pickup:''};
-        const patch={profile,loggedOut:false,authRevision:(account.authRevision||0)+1,updatedAt:now()};
+        const patch={profile,loggedOut:false,authRevision:(account.authRevision||0)+1,updatedAt:now(),...(!account.profile?{createdAt:now(),analyticsClass:'unclassified'}:{})};
         await repo.patch(id,patch);return {ok:true,account:publicAccount({...account,...patch},id)};
       }
       if(['selectCampus','campusInterest','requestSchool'].includes(action)){

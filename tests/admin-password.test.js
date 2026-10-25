@@ -1,0 +1,27 @@
+const assert=require('node:assert/strict'),auth=require('../cloudfunctions/newsService/auth'),makeRepo=require('../cloudfunctions/newsService/operations-repo'),{createHttpHandler}=require('../cloudfunctions/newsService/http');
+(async()=>{
+ const data={},copy=structuredClone;let queue=Promise.resolve(),at=Date.now();
+ const collection=()=>({doc:id=>({get:async()=>{if(!data[id])throw Error('not found');return {data:{...copy(data[id]),_id:id}};},update:async({data:patch})=>Object.assign(data[id],copy(patch)),set:async({data:value})=>{data[id]=copy(value);}})});
+ const db={collection,runTransaction:fn=>{const result=queue.then(()=>fn(db));queue=result.catch(()=>{});return result;}};
+ const repo=makeRepo(db);repo.getAdmin=async()=>({...copy(data.admin),_id:'admin'});repo.recordLogin=(accepted,stamp)=>repo.staffLogin('admin',accepted,stamp);repo.newsGet=async()=>({revision:0,items:[]});
+ data.admin=await auth.createAdmin('owner','Original-password-123');const original=copy(data.admin),oldToken=auth.mintToken(original,at);
+ const handler=createHttpHandler({repo,cloud:{},settings:{allowedOrigins:['https://test.example']},now:()=>at});
+ const http=async(input,token=oldToken)=>{const r=await handler({httpMethod:'POST',headers:{origin:'https://test.example',authorization:'Bearer '+token},body:JSON.stringify(input)});return {...r,data:JSON.parse(r.body)};};
+ const change={action:'webChangePassword',currentPassword:'Original-password-123',newPassword:'Replacement-password-456'};
+ assert.equal((await http(change,'')).statusCode,401);
+ assert.equal((await http({...change,currentPassword:'incorrect'})).statusCode,400);assert.equal(data.admin.fails,1);
+ assert.equal((await http({...change,newPassword:'short'})).statusCode,400);assert.equal(data.admin.passwordHash,original.passwordHash);
+ assert.equal((await http({...change,newPassword:change.currentPassword})).statusCode,400);
+ let r=await http(change);assert.equal(r.statusCode,200);const newToken=r.data.token;assert.notEqual(data.admin.tokenKey,original.tokenKey);assert.equal(data.admin.createdAt,original.createdAt);assert.equal(data.admin.fails,0);
+ assert.equal((await http({action:'newsAdminList'},oldToken)).statusCode,401);assert.equal((await http({action:'newsAdminList'},newToken)).statusCode,200);
+ assert.equal((await http({action:'webLogin',username:'owner',password:change.currentPassword},'')).statusCode,401);assert.equal((await http({action:'webLogin',username:'owner',password:change.newPassword},'')).statusCode,200);
+ await assert.rejects(repo.changePassword('admin',original.passwordHash,original,at),/账号状态已变化/);
+ const serialized=JSON.stringify(data);assert(!serialized.includes(change.currentPassword));assert(!serialized.includes(change.newPassword));assert(Object.values(data).some(d=>d.action==='passwordChanged'&&Object.keys(d.detail).length===0));
+ for(let i=0;i<5;i++)assert.equal((await http({...change,currentPassword:'wrong'},newToken)).statusCode,400);
+ assert.equal((await http({...change,currentPassword:change.newPassword,newPassword:'Another-password-789'},newToken)).statusCode,429);at+=900001;
+ const memberId='member-'+auth.hash('teammate');data[memberId]={...await auth.createAdmin('teammate','Member-password-123'),kind:'member'};const memberToken=auth.mintToken({...data[memberId],_id:memberId},at),ownerHash=data.admin.passwordHash;
+ r=await http({action:'webChangePassword',id:'admin',currentPassword:'Member-password-123',newPassword:'Member-replacement-456'},memberToken);assert.equal(r.statusCode,200);assert.equal(data.admin.passwordHash,ownerHash);assert(!auth.verifyToken(memberToken,data[memberId],at));assert(auth.verifyToken(r.data.token,data[memberId],at));
+ at+=29*86400000;r=await http({action:'newsAdminList'},newToken);assert.equal(r.statusCode,200);assert(r.data.sessionToken);assert(auth.verifyToken(r.data.sessionToken,data.admin,at+2*86400000));assert(!auth.verifyToken(newToken,data.admin,at+2*86400000));
+ r=await http({action:'webSession'},newToken);assert.equal(r.statusCode,200);const restored=r.data.token;assert(auth.verifyToken(restored,data.admin,at));assert.equal((await http({action:'webLogout'},restored)).statusCode,200);assert.equal((await http({action:'webSession'},restored)).statusCode,401);
+ console.log('Admin password/session: self-change, current password lockout, hashing, stale-write guard, private audit, session revocation, member isolation, 30-day rolling renewal and server logout passed.');
+})().catch(e=>{console.error(e);process.exitCode=1;});

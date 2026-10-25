@@ -43,7 +43,8 @@ function createRequest(s, data) {
   const r={...data,area:areaId,floor,floorSurcharge,id:'r'+s.nextId++,status:'waiting',runnerId:null,collected:[],photo:'',reward,createdAt:Date.now(),isMine:true,ownerId:s.profile.accountId||'local',serviceFee:serviceFee()};
   s.requests.unshift(r); return r;
 }
-function routeStationMatches(r,trip){return catalog.category(trip)==='takeout'?r.pickupPoint===trip.station:r.station===trip.station;}
+function routeStation(r){return catalog.category(r)==='takeout'?(r.pickupPoint||r.station):r.station;}
+function routeStationMatches(r,trip){return routeStation(r)===trip.station;}
 function eligible(s, trip) { return s.requests.filter(r=>r.status==='waiting' && routeStationMatches(r,trip) && r.dorm===trip.dorm && catalog.category(r)===catalog.category(trip) && boxes(r)<=trip.capacity); }
 function assign(s, trip, ids) {
   if(new Set(ids).size!==ids.length||ids.some(id=>trip.requestIds.includes(id)))throw Error('Duplicate order');
@@ -71,8 +72,8 @@ function acceptJob(s,ids) {
   if (!ids.length || new Set(ids).size!==ids.length) throw Error('Select at least one available request');
   const selected=ids.map(id=>s.requests.find(r=>r.id===id));
   if(selected.some(r=>!r||r.status!=='waiting'))throw Error('A selected request is no longer available');
-  const station=selected[0].station,dorm=selected[0].dorm;
-  if(selected.some(r=>r.station!==station||r.dorm!==dorm||(r.destinationKey||'')!==(selected[0].destinationKey||'')||catalog.category(r)!==catalog.category(selected[0])))throw Error('Choose requests on the same route');
+  const station=routeStation(selected[0]),dorm=selected[0].dorm;
+  if(selected.some(r=>routeStation(r)!==station||r.dorm!==dorm||(r.destinationKey||'')!==(selected[0].destinationKey||'')||catalog.category(r)!==catalog.category(selected[0])))throw Error('Choose requests on the same route');
   if(selected.reduce((n,r)=>n+r.reward,0)>limit(s.profile))throw Error('This trip exceeds your runner limit');
   const t={id:'t'+s.nextId++,campusId:selected[0].campusId,universityId:selected[0].universityId,category:catalog.category(selected[0]),station,dorm,capacity:selected.reduce((n,r)=>n+boxes(r),0),depart:'Now',phase:'collect',requestIds:[],cancelled:false};
   assign(s,t,ids);s.trips.unshift(t);return t;

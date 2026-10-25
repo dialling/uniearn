@@ -18,8 +18,10 @@ async function archiveFinished() {
       const state = (await ref.get()).data; delete state._id;
       const now = Date.now();
       if (now - (state.archiveCheckedAt || 0) <= ARCHIVE_CHECK_MS) return;
+      // Preserve the runner identity before trips are trimmed by the archive routine.
+      for(const r of state.requests){const t=state.trips.find(t=>t.id===r.runnerId);if(t?.runnerAccountId)r.analyticsRunnerId=t.runnerAccountId;}
       const removed = engine.archive(state, now);
-      for (const r of removed) await tx.collection('uniearn_order_archive').doc(r.id + '-' + (r.createdAt || 0)).set({data:json({...r,archivedAt:now})});
+      for (const r of removed) await tx.collection('uniearn_news').doc('orderArchive-'+crypto.createHash('sha256').update(r.id+'-'+r.createdAt).digest('hex')).set({data:json({kind:'orderArchive',order:r,archivedAt:now})});
       state.archiveCheckedAt = now;
       if (removed.length) state.revision = (state.revision || 0) + 1;
       await ref.set({data:json(state)});
@@ -62,7 +64,11 @@ exports.main = async (event = {}) => {
       if (!state || !Array.isArray(state.requests) || !state.receipts) throw Error('Invalid team-test database document.');
       delete state._id;
       const now = Date.now(), account = await getAccount(tx, actor);account._reviewer=String(process.env.REVIEWER_OPENIDS||'').split(',').map(x=>x.trim()).includes(openid);account._admin=!!(account.admin&&account.admin.until>now&&account.admin.revision===(account.authRevision||0));
-      const before = JSON.stringify(state);state.loyaltyStartedAt=state.loyaltyStartedAt||now;
+      const before = JSON.stringify(state);
+      const analyticsBefore=require('./analytics').before(state);
+      // Read the shared admin configuration on every sync; issued coupons retain their terms.
+      try {const cfg=(await tx.collection('uniearn_news').doc('promotion-config').get()).data;if(cfg&&cfg.value&&Array.isArray(cfg.value.campaigns))state.adminPromotions=cfg.value;}catch(e){if(!/not exist|not found|does not exist/i.test(e.message||'')&&e.errCode!==-502005&&e.code!==-502005)throw e;}
+      state.loyaltyStartedAt=state.loyaltyStartedAt||now;
       if(account.profile&&!account.loggedOut)require('./rewards').dailyLogin(state,actor,now);
       engine.expire(state, now);require('./rewards').settle(state,now);require('./wallet').settle(state,now);
       let value = {};
@@ -87,6 +93,7 @@ exports.main = async (event = {}) => {
         // Retry receipts expire after 24 hours. Clients must not replay older operations.
         for (const k of Object.keys(state.receipts)) if (state.receipts[k].at < now - 86400000) delete state.receipts[k];
       }
+      require('./analytics').annotate(state,analyticsBefore,actor,event,now);
       if (JSON.stringify(state) !== before) {
         state.revision = (state.revision || 0) + 1;
         if (Buffer.byteLength(JSON.stringify(state)) > 850000) throw Error('Team test storage is full. Export and archive test data first.');

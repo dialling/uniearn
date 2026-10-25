@@ -26,7 +26,7 @@ const FINISHED = ['confirmed','cancelled','refunded'], ARCHIVE_AFTER = 8 * 86400
 const finishedAt = r => r.confirmedAt || r.refundedAt || r.cancelledAt || r.createdAt || 0;
 function archive(s, now = Date.now()) {
   wallet.settle(s, now);
-  const old = s.requests.filter(r => FINISHED.includes(r.status) && now - finishedAt(r) >= ARCHIVE_AFTER);
+  const old = s.requests.filter(r => FINISHED.includes(r.status) && now - finishedAt(r) >= ARCHIVE_AFTER).slice(0,20);
   if (!old.length) return [];
   const ids = new Set(old.map(r => r.id)), member = id => s.members[id] || (s.members[id] = { marks: [] });
   for (const r of old) {
@@ -211,8 +211,12 @@ function execute(s, actor, account, event, now = Date.now()) {
     if(cfg.selfRequestId){const own=ownRequest(s,cfg.selfRequestId,actor);check(own.status==='waiting'&&own.campusId===campusId&&own.category==='parcel'&&own.station===cfg.station&&own.dorm===cfg.dorm,'Your parcel request changed. Refresh before starting.');d.cancelRequest(s,own.id);own.refundAmount=f.total(own);f.event(own,'Collecting it myself',now);}
     check(['takeout','parcel'].includes(cfg.category) && ['now','later'].includes(cfg.when), 'Invalid trip.');
     check(typeof cfg.station === 'string' && cfg.station.length <= (cfg.category === 'takeout' ? 200 : 100) && typeof cfg.dorm === 'string' && cfg.dorm.length <= 100, 'Invalid route.');
+    if(Object.prototype.hasOwnProperty.call(cfg,'requestIds')){
+      check(Array.isArray(cfg.requestIds)&&cfg.requestIds.length<=12,'Select up to 12 orders.');
+      if(cfg.requestIds.length)rejectOwn(s,cfg.requestIds,actor);
+    }
     const tripState={...s,requests:s.requests.filter(r=>r.campusId===campusId)};
-    const t = f.startTrip(tripState, { category: cfg.category, when: cfg.when, time: cfg.time, duration: cfg.duration, station: cfg.station, dorm: cfg.dorm, capacity: cfg.capacity }, now);s.nextId=tripState.nextId;
+    const t = f.startTrip(tripState, { category: cfg.category, when: cfg.when, time: cfg.time, duration: cfg.duration, station: cfg.station, dorm: cfg.dorm, capacity: cfg.capacity, ...(Object.prototype.hasOwnProperty.call(cfg,'requestIds')?{requestIds:cfg.requestIds}:{}) }, now);s.nextId=tripState.nextId;
     t.campusId=campusId;t.universityId='xjtlu';t.runnerAccountId = actor; t.runnerName=contact.name; t.runnerPhone=contact.phone; t.createdAt = now;
     t.requestIds.forEach(id => f.event(s.requests.find(r => r.id === id), 'Runner accepted', now)); value = { id: t.id };
   } else if (['raise','cancel','confirm','report','riderPhoto','foodArrived'].includes(action)) {
@@ -268,7 +272,7 @@ function snapshot(s, actor, account, now = Date.now()) {
   const requests = s.requests.filter(r => r.status === 'waiting' && inCampus(r) || loggedIn && (r.ownerId === actor || myTrips.has(r.runnerId))).map(r => {
     const isMine = loggedIn && r.ownerId === actor, isRunner = myTrips.has(r.runnerId);
     if (isMine || isRunner) {
-      const out = clone(r); delete out.splitOriginal; delete out.ownerId;
+      const out = clone(r); delete out.splitOriginal; delete out.ownerId;delete out.analytics;delete out.analyticsEvents;delete out.analyticsRunnerId;delete out.analyticsHistoryCapped;
       const rt=s.trips.find(t=>t.id===r.runnerId),thread=rt&&(s.threads||{})[r.id+':'+rt.id];
       out.runnerPhone=rt&&rt.runnerPhone||'';out.runnerStats=rt?(()=>{const st=stats(s,rt.runnerAccountId);return{jobsDone:st.jobsDone,onTime:st.onTime};})():{};out.unread=thread?thread.messages.filter(m=>m.sender!==actor&&m.at>(thread.read[actor]||0)).length:0;
       out.messages=thread?thread.messages.map(m=>({id:m.id,text:m.text,at:m.at,mine:m.sender===actor})):[];

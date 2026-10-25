@@ -16,7 +16,7 @@ Page({
       const r=await new Promise((resolve,reject)=>wx.chooseMedia({count:1,mediaType:['image'],sourceType:['album'],success:resolve,fail:reject}));
       path=r.tempFiles[0].tempFilePath;
     }catch(_){return;}
-    this.setData({busy:true,error:''});let fileID='',cloud;
+    this.setData({busy:true,error:''});let fileID='',cloud;const analyticsStart=Date.now();
     try{
       cloud=ensureCloud();
       if(this.data.mode!=='sms'){
@@ -30,14 +30,14 @@ Page({
       fileID=(await cloud.uploadFile({cloudPath:prep.cloudPath,filePath:path})).fileID;
       const r=(await cloud.callFunction({name:'parseSmsScreenshot',data:{fileID}})).result;
       if(!r||!r.ok)throw Error(r&&r.error||this.t('Could not read the SMS.'));
-      this.setData({preview:path});this.applyResult(r.fields);
-    }catch(e){this.setData({error:e.message||e.errMsg||this.t('Could not read the SMS.')});}
+      try{require('../../utils/analytics').record('ocr_result',{result:'ok',duration:Date.now()-analyticsStart,page:'sms-scan'});}catch(_){}this.setData({preview:path});this.applyResult(r.fields);
+    }catch(e){if(this.data.mode==='sms')try{require('../../utils/analytics').record('ocr_result',{result:'unknown',duration:Date.now()-analyticsStart,page:'sms-scan'});}catch(_){}this.setData({error:e.message||e.errMsg||this.t('Could not read the SMS.')});}
     finally{if(fileID)try{await cloud.deleteFile({fileList:[fileID]});}catch(_){}this.setData({busy:false});}
   },
-  applyResult(r){const candidates=(r.candidates||[]).map(x=>({...x,point:normalizePoint(x.point)})),points=[...new Set(candidates.filter(x=>x.selected&&x.point).map(x=>x.point))];this.setData({candidates,note:this.t('All detected codes are listed. Select up to 12 from one pickup point.'),pickupPoint:points.length===1?points[0]:'',pickupAddress:(candidates.find(x=>x.selected&&x.address)||{}).address||'',error:''});this.recount();},
+  applyResult(r){this._analyticsOcr=true;this._analyticsOcrEdited=false;const candidates=(r.candidates||[]).map(x=>({...x,point:normalizePoint(x.point)})),points=[...new Set(candidates.filter(x=>x.selected&&x.point).map(x=>x.point))];this.setData({candidates,note:this.t('All detected codes are listed. Select up to 12 from one pickup point.'),pickupPoint:points.length===1?points[0]:'',pickupAddress:(candidates.find(x=>x.selected&&x.address)||{}).address||'',error:''});this.recount();},
   recount(){this.setData({selectedCount:this.data.candidates.filter(x=>x.selected).length});},
   toggle(e){const i=Number(e.currentTarget.dataset.i),candidates=this.data.candidates.map((x,j)=>j===i?{...x,selected:!x.selected}:x);const points=[...new Set(candidates.filter(x=>x.selected&&x.point).map(x=>x.point))];this.setData({candidates,pickupPoint:points.length===1?points[0]:'',pickupAddress:(candidates.find(x=>x.selected&&x.address)||{}).address||'',error:''});this.recount();},
-  editCode(e){this.setData({['candidates['+e.currentTarget.dataset.i+'].code']:e.detail.value});},
+  editCode(e){if(this._analyticsOcr&&!this._analyticsOcrEdited){this._analyticsOcrEdited=true;try{require('../../utils/analytics').record('ocr_edit',{page:'sms-scan'});}catch(_){}}this.setData({['candidates['+e.currentTarget.dataset.i+'].code']:e.detail.value});},
   editPoint(e){this.setData({['candidates['+e.currentTarget.dataset.i+'].point']:e.detail.value});},
   field(e){this.setData({[e.currentTarget.dataset.field]:e.detail.value});},
   confirm(){

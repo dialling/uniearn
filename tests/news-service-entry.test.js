@@ -1,0 +1,23 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const auth=require('../cloudfunctions/newsService/auth');
+(async()=>{
+  const records={},clone=x=>structuredClone(x);let openid='';
+  const sdk={DYNAMIC_CURRENT_ENV:'test',init(){},getWXContext:()=>({OPENID:openid}),getTempFileURL:async({fileList})=>({fileList:fileList.map(fileID=>({fileID,tempFileURL:'https://images.example/'+encodeURIComponent(fileID)}))})};
+  const ref=id=>({get:async()=>{if(!records[id])throw Error('document does not exist');return{data:clone(records[id])};},set:async({data})=>{records[id]=clone(data);},update:async({data})=>{records[id]={...records[id],...clone(data)};}});
+  const collection=()=>({doc:ref,where:query=>({limit:()=>({get:async()=>({data:records[query._id]?[clone(records[query._id])]:[]})})})});
+  sdk.database=()=>({collection,runTransaction:async fn=>fn({collection})});
+  const exports={};
+  vm.runInNewContext(fs.readFileSync(require.resolve('../cloudfunctions/newsService/index'),'utf8'),{require:name=>name==='wx-server-sdk'?sdk:name==='./settings.json'?{allowedOrigins:['https://test.example'],setupTokenHash:auth.hash('fixture-bootstrap')}:require('../cloudfunctions/newsService/'+name.slice(2)),exports,Date,Set,Object,console});
+  const main=exports.main;
+  assert.equal((await main({action:'newsList'})).code,'FORBIDDEN');
+  openid='student';assert.equal((await main({action:'newsAdminList'})).code,'FORBIDDEN');
+  assert.equal((await main({action:'newsList'})).items.length,0);
+  const http=(input,token='')=>main({httpMethod:'POST',headers:{origin:'https://test.example',authorization:'Bearer '+token},body:JSON.stringify(input)});
+  let response=await http({action:'webSetup',setupToken:'fixture-bootstrap',username:'editor',password:'Test-admin-password'});assert.equal(response.statusCode,200);
+  const token=JSON.parse(response.body).token;
+  response=await http({action:'newsSave',revision:0,item:{titleZh:'云端新闻',bodyZh:'已发布正文',status:'published',cover:'cloud://env/news-covers/cover.png'}},token);assert.equal(response.statusCode,200);
+  response=await http({action:'newsSave',revision:1,item:{titleZh:'私密草稿',bodyZh:'不可公开',status:'draft'}},token);assert.equal(response.statusCode,200);
+  const feed=await main({action:'newsList'});assert.equal(feed.items.length,1);assert.equal(feed.items[0].titleZh,'云端新闻');assert(feed.items[0].coverURL.startsWith('https://images.example/'));assert(!('updatedBy' in feed.items[0]));assert(!JSON.stringify(feed).includes(records.admin.passwordHash));
+  assert.equal((await http({action:'newsAdminList'})).statusCode,401);
+  console.log('newsService entry: real SDK adapter flow, setup, saved content, private drafts, server cover URLs, Mini Program identity and HTTP authorization passed.');
+})().catch(e=>{console.error(e);process.exitCode=1;});

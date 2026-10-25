@@ -1,6 +1,7 @@
 const store = require('./store');
 const {ensureCloud} = require('./cloud');
 const yuniEvents=require('./yuni-events');
+function track(name,props){try{require('./analytics').record(name,props);}catch(_){}}
 function pairMap(rows,value){const result={};rows.forEach(r=>{result[r.id]=value(r);});return result;}
 let queue = Promise.resolve(), syncing = null, mutating = false, timer = null;
 let previous = null, lastError = '', foreground = true, generation = 0;
@@ -57,6 +58,7 @@ function sync() {
 async function act(action, payload = {}) {
   if (mutating) throw Error('Please wait for the current action.');
   mutating=true;
+  const started=Date.now();
   try {
     return await enqueue(async()=>{
       const s=store.get(), signature=JSON.stringify({action,...payload});
@@ -71,7 +73,8 @@ async function act(action, payload = {}) {
       // Resume an uncertain request before sending a second mutation.
       const recovering=!!pending;
       if (!pending) {
-        pending={at:Date.now(),signature,data:{action,...payload,operationId:'op_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2)+'_'+Math.random().toString(36).slice(2)}};
+        let meta={};try{meta=require('./analytics').metadata();}catch(_){}
+        pending={at:Date.now(),signature,data:{action,...payload,analyticsVersion:meta.version||'',analyticsSource:meta.source||'other',operationId:'op_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2)+'_'+Math.random().toString(36).slice(2)}};
         store.update(x=>{x.pendingOrderOperation=pending;});
       }
       let value;
@@ -84,9 +87,9 @@ async function act(action, payload = {}) {
       }
       store.update(x=>{delete x.pendingOrderOperation;});
       if (recovering && pending.signature!==signature) throw Error('The previous action was recovered. Check your orders, then submit this change again.');
-      return value;
+      track('action_result',{action,result:'ok',duration:Date.now()-started});return value;
     });
-  } finally { mutating=false; }
+  } catch(e){track('action_result',{action,result:e.business?'business':'network',duration:Date.now()-started});throw e;}finally { mutating=false; }
 }
 async function upload(path) {
   if (!path || path.startsWith('cloud://')) return path || '';
@@ -96,7 +99,7 @@ async function upload(path) {
     const file=await ensureCloud().uploadFile({cloudPath,filePath:path});return file.fileID;
   });
   uploads.set(path,job);
-  try { return await job; } catch(e) { uploads.delete(path); throw e; }
+  const started=Date.now();try {const value=await job;track('upload_result',{result:'ok',duration:Date.now()-started});return value;} catch(e) {track('upload_result',{result:'network',duration:Date.now()-started});uploads.delete(path);throw e;}
 }
 function bind(page, method='refresh') {
   unbind(page);

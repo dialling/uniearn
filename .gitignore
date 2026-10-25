@@ -11,3 +11,6 @@ outputs/
 cloudfunctions/adminService/order-engine/
 admin-web/.git/
 admin-web/.env
+
+# Machine-specific News administration bootstrap settings.
+/cloudfunctions/newsService/settings.json

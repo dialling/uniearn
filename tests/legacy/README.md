@@ -1,0 +1,1 @@
+retry.test.js.disabled preserves the old student-card OCR scan-lock tests. The scan API was removed in favor of reviewed applications. Current application concurrency is tested by ../student-reservation.test.js; order retry behavior is covered by ../takeaway-pages.test.js.

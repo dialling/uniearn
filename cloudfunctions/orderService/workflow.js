@@ -47,7 +47,7 @@ function pickup(s,id){const r=s.requests.find(x=>x.id===id);if(!r||r.status!=='t
 function deliver(s,id,photo,location){d.deliver(s,id,photo);const r=s.requests.find(x=>x.id===id);r.deliveryLocation=location||'';event(r,'Delivered · photo');}
 function report(s,id,reason,photo,note){const r=s.requests.find(x=>x.id===id);if(!r||r.status!=='delivered')throw Error('Only a delivered order can be reported');if(!['Not received','Wrong bag','Spilled or damaged','Something else'].includes(reason))throw Error('Choose a reason');if(reason==='Spilled or damaged'&&!photo)throw Error('Add a photo of the damage');if(reason==='Something else'&&!String(note||'').trim())throw Error('Describe the issue');r.status='disputed';r.dispute={reason,photo:photo||'',note:note||'',at:Date.now()};event(r,'Issue reported · settlement paused');}
 function candidates(s,t,now=Date.now()){
- return s.requests.filter(r=>{const pickup=c.category(t)==='takeout'?r.pickupPoint:r.station;return r.status==='waiting'&&r.ownerId!==s.profile.accountId&&pickup===t.station&&r.dorm===t.dorm&&c.category(r)===c.category(t)&&(!r.closesAt||r.closesAt>now)&&(!r.closesAt||r.closesAt>t.departAt)&&(!r.arrivalAt||r.arrivalAt<=t.departAt);});
+ return s.requests.filter(r=>{const pickup=c.category(t)==='takeout'?(r.pickupPoint||r.station):r.station;return r.status==='waiting'&&r.ownerId!==s.profile.accountId&&pickup===t.station&&r.dorm===t.dorm&&c.category(r)===c.category(t)&&(!r.closesAt||r.closesAt>now)&&(!r.closesAt||r.closesAt>t.departAt)&&(!r.arrivalAt||r.arrivalAt<=t.departAt);});
 }
 function plan(s,cfg,now=Date.now()){
  const capacity=Number(cfg.capacity);if(!Number.isInteger(capacity)||capacity<1||capacity>(cfg.category==='takeout'?5:12))throw Error('Choose a capacity between 1 and 12');
@@ -57,8 +57,21 @@ function plan(s,cfg,now=Date.now()){
  if(later&&departAt<=now+10*MIN)throw Error('Choose a departure more than 10 minutes from now');
  return {campusId:s.profile.campusId,universityId:s.profile.universityId,category:cfg.category||'takeout',station:cfg.station,dorm:cfg.dorm,capacity,departAt,depart:clock(departAt),joinUntil:later?departAt-10*MIN:departAt,remindAt:later?departAt-15*MIN:0,phase:'collect',requestIds:[],cancelled:false,runnerName:s.profile.name||'You',runnerJobs:s.profile.jobsDone||0};
 }
+function matchingTripOrders(s,cfg,now=Date.now()){
+ const t=plan(s,cfg,now);
+ return candidates(s,t,now).sort((a,b)=>(a.arrivalAt||0)-(b.arrivalAt||0));
+}
 function previewTrip(s,cfg,now=Date.now()){
  const t=plan(s,cfg,now),ids=[];let boxes=0,reward=0;
+ if(Object.prototype.hasOwnProperty.call(cfg,'requestIds')){
+  if(!Array.isArray(cfg.requestIds)||cfg.requestIds.length>12||cfg.requestIds.some(id=>typeof id!=='string')||new Set(cfg.requestIds).size!==cfg.requestIds.length)throw Error('Choose up to 12 different orders');
+  const available=new Map(candidates(s,t,now).map(r=>[r.id,r]));
+  const selected=cfg.requestIds.map(id=>available.get(id));
+  if(selected.some(r=>!r))throw Error('A selected order changed. Refresh and choose again.');
+  // Validate on copies: preview must never accept or change the real orders.
+  d.assign({...s,requests:selected.map(r=>({...r}))},{...t,requestIds:[]},cfg.requestIds);
+  return {trip:t,ids:cfg.requestIds.slice(),boxes:selected.reduce((n,r)=>n+d.boxes(r),0),reward:selected.reduce((n,r)=>n+r.reward,0)};
+ }
  for(const r of candidates(s,t,now).sort((a,b)=>(a.arrivalAt||0)-(b.arrivalAt||0))){if(boxes+d.boxes(r)<=t.capacity&&reward+r.reward<=d.limit(s.profile)){const first=ids.length&&s.requests.find(x=>x.id===ids[0]);if(first&&(r.destinationKey||'')!==(first.destinationKey||''))continue;if(t.category==='takeout'&&first&&Math.abs(r.arrivalAt-first.arrivalAt)>15*MIN)continue;ids.push(r.id);boxes+=d.boxes(r);reward+=r.reward;}}
  return {trip:t,ids,boxes,reward};
 }
@@ -72,4 +85,4 @@ function join(s,tripId,make,now=Date.now()){
 function owned(s,r){return r.isMine===true&&(r.ownerId?r.ownerId===(s.profile.accountId||'local'):true)||r.owner==='You'||!!s.profile.name&&r.owner===s.profile.name;}
 function status(r){return {waiting:r.cancellation?'Finding another runner':'Waiting for a runner',taken:'Runner accepted',collected:'On the way',delivered:'Delivered · please check',confirmed:'Confirmed',cancelled:'Cancelled · demo refund',refunded:'No runner · demo refund',disputed:'Issue reported · under review'}[r.status]||r.status;}
 function view(r){return {...r,category:c.category(r),unit:c.category(r)==='task'?'task':c.category(r)==='takeout'?'bags':'boxes',boxes:d.boxes(r),fee:fee(r).toFixed(2),total:total(r).toFixed(2),rewardText:r.reward.toFixed(2),earnedText:(r.reward+Number(r.runnerBonus||0)).toFixed(2),statusLabel:status(r),arrivalLabel:r.arrived?'Food is there now':'Arrives '+clock(r.arrivalAt),closeTime:clock(r.closesAt),phoneLast4:(r.phone||'').replace(/\s/g,'').slice(-4),autoHours:hours(r),autoTime:r.deliveredAt?clock(r.deliveredAt+hours(r)*HOUR):'',sizeLabel:c.category(r)==='task'?'Task':c.label(r),deliveredTime:clock(r.deliveredAt),history:(r.history||[]).map(e=>({...e,time:clock(e.at)}))};}
-module.exports={clock,todayAt,fee,total,hours,event,migrate,expire,createTakeaway,raise,cancelReason,runnerCancel,pickup,deliver,report,previewTrip,startTrip,join,owned,status,view};
+module.exports={clock,todayAt,fee,total,hours,event,migrate,expire,createTakeaway,raise,cancelReason,runnerCancel,pickup,deliver,report,matchingTripOrders,previewTrip,startTrip,join,owned,status,view};

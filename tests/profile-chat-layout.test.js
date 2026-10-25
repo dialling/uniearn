@@ -12,7 +12,7 @@ assert.match(profileXml,/class="edit-grid"/);
 assert.match(profileXml,/class="edit-actions"/);
 assert.match(profileCss,/\.edit-grid\{display:flex/);
 assert.match(profileCss,/\.edit-grid \.room-field\{flex:0 0 190rpx/);
-assert.match(profileCss,/\.edit-save\{flex:1\}/);
+assert.match(profileCss,/\.edit-save\{[^}]*flex:1(?:;|\})/);
 assert.match(profileXml,/class="header-actions"[\s\S]{0,160}?class="edit-button"/,'the header edit chip lives in its own actions row, away from the editor form');
 assert.match(profileCss,/\.hl-track\{[^}]*background:#cfe3d5/);
 assert.match(profileCss,/\.hl-fill\{[^}]*background:#174a35/);

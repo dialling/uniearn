@@ -1,0 +1,177 @@
+// Mini Program runtime imports JavaScript modules, not JSON configuration files.
+module.exports = {
+  "version": 1,
+  "id": "campus-points-challenge",
+  "revision": "separate-level-points-ranking-2026-10-25",
+  "pointsProgram": {
+    "status": "active",
+    "balance": "account_level_points",
+    "rolesCombined": true,
+    "resetOnRankingEnd": false
+  },
+  "status": "not_open",
+  "scoringEnabled": false,
+  "title": {
+    "zh": "积分成长与排行榜",
+    "en": "Level Points & Ranking"
+  },
+  "intro": {
+    "zh": "日常任务积攒积分，成长记录在 Me 等级中。排行榜是独立的限时活动。",
+    "en": "Daily tasks earn points toward your level in Me. Ranking is a separate limited-time event."
+  },
+  "schedule": {
+    "durationDays": 14,
+    "maxCampaignsPerMonth": 1,
+    "timezone": "Asia/Shanghai",
+    "startsAt": null,
+    "endsAt": null,
+    "tentative": true
+  },
+  "tasks": [
+    {
+      "id": "profile",
+      "kind": "profile",
+      "enabled": true,
+      "points": 20,
+      "title": {
+        "zh": "完善个人信息",
+        "en": "Complete your profile"
+      },
+      "description": {
+        "zh": "完善个人信息，获得一次积分奖励。",
+        "en": "Complete your personal information for a one-time points reward."
+      },
+      "repeat": "once"
+    },
+    {
+      "id": "customer-order",
+      "kind": "customer_order",
+      "enabled": true,
+      "points": 10,
+      "title": {
+        "zh": "发布并完成订单",
+        "en": "Post an order and have it completed"
+      },
+      "description": {
+        "zh": "作为用户发布订单，订单完成后获得积分。",
+        "en": "Earn points when an order you posted is completed."
+      },
+      "firstCompletion": {
+        "points": 20,
+        "mode": "total",
+        "role": "user"
+      }
+    },
+    {
+      "id": "runner-order",
+      "kind": "runner_order",
+      "enabled": true,
+      "points": 15,
+      "title": {
+        "zh": "接单并完成配送",
+        "en": "Complete a job as a runner"
+      },
+      "description": {
+        "zh": "作为骑手完成订单，获得积分。",
+        "en": "Earn points when you complete a job as a runner."
+      },
+      "firstCompletion": {
+        "points": 20,
+        "mode": "total",
+        "role": "runner"
+      }
+    },
+    {
+      "id": "weekly-login",
+      "kind": "weekly_login",
+      "enabled": true,
+      "points": 20,
+      "title": {
+        "zh": "每周 7 天登录",
+        "en": "Open the app all 7 days"
+      },
+      "description": {
+        "zh": "周一至周日，每天打开小程序。漏一天则不获得当周奖励。",
+        "en": "Open the mini program every day, Monday through Sunday. Missing a day means no reward for that week."
+      },
+      "daysRequired": 7,
+      "weekStartsOn": "monday"
+    },
+    {
+      "id": "invite",
+      "kind": "referral",
+      "enabled": true,
+      "points": 10,
+      "title": {
+        "zh": "邀请新同学",
+        "en": "Invite a new classmate"
+      },
+      "description": {
+        "zh": "新同学通过邀请加入并登录后，双方自动获得积分，无需额外操作。",
+        "en": "Once a new classmate joins through your invitation and logs in, both receive points automatically."
+      },
+      "trigger": "invitee_first_login",
+      "recipients": [
+        "inviter",
+        "invitee"
+      ]
+    }
+  ],
+  "referralCoupon": {
+    "discountRate": 0.5,
+    "maxDiscount": 3.9,
+    "recipient": "inviter",
+    "trigger": "invitee_first_completed_order",
+    "pendingUntilTriggered": true
+  },
+  "rewards": [
+    {
+      "rankFrom": 1,
+      "rankTo": 1,
+      "physical": {
+        "zh": "大玩偶",
+        "en": "Large plush toy"
+      },
+      "coupon": {
+        "discountRate": 0,
+        "maxDiscount": 18.8
+      }
+    },
+    {
+      "rankFrom": 2,
+      "rankTo": 3,
+      "physical": {
+        "zh": "小玩偶",
+        "en": "Small plush toy"
+      },
+      "coupon": {
+        "discountRate": 0.5,
+        "maxDiscount": 12.88
+      }
+    },
+    {
+      "rankFrom": 4,
+      "rankTo": 10,
+      "coupon": {
+        "discountRate": 0.7,
+        "maxDiscount": 8.88
+      }
+    },
+    {
+      "rankFrom": 11,
+      "rankTo": 50,
+      "coupon": {
+        "discountRate": 0.8,
+        "maxDiscount": 5
+      }
+    },
+    {
+      "rankFrom": 51,
+      "rankTo": 100,
+      "coupon": {
+        "discountRate": 0.9,
+        "maxDiscount": 3
+      }
+    }
+  ]
+};

@@ -1,0 +1,21 @@
+const assert=require('node:assert/strict'),auth=require('../cloudfunctions/newsService/auth'),{createHttpHandler}=require('../cloudfunctions/newsService/http');
+(async()=>{
+  let admin=null,content={revision:0,items:[]},stamp=1000000;
+  const repo={getAdmin:async()=>admin,setupAdmin:async value=>{if(admin)return false;admin=value;return true;},recordLogin:async(accepted,now)=>{if(admin.lockedUntil>now)return{ok:false,error:'locked'};const fails=accepted?0:admin.fails+1;admin={...admin,fails:fails>=5?0:fails,lockedUntil:fails>=5?now+900000:0};return{ok:true};},newsGet:async()=>content,newsMutate:async fn=>{const r=fn(content);if(r.ok){content=r.state;const{state,...rest}=r;return rest;}return r;}};
+  const handler=createHttpHandler({repo,cloud:{},settings:{allowedOrigins:['https://example.test'],setupTokenHash:auth.hash('one-time-setup')},now:()=>stamp});
+  const request=(data,token='')=>handler({httpMethod:'POST',headers:{origin:'https://example.test',authorization:'Bearer '+token},body:JSON.stringify(data)});
+  let r=await request({action:'webStatus'});assert(JSON.parse(r.body).setupRequired);
+  assert.equal((await request({action:'webSetup',setupToken:'wrong'})).statusCode,403);
+  r=await request({action:'webSetup',setupToken:'one-time-setup',username:'admin',password:'too-short'});assert.equal(r.statusCode,400);assert.equal(admin,null);
+  r=await request({action:'webSetup',setupToken:'one-time-setup',username:'admin',password:'Test-password-123'});assert.equal(r.statusCode,200);const token=JSON.parse(r.body).token;
+  assert(!JSON.stringify(admin).includes('Test-password-123'));assert(auth.verifyToken(token,admin,stamp));assert(!auth.verifyToken(token+'x',admin,stamp));assert(!auth.verifyToken(token,admin,stamp+auth.SESSION_TTL+1));
+  assert.equal((await request({action:'webSetup',setupToken:'one-time-setup',username:'attacker',password:'attacker-password'})).statusCode,409);
+  assert.equal((await request({action:'newsAdminList'})).statusCode,401);
+  r=await request({action:'newsSave',revision:0,item:{titleZh:'测试',bodyZh:'正文',status:'draft'}},token);assert.equal(r.statusCode,200);
+  r=await request({action:'newsAdminList'},token);assert.equal(JSON.parse(r.body).items.length,1);assert(!r.body.includes(admin.passwordHash));assert(!r.body.includes(admin.tokenKey));
+  assert.equal((await request({action:'adminDashboard'},token)).statusCode,400);
+  for(let i=0;i<5;i++)assert.equal((await request({action:'webLogin',username:'admin',password:'incorrect'})).statusCode,401);
+  assert.equal((await request({action:'webLogin',username:'admin',password:'Test-password-123'})).statusCode,429);
+  stamp+=900001;r=await request({action:'webLogin',username:'admin',password:'Test-password-123'});assert.equal(r.statusCode,200);assert.equal(admin.fails,0);
+  console.log('Dedicated newsService: setup token, one-time admin creation, password hashing, token validation, private content, action isolation and login lockout passed.');
+})().catch(e=>{console.error(e);process.exitCode=1;});

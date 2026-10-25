@@ -8,5 +8,5 @@ Page({data:{zh:true,tab:'usable',usable:[],expired:[],selected:'',best:''},
   const expired=all.filter(c=>!c.usedBy&&c.expiresAt&&c.expiresAt<=now).map(c=>({id:c.id,name:copy.coupon(c.short||c.title||'Coupon',lang),max:Number(c.stored?c.balance:c.max||0).toFixed(2),until:(zh?'已于 ':'Expired ')+day(c.expiresAt)+(zh?' 过期':'')}));
   this.setData({zh,usable,expired,best:q.couponId});if(wx.setNavigationBarTitle)wx.setNavigationBarTitle({title:zh?'选择优惠券':'Choose a coupon'});},
  switchTab(e){this.setData({tab:e.currentTarget.dataset.tab});},
- pick(e){const id=e.currentTarget.dataset.id,c=this.data.usable.find(x=>x.id===id);if(id&&c&&!c.usable){wx.showToast({title:c.note||(this.data.zh?'这张券本单不可用':'Not usable for this order'),icon:'none'});return;}this.setData({selected:id});if(this.channel&&this.channel.emit)this.channel.emit('couponPicked',id);setTimeout(()=>wx.navigateBack({delta:1}),160);}
+ pick(e){const id=e.currentTarget.dataset.id,c=this.data.usable.find(x=>x.id===id);if(id&&c&&!c.usable){wx.showToast({title:c.note||(this.data.zh?'当前订单无法使用这张优惠券':'This coupon can’t be used for this order.'),icon:'none'});return;}this.setData({selected:id});if(this.channel&&this.channel.emit)this.channel.emit('couponPicked',id);setTimeout(()=>wx.navigateBack({delta:1}),160);}
 });

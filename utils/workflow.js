@@ -63,7 +63,7 @@ function pickup(s,id){const r=s.requests.find(x=>x.id===id);if(!r||r.status!=='t
 function deliver(s,id,photo,location){d.deliver(s,id,photo);const r=s.requests.find(x=>x.id===id);r.deliveryLocation=location||'';event(r,'Delivered · photo');}
 function report(s,id,reason,photo,note){const r=s.requests.find(x=>x.id===id);if(!r||r.status!=='delivered')throw Error('Only a delivered order can be reported');if(!['Not received','Wrong bag','Spilled or damaged','Something else'].includes(reason))throw Error('Choose a reason');if(reason==='Spilled or damaged'&&!photo)throw Error('Add a photo of the damage');if(reason==='Something else'&&!String(note||'').trim())throw Error('Describe the issue');r.status='disputed';r.dispute={reason,photo:photo||'',note:note||'',at:Date.now()};event(r,'Issue reported · settlement paused');}
 function candidates(s,t,now=Date.now()){
- return s.requests.filter(r=>{const pickup=c.category(t)==='takeout'?r.pickupPoint:r.station;return r.status==='waiting'&&r.campusId===t.campusId&&pickup===t.station&&r.dorm===t.dorm&&c.category(r)===c.category(t)&&(!r.closesAt||r.closesAt>now)&&(!r.closesAt||r.closesAt>t.departAt)&&(!r.arrivalAt||r.arrivalAt<=t.departAt);});
+ return s.requests.filter(r=>{const pickup=c.category(t)==='takeout'?(r.pickupPoint||r.station):r.station;return r.status==='waiting'&&r.campusId===t.campusId&&pickup===t.station&&r.dorm===t.dorm&&c.category(r)===c.category(t)&&(!r.closesAt||r.closesAt>now)&&(!r.closesAt||r.closesAt>t.departAt)&&(!r.arrivalAt||r.arrivalAt<=t.departAt);});
 }
 function plan(s,cfg,now=Date.now()){
  const capacity=Number(cfg.capacity);if(!Number.isInteger(capacity)||capacity<1||capacity>(cfg.category==='takeout'?5:12))throw Error('Choose a capacity between 1 and 12');
@@ -73,8 +73,21 @@ function plan(s,cfg,now=Date.now()){
  if(later&&departAt<=now+10*MIN)throw Error('Choose a departure more than 10 minutes from now');
  return {campusId:s.profile.campusId,universityId:s.profile.universityId,category:cfg.category||'takeout',station:cfg.station,dorm:cfg.dorm,capacity,departAt,depart:clock(departAt),joinUntil:later?departAt-10*MIN:departAt,remindAt:later?departAt-15*MIN:0,phase:'collect',requestIds:[],cancelled:false,runnerName:s.profile.name||'You',runnerJobs:s.profile.jobsDone||0};
 }
+function matchingTripOrders(s,cfg,now=Date.now()){
+ const t=plan(s,cfg,now);
+ return candidates(s,t,now).sort((a,b)=>(a.arrivalAt||0)-(b.arrivalAt||0));
+}
 function previewTrip(s,cfg,now=Date.now()){
  const t=plan(s,cfg,now),ids=[];let boxes=0,reward=0;
+ if(Object.prototype.hasOwnProperty.call(cfg,'requestIds')){
+  if(!Array.isArray(cfg.requestIds)||cfg.requestIds.length>12||cfg.requestIds.some(id=>typeof id!=='string')||new Set(cfg.requestIds).size!==cfg.requestIds.length)throw Error('Choose up to 12 different orders');
+  const available=new Map(candidates(s,t,now).map(r=>[r.id,r]));
+  const selected=cfg.requestIds.map(id=>available.get(id));
+  if(selected.some(r=>!r))throw Error('A selected order changed. Refresh and choose again.');
+  // Validate on copies: preview must never accept or change the real orders.
+  d.assign({...s,requests:selected.map(r=>({...r}))},{...t,requestIds:[]},cfg.requestIds);
+  return {trip:t,ids:cfg.requestIds.slice(),boxes:selected.reduce((n,r)=>n+d.boxes(r),0),reward:selected.reduce((n,r)=>n+r.reward,0)};
+ }
  for(const r of candidates(s,t,now).sort((a,b)=>(a.arrivalAt||0)-(b.arrivalAt||0))){if(boxes+d.boxes(r)<=t.capacity&&reward+r.reward<=d.limit(s.profile)){const first=ids.length&&s.requests.find(x=>x.id===ids[0]);if(first&&(r.destinationKey||'')!==(first.destinationKey||''))continue;if(t.category==='takeout'&&first&&Math.abs(r.arrivalAt-first.arrivalAt)>15*MIN)continue;ids.push(r.id);boxes+=d.boxes(r);reward+=r.reward;}}
  return {trip:t,ids,boxes,reward};
 }
@@ -90,4 +103,4 @@ function status(r){return {waiting:r.cancellation?'Finding another runner':'Wait
 // Pass language 'zh' for Chinese labels; without it the labels stay in English.
 function view(r,language){const out=baseView(r);if(c.category(r)==='takeout')out.pickupPointDisplay=require('./takeaway-lockers').label(r.pickupPoint,language==='zh'?'zh':'en');if(c.category(r)==='takeout'&&r.night&&r.purchaseStatus==='needs_purchase')out.arrivalLabel=(language==='zh'?'期待送达 ':'Expected delivery ')+(r.deliverBy||clock(r.closesAt));if(language!=='zh')return out;const t=require('./order-copy').translate;return {...out,destinationDisplay:r.destinationType==='place'?r.deliveryAddress:r.dorm+' · '+r.room+' 室',statusLabel:t(out.statusLabel,language),arrivalLabel:t(out.arrivalLabel,language),sizeLabel:t(out.sizeLabel,language),history:out.history.map(e=>({...e,label:t(e.label,language)}))};}
 function baseView(r){const urls=require('./orders');return {...r,destinationDisplay:r.destinationType==='place'?r.deliveryAddress:r.dorm+' · Room '+r.room,photo:urls.photoURL(r.photo),riderPhoto:urls.photoURL(r.riderPhoto),orderPictures:(r.orderPictures||[]).map(path=>urls.photoURL(path)),noticePhoto:urls.photoURL(r.noticePhoto),category:c.category(r),unit:c.category(r)==='task'?'task':c.category(r)==='takeout'?'bags':'boxes',boxes:d.boxes(r),fee:fee(r).toFixed(2),total:total(r).toFixed(2),rewardText:r.reward.toFixed(2),earnedText:(r.reward+Number(r.runnerBonus||0)).toFixed(2),statusLabel:status(r),arrivalLabel:r.arrived?(r.deliverBy?'Food is there · door by '+r.deliverBy:'Food is there now'):'Arrives '+clock(r.arrivalAt),closeTime:clock(r.closesAt),phoneLast4:(r.phone||'').replace(/\s/g,'').slice(-4),autoHours:hours(r),autoTime:r.deliveredAt?clock(r.deliveredAt+hours(r)*HOUR):'',sizeLabel:c.category(r)==='task'?'Task':c.label(r),deliveredTime:clock(r.deliveredAt),history:(r.history||[]).map(e=>({...e,time:clock(e.at)}))};}
-module.exports={clock,todayAt,fee,total,hours,event,migrate,expire,createTakeaway,raise,cancelReason,runnerCancel,pickup,deliver,report,previewTrip,startTrip,join,owned,status,view};
+module.exports={clock,todayAt,fee,total,hours,event,migrate,expire,createTakeaway,raise,cancelReason,runnerCancel,pickup,deliver,report,matchingTripOrders,previewTrip,startTrip,join,owned,status,view};

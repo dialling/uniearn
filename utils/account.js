@@ -1,5 +1,5 @@
 const {ensureCloud}=require('./cloud'),store=require('./store');
-async function call(action,extra={}) {
+async function core(action,extra={}) {
   const wasVerified=!!store.get().profile.studentVerified;
   const cloud=ensureCloud();
   const {result}=await cloud.callFunction({name:'studentAccount',data:{action,lang:store.get().language==='en'?'en':'zh',...extra}});
@@ -18,4 +18,5 @@ async function requireRunner(){
  // responses may omit it; a missing response field must not redirect to Me.
  return true;
 }
+async function call(action,extra={}){const started=Date.now();try{const result=await core(action,extra);if(action!=='status')try{require('./analytics').record('action_result',{action,result:'ok',duration:Date.now()-started});}catch(_){}return result;}catch(e){if(action!=='status')try{require('./analytics').record('action_result',{action,result:'unknown',duration:Date.now()-started});}catch(_){}throw e;}}
 module.exports={call,requireRunner};
