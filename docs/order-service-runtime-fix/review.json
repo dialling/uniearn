@@ -4,6 +4,30 @@
     "engine.js"
   ],
   "baseline_engine_sha256": "0965ec7be878ca09cb87c54f2d73c8ceac7944abca0a019d5ca7b9caf07e7745",
-  "patched_engine_sha256": "0892bc290a0979c2800ad4e45fe862f07fb72f538ba2a9cba15cf8c7fa146af5",
-  "other_files_preserved": 11
+  "patched_engine_sha256": "a7b507dbe8126746c2eddbbb138e46e31a0bcf964717571544d0312df5f8c105",
+  "other_files_preserved": 11,
+  "deployment": {
+    "status": "deployed_and_download_verified",
+    "verifiedAt": "2026-10-25T14:33:00+08:00",
+    "method": "WeChat DevTools UI incremental engine.js upload",
+    "downloaded_engine_sha256": "a7b507dbe8126746c2eddbbb138e46e31a0bcf964717571544d0312df5f8c105",
+    "changed_files": [
+      "engine.js"
+    ],
+    "runtimeSyncSucceeded": true,
+    "missingGendersRestoredFromSavedAddresses": 3,
+    "verifiedRunnerWithEmptyGeneralContactPassedContactGate": true,
+    "liveNewAcceptanceNavigationVerified": false,
+    "limitation": "No waiting jobs were available in the live hall."
+  },
+  "tests": {
+    "passed": 60,
+    "existingBaselineFailures": [
+      "level-up.test.js",
+      "logout.test.js",
+      "me-sticker-inline.test.js",
+      "profile-chat-layout.test.js",
+      "stored-coupon.test.js"
+    ]
+  }
 }
