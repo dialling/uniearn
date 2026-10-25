@@ -34,7 +34,7 @@ const examplesZh = [
 
 const activityDisplay=require('../../utils/activity-display');
 Page({
-  data: {screen:'home',featuredTitle:'',featuredDescription:'',activityTab:'tasks',activityTasks:[],activityRewards:[],selectedNews:null,coupons: [], campaigns: [], weekly: {segments: []}, news: [], ready: 0, toCollect: 0, examples, registered: false, zh: false},
+  data: {screen:'home',activeOffers:[],latestOffer:null,activityTab:'tasks',activityTasks:[],activityRewards:[],selectedNews:null,coupons: [], campaigns: [], weekly: {segments: []}, news: [], ready: 0, toCollect: 0, examples, registered: false, zh: false},
   onShow() {
     const zh = store.get().language !== 'en';
     this.setData({zh, examples: zh ? examplesZh : examples});
@@ -59,10 +59,9 @@ Page({
       (now >= Date.parse('2026-10-01T00:00:00+08:00') && now < Date.parse('2026-10-08T00:00:00+08:00') ? (this.data.zh ? goldenWeekZh : goldenWeek) : null);
     const zh=this.data.zh,coupons=(r.coupons||[]).map(c=>({...c,title:zh&&c.titleZh||c.title,description:zh&&c.descriptionZh||c.description,sub:zh&&c.subZh||c.sub,displayEnd:couponDate(c.endLabel,zh)||c.endLabel||'',validity:validity(c,zh),cash:c.kind==='total'})).sort((a,b)=>Number(!!b.event)-Number(!!a.event));
     const {news:legacyNews,...rewardData}=r;
-    const featured=coupons.find(c=>c.usable!==false)||null;
+    const activeOffers=require('../../utils/news-offers').display(campaigns,zh,now);
     this.setData({...rewardData, coupons, campaigns, event,
-      featuredTitle:featured?featured.title:(zh?'同学专属优惠':'Student perks'),
-      featuredDescription:featured?featured.description:(zh?'查看可领取的活动与优惠券':'Explore available offers and coupons'),
+      activeOffers,latestOffer:activeOffers[0]||null,
       returning: campaigns.find(c => c.returning), campaignCards:campaigns.filter(c=>(!event||c.id!==event.id)&&(c.eligible||c.collected)).map(c=>({...c,title:zh&&c.titleZh||c.title,description:zh&&c.descriptionZh||c.description})),  registered: !!state.profile.onboarded,
       showExamples: !state.profile.onboarded && !(r.coupons || []).length,
       ready: (r.coupons || []).length,

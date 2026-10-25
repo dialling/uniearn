@@ -1,0 +1,13 @@
+const assert=require('node:assert/strict'),fs=require('node:fs');
+const {display}=require('../utils/news-offers'),now=Date.parse('2026-10-25T00:00:00Z');
+const c=(id,extra={})=>({id,title:id,description:'Details',eligible:true,...extra});
+const rows=[c('welcome-free'),c('welcome-two'),c('return2026'),c('auto',{automatic:true}),c('loyal',{returning:true}),c('off',{enabled:false}),c('ended',{end:'2026-10-24T00:00:00Z'}),c('future',{start:'2026-11-01T00:00:00Z'}),c('invalid',{end:'bad date'}),c('festival',{titleZh:'节日优惠',collected:true}),c('latest')];
+assert.deepEqual(display(rows,true,now).map(c=>c.id),['latest','festival']);
+assert.equal(display(rows,true,now)[1].title,'节日优惠');assert.equal(display(rows,false,now)[1].title,'festival');
+assert.equal(display(rows,true,now)[1].collected,true,'Claiming does not remove a public campaign');
+assert.deepEqual(display([],true,now),[]);assert.deepEqual(display(null,true,now),[]);
+const xml=fs.readFileSync(require('path').join(__dirname,'../pages/rewards/index.wxml'),'utf8');
+const home=xml.slice(xml.indexOf("<block wx:if="),xml.indexOf(" <view wx:if=",xml.indexOf("<block wx:if=")));
+assert(!home.includes('data-tab="tasks"'),'No duplicate tasks row');assert.equal((home.match(/bindtap="openActivity"/g)||[]).length,1,'One green activity entry');
+assert(home.includes('latestOffer.title'));assert(!home.includes('bindtap="openCoupons"'),'Home cannot display the private coupon wallet');
+console.log('News offers: active campaign filtering, latest-first, expired/future/automatic exclusions, language fallback, collected visibility and one activity entry passed.');

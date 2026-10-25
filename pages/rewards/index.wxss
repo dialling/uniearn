@@ -37,3 +37,5 @@
 
 /* News is one continuous feed without category tabs. */
 .reference-header{padding-bottom:22rpx}.reference-header .news-heading{margin-bottom:0}
+
+.public-offer .news-small{margin-top:12rpx}.rewards-page .public-offer .small-outline{margin-top:22rpx;width:auto;max-width:none;min-width:160rpx;padding:0 20rpx}
