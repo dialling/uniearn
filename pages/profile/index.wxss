@@ -4,36 +4,38 @@
 .me-page .flow-card{padding:27rpx;border:1rpx solid #e2e0d9;border-radius:27rpx;margin-bottom:20rpx}
 
 /* ① 顶部大卡：资料 + 双徽章 + 等级进度 */
-.me-header{background:#0b7a55;color:#fff;border-radius:27rpx;padding:30rpx 27rpx 26rpx;margin-bottom:20rpx}
-.me-header-top{display:flex;align-items:center;gap:18rpx}
+.me-header{background:#0b7a55;color:#fff;border-radius:30rpx;padding:32rpx 30rpx 28rpx;margin-bottom:20rpx}
+.me-header-top{display:flex;align-items:center;gap:22rpx}
 .avatar{width:108rpx;height:108rpx;line-height:108rpx;font-size:43rpx}
-.header-avatar{width:96rpx;height:96rpx;line-height:96rpx;font-size:38rpx;background:#0b7a55;color:#fff;border-radius:50%;text-align:center;flex:none}
+.me-header .header-avatar{width:100rpx;height:100rpx;line-height:1;font-size:38rpx;font-weight:700;background:#e7f3ed;color:#08523a;border:1rpx solid #ffffff40;border-radius:28rpx;display:flex;align-items:center;justify-content:center;flex:none}
+.header-avatar image{width:48rpx;height:48rpx}
 .customer-avatar{background:#0b7a55}
 .runner-avatar{background:#0b7a55}
-.header-main{flex:none;max-width:330rpx}
-.header-name{font-size:37rpx;font-weight:800;line-height:96rpx;white-space:nowrap;overflow:visible}
-.header-badge-row{margin:14rpx 0 0 116rpx}
-.header-badge{font-size:21rpx;line-height:1.6;padding:6rpx 15rpx;background:#f0efea;border-radius:26rpx;font-weight:650;color:#5e5c55;display:inline-block;white-space:nowrap}
-.header-badge.verified{background:#e7f3ed;color:#0b7a55}
-.edit-button{margin:0;padding:0 12rpx;min-width:0;flex:none;width:auto;height:40rpx;line-height:40rpx;display:flex;align-items:center;justify-content:center;gap:5rpx;border:1rpx solid #6fd0a8;border-radius:20rpx;background:transparent;color:#e7f3ed;font-size:19rpx;font-weight:650}
-.edit-button::after{border:0}
-.edit-button image{width:16rpx;height:16rpx}
-.runner-tag{flex:none;font-size:20rpx;font-weight:700;color:#0b7a55;background:#e7f3ed;border-radius:26rpx;padding:8rpx 14rpx;line-height:1.4}
-.badge-row{display:flex;gap:16rpx;margin:24rpx 0 22rpx}
-.tier-badge{font-size:23rpx;font-weight:650;color:#e7f3ed;border:1rpx solid #6fd0a8;border-radius:26rpx;padding:10rpx 22rpx}
-.header-level{display:flex;align-items:center;gap:14rpx}
-.hl-label{font-size:22rpx;color:#6fd0a8;font-weight:650;flex:none}
-.hl-next{flex:1;min-width:0;font-size:22rpx;color:#e7f3ed;text-align:right}
-.hl-caret{flex:none;color:#e7f3ed;font-size:28rpx}
-.hl-track{height:10rpx;background:#f3faf6;border-radius:10rpx;overflow:hidden;margin:16rpx 0 12rpx}
-.hl-fill{height:100%;background:#6fd0a8;border-radius:10rpx}
-.hl-tiers{display:flex;justify-content:space-between;font-size:20rpx;color:#6fd0a8}
-.hl-tiers .cur{color:#e7f3ed;font-weight:750}
-.level-detail{margin-top:18rpx;border-top:1rpx solid #ffffff42;padding-top:20rpx}
-.level-detail .level-grid .hint{color:#f2b48a}
-.level-detail .level-nudge{background:#0b7a55;color:#e7f3ed}
-.level-detail .mark-note{color:#f2b48a}
-.level-detail .mark-note .hint{color:#8a877e}
+.header-main{flex:1;min-width:0}
+.header-name{font-size:36rpx;font-weight:750;line-height:1.35;overflow-wrap:anywhere;word-break:break-word}
+.header-role{font-size:22rpx;line-height:1.5;color:#d3eadf;margin-top:8rpx}
+.header-badge-row{display:flex;align-items:center;flex-wrap:wrap;gap:12rpx;margin:26rpx 0 0}
+.header-badge{font-size:21rpx;line-height:1.5;padding:9rpx 15rpx;background:#ffffff18;border:1rpx solid #ffffff30;border-radius:12rpx;font-weight:600;color:#e7f3ed;display:flex;align-items:center;gap:8rpx;max-width:100%;box-sizing:border-box}
+.header-badge.verified{background:#e7f3ed;border-color:#e7f3ed;color:#08523a}
+.header-check{font-size:23rpx;font-weight:750}
+.header-check-link{font-size:26rpx;margin-left:4rpx}
+.header-verified-date{font-size:21rpx;line-height:1.4;color:#d3eadf}
+.badge-row{display:flex;flex-wrap:wrap;gap:12rpx;margin:22rpx 0 26rpx}
+.tier-badge{font-size:22rpx;font-weight:600;line-height:1.45;color:#e7f3ed;border:1rpx solid #ffffff40;border-radius:12rpx;padding:9rpx 17rpx;background:#ffffff0a}
+.header-level{display:block;border-top:1rpx solid #ffffff30;padding-top:24rpx}
+.hl-heading{display:flex;align-items:center;justify-content:space-between;gap:16rpx}
+.hl-label{font-size:24rpx;line-height:1.5;color:#fff;font-weight:650}
+.hl-current{display:flex;align-items:center;gap:12rpx;color:#e7f3ed;font-size:23rpx;font-weight:650;flex:none}
+.hl-caret{font-size:30rpx;line-height:1}
+.hl-next{font-size:22rpx;line-height:1.6;color:#d3eadf;margin-top:7rpx}
+.hl-track{height:10rpx;background:#ffffff30;border-radius:10rpx;overflow:hidden;margin:18rpx 0 12rpx}
+.hl-fill{height:100%;background:#b7edcf;border-radius:10rpx}
+.hl-tiers{display:flex;justify-content:space-between;gap:12rpx;font-size:20rpx;line-height:1.4;color:#c3e2d4}
+.hl-tiers .cur{color:#fff;font-weight:650}
+.level-detail{margin-top:24rpx;border-top:1rpx solid #ffffff30;padding-top:22rpx}
+.level-detail .level-grid .hint{color:#d3eadf}
+.level-detail .level-nudge{background:#ffffff12;color:#e7f3ed}
+.level-detail .mark-note,.level-detail .mark-note .hint{color:#d3eadf}
 
 /* ② 数据卡 */
 .me-stats{display:flex;gap:15rpx;margin-bottom:20rpx}
@@ -124,7 +126,7 @@
 
 /* 深色模式 */
 .me-dark{background:#1b1c1a;color:#f3faf6}
-.me-dark .flow-card,.me-dark .me-stats>view,.me-dark .edit-button,.me-dark .floating-yuni{background:#242522;border-color:#3a3b37;color:#f3faf6}
+.me-dark .flow-card,.me-dark .me-stats>view,.me-dark .floating-yuni{background:#242522;border-color:#3a3b37;color:#f3faf6}
 .me-dark .stats-number{color:#f3faf6}
 .me-dark .settings-icon,.me-dark .sticker,.me-dark .mini-sticker{background:#a9a69c}
 .me-dark .sticker.locked,.me-dark .mini-sticker.locked{opacity:.3}
@@ -132,9 +134,9 @@
 .me-dark .address-privacy{border-color:#3a3b37}
 .me-dark .hint,.me-dark .setting-value{color:#a9a69c}
 .me-dark .green-text,.me-dark .earnings-total,.me-dark .sticker-count{color:#6fd0a8}
-.me-dark .me-header{background:#16332a}
-.me-dark .header-badge{background:#a9a69c}
-.me-dark .header-badge.verified{background:#e7f3ed;color:#0b7a55}
+.me-dark .me-header{background:#16332a;border:1rpx solid #2d5344}
+.me-dark .header-badge{background:#ffffff12;border-color:#ffffff30;color:#e7f3ed}
+.me-dark .header-badge.verified{background:#244d3d;border-color:#356a55;color:#b7edcf}
 .me-dark .level-detail{border-color:#ffffff42}
 .me-dark .level-detail .level-track{background:#3a3b37}
 

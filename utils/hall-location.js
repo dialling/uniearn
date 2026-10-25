@@ -12,4 +12,10 @@ function group(orders,language='zh'){
  const rows=orders.map(r=>detail(r,language)),join=key=>[...new Set(rows.map(r=>r[key]).filter(Boolean))].join(' / ');
  return {showDorm:rows.some(r=>r.showDorm),gender:join('gender'),area:join('area'),building:join('building'),room:join('room')};
 }
-module.exports={detail,group};
+function merge(summary,request){
+ const result={...summary,...request};
+ // Older request snapshots blanked hall fields; prefer the nonempty public value.
+ for(const key of ['dormGender','room','pickupPoint'])if(!result[key]&&summary&&summary[key])result[key]=summary[key];
+ return result;
+}
+module.exports={detail,group,merge};

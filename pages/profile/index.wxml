@@ -29,24 +29,23 @@
 <!-- ① 顶部大卡：资料 + 双徽章 + 等级进度 -->
 <view class="me-header">
  <view class="me-header-top">
-  <view class="avatar header-avatar">{{initial}}</view>
+  <view class="avatar header-avatar"><text wx:if="{{profile.name}}">{{initial}}</text><image wx:else src="/assets/profile-green.svg" mode="aspectFit"/></view>
   <view class="header-main">
    <view class="header-name">{{profile.name||ui.account}}</view>
+   <view class="header-role">{{isRunner?ui.runnerTag:ui.campusHelper}}</view>
   </view>
-  <button class="edit-button" bindtap="edit"><image src="/assets/edit-outline.svg"/>{{ui.edit}}</button>
-  <view wx:if="{{isRunner}}" class="runner-tag">● {{ui.runnerTag}}</view>
  </view>
  <view class="header-badge-row">
-  <view class="header-badge {{isRunner?'verified':''}}" bindtap="studentCheck">{{isRunner?'✓ '+ui.verified+(verifiedDate?' '+verifiedDate:''):ui.check}}</view>
+  <view class="header-badge {{isRunner?'verified':''}}" bindtap="studentCheck"><text wx:if="{{isRunner}}" class="header-check">✓</text><text>{{isRunner?ui.verified:ui.check}}</text><text wx:if="{{!isRunner}}" class="header-check-link">›</text></view>
+  <text wx:if="{{isRunner && verifiedDate}}" class="header-verified-date">{{verifiedDate}}</text>
  </view>
  <view class="badge-row">
   <view class="tier-badge">{{ui.badgePosts}} · {{ui[postedBadge]}}</view>
   <view class="tier-badge">{{ui.badgeJobs}} · {{ui[jobsBadge]}}</view>
  </view>
  <view class="header-level" bindtap="toggleLevel">
-  <text class="hl-label">{{ui.campusHelper}} · {{tierName}}</text>
-  <text class="hl-next">{{nextJobsText}}</text>
-  <text class="hl-caret">{{levelOpen?'⌄':'›'}}</text>
+  <view class="hl-heading"><text class="hl-label">{{ui.campusHelper}}</text><view class="hl-current"><text>{{tierName}}</text><text class="hl-caret">{{levelOpen?'⌄':'›'}}</text></view></view>
+  <view class="hl-next">{{nextJobsText}}</view>
  </view>
  <view class="hl-track"><view class="hl-fill" style="width:{{progress}}%"/></view>
  <view class="hl-tiers">
