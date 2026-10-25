@@ -1,5 +1,5 @@
---- cloud-current/engine.js
-+++ patched/engine.js
+--- cloud-before/engine.js
++++ cloud-after/engine.js
 @@ -4,6 +4,14 @@
  const f = require('./workflow');
  const rewards=require('./rewards');
@@ -31,7 +31,24 @@
    check(out.pickupCode.length <= 20, 'Keep the pickup code under 20 characters.');
    check(out.shop.length <= 60, 'Keep the shop name under 60 characters.');
    check(['parcel','takeout','task'].includes(data.category), 'Choose takeaway or parcel.');
-@@ -117,10 +129,9 @@
+@@ -113,21 +125,33 @@
+     }
+   }
+ }
++function restoreDormGenders(s,actor,campusId,repairs,now){
++  check(Array.isArray(repairs)&&repairs.length>0&&repairs.length<=25,'Invalid dorm gender repair.');
++  const rows=repairs.map(p=>{
++    check(p&&typeof p.id==='string'&&p.id.length<=100&&['male','female'].includes(p.gender)&&typeof p.dorm==='string'&&p.dorm.length<=100&&typeof p.room==='string'&&p.room.length<=100,'Invalid dorm gender repair.');
++    const r=ownRequest(s,p.id,actor);
++    check(r.campusId===campusId&&r.category!=='task'&&r.destinationType!=='place'&&OPEN_STATUSES.includes(r.status),'This order cannot restore a dorm gender.');
++    check(r.dorm===p.dorm&&r.room===p.room,'The order address has changed.');
++    return {r,gender:p.gender};
++  });
++  let updated=0;
++  for(const {r,gender} of rows)if(!r.dormGender){r.dormGender=gender;r.dormGenderRestoredAt=now;updated++;}
++  return {updated};
++}
+ const runnerActions = new Set(['accept','acceptBoxes','startTrip','pickup','deliver','runnerCancel','leave','endEmpty','taskDone','sealBroken']);
  function execute(s, actor, account, event, now = Date.now()) {
    check(account && account.profile && !account.loggedOut, 'Save your profile / log in in Me first.');
    const action = event.action;
@@ -43,7 +60,15 @@
    if (runnerActions.has(action)) check(account.verification && account.verification.status === 'verified', 'Complete your student check before accepting jobs.');
    if(runnerActions.has(action))check(!!account.runnerRulesAcceptedAt,'Read and accept the runner rules first.');
    s.profile = profile(s, actor, account);
-@@ -173,7 +184,7 @@
+   s.members[actor] = s.members[actor] || { marks: [] };
+   rewards.init(s,actor,now);
+   let value = {};
+-  if (action === 'supportRequest') {
++  if(action==='restoreDormGenders'){value=restoreDormGenders(s,actor,campusId,event.repairs,now);} else if (action === 'supportRequest') {
+     check(['order','payment','other','deletion'].includes(event.topic),'Choose a support topic.');
+     const m=s.members[actor];m.supportTickets=m.supportTickets||[];
+     check(m.supportTickets.filter(t=>now-t.createdAt<86400000).length<10,'You can send up to 10 support requests a day.');
+@@ -173,7 +197,7 @@
      const ids = action === 'accept' ? event.ids : (Array.isArray(event.refs) ? event.refs.map(x => x && x.requestId) : []);
      rejectOwn(s, ids, actor);check(ids.every(id=>s.requests.find(r=>r.id===id).campusId===campusId),'Choose orders from your selected campus.');
      const selected=ids.map(id=>s.requests.find(r=>r.id===id));let t;if(selected[0].category==='task'){check(action==='accept'&&ids.length===1,'Take one task at a time.');const r=selected[0];check(r.status==='waiting'&&r.reward<=d.limit(s.profile),'This task exceeds your runner limit.');t={id:'t'+s.nextId++,category:'task',station:'Task',dorm:r.dorm,capacity:1,phase:'deliver',requestIds:[r.id]};r.status='taken';r.runnerId=t.id;r.takenAt=now;s.trips.unshift(t);}else t=action==='accept'?d.acceptJob(s,event.ids):d.acceptBoxes(s,event.refs);
@@ -52,7 +77,7 @@
      t.requestIds.forEach(id => f.event(s.requests.find(r => r.id === id), 'Runner accepted', now)); value = { id: t.id };
    } else if (action === 'startTrip') {
      const cfg = event.data || {};
-@@ -186,7 +197,7 @@
+@@ -186,7 +210,7 @@
      }
      const tripState={...s,requests:s.requests.filter(r=>r.campusId===campusId)};
      const t = f.startTrip(tripState, { category: cfg.category, when: cfg.when, time: cfg.time, duration: cfg.duration, station: cfg.station, dorm: cfg.dorm, capacity: cfg.capacity, ...(Object.prototype.hasOwnProperty.call(cfg,'requestIds')?{requestIds:cfg.requestIds}:{}) }, now);s.nextId=tripState.nextId;
@@ -61,7 +86,7 @@
      t.requestIds.forEach(id => f.event(s.requests.find(r => r.id === id), 'Runner accepted', now)); value = { id: t.id };
    } else if (['raise','cancel','confirm','report','riderPhoto'].includes(action)) {
      const r = ownRequest(s, event.id, actor);
-@@ -247,9 +258,10 @@
+@@ -247,9 +271,10 @@
      }
      // Allowlist public fields. Never send pickup codes, phone, room or photo IDs. Takeaway notes are public by design.
      const out = {};
@@ -74,12 +99,15 @@
        parcelItems:r.parcelItems && r.parcelItems.map(p => ({size:p.size, price:p.price, code:''})), isMine:false, isRunner:false };
    });
    const trips = s.trips.filter(t => myTrips.has(t.id)).map(t => ({...clone(t), isRunner:true}));
-@@ -258,7 +270,7 @@
+@@ -258,9 +283,9 @@
      runnerJobs:stats(s,t.runnerAccountId).jobsDone, departAt:t.departAt, joinUntil:t.joinUntil, phase:t.phase,
      cancelled:false, remaining:t.capacity-t.requestIds.reduce((n,id)=>n+d.boxes(s.requests.find(r=>r.id===id)),0)
    }));
 -  const publicJobs=s.requests.filter(r=>inCampus(r)&&!['cancelled','refunded','disputed'].includes(r.status)).map(r=>{const o={};for(const k of ['destinationKey','destinationType','id','campusId','universityId','category','station','dorm','small','big','reward','status','arrivalAt','closesAt','deadline','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','arrived','deliverBy','soup','fragile','night','shop','raised','title','dueAt'])if(r[k]!==undefined)o[k]=r[k];return o;});
 +  const publicJobs=s.requests.filter(r=>inCampus(r)&&!['cancelled','refunded','disputed'].includes(r.status)).map(r=>{const o={};for(const k of ['destinationKey','destinationType','dormGender','id','campusId','universityId','category','station','dorm','room','small','big','reward','status','arrivalAt','closesAt','deadline','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','arrived','deliverBy','soup','fragile','night','shop','raised','title','dueAt'])if(r[k]!==undefined)o[k]=r[k];if(r.category==='takeout'&&!r.night&&r.pickupPoint)o.pickupPoint=r.pickupPoint;if(r.category==='task'||r.destinationType==='place')delete o.room;return o;});
    const supportInbox=(account&&account._admin||account&&account._reviewer)?Object.entries(s.members).flatMap(([accountId,member])=>(member.supportTickets||[]).filter(t=>t.status==='open').map(t=>({...clone(t),accountId}))).sort((a,b)=>((b.messages||[]).at(-1)?.at||b.createdAt)-((a.messages||[]).at(-1)?.at||a.createdAt)).slice(0,50):[];
-   return {revision:s.revision,serverTime:now,publicJobs,deliveredThisWeek:s.requests.filter(r=>inCampus(r)&&r.deliveredAt>now-7*86400000).length,requests,trips,publicTrips,accountId:actor,supportInbox,
+-  return {revision:s.revision,serverTime:now,publicJobs,deliveredThisWeek:s.requests.filter(r=>inCampus(r)&&r.deliveredAt>now-7*86400000).length,requests,trips,publicTrips,accountId:actor,supportInbox,
++  return {revision:s.revision,serverTime:now,capabilities:{restoreDormGenders:loggedIn},publicJobs,deliveredThisWeek:s.requests.filter(r=>inCampus(r)&&r.deliveredAt>now-7*86400000).length,requests,trips,publicTrips,accountId:actor,supportInbox,
      adjustments:loggedIn?(s.adjustments||[]).filter(a=>a.runnerAccountId===actor).map(({runnerAccountId,...a})=>a):[],rewards:loggedIn?rewards.view(s,actor,now):null,preferences:loggedIn?(s.members[actor]||{}).preferences||{}:{},
+     supportTickets:loggedIn?((s.members[actor]||{}).supportTickets||[]):[],stats:loggedIn ? stats(s,actor) : {jobsDone:0,paid:0,marks:[]} };
+ }
