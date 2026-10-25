@@ -1,0 +1,9 @@
+{
+  "cloud_unchanged": true,
+  "package_changed_files": [
+    "engine.js"
+  ],
+  "baseline_engine_sha256": "0965ec7be878ca09cb87c54f2d73c8ceac7944abca0a019d5ca7b9caf07e7745",
+  "patched_engine_sha256": "0892bc290a0979c2800ad4e45fe862f07fb72f538ba2a9cba15cf8c7fa146af5",
+  "other_files_preserved": 11
+}

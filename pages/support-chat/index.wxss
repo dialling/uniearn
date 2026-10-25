@@ -1,18 +1,18 @@
-.chat-page{padding-bottom:220rpx;min-height:100vh;background:#f7f7f4}
+.chat-page{padding-bottom:220rpx;min-height:100vh;background:#eeede8}
 .chat-note{margin:10rpx 0 4rpx}
 .message-row{display:flex;margin:22rpx 0;padding:0 30rpx}
 .message-row.mine{justify-content:flex-end}
 .bubble{max-width:82%;padding:22rpx;border-radius:22rpx;background:#fff;white-space:pre-wrap;word-break:break-word}
-.mine .bubble{background:#e8f3ed}
+.mine .bubble{background:#e7f3ed}
 .team-bubble{background:#fff}
-.message-time{font-size:20rpx;color:#888;text-align:right;margin-top:8rpx}
+.message-time{font-size:20rpx;color:#8a877e;text-align:right;margin-top:8rpx}
 .topic-row{display:flex;flex-wrap:wrap;gap:14rpx;padding:0 30rpx;margin:8rpx 0 10rpx}
-.pill{font-size:22rpx;padding:10rpx 22rpx;border-radius:30rpx;background:#fff;border:1rpx solid #deded7;color:#55564e}
-.pill.on{background:#41775b;color:#fff;border-color:#41775b}
-.chat-compose{position:fixed;left:0;right:0;bottom:0;z-index:20;background:#f7f7f7;border-top:1rpx solid #dfe3df;padding:14rpx 24rpx calc(14rpx + env(safe-area-inset-bottom));box-shadow:0 -6rpx 24rpx #0000000d}
+.pill{font-size:22rpx;padding:10rpx 22rpx;border-radius:30rpx;background:#fff;border:1rpx solid #e2e0d9;color:#44423c}
+.pill.on{background:#0b7a55;color:#fff;border-color:#0b7a55}
+.chat-compose{position:fixed;left:0;right:0;bottom:0;z-index:20;background:#f7f7f7;border-top:1rpx solid #e2e0d9;padding:14rpx 24rpx calc(14rpx + env(safe-area-inset-bottom));box-shadow:0 -6rpx 24rpx #0000000d}
 .compose-row{display:flex;align-items:center;gap:12rpx;width:100%}
-.compose-input{flex:1;min-width:0;height:72rpx;background:#fff;border:1rpx solid #dfe3df;border-radius:36rpx;padding:0 28rpx;font-size:28rpx;box-sizing:border-box}
-.send-button{flex:none;width:68rpx;height:68rpx;min-width:68rpx;min-height:68rpx;margin:0;padding:0;border-radius:50%;background:#41775b;display:flex;align-items:center;justify-content:center;line-height:0}
+.compose-input{flex:1;min-width:0;height:72rpx;background:#fff;border:1rpx solid #e2e0d9;border-radius:36rpx;padding:0 28rpx;font-size:28rpx;box-sizing:border-box}
+.send-button{flex:none;width:68rpx;height:68rpx;min-width:68rpx;min-height:68rpx;margin:0;padding:0;border-radius:50%;background:#0b7a55;display:flex;align-items:center;justify-content:center;line-height:0}
 .send-button::after{border:0}
 .send-button image{width:31rpx;height:31rpx;margin-left:3rpx}
 .send-button[disabled]{opacity:.38}

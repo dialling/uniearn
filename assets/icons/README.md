@@ -9,7 +9,7 @@
 | 文件 | 颜色 | 用在哪 |
 | --- | --- | --- |
 | `plus-white.svg` | `#ffffff` | 底栏中间的发布按钮 |
-| `plus-green.svg` | `#41775b` | 下单页「添加常用配送地址」 |
+| `plus-orange.svg` | `#41775b` | 下单页「添加常用配送地址」 |
 | `check-white.svg` | `#ffffff` | 地址卡片选中角标 |
 | `x-muted.svg` | `#55544f` | 发布面板关闭（浅色） |
 | `x-light.svg` | `#edf1ed` | 发布面板关闭（深色） |

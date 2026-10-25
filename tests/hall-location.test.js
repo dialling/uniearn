@@ -1,0 +1,21 @@
+const assert=require('node:assert/strict'),fs=require('node:fs');
+const {harness}=require('./helpers/order-cloud'),location=require('../utils/hall-location');
+const h=harness();let definition;global.Page=p=>definition=p;
+global.wx={getStorageSync:()=>null,setStorageSync(){}};
+const store=require('../utils/store');require('../pages/jobs/index');
+const page={...definition,data:structuredClone(definition.data),setData(patch){Object.assign(this.data,patch);}};
+const now=Date.now(),data={category:'takeout',owner:'Private customer',phone:'13801026092',station:'Takeaway pickup',dorm:'A05',room:'1111',dormGender:'female',pickupPoint:'文缘夜市门口外卖柜',bags:1,price:3,arrived:true};
+(async()=>{
+ const r=await h.call('customer','create',{data});assert.equal(r.ok,true,r.error);const view=(await h.call('runner','sync')).snapshot,publicOrder=view.publicJobs.find(o=>o.id===r.value.id);
+ assert.equal(publicOrder.dormGender,'female');assert.equal(publicOrder.dorm,'A05');assert.equal(publicOrder.room,'1111');assert.equal(publicOrder.pickupPoint,data.pickupPoint);
+ for(const key of ['phone','owner','ownerId','photo','orderPictures','codes'])assert.ok(!(key in publicOrder),'hall does not expose '+key);
+ store.reset();store.update(s=>{s.language='zh';s.profile={...s.profile,campusId:'sip',accountId:h.engine.idFor('runner'),onboarded:true};s.publicJobs=view.publicJobs;s.requests=view.requests;});page.refresh();
+ const card=page.data.cards[0];assert.equal(card.location.gender,'女寝');assert.equal(card.location.area,'文星');assert.equal(card.location.building,'A05');assert.equal(card.location.room,'1111');assert.equal(card.pickupPointDisplay,data.pickupPoint);assert.equal(card.items[0].location.room,'1111');assert.equal(page.data.expanded[card.key],undefined,'details are present before expansion');
+ store.update(s=>{s.requests=s.requests.map(r=>({...r,room:'',dormGender:'',pickupPoint:''}));});page.refresh();assert.equal(page.data.cards[0].location.room,'1111');assert.equal(page.data.cards[0].location.gender,'女寝');assert.equal(page.data.cards[0].pickupPointDisplay,data.pickupPoint,'masked request data cannot overwrite a complete public summary');
+ store.update(s=>s.language='en');page.refresh();assert.equal(page.data.cards[0].location.gender,'Women’s dorm');assert.equal(page.data.cards[0].location.area,'Wenxing');assert.match(page.data.cards[0].pickupPointDisplay,/Locker/);
+ const grouped=location.group([data,{...data,room:'1112',dormGender:'male'}]);assert.equal(grouped.room,'1111 / 1112');assert.equal(grouped.gender,'女寝 / 男寝','mixed grouped destinations are not mislabelled');
+ assert.equal(location.detail({...data,destinationType:'place'}).showDorm,false);assert.equal(location.detail({...data,category:'task'}).showDorm,false);assert.equal(location.detail({...data,dormGender:''}).gender,'','legacy data never infers gender from building');
+ const xml=fs.readFileSync(require.resolve('../pages/jobs/index.wxml'),'utf8');for(const field of ['item.location.gender','item.location.area','item.location.building','item.location.room','item.pickupPointDisplay'])assert.ok(xml.includes(field));
+ assert.match(xml,/Names, phone numbers and pickup codes stay hidden/);
+ console.log('Hall location: cloud destination fields → collapsed/expanded card, gender, locker, area/building/room, grouped destinations, bilingual labels and retained contact privacy passed.');
+})().catch(e=>{console.error(e);process.exitCode=1;});

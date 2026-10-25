@@ -9,7 +9,7 @@ const ok=async(who,action,extra={})=>{const r=await h.call(who,action,extra);ass
  let r=await ok('customer','create',{data:{...data,ownerId:id('runner'),status:'confirmed',reward:999}}),rid=r.value.id;
  assert.equal(h.state.requests[0].ownerId,id('customer'));assert.equal(h.state.requests[0].reward,4);assert.equal(h.state.requests[0].status,'waiting');
  let publicView=(await ok('stranger','sync')).snapshot;
- assert.equal(publicView.requests[0].phone,'');assert.equal(publicView.requests[0].room,'');assert.ok(!JSON.stringify(publicView).includes('13801026092'));
+ assert.equal(publicView.requests[0].phone,'');assert.equal(publicView.requests[0].room,'412');assert.ok(!JSON.stringify(publicView).includes('13801026092'));
  assert.equal((await h.call('customer','accept',{ids:[rid]})).ok,false,'cannot accept own order');
  assert.equal((await h.call('stranger','accept',{ids:[rid]})).ok,false,'runner student check enforced on server');
  assert.equal((await h.call('other','raise',{id:rid,amount:1.88})).ok,false,'customer ownership checked');
@@ -42,9 +42,9 @@ const ok=async(who,action,extra={})=>{const r=await h.call(who,action,extra);ass
  assert.ok(!JSON.stringify(runnerView).includes('22-2-2222'));
  assert.ok(!JSON.stringify((await ok('stranger','sync')).snapshot).includes('11-1-1111'));
  await ok(who,'pickup',{id:parcelId});await ok(who,'deliver',{id:parcelId,photo:cloudPhoto,location:'Downstairs',sealChecked:true});
- h.edit(s=>{s.requests.find(x=>x.id===parcelId).deliveredAt=Date.now()-3*3600000;});
- await ok('customer','sync');assert.equal(h.state.requests.find(x=>x.id===parcelId).status,'delivered','parcels do not settle at 2h');
- h.edit(s=>{s.requests.find(x=>x.id===parcelId).deliveredAt=Date.now()-49*3600000;});
+ h.edit(s=>{s.requests.find(x=>x.id===parcelId).deliveredAt=Date.now()-2*3600000+1;});
+ await ok('customer','sync');assert.equal(h.state.requests.find(x=>x.id===parcelId).status,'delivered','parcels remain pending just before 2h');
+ h.edit(s=>{s.requests.find(x=>x.id===parcelId).deliveredAt=Date.now()-2*3600000;});
  await ok('customer','sync');assert.equal(h.state.requests.find(x=>x.id===parcelId).status,'confirmed');
  // Capacity failures roll back both the new order and the ID counter.
  const trip=(await ok(who,'startTrip',{data:{category:'takeout',when:'now',duration:10,station:'Other gate',dorm:'Dorm 7',capacity:1}})).value.id;
@@ -53,7 +53,7 @@ const ok=async(who,action,extra={})=>{const r=await h.call(who,action,extra);ass
  assert.equal(JSON.stringify(h.state),before);
  r=await ok('customer','create',{data:{...data,station:'Other gate'},tripId:trip});
  await ok(who,'pickup',{id:r.value.id});await ok(who,'leave',{id:trip});await ok(who,'deliver',{id:r.value.id,photo:cloudPhoto,location:'Downstairs',sealChecked:true});
- h.edit(s=>{s.requests.find(x=>x.id===r.value.id).deliveredAt=Date.now()-3600000-1;});
+ h.edit(s=>{s.requests.find(x=>x.id===r.value.id).deliveredAt=Date.now()-2*3600000;});
  await ok('customer','sync');assert.equal(h.state.requests.find(x=>x.id===r.value.id).status,'confirmed');
  // Dispute remains unconfirmed beyond timeout.
  const disputed=(await ok('customer','create',{data})).value.id;
@@ -62,5 +62,5 @@ const ok=async(who,action,extra={})=>{const r=await h.call(who,action,extra);ass
  h.edit(s=>{s.requests.find(x=>x.id===disputed).deliveredAt=Date.now()-72*3600000;});await ok('customer','sync');assert.equal(h.state.requests.find(x=>x.id===disputed).status,'disputed');
  h.accounts[id('customer')].loggedOut=true;
  assert.equal((await h.call('customer','create',{data})).ok,false);assert.ok(!(await ok('customer','sync')).snapshot.requests.some(x=>x.isMine));
- console.log('Cloud service: server identity, privacy, concurrent acceptance, idempotency, private photo access, split parcel privacy, atomic joins, 1h/48h settlement and logout passed.');
+ console.log('Cloud service: server identity, privacy, concurrent acceptance, idempotency, private photo access, split parcel privacy, atomic joins, uniform 2h settlement and logout passed.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

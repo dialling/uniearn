@@ -10,6 +10,7 @@
  <view class="sheet-choice task" data-mode="task" data-category="task" hover-class="choice-press" hover-stay-time="90" bindtap="create"><view class="sheet-icon"><image class="nav-sheet-icon" src="/assets/sheet-task.svg"/></view><view class="sheet-copy"><view class="sheet-name">{{zh?"其他需求":"Something else"}}<text class="sheet-new">{{zh?"新":"New"}}</text></view><view class="sheet-description">{{zh?"买枕头、取课本、找老师、代签到…… 想到什么就发什么，时间赏金自己定。":"A pillow, a textbook, finding a teacher, signing in — post whatever you need, your time and price"}}</view></view><text class="sheet-arrow">›</text></view>
 
 </view>
+<level-up/>
 <view class="nav {{active==='profile'?'me-nav':''}} {{dark?'nav-dark':''}}">
  <view class="item {{active==='jobs'?'selected':''}}" data-key="jobs" hover-class="nav-press" hover-stay-time="90" bindtap="go"><image class="nav-icon" mode="aspectFit" src="{{active==='jobs'?'/assets/jobs-active.png':'/assets/jobs.png'}}"/><text class="nav-label">{{zh?"接单大厅":"Jobs"}}</text></view>
  <view class="item nav-orders {{active==='requests'?'selected':''}}" data-key="requests" hover-class="nav-press" hover-stay-time="90" bindtap="go"><image class="nav-icon" mode="aspectFit" src="{{active==='requests'?'/assets/orders-active.png':'/assets/orders.png'}}"/><text class="nav-label">{{zh?"我的订单":"My orders"}}</text></view>

@@ -3,7 +3,7 @@ const pairs={"What do you want to do?":"你想做什么？","Pick up food or par
 const sizeCopy={small:{label:'小件',hint:'文件、钥匙、小药盒',desc:'能一只手拿、装得进书包：文件袋、钥匙、小药盒、手机壳等小包快递。'},medium:{label:'中件',hint:'衣服、鞋、书包',desc:'一个鞋盒到一件外套的大小：衣服、鞋、书包、小电器，一只手抱起不费力。'},large:{label:'大件',hint:'棉被、成箱纸巾',desc:'要双手抱着走：棉被、羽绒服、成箱纸巾/零食、大号快递箱。'},oversized:{label:'超大件',hint:'整箱水、被褥、桌椅',desc:'大重量或大体积的单件，一个人能搬、只是比较费力：整箱矿泉水饮料、被褥打包、行李箱、成箱纸巾、宿舍桌椅、折叠床。贵重物品请自行取件，不要下单代取。'}};
 const placeCopy={'Station A':'A 驿站','Station B':'B 驿站','Station C':'C 驿站','Takeaway counter A':'外卖柜 A','Takeaway counter B':'外卖柜 B','Building C':'C 栋','Choose building':'选择楼栋','North gate':'北门','South gate':'南门','East gate':'东门','Parcel station':'快递驿站'};
 const names={'My dorm':'我的宿舍','Other':'其他地址'};
-const couponCopy={'None':'不使用','Coupon':'优惠券','Unavailable now':'暂不可用','Golden Week free':'黄金周免单','Free delivery':'免配送费','¥2 off':'减 ¥2','¥1 off':'减 ¥1','Invite free':'邀请免单','Invite ¥3.9':'邀请 ¥3.9 券'};
+const couponCopy={'None':'不使用','Coupon':'优惠券','Unavailable now':'暂不可用','Golden Week free':'黄金周免单','Free delivery':'免配送费','¥2 off':'减 ¥2','¥2 off any order':'任意订单减 ¥2','For your next order of any size':'下单即可使用','¥1 off':'减 ¥1','¥1 off × 3 orders':'连续 3 单各减 ¥1','Welcome back · for students who ordered last month':'上月下单同学专享','Invite free':'邀请免单','Invite ¥3.9':'邀请 ¥3.9 券'};
 function translate(value,language){return language==='en'?value:(pairs[value]||value);}
 function table(language){const result={};Object.keys(pairs).forEach(k=>result[k]=translate(k,language));return result;}
 function sizes(list,language){const result={};list.forEach(x=>{const c=language==='en'||!sizeCopy[x.id]?null:sizeCopy[x.id];result[x.id]=c||{label:x.label,hint:x.hint||x.examples,desc:x.desc||''};});return result;}

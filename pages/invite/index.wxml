@@ -10,15 +10,16 @@
  <view class="iv-nav" style="padding-top:{{navTop}}px;height:{{navHeight}}px"><view class="iv-back" hover-class="iv-press" bindtap="back"><view class="iv-back-arrow"></view></view></view>
 
  <view class="iv-body">
-  <view class="iv-title">{{zh?'邀请同学，一起省配送费':'Invite a classmate, both save on delivery'}}</view>
+  <view class="iv-title">{{zh?'邀请同学，一起赚积分':'Invite a classmate and earn points together'}}</view>
 
   <view class="iv-label">{{zh?'你和同学各得':'You each get'}}</view>
-  <view class="iv-big">¥3.9</view>
-  <view class="iv-unit">{{zh?'配送券':'delivery credit'}}</view>
+  <view class="iv-big">10</view>
+  <view class="iv-unit">{{zh?'积分':'points'}}</view>
 
   <view class="iv-rows">
-   <view class="iv-row"><image class="iv-row-icon" src="/assets/invite/check.svg"/><text>{{zh?'同学填写邀请码后，你们各得 ¥3.9，马上就能用，可分多单抵扣配送费':'Once a classmate enters your code, you each get ¥3.9 to use right away, across orders until it runs out'}}</text></view>
-   <view class="iv-row"><image class="iv-row-icon" src="/assets/invite/check.svg"/><text>{{zh?'发放后 30 天内有效，有效期可在优惠券里查看':'Valid for 30 days after it is issued. See the dates in your coupons'}}</text></view><view class="iv-row"><image class="iv-row-icon" src="/assets/invite/gift.svg"/><text>{{zh?'每人只能绑定一次邀请码，下过单也能用':'One invitation code per person, even if you have ordered before'}}</text></view>
+   <view class="iv-row"><image class="iv-row-icon" src="/assets/invite/check.svg"/><text>{{zh?'同学首次登录并绑定邀请码后，双方各得 10 积分':'When a classmate signs in and links your code, you each get 10 points'}}</text></view>
+   <view class="iv-row"><image class="iv-row-icon" src="/assets/invite/check.svg"/><text>{{zh?'同学完成首单后，你会解锁一张 5 折配送券，最高抵 ¥3.9':'After their first completed order, you unlock a 50% delivery coupon up to ¥3.9'}}</text></view>
+   <view class="iv-row"><image class="iv-row-icon" src="/assets/invite/check.svg"/><text>{{zh?'优惠券解锁后 30 天有效，每人只能绑定一次邀请码':'The coupon is valid for 30 days after unlocking. Each person can link one code'}}</text></view>
   </view>
 
   <view class="iv-line"></view>

@@ -3,7 +3,9 @@
   "version": "0.9.20",
   "private": true,
   "scripts": {
-    "test": "node scripts/check.js"
+    "test": "node scripts/check.js",
+    "admin:prepare": "node scripts/prepare-admin.js",
+    "admin": "node admin-web/server.cjs"
   },
   "engines": {
     "node": ">=18"

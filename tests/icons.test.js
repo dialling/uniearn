@@ -3,7 +3,7 @@ const root=path.resolve(__dirname,'..');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 
 // Every icon is a self-contained 24x24 stroke SVG: <image> cannot inherit currentColor.
-const icons=['plus-white','plus-green','check-white','x-muted','x-light'];
+const icons=['plus-white','plus-orange','check-white','x-muted','x-light'];
 for(const name of icons){
   const svg=read(`assets/icons/${name}.svg`).trim();
   assert.match(svg,/^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" width="24" height="24" viewBox="0 0 24 24"/,`${name} keeps the shared 24x24 grid`);
@@ -35,8 +35,8 @@ assert.match(navCss,/@keyframes sheet-close-unfold\{from\{opacity:0;transform:ro
 // Posting forms: add and selected marks use the same stroke set as the rest of the app.
 for(const page of ['pages/takeaway/index.wxml','pages/create/index.wxml']){
   const t=read(page);
-  assert.match(t,/class="addr-plus big" mode="aspectFit" src="\/assets\/icons\/plus-green\.svg"/,`${page} add card uses the plus icon`);
-  assert.match(t,/class="addr-plus" mode="aspectFit" src="\/assets\/icons\/plus-green\.svg"/,`${page} add chip uses the plus icon`);
+  assert.match(t,/class="addr-plus big" mode="aspectFit" src="\/assets\/icons\/plus-orange\.svg"/,`${page} add card uses the plus icon`);
+  assert.match(t,/class="addr-plus" mode="aspectFit" src="\/assets\/icons\/plus-orange\.svg"/,`${page} add chip uses the plus icon`);
   assert.match(t,/class="addr-chip-check" mode="aspectFit" src="\/assets\/icons\/check-white\.svg"/,`${page} selected mark uses the check icon`);
   assert.doesNotMatch(t,/class="addr-plus[^"]*">＋/);
   assert.doesNotMatch(t,/class="addr-chip-check">✓/);
