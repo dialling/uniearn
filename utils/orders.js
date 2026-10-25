@@ -25,7 +25,7 @@ function apply(snapshot) {
   }
   previous = {accountId:snapshot.accountId,unread:pairMap(snapshot.requests,r=>r.unread||0),tripIds:(snapshot.publicTrips||[]).map(t=>t.id),status:pairMap(snapshot.requests,r=>r.status)};
   store.update(s=>{
-    s.walletSummary=snapshot.walletSummary||null;s.progression=snapshot.progression||null;s.publicJobs=snapshot.publicJobs||[];s.deliveredThisWeek=snapshot.deliveredThisWeek||0;s.requests=snapshot.requests; s.trips=snapshot.trips; s.publicTrips=snapshot.publicTrips;
+    s.orderCapabilities=snapshot.capabilities||{};s.walletSummary=snapshot.walletSummary||null;s.progression=snapshot.progression||null;s.publicJobs=snapshot.publicJobs||[];s.deliveredThisWeek=snapshot.deliveredThisWeek||0;s.requests=snapshot.requests; s.trips=snapshot.trips; s.publicTrips=snapshot.publicTrips;
     s.supportTickets=snapshot.supportTickets||[];s.supportInbox=snapshot.supportInbox||[];s.adjustments=snapshot.adjustments||[];s.rewards=snapshot.rewards;s.preferences=snapshot.preferences||{};s.photoURLs=snapshot.photoURLs||{}; s.cloudRevision=snapshot.revision; s.lastSyncAt=Date.now();
     s.profile={...s.profile,...snapshot.stats,accountId:snapshot.accountId};
   });
@@ -42,7 +42,13 @@ async function call(data) {
 }
 function sync() {
   if (syncing) return syncing;
-  syncing = enqueue(()=>call({action:'sync'})).then(v=>{lastError='';return v;}).catch(e=>{
+  syncing = enqueue(async()=>{
+    const syncGeneration=generation,value=await call({action:'sync'});
+    if(syncGeneration!==generation)return value;
+    const repairs=require('./dorm-gender-memory').repairs(store.get());
+    if(repairs.length)try{await call({action:'restoreDormGenders',repairs,operationId:'restore_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2)});}catch(e){console.warn('Dorm gender restoration deferred',e.message);}
+    return value;
+  }).then(v=>{lastError='';return v;}).catch(e=>{
     if (e.message!==lastError) { tell('Orders not synced: '+e.message); lastError=e.message; }
     throw e;
   }).finally(()=>{syncing=null;});
