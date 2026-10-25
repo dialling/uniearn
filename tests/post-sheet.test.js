@@ -32,9 +32,9 @@ tap('trip');assert.equal(opened.url,'/pages/trip-start/index?category=takeout');
 tap('request');assert.equal(opened.url,'/pages/takeaway/index');
 assert.ok(require('../app.json').pages.includes('pages/task-post/index'),'task-post must be registered to be reachable');
 
-// The form behind the card starts from the five needs the card promises.
+// The form keeps the requested shopping and textbook examples.
 const form=read('pages/task-post/index.js');
-for(const example of ['帮我买一个枕头或一个盆儿','帮我完成作业','帮我拿一下课本','帮我去找一下老师','帮我签一下到'])
+for(const example of ['帮我买一个枕头或一个盆儿','帮我拿一下课本'])
   assert.ok(form.includes(example),`example missing from the task form: ${example}`);
 assert.match(form,/en:\['Buy me a pillow or a basin'/,'the examples stay bilingual');
 

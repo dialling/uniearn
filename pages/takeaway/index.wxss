@@ -1,4 +1,5 @@
 @import "../../utils/post-form.wxss";
+@import "../../utils/fee-control.wxss";
 .purchase-options{display:flex;gap:16rpx}
 .purchase-option{flex:1;min-width:0;display:flex;align-items:center;gap:14rpx;min-height:112rpx;padding:20rpx;border:2rpx solid #e2e0d9;border-radius:22rpx;background:#f6f5f1}
 .purchase-option.selected{border-color:#c2410c;background:#fff1e6;color:#c2410c}
@@ -16,11 +17,11 @@
 .dash{border:2rpx dashed #f4a06e;border-radius:18rpx;padding:20rpx;margin:18rpx 0}.thumb{width:140rpx;height:140rpx;border-radius:16rpx}
 .bag-control{margin:18rpx 0}.bag-control>view:first-child{flex:1;min-width:0}.bag-control .hint{margin:4rpx 0}
 .soup-control{display:flex;align-items:center;gap:12rpx;border:1rpx solid #e2e0d9;border-radius:18rpx;padding:18rpx;min-height:90rpx}.soup-control .hint{margin:2rpx 0}
-.fee-control{margin:22rpx 0 4rpx}.fee-round{flex:none;width:72rpx;height:72rpx;line-height:72rpx;text-align:center;border-radius:50%;background:#f0efea;font-size:36rpx}.fee-value{flex:1;text-align:center;white-space:nowrap}.fee-value .amount{font-size:50rpx;font-weight:800}.fee-value .hint{font-size:24rpx}
+
 
 .coupon-unavailable{opacity:.55;border-style:dashed}.coupon-block .pills{flex-wrap:wrap}
 
-.address-card{margin-bottom:22rpx!important}.destination-column{width:57%}.room-column{flex:1;min-width:0}.orange-label{color:#c2410c!important;font-weight:700}.route-tag{background:#fff1e6;border:1rpx solid #f2b48a;color:#0b7a55;padding:6rpx 13rpx;border-radius:9rpx;font-size:22rpx}.drop-pills{flex-wrap:nowrap!important}.drop-pills .pill{flex:1;text-align:center;padding:12rpx 8rpx;font-size:23rpx}.bag-phone{text-align:center;flex:none}.phone-field{flex:1;min-width:0}.phone-digits{background:#16181c;color:white;border-radius:12rpx;padding:8rpx 16rpx;letter-spacing:3rpx;font-weight:750}.save-route-choice{display:flex;align-items:flex-start;gap:16rpx;padding:20rpx;border:1rpx solid #e2e0d9;border-radius:18rpx;background:white;margin:24rpx 0}.save-route-choice .check{margin-top:6rpx}.save-route-choice>view{flex:1}.privacy-lock{margin-top:24rpx!important}.other-place-link{color:#c2410c;font-weight:650;margin:22rpx 0}.wechat-number{margin:8rpx 0 12rpx;padding:12rpx 20rpx;background:#fdf6f2;border:1rpx solid #f2b48a;color:#c2410c;border-radius:40rpx;font-size:23rpx;line-height:1.5;text-align:left}.wechat-number::after{border:0}.fee-value .price-input{display:inline-block;width:95rpx;height:60rpx;font-size:50rpx;font-weight:800;vertical-align:middle;text-align:center}
+.address-card{margin-bottom:22rpx!important}.destination-column{width:57%}.room-column{flex:1;min-width:0}.orange-label{color:#c2410c!important;font-weight:700}.route-tag{background:#fff1e6;border:1rpx solid #f2b48a;color:#0b7a55;padding:6rpx 13rpx;border-radius:9rpx;font-size:22rpx}.drop-pills{flex-wrap:nowrap!important}.drop-pills .pill{flex:1;text-align:center;padding:12rpx 8rpx;font-size:23rpx}.bag-phone{text-align:center;flex:none}.phone-field{flex:1;min-width:0}.phone-digits{background:#16181c;color:white;border-radius:12rpx;padding:8rpx 16rpx;letter-spacing:3rpx;font-weight:750}.save-route-choice{display:flex;align-items:flex-start;gap:16rpx;padding:20rpx;border:1rpx solid #e2e0d9;border-radius:18rpx;background:white;margin:24rpx 0}.save-route-choice .check{margin-top:6rpx}.save-route-choice>view{flex:1}.privacy-lock{margin-top:24rpx!important}.other-place-link{color:#c2410c;font-weight:650;margin:22rpx 0}.wechat-number{margin:8rpx 0 12rpx;padding:12rpx 20rpx;background:#fdf6f2;border:1rpx solid #f2b48a;color:#c2410c;border-radius:40rpx;font-size:23rpx;line-height:1.5;text-align:left}.wechat-number::after{border:0}
 
 .privacy-lock{display:flex;align-items:center;gap:12rpx}.lock-icon{width:24rpx;height:24rpx;flex:none}
 

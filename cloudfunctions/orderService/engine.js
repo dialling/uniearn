@@ -10,7 +10,7 @@ function check(ok, message) { if (!ok) throw Error(message); }
 // One shared document holds every order, so each student gets a fair share of it.
 const OPEN_STATUSES = ['waiting','taken','collected','delivered','disputed'], MAX_OPEN_PER_USER = 10, MAX_CREATES_PER_DAY = 30, MAX_TASK_PRICE = 500;
 function initial() { return { nextId: 1, requests: [], trips: [], members: {}, receipts: {}, revision: 0, loyaltyStartedAt:Date.now() }; }
-const onTime = r => r.category==='task'?r.deliveredAt<=r.dueAt:r.deliveredAt-r.collectedAt<=15*60000;
+const onTime = r => r.category==='task'?(!r.dueAt||r.deliveredAt<=r.dueAt):r.deliveredAt-r.collectedAt<=15*60000;
 function stats(s, id) {
   const ownTrips = new Set(s.trips.filter(t => t.runnerAccountId === id).map(t => t.id));
   const paid = s.requests.filter(r => r.status === 'confirmed' && ownTrips.has(r.runnerId));
@@ -95,7 +95,7 @@ function input(data, actor) {
     check(Number.isInteger(out.bags) && out.bags >= 1 && out.bags <= 5, 'Choose 1–5 bags.');
     check(Number.isInteger(out.price) && out.price >= 3 && out.price <= d.MAX_PRICE_PER_BOX, 'Choose ¥3–'+d.MAX_PRICE_PER_BOX+' per bag.');
   } else if(out.category==='task'){
-    out.title=String(data.title||'').trim();check(out.title.length>=5&&out.title.length<=4000,'Describe your task (5–4000 characters).');check(d.wholeCents(out.price)&&out.price>=3&&out.price<=MAX_TASK_PRICE,'Set a price from ¥3 to ¥'+MAX_TASK_PRICE+'.');out.price=Math.round(out.price*100)/100;out.dueAt=Number(data.dueAt);check(Number.isFinite(out.dueAt)&&out.dueAt>Date.now(),'Choose a future deadline.');
+    out.title=String(data.title||'').trim();check(out.title.length>=5&&out.title.length<=4000,'Describe your task (5–4000 characters).');check(d.wholeCents(out.price)&&out.price>=3&&out.price<=MAX_TASK_PRICE,'Set a price from ¥3 to ¥'+MAX_TASK_PRICE+'.');out.price=Math.round(out.price*100)/100;out.dueAt=0;if(data.dueAt!==undefined&&data.dueAt!==null){out.dueAt=Number(data.dueAt);check(Number.isFinite(out.dueAt)&&out.dueAt>Date.now(),'Choose a future deadline.');}
   } else {
     check(Array.isArray(data.parcelItems) && data.parcelItems.length >= 1 && data.parcelItems.length <= 12, 'Choose 1–12 parcels.');
     out.parcelItems = data.parcelItems.map(p => {
@@ -186,7 +186,7 @@ function execute(s, actor, account, event, now = Date.now()) {
     check(s.requests.filter(r => r.ownerId === actor && r.createdAt > now - 86400000).length < MAX_CREATES_PER_DAY, 'You can post up to '+MAX_CREATES_PER_DAY+' orders a day.');
     check(s.requests.length < 200, 'The order board is full right now. Please try again later.');
     const data = input(event.data, actor);
-    let r;if(data.category==='task'){data.dorm='';data.room='';r={...data,id:'r'+s.nextId++,small:1,big:0,codes:[''],reward:Math.round(data.price*100)/100,serviceFee:0,status:'waiting',runnerId:null,collected:[],photo:'',closesAt:data.dueAt,deadline:f.clock(data.dueAt),station:'Task',createdAt:now};s.requests.unshift(r);f.event(r,'Posted',now);}else r=data.category==='takeout'?f.createTakeaway(s,data,now):d.createRequest(s,data);
+    let r;if(data.category==='task'){data.dorm='';data.room='';r={...data,id:'r'+s.nextId++,small:1,big:0,codes:[''],reward:Math.round(data.price*100)/100,serviceFee:0,status:'waiting',runnerId:null,collected:[],photo:'',closesAt:data.dueAt,deadline:data.dueAt?f.clock(data.dueAt):'',station:'Task',createdAt:now};s.requests.unshift(r);f.event(r,'Posted',now);}else r=data.category==='takeout'?f.createTakeaway(s,data,now):d.createRequest(s,data);
     r.createdAt = now; r.campusId=campusId;r.universityId='xjtlu';r.ownerId = actor; r.isMine = true;
     rewards.apply(s,actor,r,event.couponId,now);
     if (data.category === 'parcel') {const date=data.deliveryDate||new Date(now+28800000).toISOString().slice(0,10);if(data.deadline){const close=Date.parse(date+'T'+data.deadline+':00+08:00');check(Number.isFinite(close)&&close>now,'Choose a future delivery deadline.');r.closesAt=close;}f.event(r, 'Posted', now);}

@@ -7,4 +7,5 @@ function language(){return store.get().language==='en'?'en':'zh';}
 function text(lang=language()){return copy[lang]||copy.zh;}
 function toggle(){const lang=language()==='zh'?'en':'zh';store.update(s=>{s.language=lang;});return lang;}
 function selected(profile=store.get().profile){return profile.universityId==='xjtlu'&&profile.campusId==='sip';}
-module.exports={language,text,toggle,selected};
+function nextPage(profile=store.get().profile){if(!selected(profile))return '/pages/campus/index';const code=String(store.get().pendingInviteCode||'').trim();return code?'/pages/invite/index?invite='+encodeURIComponent(code):'/pages/jobs/index';}
+module.exports={language,text,toggle,selected,nextPage};

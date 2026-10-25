@@ -1,0 +1,2 @@
+.fee-control{margin:22rpx 0 4rpx}.fee-round{flex:none;width:72rpx;height:72rpx;line-height:72rpx;text-align:center;border-radius:50%;background:#f0efea;font-size:36rpx}.fee-value{flex:1;text-align:center;white-space:nowrap}.fee-value .amount{font-size:50rpx;font-weight:800}.fee-value .hint{font-size:24rpx}
+.fee-value .price-input{display:inline-block;width:95rpx;height:60rpx;font-size:50rpx;font-weight:800;vertical-align:middle;text-align:center}

@@ -17,9 +17,6 @@
 .header-badge-row{display:flex;align-items:center;margin:5rpx 0 0;min-width:0}
 .header-badge{max-width:100%;box-sizing:border-box;overflow:hidden;text-overflow:ellipsis;font-size:16rpx;line-height:1.4;padding:4rpx 10rpx;background:#ffffffed;border-radius:26rpx;font-weight:600;color:#41684e;display:inline-block;white-space:nowrap}
 .header-badge.verified{background:#eff7f0;color:#32674a}
-.edit-button{margin:0;padding:0 9rpx;min-width:0;flex:none;width:auto;height:40rpx;line-height:40rpx;display:flex;align-items:center;justify-content:center;gap:4rpx;border:1rpx solid #ffffff8c;border-radius:24rpx;background:transparent;color:#fff;font-size:17rpx;font-weight:600}
-.edit-button::after{border:0}
-.edit-button image{width:14rpx;height:14rpx}
 .runner-tag{display:inline-block;margin:0;font-size:17rpx;font-weight:600;color:#326a4a;background:#e7f1e8;border-radius:26rpx;padding:4rpx 10rpx;line-height:1.4;white-space:nowrap}
 .level-journey{background:transparent;border:0;border-radius:0;padding:0;margin:20rpx 0 0;box-shadow:none}
 .journey-heading{display:flex;align-items:center;justify-content:space-between;gap:12rpx}
@@ -136,7 +133,6 @@
 .me-dark .green-text,.me-dark .earnings-total,.me-dark .sticker-count{color:#6fd0a8}
 .me-dark .me-header{background:linear-gradient(145deg,#285b40 0%,#193b2a 100%);border:1rpx solid #2d5344;color:#f3faf6}
 .me-dark .header-name{color:#f3faf6}
-.me-dark .edit-button{background:transparent;border-color:#ffffff75;color:#fff}
 .me-dark .level-journey{background:transparent;border-color:transparent;box-shadow:none}
 .me-dark .journey-level,.me-dark .journey-points,.me-dark .journey-nudge,.me-dark .hl-tiers{color:#e0eee3}
 .me-dark .journey-points-number{color:#f3faf6}
@@ -148,6 +144,5 @@
 .me-dark .level-detail{border-color:#ffffff42}
 .me-dark .level-detail .level-track{background:#3a3b37}
 
-.profile-editor{display:flex;flex-direction:column;gap:20rpx}.edit-hero{position:relative;display:flex;align-items:center;gap:21rpx;padding:28rpx 74rpx 28rpx 26rpx;border-radius:28rpx;background:#0b7a55;color:#fff;box-shadow:0 12rpx 28rpx #0b7a5524}.edit-avatar{width:82rpx;height:82rpx;line-height:82rpx;border-radius:50%;text-align:center;font-size:34rpx;font-weight:800;color:#fff;flex:none;border:3rpx solid #ffffff66}.edit-heading{flex:1;min-width:0}.edit-title{font-size:34rpx;line-height:1.3;font-weight:800}.edit-subtitle{font-size:22rpx;line-height:1.55;color:#e7f3ed;margin-top:7rpx}.edit-close{position:absolute;right:16rpx;top:14rpx;z-index:5;display:flex;align-items:center;justify-content:center;width:48rpx;height:48rpx;border:1rpx solid #ffffff8c;border-radius:50%;background:transparent;color:#fff;font-size:26rpx;line-height:1;font-weight:600}.edit-section{background:#fff;border:1rpx solid #e2e0d9;border-radius:27rpx;padding:27rpx}.edit-section-title{font-size:25rpx;font-weight:800;margin:0 0 18rpx;color:#242522}.edit-field+.edit-field{margin-top:18rpx}.edit-section .field-label{font-size:22rpx;line-height:1.4;margin:0 0 9rpx;color:#5e5c55}.edit-section .field{width:100%;height:82rpx;min-height:82rpx;margin:0;padding:0 21rpx;border-radius:18rpx;background:#f7f6f2;border-color:#e2e0d9;font-size:27rpx}.edit-grid{display:flex;align-items:flex-start;gap:16rpx}.edit-grid .edit-field{flex:1;min-width:0;margin:0}.edit-grid .room-field{flex:0 0 190rpx}.edit-privacy{display:flex;align-items:flex-start;gap:12rpx;margin-top:20rpx;padding-top:19rpx;border-top:1rpx solid #f0eee8;color:#6b6860;font-size:21rpx;line-height:1.55}.edit-privacy image{width:23rpx;height:25rpx;flex:none;margin-top:3rpx}.edit-actions{display:flex;align-items:center}.edit-actions button{margin:0;height:84rpx;min-height:84rpx;line-height:84rpx;border-radius:42rpx;font-size:26rpx;text-align:center}.edit-save{display:flex;align-items:center;justify-content:center;flex:1;padding:0}.me-dark .edit-section{background:#242522;border-color:#3a3b37;color:#edebe4}.me-dark .edit-section-title{color:#edebe4}.me-dark .edit-section .field-label,.me-dark .edit-privacy{color:#a9a69c}.me-dark .edit-section .field{background:#242522;border-color:#3a3b37;color:#edebe4}.me-dark .edit-privacy{border-color:#3a3b37}
 
 .wallet-entry{min-height:64rpx;align-items:center}.wallet-entry-value{margin-left:auto;white-space:nowrap;color:#0b7a55;font-weight:650}.page-dark .wallet-entry-value{color:#6fd0a8}

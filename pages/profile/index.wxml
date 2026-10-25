@@ -1,29 +1,10 @@
 <lang-switch></lang-switch>
 <view class="page navpage me-page {{appearance==='dark'?'me-dark':''}}">
 <view wx:if="{{loading}}" class="muted">{{language==='zh'?'正在加载账户…':'Loading your account…'}}</view><view wx:if="{{error}}" class="notice-error">{{error}}</view>
- <view wx:if="{{profile.loggedOut}}" class="card">
+ <view wx:if="{{profile.loggedOut || !profile.onboarded}}" class="card">
   <view class="route">{{language==='zh'?'欢迎来到 UniEarn':'Welcome to UniEarn'}}</view>
   <view class="muted">{{language==='zh'?'你已退出登录。登录后可查看订单和已保存的账户信息。':'You are logged out. Sign in to see your orders and saved account.'}}</view>
   <button class="btn" bindtap="login" disabled="{{loading || loggingOut}}">{{language==='zh'?'登录':'Sign in'}}</button>
- </view>
- <view wx:elif="{{editing}}" class="profile-editor">
-  <view class="edit-hero">
-   <view class="edit-avatar {{isRunner?'runner-avatar':'customer-avatar'}}">{{initial}}</view>
-   <view class="edit-heading"><view class="edit-title">{{profile.onboarded?(language==='zh'?'编辑个人资料':'Edit profile'):(language==='zh'?'欢迎来到 UniEarn':'Welcome to UniEarn')}}</view><view class="edit-subtitle">{{profile.onboarded?(language==='zh'?'让同学看到准确、清晰的信息。':'Keep your details clear and up to date.'):(language==='zh'?'填写基本信息，开始使用校园互助服务。':'Add your details to start using the campus service.')}}</view></view>
-   <view wx:if="{{profile.onboarded}}" class="edit-close" bindtap="cancelEdit" role="button" aria-label="{{language==='zh'?'关闭编辑':'Close editor'}}">×</view>
-  </view>
-  <view class="edit-section">
-   <view class="edit-section-title">{{language==='zh'?'基本资料':'Basic details'}}</view>
-   <view class="edit-field"><view class="field-label">{{language==='zh'?'姓名':'Full name'}}</view><input class="field" maxlength="60" value="{{form.name}}" data-field="name" bindinput="input" placeholder="{{language==='zh'?'与学生证一致':'Name on your student card'}}"/></view>
-   <view class="edit-field"><view class="field-label">{{language==='zh'?'手机号':'Phone number'}}</view><input class="field" type="number" maxlength="11" value="{{form.phone}}" data-field="phone" bindinput="input" placeholder="{{language==='zh'?'11 位手机号':'11-digit mobile number'}}"/></view>
-  </view>
-  <view wx:if="{{profile.onboarded}}" class="edit-section">
-   <view class="edit-section-title">{{language==='zh'?'常用配送信息':'Usual delivery details'}}</view>
-   <view class="edit-grid"><view class="edit-field"><view class="field-label">{{language==='zh'?'宿舍 / 楼栋':'Dorm / building'}}</view><input class="field" value="{{form.dorm}}" data-field="dorm" bindinput="input" placeholder="D01"/></view><view class="edit-field room-field"><view class="field-label">{{language==='zh'?'房间号':'Room'}}</view><input class="field" value="{{form.room}}" data-field="room" bindinput="input" placeholder="412"/></view></view>
-   <view class="edit-field"><view class="field-label">{{language==='zh'?'常用外卖取餐点':'Usual takeaway pickup point'}}</view><input class="field" value="{{form.pickup}}" data-field="pickup" bindinput="input" placeholder="Takeaway counter A"/></view>
-   <view class="edit-privacy"><image src="/assets/lock-outline.svg"/><text>{{ui.private}}</text></view>
-  </view>
-  <view class="edit-actions"><button class="btn edit-save" bindtap="save" loading="{{saving}}" disabled="{{saving || loading}}">{{profile.onboarded?(language==='zh'?'保存修改':'Save changes'):(language==='zh'?'注册并继续':'Register and continue')}}</button></view>
  </view>
 <block wx:else>
 <!-- ① 个人资料与等级成长 -->
@@ -34,8 +15,7 @@
    <view class="header-name">{{profile.name||ui.account}}</view>
    <view class="header-badge-row"><view class="header-badge {{isRunner?'verified':''}}" bindtap="studentCheck">{{isRunner?'✓ '+ui.verified+(verifiedDate?' '+verifiedDate:''):ui.check}}</view></view>
   </view>
-  <view class="header-actions">
-   <view class="edit-button" bindtap="edit"><image src="/assets/edit-outline.svg"/>{{ui.edit}}</view>
+  <view wx:if="{{isRunner}}" class="header-actions">
    <view wx:if="{{isRunner}}" class="runner-tag">{{ui.runnerTag}}</view>
   </view>
  </view>
@@ -52,7 +32,7 @@
 <!-- ② 数据卡 -->
 <view class="me-stats"><view bindtap="firstStat"><text class="stats-number">{{isRunner?profile.jobsDone||0:postedCount}}</text><text>{{isRunner?ui.jobsRun:ui.orders}}</text></view><view bindtap="past"><text class="stats-number">{{isRunner?postedCount:deliveredCount}}</text><text>{{isRunner?ui.orders:ui.delivered}}</text></view><view bindtap="coupons"><text class="stats-number">{{couponCount}}</text><text>{{ui.coupons}}</text></view></view>
 <!-- ③ 收益卡（跑手） -->
-<block wx:if="{{isRunner}}"><view class="flow-card earnings-summary" bindtap="earnings"><view class="row card-heading"><text>{{ui.earnings}}</text><text class="green-text">{{ui.details}} ›</text></view><view class="row earnings-body"><view><view class="earnings-total">¥{{earnTotal}}</view><view class="hint"><text class="strong">¥{{earnWaiting}}</text> {{ui.waiting}}</view></view><view class="mini-bars"><view wx:for="{{earnBars}}" wx:key="index" style="height:{{item}}rpx"/></view></view><view class="earnings-note wallet-entry" catchtap="wallet"><image src="/assets/balance-outline.svg"/><text>{{language==='en'?'My wallet · test balance':'我的钱包 · 测试余额'}}</text><text class="wallet-entry-value">¥{{walletBalance}} ›</text></view></view></block>
+<block wx:if="{{isRunner}}"><view class="flow-card earnings-summary" bindtap="wallet"><view class="row card-heading"><text>{{language==='en'?'My wallet':'我的钱包'}}</text><text class="green-text" catchtap="earnings">{{ui.earnings}} ›</text></view><view class="row earnings-body"><view><view class="earnings-total">¥{{earnTotal}}</view><view class="hint"><text class="strong">¥{{earnWaiting}}</text> {{ui.waiting}}</view></view><view class="mini-bars"><view wx:for="{{earnBars}}" wx:key="index" style="height:{{item}}rpx"/></view></view><view class="earnings-note wallet-entry" catchtap="wallet"><image src="/assets/balance-outline.svg"/><text>{{language==='en'?'My wallet · test balance':'我的钱包 · 测试余额'}}</text><text class="wallet-entry-value">¥{{walletBalance}} ›</text></view></view></block>
 <!-- ④ Yuni 贴纸（折叠入口） -->
 <view class="flow-card stickers-card">
  <view class="row sticker-head" bindtap="toggleStickers" hover-class="sticker-head-press"><text class="strong">{{ui.stickers}}</text><text class="sticker-count">{{unlockedCount}} {{ui.of}} 6 {{stickersOpen?'⌄':'›'}}</text></view>
@@ -71,7 +51,7 @@
 <view class="flow-card menu-card">
  <view class="menu-row" bindtap="myOrders"><view class="settings-icon"><image src="/assets/receipt-outline.svg"/></view><view class="menu-copy">{{ui.myOrders}}<view class="hint">{{ui.myOrdersSub}}</view></view><text class="setting-chevron">›</text></view>
  <view class="menu-row" bindtap="routes"><view class="settings-icon"><image src="/assets/route-outline.svg"/></view><view class="menu-copy">{{ui.routes}}<view class="hint">{{ui.routesHelp}}</view></view><text class="setting-chevron">›</text></view>
- <view class="menu-row" bindtap="edit"><view class="settings-icon"><image src="/assets/university-outline.svg"/></view><view class="menu-copy">{{ui.delivery}}<view class="hint">{{hasDeliveryAddress?profile.dorm+' · '+profile.room:ui.notSetAdd}}</view></view><text class="setting-chevron">›</text></view>
+ <view class="menu-row" bindtap="dormDetails"><view class="settings-icon"><image src="/assets/university-outline.svg"/></view><view class="menu-copy">{{ui.delivery}}<view class="hint">{{deliverySummary||ui.notSetAdd}}</view></view><text class="setting-chevron">›</text></view>
 </view>
 <!-- ⑥ 邀请同学 -->
 <view class="flow-card invite-card"><view class="invite-icon"><image src="/assets/invite-classmate.svg"/></view><view class="invite-copy"><view class="strong">{{ui.inviteTitle}}</view><view class="hint">{{ui.inviteHelp}}</view></view><button class="invite-button" bindtap="inviteFriends">{{ui.invite}}</button></view>

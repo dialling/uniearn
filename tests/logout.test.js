@@ -32,6 +32,6 @@ const {createHandler}=require('../cloudfunctions/studentAccount/handler');
  });
  const page={...def,data:{...def.data},setData(v){Object.assign(this.data,v);}};
  await page.logout();assert.equal(logoutCalls,0);assert.equal(state.profile.studentVerified,true);assert.equal(page.data.loggingOut,false);
- confirm=true;await page.logout();assert.equal(logoutCalls,1);assert.equal(page.data.profile.loggedOut,true);assert.equal(page.data.editing,false);assert.equal(modal.cancelText,'Cancel');
+ confirm=true;await page.logout();assert.equal(logoutCalls,1);assert.equal(page.data.profile.loggedOut,true);assert.equal(page.edit,undefined);assert.equal(modal.cancelText,'Cancel');
  console.log('Logout cancel/confirm, persistent logged-out status, retained records and logged-out application guard passed.');
 })().catch(e=>{console.error(e);process.exitCode=1});
