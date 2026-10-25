@@ -31,6 +31,7 @@
 .hl-track{height:10rpx;background:#ffffff30;border-radius:10rpx;overflow:hidden;margin:18rpx 0 12rpx}
 .hl-fill{height:100%;background:#b7edcf;border-radius:10rpx}
 .hl-tiers{display:flex;justify-content:space-between;gap:12rpx;font-size:20rpx;line-height:1.4;color:#c3e2d4}
+.hl-tiers text{flex:1;text-align:left}.hl-tiers .hl-end{text-align:right}
 .hl-tiers .cur{color:#fff;font-weight:650}
 .level-detail{margin-top:24rpx;border-top:1rpx solid #ffffff30;padding-top:22rpx}
 .level-detail .level-grid .hint{color:#d3eadf}
