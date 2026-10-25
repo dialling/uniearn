@@ -63,6 +63,10 @@ module.exports={
     {
       "key": "night",
       "label": "夜市代买"
+    },
+    {
+      "key": "other",
+      "label": "其他"
     }
   ]
 };
