@@ -8,6 +8,7 @@
 .me-header-top{display:flex;align-items:center;gap:12rpx;min-width:0}
 .avatar{width:108rpx;height:108rpx;line-height:108rpx;font-size:43rpx}
 .header-avatar{width:92rpx;height:92rpx;line-height:92rpx;font-size:35rpx;background:#ffffff24;color:#fff;border-radius:50%;text-align:center;flex:none;border:2rpx solid #ffffff38;box-sizing:border-box;box-shadow:0 5rpx 13rpx #204b341c}
+.header-avatar image{width:48rpx;height:48rpx}
 .customer-avatar{background:#ffffff24}
 .runner-avatar{background:#ffffff24}
 .header-main{flex:1;min-width:0}
@@ -30,12 +31,11 @@
 .hl-fill{height:100%;background:#174a35;border-radius:10rpx}
 .hl-tiers{display:flex;justify-content:space-between;font-size:19rpx;font-weight:600;color:#d4e8db}
 .hl-tiers text{flex:1;text-align:left}.hl-tiers .hl-end{text-align:right}
-.hl-tiers .cur{color:#ecf5f0;font-weight:750}
-.level-detail{margin-top:18rpx;border-top:1rpx solid #ffffff42;padding-top:20rpx}
-.level-detail .level-grid .hint{color:#f2b48a}
-.level-detail .level-nudge{background:#0b7a55;color:#e7f3ed}
-.level-detail .mark-note{color:#f2b48a}
-.level-detail .mark-note .hint{color:#8a877e}
+.hl-tiers .cur{color:#fff;font-weight:650}
+.level-detail{margin-top:24rpx;border-top:1rpx solid #ffffff30;padding-top:22rpx}
+.level-detail .level-grid .hint{color:#d3eadf}
+.level-detail .level-nudge{background:#ffffff12;color:#e7f3ed}
+.level-detail .mark-note,.level-detail .mark-note .hint{color:#d3eadf}
 
 /* ② 数据卡 */
 .me-stats{display:flex;gap:15rpx;margin-bottom:20rpx}
@@ -126,7 +126,7 @@
 
 /* 深色模式 */
 .me-dark{background:#1b1c1a;color:#f3faf6}
-.me-dark .flow-card,.me-dark .me-stats>view,.me-dark .edit-button,.me-dark .floating-yuni{background:#242522;border-color:#3a3b37;color:#f3faf6}
+.me-dark .flow-card,.me-dark .me-stats>view,.me-dark .floating-yuni{background:#242522;border-color:#3a3b37;color:#f3faf6}
 .me-dark .stats-number{color:#f3faf6}
 .me-dark .settings-icon,.me-dark .sticker,.me-dark .mini-sticker{background:#a9a69c}
 .me-dark .sticker.locked,.me-dark .mini-sticker.locked{opacity:.3}
@@ -134,7 +134,7 @@
 .me-dark .address-privacy{border-color:#3a3b37}
 .me-dark .hint,.me-dark .setting-value{color:#a9a69c}
 .me-dark .green-text,.me-dark .earnings-total,.me-dark .sticker-count{color:#6fd0a8}
-.me-dark .me-header{background:linear-gradient(145deg,#285b40 0%,#193b2a 100%);color:#f3faf6}
+.me-dark .me-header{background:linear-gradient(145deg,#285b40 0%,#193b2a 100%);border:1rpx solid #2d5344;color:#f3faf6}
 .me-dark .header-name{color:#f3faf6}
 .me-dark .edit-button{background:transparent;border-color:#ffffff75;color:#fff}
 .me-dark .level-journey{background:transparent;border-color:transparent;box-shadow:none}

@@ -131,7 +131,6 @@ function execute(s, actor, account, event, now = Date.now()) {
   const campusId=account.profile.campusId,contact=require('./runner-contact')(account);
   if(['create','accept','acceptBoxes','startTrip'].includes(action))check(account.profile.universityId==='xjtlu'&&campusId==='sip','Choose XJTLU SIP campus before posting or taking jobs.');
   if (['accept','acceptBoxes','startTrip'].includes(action))check(!require('./runner-level').level(stats(s,actor),now).paused,'Taking jobs is paused for seven days. Contact the team before returning.');
-  if(['accept','acceptBoxes','startTrip'].includes(action))check(/^1\d{10}$/.test(contact.phone),'Add your contact details in Me before taking jobs.');
   if (runnerActions.has(action)) check(account.verification && account.verification.status === 'verified', 'Complete your student check before accepting jobs.');
   if(runnerActions.has(action))check(!!account.runnerRulesAcceptedAt,'Read and accept the runner rules first.');
   s.profile = profile(s, actor, account);

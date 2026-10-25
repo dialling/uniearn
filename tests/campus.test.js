@@ -72,5 +72,5 @@ assert.equal(rl.tier(5).zh,'白银');
 assert.equal(rl.tier(20).zh,'黄金');
 assert.equal(rl.tier(50).zh,'铂金');
 assert.equal(rl.tier(100).zh,'钻石');assert.equal(rl.tier(100).next,null);
-assert.equal(rl.level({jobsDone:0}).progress,0);assert.equal(rl.level({jobsDone:5}).progress,25);assert.equal(rl.level({jobsDone:10}).progress,50);assert.equal(rl.level({jobsDone:25}).progress,75);assert.equal(rl.level({jobsDone:40,onTime:40}).progress,100);
+for(const [jobs,progress] of [[0,0],[4,80],[5,0],[10,100/3],[20,0],[25,100/6],[50,0],[75,50],[100,100]])assert.ok(Math.abs(rl.level({jobsDone:jobs}).progress-progress)<1e-9,'progress uses the current display tier for '+jobs+' jobs');
 console.log('Campus data: 31 real buildings, floors, lift rule and bilingual pickup points passed.');

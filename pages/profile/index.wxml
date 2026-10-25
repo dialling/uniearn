@@ -29,7 +29,7 @@
 <!-- ① 个人资料与等级成长 -->
 <view class="me-header">
  <view class="me-header-top">
-  <view class="avatar header-avatar">{{initial}}</view>
+  <view class="avatar header-avatar"><text wx:if="{{profile.name}}">{{initial}}</text><image wx:else src="/assets/profile-green.svg" mode="aspectFit"/></view>
   <view class="header-main">
    <view class="header-name">{{profile.name||ui.account}}</view>
    <view class="header-badge-row"><view class="header-badge {{isRunner?'verified':''}}" bindtap="studentCheck">{{isRunner?'✓ '+ui.verified+(verifiedDate?' '+verifiedDate:''):ui.check}}</view></view>
