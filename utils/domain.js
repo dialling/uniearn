@@ -43,11 +43,12 @@ function createRequest(s, data) {
   const r={...data,area:areaId,floor,floorSurcharge,id:'r'+s.nextId++,status:'waiting',runnerId:null,collected:[],photo:'',reward,createdAt:Date.now(),isMine:true,ownerId:s.profile.accountId||'local',serviceFee:serviceFee()};
   s.requests.unshift(r); return r;
 }
-function eligible(s, trip) { return s.requests.filter(r=>r.status==='waiting' && r.station===trip.station && r.dorm===trip.dorm && catalog.category(r)===catalog.category(trip) && boxes(r)<=trip.capacity); }
+function routeStationMatches(r,trip){return catalog.category(trip)==='takeout'?r.pickupPoint===trip.station:r.station===trip.station;}
+function eligible(s, trip) { return s.requests.filter(r=>r.status==='waiting' && routeStationMatches(r,trip) && r.dorm===trip.dorm && catalog.category(r)===catalog.category(trip) && boxes(r)<=trip.capacity); }
 function assign(s, trip, ids) {
   if(new Set(ids).size!==ids.length||ids.some(id=>trip.requestIds.includes(id)))throw Error('Duplicate order');
   const selection=ids.map(id=>s.requests.find(r=>r.id===id));
-  if (selection.some(r=>!r || r.status!=='waiting' || r.station!==trip.station || r.dorm!==trip.dorm || (trip.destinationKey&&r.destinationKey!==trip.destinationKey) || catalog.category(r)!==catalog.category(trip)||r.campusId!==trip.campusId)) throw Error('Some requests are unavailable for this route');
+  if (selection.some(r=>!r || r.status!=='waiting' || !routeStationMatches(r,trip) || r.dorm!==trip.dorm || (trip.destinationKey&&r.destinationKey!==trip.destinationKey) || catalog.category(r)!==catalog.category(trip)||r.campusId!==trip.campusId)) throw Error('Some requests are unavailable for this route');
   const existing=trip.requestIds.map(id=>s.requests.find(r=>r.id===id));
   const route=existing[0]||selection[0];
   if(route&&selection.concat(existing).some(r=>(r.destinationKey||'')!==(route.destinationKey||'')))throw Error('Choose requests with the same delivery address');

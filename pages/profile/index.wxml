@@ -10,7 +10,7 @@
   <view class="edit-hero">
    <view class="edit-avatar {{isRunner?'runner-avatar':'customer-avatar'}}">{{initial}}</view>
    <view class="edit-heading"><view class="edit-title">{{profile.onboarded?(language==='zh'?'编辑个人资料':'Edit profile'):(language==='zh'?'欢迎来到 UniEarn':'Welcome to UniEarn')}}</view><view class="edit-subtitle">{{profile.onboarded?(language==='zh'?'让同学看到准确、清晰的信息。':'Keep your details clear and up to date.'):(language==='zh'?'填写基本信息，开始使用校园互助服务。':'Add your details to start using the campus service.')}}</view></view>
-   <button wx:if="{{profile.onboarded}}" class="edit-close" bindtap="cancelEdit" aria-label="{{language==='zh'?'关闭编辑':'Close editor'}}">×</button>
+   <view wx:if="{{profile.onboarded}}" class="edit-close" bindtap="cancelEdit" role="button" aria-label="{{language==='zh'?'关闭编辑':'Close editor'}}">×</view>
   </view>
   <view class="edit-section">
    <view class="edit-section-title">{{language==='zh'?'基本资料':'Basic details'}}</view>
@@ -23,7 +23,7 @@
    <view class="edit-field"><view class="field-label">{{language==='zh'?'常用外卖取餐点':'Usual takeaway pickup point'}}</view><input class="field" value="{{form.pickup}}" data-field="pickup" bindinput="input" placeholder="Takeaway counter A"/></view>
    <view class="edit-privacy"><image src="/assets/lock-outline.svg"/><text>{{ui.private}}</text></view>
   </view>
-  <view class="edit-actions"><button class="btn edit-save" bindtap="save" loading="{{saving}}" disabled="{{saving || loading}}">{{profile.onboarded?(language==='zh'?'保存修改':'Save changes'):(language==='zh'?'注册并继续':'Register and continue')}}</button><button wx:if="{{profile.onboarded}}" class="edit-cancel" bindtap="cancelEdit">{{language==='zh'?'取消':'Cancel'}}</button></view>
+  <view class="edit-actions"><button class="btn edit-save" bindtap="save" loading="{{saving}}" disabled="{{saving || loading}}">{{profile.onboarded?(language==='zh'?'保存修改':'Save changes'):(language==='zh'?'注册并继续':'Register and continue')}}</button></view>
  </view>
 <block wx:else>
 <!-- ① 个人资料与等级成长 -->

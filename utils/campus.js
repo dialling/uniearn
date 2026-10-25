@@ -28,7 +28,7 @@ function buildingsOf(areaId){const a=AREAS.find(x=>x.id===areaId);return a?a.bui
 function areaOfBuilding(code){const b=String(code||'').trim().toUpperCase();return AREAS.find(a=>a.buildings.indexOf(b)>=0)||null;}
 function isBuilding(code){return !!areaOfBuilding(code);}
 function areaLabel(areaId,lang){const a=AREAS.find(x=>x.id===areaId);return a?(lang==='en'?a.en:a.zh):'';}
-function buildingLabel(code,lang){const raw=String(code||'').trim();if(!raw||raw==='Choose building')return lang==='en'?'Choose building':'选择楼栋';const b=raw.toUpperCase(),a=areaOfBuilding(b);return a?(lang==='en'?a.en+' '+b:a.zh+' '+b):b;}
+function buildingLabel(code,lang){const raw=String(code||'');if(!raw.trim()||raw==='Choose building')return lang==='en'?'Choose building':'选择楼栋';return raw;}
 function maxFloorOf(code){const b=String(code||'').trim().toUpperCase();if(b&&FLOORS[b])return FLOORS[b];return b?FLOOR_MAX:Math.max(FLOOR_MAX,...Object.values(FLOORS));}
 function floorsOf(code){const out=[];for(let i=1;i<=maxFloorOf(code);i++)out.push(i);return out;}
 // Room numbers like 1201 sit on floor 12; 401 on 4. Unknown formats return 0.

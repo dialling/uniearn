@@ -63,12 +63,12 @@ function pickup(s,id){const r=s.requests.find(x=>x.id===id);if(!r||r.status!=='t
 function deliver(s,id,photo,location){d.deliver(s,id,photo);const r=s.requests.find(x=>x.id===id);r.deliveryLocation=location||'';event(r,'Delivered · photo');}
 function report(s,id,reason,photo,note){const r=s.requests.find(x=>x.id===id);if(!r||r.status!=='delivered')throw Error('Only a delivered order can be reported');if(!['Not received','Wrong bag','Spilled or damaged','Something else'].includes(reason))throw Error('Choose a reason');if(reason==='Spilled or damaged'&&!photo)throw Error('Add a photo of the damage');if(reason==='Something else'&&!String(note||'').trim())throw Error('Describe the issue');r.status='disputed';r.dispute={reason,photo:photo||'',note:note||'',at:Date.now()};event(r,'Issue reported · settlement paused');}
 function candidates(s,t,now=Date.now()){
- return s.requests.filter(r=>r.status==='waiting'&&r.campusId===t.campusId&&r.station===t.station&&r.dorm===t.dorm&&c.category(r)===c.category(t)&&(!r.closesAt||r.closesAt>now)&&(!r.closesAt||r.closesAt>t.departAt)&&(!r.arrivalAt||r.arrivalAt<=t.departAt));
+ return s.requests.filter(r=>{const pickup=c.category(t)==='takeout'?r.pickupPoint:r.station;return r.status==='waiting'&&r.campusId===t.campusId&&pickup===t.station&&r.dorm===t.dorm&&c.category(r)===c.category(t)&&(!r.closesAt||r.closesAt>now)&&(!r.closesAt||r.closesAt>t.departAt)&&(!r.arrivalAt||r.arrivalAt<=t.departAt);});
 }
 function plan(s,cfg,now=Date.now()){
  const capacity=Number(cfg.capacity);if(!Number.isInteger(capacity)||capacity<1||capacity>(cfg.category==='takeout'?5:12))throw Error('Choose a capacity between 1 and 12');
  if(!cfg.station||!cfg.dorm)throw Error('Choose a pickup point and destination');
- const later=cfg.when==='later',duration=Number(cfg.duration||10);if(![5,10,15].includes(duration))throw Error('Choose 5, 10 or 15 minutes');
+ const later=cfg.when==='later',duration=cfg.duration===undefined||cfg.duration===null||cfg.duration===''?10:Number(cfg.duration);if(!Number.isInteger(duration)||duration<1||duration>30)throw Error('Choose a duration between 1 and 30 minutes');
  const departAt=later?todayAt(cfg.time,now):now+duration*MIN;
  if(later&&departAt<=now+10*MIN)throw Error('Choose a departure more than 10 minutes from now');
  return {campusId:s.profile.campusId,universityId:s.profile.universityId,category:cfg.category||'takeout',station:cfg.station,dorm:cfg.dorm,capacity,departAt,depart:clock(departAt),joinUntil:later?departAt-10*MIN:departAt,remindAt:later?departAt-15*MIN:0,phase:'collect',requestIds:[],cancelled:false,runnerName:s.profile.name||'You',runnerJobs:s.profile.jobsDone||0};

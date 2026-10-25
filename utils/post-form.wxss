@@ -1,18 +1,19 @@
 /* Shared dimensions and typography for both pickup forms. */
 .post-page{min-height:100vh;padding:0 30rpx calc(230rpx + env(safe-area-inset-bottom));background:#eeede8;color:#16181c;font-size:26rpx;line-height:1.5}
 .post-page .post-header{background:transparent;margin:0 -30rpx 20rpx;padding:18rpx 30rpx 22rpx;border-bottom:1rpx solid #e2e0d9}
-.post-page .post-tabs{display:flex;gap:0;margin-top:0;padding:5rpx;border-radius:23rpx;background:#f0efea}
+.post-page .post-tabs{display:flex;gap:0;margin-top:0;padding:5rpx;border:1rpx solid #d7d8d2;border-radius:23rpx;background:#f0efea}
 .post-page .post-tab{position:relative;z-index:1;display:block;flex:1;min-width:0;height:72rpx;line-height:72rpx;padding:0;margin:0;border-radius:19rpx;background:transparent;color:#6b6860;font-size:26rpx;font-weight:700;transition:color .3s ease,transform .3s cubic-bezier(.34,1.5,.55,1)}
 .post-page .post-tabs.glass .post-tab.active{background:transparent;color:#16181c;box-shadow:none}
 .post-page .post-tabs .glass-thumb{pointer-events:none}
 .post-page .post-tab[disabled]{opacity:.65}
+.page-dark .post-page .post-tabs{border-color:#45463f}
 .post-page .flow-card,.post-page .step-card{width:100%;padding:24rpx;margin:0 0 20rpx;border:1rpx solid #e2e0d9;border-radius:24rpx;background:#fff}
 .post-page .flow-head,.post-page .step-head{display:flex;align-items:center;gap:12rpx;min-height:40rpx;margin:0 0 12rpx;font-size:28rpx;font-weight:750;line-height:1.35}
 .post-page .step-title{flex:1;min-width:0;font-size:28rpx;font-weight:750}
 .post-page .flow-head .link,.post-page .step-head .link{flex:none;margin-left:auto;font-size:23rpx;font-weight:600}
 .post-page .flow-head .badge,.post-page .step-head .badge,.post-page .step-count{flex:none;margin-left:auto;font-size:20rpx;font-weight:400}
 .post-page .step,.post-page .step-number{display:inline-flex;align-items:center;justify-content:center;flex:none;min-width:40rpx;width:40rpx;height:40rpx;line-height:40rpx;border-radius:9rpx;background:#c2410c;color:#fff;font-size:23rpx;font-weight:750}
-.post-page .step.dark,.post-page .step-number.dark{background:#16181c}
+.post-page .step.dark,.post-page .step-number.dark{background:#c2410c}
 .post-page .hint,.post-page .tiny{font-size:23rpx;color:#6b6860;line-height:1.5;margin:8rpx 0}
 .post-page .strong{font-size:26rpx;font-weight:700}
 .post-page .link{color:#c2410c;font-size:24rpx}

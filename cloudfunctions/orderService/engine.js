@@ -197,7 +197,7 @@ function execute(s, actor, account, event, now = Date.now()) {
     const cfg = event.data || {};
     if(cfg.selfRequestId){const own=ownRequest(s,cfg.selfRequestId,actor);check(own.status==='waiting'&&own.campusId===campusId&&own.category==='parcel'&&own.station===cfg.station&&own.dorm===cfg.dorm,'Your parcel request changed. Refresh before starting.');d.cancelRequest(s,own.id);own.refundAmount=f.total(own);f.event(own,'Collecting it myself',now);}
     check(['takeout','parcel'].includes(cfg.category) && ['now','later'].includes(cfg.when), 'Invalid trip.');
-    check(typeof cfg.station === 'string' && cfg.station.length <= 100 && typeof cfg.dorm === 'string' && cfg.dorm.length <= 100, 'Invalid route.');
+    check(typeof cfg.station === 'string' && cfg.station.length <= (cfg.category === 'takeout' ? 200 : 100) && typeof cfg.dorm === 'string' && cfg.dorm.length <= 100, 'Invalid route.');
     const tripState={...s,requests:s.requests.filter(r=>r.campusId===campusId)};
     const t = f.startTrip(tripState, { category: cfg.category, when: cfg.when, time: cfg.time, duration: cfg.duration, station: cfg.station, dorm: cfg.dorm, capacity: cfg.capacity }, now);s.nextId=tripState.nextId;
     t.campusId=campusId;t.universityId='xjtlu';t.runnerAccountId = actor; t.runnerName=contact.name; t.runnerPhone=contact.phone; t.createdAt = now;

@@ -28,7 +28,7 @@ function scoped(service){
  function remove(id){store.update(s=>{const owner=s.profile.accountId||'local';s[key]=(s[key]||[]).filter(v=>!(v.id===id&&(!v.accountId||v.accountId===owner)));const own=s[key].filter(v=>!v.accountId||v.accountId===owner);if(own.length&&!own.some(v=>v.default))own[0].default=true;});}
  return {phoneHint,validPhone,stations,dorms,names,suggestions,normalize,validate:scopedValidate,list,save,setDefault,remove,display,phoneMask,formatPhone,campus,buildingLabel:lang=>campus.buildingLabel,dormLabel:(code,lang)=>campus.buildingLabel(code,lang),stationLabel:(v,lang)=>campus.stationLabel(v,lang),areas:campus.areas,buildingsOf:area=>campus.buildingsOf(area)};
 }
-function display(a){if(a.destinationType==='place')return a.deliveryAddress;const zh=store.get().language!=='en',ar=a.area?campus.areaLabel(a.area,zh?'zh':'en'):(campus.areaOfBuilding(a.dorm)?campus.areaLabel(campus.areaOfBuilding(a.dorm).id,zh?'zh':'en'):''),b=a.dorm||(zh?'选择楼栋':'Choose building'),f=Number(a.floor)||0,room=a.room||'—';return zh?(ar?ar+' ':'')+b+(f?' '+f+'楼 ':' ')+room:(ar?ar+' ':'')+b+(f?' floor '+f:'')+' '+room;}
+function display(a){if(a.destinationType==='place')return a.deliveryAddress;const zh=store.get().language!=='en',b=a.dorm||(zh?'选择楼栋':'Choose building'),f=Number(a.floor)||0,room=a.room||'—';return zh?b+(f?' '+f+'楼 ':' ')+room:b+(f?' floor '+f:'')+' '+room;}
 function formatPhone(value){const phone=String(value||'').replace(/\s/g,'');return validPhone(phone)?phone.slice(0,3)+' '+phone.slice(3,7)+' '+phone.slice(7):phone;}
 function phoneMask(p){return /^1\d{10}$/.test(p||'')?p.slice(0,3)+'****'+p.slice(-4):'';}
 module.exports={...scoped('takeaway'),forService:scoped};
