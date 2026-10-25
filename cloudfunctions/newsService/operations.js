@@ -69,6 +69,8 @@ async function handleOperations({input,repo,actor,now=Date.now}){
   check(['approve','reject'].includes(input.decision),'审核决定无效。');check(input.decision!=='reject'||text(input.note).length>=2,'拒绝时请填写原因。');
   await repo.review(actor,input,at);return {ok:true};
  }
+ if(action==='opsActivities')return {ok:true,...await repo.activities()};
+ if(action==='opsSaveActivities'){const value=require('./activity-config').validate(input.value);await repo.saveActivities(actor,input.revision,value,at);return {ok:true};}
  if(action==='opsPromotions')return {ok:true,...await repo.promotions()};
  if(action==='opsSavePromotions'){const value=validatePromotions(input.value);await repo.savePromotions(actor,input.revision,value,at);return {ok:true};}
  if(action==='opsAudit'){const [result,members]=await Promise.all([repo.audits(page),repo.members()]);const names=Object.fromEntries(members.map(m=>[m._id,m.username]));return {ok:true,...result,items:result.items.map(a=>({...a,actorName:names[a.actor]||a.actor})),page};}
