@@ -6,6 +6,7 @@
     "pages/requests/index",
     "pages/create/index",
     "pages/earnings/index",
+    "pages/wallet/index",
     "pages/profile/index",
     "pages/request/index",
     "pages/trip/index",

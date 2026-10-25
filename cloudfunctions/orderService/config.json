@@ -1,0 +1,1 @@
+{"triggers":[{"name":"wallet-auto-settle","type":"timer","config":"0 * * * * * *"}]}

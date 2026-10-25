@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const d = require('./domain');
 const f = require('./workflow');
 const rewards=require('./rewards');
+const wallet=require('./wallet');
 const clone = x => JSON.parse(JSON.stringify(x));
 const idFor = openid => crypto.createHash('sha256').update(openid).digest('hex');
 function check(ok, message) { if (!ok) throw Error(message); }
@@ -24,6 +25,7 @@ function stats(s, id) {
 const FINISHED = ['confirmed','cancelled','refunded'], ARCHIVE_AFTER = 8 * 86400000;
 const finishedAt = r => r.confirmedAt || r.refundedAt || r.cancelledAt || r.createdAt || 0;
 function archive(s, now = Date.now()) {
+  wallet.settle(s, now);
   const old = s.requests.filter(r => FINISHED.includes(r.status) && now - finishedAt(r) >= ARCHIVE_AFTER);
   if (!old.length) return [];
   const ids = new Set(old.map(r => r.id)), member = id => s.members[id] || (s.members[id] = { marks: [] });
@@ -126,17 +128,20 @@ const runnerActions = new Set(['accept','acceptBoxes','startTrip','pickup','deli
 function execute(s, actor, account, event, now = Date.now()) {
   check(account && account.profile && !account.loggedOut, 'Save your profile / log in in Me first.');
   const action = event.action;
-  const campusId=account.profile.campusId;
+  const campusId=account.profile.campusId,contact=require('./runner-contact')(account);
   if(['create','accept','acceptBoxes','startTrip'].includes(action))check(account.profile.universityId==='xjtlu'&&campusId==='sip','Choose XJTLU SIP campus before posting or taking jobs.');
   if (['accept','acceptBoxes','startTrip'].includes(action))check(!require('./runner-level').level(stats(s,actor),now).paused,'Taking jobs is paused for seven days. Contact the team before returning.');
-  if(['accept','acceptBoxes','startTrip'].includes(action))check(String(account.profile.name||'').trim().length>=2&&/^1\d{10}$/.test(account.profile.phone||''),'Add your contact details in Me before taking jobs.');
+  if(['accept','acceptBoxes','startTrip'].includes(action))check(/^1\d{10}$/.test(contact.phone),'Add your contact details in Me before taking jobs.');
   if (runnerActions.has(action)) check(account.verification && account.verification.status === 'verified', 'Complete your student check before accepting jobs.');
   if(runnerActions.has(action))check(!!account.runnerRulesAcceptedAt,'Read and accept the runner rules first.');
   s.profile = profile(s, actor, account);
   s.members[actor] = s.members[actor] || { marks: [] };
   rewards.init(s,actor,now);
   let value = {};
-  if (action === 'supportRequest') {
+  if (action === 'walletWithdraw') {
+    wallet.settle(s, now);
+    value = wallet.withdraw(s, actor, event.amount_cents, event.operationId, now, process.env.WALLET_TEST_WITHDRAW_FAIL === '1');
+  } else if (action === 'supportRequest') {
     check(['order','payment','other','deletion'].includes(event.topic),'Choose a support topic.');
     const m=s.members[actor];m.supportTickets=m.supportTickets||[];
     check(m.supportTickets.filter(t=>now-t.createdAt<86400000).length<10,'You can send up to 10 support requests a day.');
@@ -182,7 +187,7 @@ function execute(s, actor, account, event, now = Date.now()) {
     const ids = action === 'accept' ? event.ids : (Array.isArray(event.refs) ? event.refs.map(x => x && x.requestId) : []);
     rejectOwn(s, ids, actor);check(ids.every(id=>s.requests.find(r=>r.id===id).campusId===campusId),'Choose orders from your selected campus.');
     const selected=ids.map(id=>s.requests.find(r=>r.id===id));let t;if(selected[0].category==='task'){check(action==='accept'&&ids.length===1,'Take one task at a time.');const r=selected[0];check(r.status==='waiting'&&r.reward<=d.limit(s.profile),'This task exceeds your runner limit.');t={id:'t'+s.nextId++,category:'task',station:'Task',dorm:r.dorm,capacity:1,phase:'deliver',requestIds:[r.id]};r.status='taken';r.runnerId=t.id;r.takenAt=now;s.trips.unshift(t);}else t=action==='accept'?d.acceptJob(s,event.ids):d.acceptBoxes(s,event.refs);
-    t.campusId=campusId;t.universityId='xjtlu';t.runnerAccountId = actor; t.runnerName = account.profile.name; t.runnerPhone=account.profile.phone; t.createdAt = now;
+    t.campusId=campusId;t.universityId='xjtlu';t.runnerAccountId = actor; t.runnerName = contact.name; t.runnerPhone=contact.phone; t.createdAt = now;
     t.requestIds.forEach(id => f.event(s.requests.find(r => r.id === id), 'Runner accepted', now)); value = { id: t.id };
   } else if (action === 'startTrip') {
     const cfg = event.data || {};
@@ -191,7 +196,7 @@ function execute(s, actor, account, event, now = Date.now()) {
     check(typeof cfg.station === 'string' && cfg.station.length <= 100 && typeof cfg.dorm === 'string' && cfg.dorm.length <= 100, 'Invalid route.');
     const tripState={...s,requests:s.requests.filter(r=>r.campusId===campusId)};
     const t = f.startTrip(tripState, { category: cfg.category, when: cfg.when, time: cfg.time, duration: cfg.duration, station: cfg.station, dorm: cfg.dorm, capacity: cfg.capacity }, now);s.nextId=tripState.nextId;
-    t.campusId=campusId;t.universityId='xjtlu';t.runnerAccountId = actor; t.runnerName=account.profile.name; t.runnerPhone=account.profile.phone; t.createdAt = now;
+    t.campusId=campusId;t.universityId='xjtlu';t.runnerAccountId = actor; t.runnerName=contact.name; t.runnerPhone=contact.phone; t.createdAt = now;
     t.requestIds.forEach(id => f.event(s.requests.find(r => r.id === id), 'Runner accepted', now)); value = { id: t.id };
   } else if (['raise','cancel','confirm','report','riderPhoto','foodArrived'].includes(action)) {
     const r = ownRequest(s, event.id, actor);
@@ -233,6 +238,7 @@ function execute(s, actor, account, event, now = Date.now()) {
     if(action==='message'){check(!r.deliveredAt||now<r.deliveredAt+86400000,'This chat closed 24 hours after delivery.');const body=String(event.text||'').trim();check(body&&body.length<=500,'Enter a message up to 500 characters.');check(thread.messages.length<100,'This test chat reached 100 messages.');thread.messages.push({id:'m'+s.nextId++,sender:actor,text:body,at:now});}thread.read[actor]=now;
   } else throw Error('Unknown action.');
   rewards.settle(s,now);
+  wallet.settle(s,now);
   check(s.requests.length <= 200 && s.trips.length <= 200, 'Team test storage limit reached. Export test data before starting a new round.');
   delete s.profile; delete s.installationId; delete s.routes; delete s.agreements;
   return value;
@@ -251,12 +257,12 @@ function snapshot(s, actor, account, now = Date.now()) {
       out.messages=thread?thread.messages.map(m=>({id:m.id,text:m.text,at:m.at,mine:m.sender===actor})):[];
       return { ...out, runnerName:(s.trips.find(t=>t.id===r.runnerId)||{}).runnerName||'', ownerId: isMine ? actor : '', isMine, isRunner };
     }
-    // Allowlist public fields. Takeaway notes and locker locations are public; pickup codes, phone, room and photo IDs stay private.
+    // Allowlist hall fields, including requested dorm room details. Contacts, codes and photo IDs stay private.
     const out = {};
-    for (const k of ['destinationKey','destinationType','dormGender','id','campusId','universityId','category','station','dorm','small','big','reward','serviceFee','status','deadline','deliveryDate','createdAt','arrivalAt','closesAt','arrived','deliverBy','soup','fragile','night','purchaseStatus','shop','raised','tip','parcelSize']) if (r[k] !== undefined) out[k] = r[k];
+    for (const k of ['destinationKey','destinationType','dormGender','id','campusId','universityId','category','station','dorm','room','small','big','reward','serviceFee','status','deadline','deliveryDate','createdAt','arrivalAt','closesAt','arrived','deliverBy','soup','fragile','night','purchaseStatus','shop','raised','tip','parcelSize']) if (r[k] !== undefined) out[k] = r[k];
     if (r.category === 'takeout' && r.note) out.note = r.note;
     if (r.category === 'takeout' && !r.night && r.pickupPoint) out.pickupPoint = r.pickupPoint;
-    return { ...out, owner:'Request', phone:'', room:'', codes:Array(d.boxes(r)).fill(''), collected:[], photo:'',
+    return { ...out, owner:'Request', phone:'', room:r.category!=='task'&&r.destinationType!=='place'?r.room||'':'', codes:Array(d.boxes(r)).fill(''), collected:[], photo:'',
       parcelItems:r.parcelItems && r.parcelItems.map(p => ({size:p.size, price:p.price, code:''})), isMine:false, isRunner:false };
   });
   const trips = s.trips.filter(t => myTrips.has(t.id)).map(t => ({...clone(t), isRunner:true}));
@@ -265,9 +271,9 @@ function snapshot(s, actor, account, now = Date.now()) {
     runnerJobs:stats(s,t.runnerAccountId).jobsDone, departAt:t.departAt, joinUntil:t.joinUntil, phase:t.phase,
     cancelled:false, remaining:t.capacity-t.requestIds.reduce((n,id)=>n+d.boxes(s.requests.find(r=>r.id===id)),0)
   }));
-  const publicJobs=s.requests.filter(r=>inCampus(r)&&!['cancelled','refunded','disputed'].includes(r.status)).map(r=>{const o={};for(const k of ['destinationKey','destinationType','dormGender','id','campusId','universityId','category','station','dorm','small','big','reward','status','arrivalAt','closesAt','deadline','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','arrived','deliverBy','soup','fragile','night','purchaseStatus','shop','raised','title','dueAt'])if(r[k]!==undefined)o[k]=r[k];if(r.category==='takeout'&&!r.night&&r.pickupPoint)o.pickupPoint=r.pickupPoint;return o;});
+  const publicJobs=s.requests.filter(r=>inCampus(r)&&!['cancelled','refunded','disputed'].includes(r.status)).map(r=>{const o={};for(const k of ['destinationKey','destinationType','dormGender','id','campusId','universityId','category','station','dorm','room','small','big','reward','status','arrivalAt','closesAt','deadline','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','arrived','deliverBy','soup','fragile','night','purchaseStatus','shop','raised','title','dueAt'])if(r[k]!==undefined)o[k]=r[k];if(r.category==='takeout'&&!r.night&&r.pickupPoint)o.pickupPoint=r.pickupPoint;if(r.category==='task'||r.destinationType==='place')delete o.room;return o;});
   const supportInbox=(account&&account._admin||account&&account._reviewer)?Object.entries(s.members).flatMap(([accountId,member])=>(member.supportTickets||[]).filter(t=>t.status==='open').map(t=>({...clone(t),accountId}))).sort((a,b)=>((b.messages||[]).at(-1)?.at||b.createdAt)-((a.messages||[]).at(-1)?.at||a.createdAt)).slice(0,50):[];
-  return {revision:s.revision,serverTime:now,publicJobs,deliveredThisWeek:s.requests.filter(r=>inCampus(r)&&r.deliveredAt>now-7*86400000).length,requests,trips,publicTrips,accountId:actor,supportInbox,
+  return {walletSummary:loggedIn?wallet.summary(s,actor):null,revision:s.revision,serverTime:now,publicJobs,deliveredThisWeek:s.requests.filter(r=>inCampus(r)&&r.deliveredAt>now-7*86400000).length,requests,trips,publicTrips,accountId:actor,supportInbox,
     adjustments:loggedIn?(s.adjustments||[]).filter(a=>a.runnerAccountId===actor).map(({runnerAccountId,...a})=>a):[],rewards:loggedIn?rewards.view(s,actor,now):null,preferences:loggedIn?(s.members[actor]||{}).preferences||{}:{},
     supportTickets:loggedIn?((s.members[actor]||{}).supportTickets||[]):[],stats:loggedIn ? stats(s,actor) : {jobsDone:0,paid:0,marks:[]} };
 }

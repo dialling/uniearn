@@ -30,6 +30,10 @@
   "packOptions": {
     "ignore": [
       {
+        "value": "admin-web",
+        "type": "folder"
+      },
+      {
         "value": "tests",
         "type": "folder"
       },

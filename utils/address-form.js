@@ -9,8 +9,17 @@ module.exports=function addressForm(editing=false){return {
    const x=routes.list().find(v=>v.id===o.id);if(!x){ui.toast(store.get().language==='en'?'This address is unavailable':'这个地址已不存在');wx.navigateBack({delta:1});return;}
    const area=campus.AREAS.findIndex(a=>a.buildings.includes(String(x.dorm).toUpperCase()));
    this.setData({form:{...blank(),id:x.id,destinationType:x.destinationType,owner:x.owner,dormGender:x.dormGender,recipientGender:x.recipientGender,phone:x.phone,area,room:x.room,deliveryAddress:x.deliveryAddress}});this.syncBuildings();this.setData({'form.building':this.data.buildings.indexOf(String(x.dorm).toUpperCase())});
-  }else this.setData({'form.owner':p.name&&p.name!=='Student'?p.name:'','form.phone':p.phone||''});
+  }else{const first=routes.list()[0];this.previousContact=first||null;this.contactAccountId=p.accountId||'local';this.setData({'form.destinationType':first?'place':'dorm','form.owner':first?'':p.name&&p.name!=='Student'?p.name:'','form.phone':first?'':p.phone||''});}
  },
+ onReady(){
+  const first=this.previousContact;if(editing||!first||this.contactPrompted)return;this.contactPrompted=true;
+  const zh=store.get().language!=='en',gender=first.destinationType==='place'?first.recipientGender:first.dormGender,genderLabel=gender==='male'?(zh?'男':'Male'):gender==='female'?(zh?'女':'Female'):(zh?'未填写':'Not set');
+  wx.showModal({title:zh?'使用之前的收件信息？':'Use previous contact details?',content:zh?'姓名：'+first.owner+'\n性别：'+genderLabel+'\n电话：'+routes.formatPhone(first.phone):'Name: '+first.owner+'\nGender: '+genderLabel+'\nPhone: '+routes.formatPhone(first.phone),confirmText:zh?'使用':'Use',cancelText:zh?'自行填写':'New',confirmColor:'#c2410c',success:result=>{
+   if(!result.confirm||this.contactClosed||(store.get().profile.accountId||'local')!==this.contactAccountId||!routes.list().some(x=>x.id===first.id))return;
+   this.setData({'form.owner':first.owner,'form.phone':first.phone,'form.dormGender':gender||'','form.recipientGender':gender||''});
+  }});
+ },
+ onUnload(){this.contactClosed=true;},
  onShow(){const zh=store.get().language!=='en';this.setData({zh,areaLabels:campus.AREAS.map(a=>zh?a.zh:a.en)});if(wx.setNavigationBarTitle)wx.setNavigationBarTitle({title:editing?(zh?'编辑常用地址':'Edit address'):(zh?'新增常用地址':'New address')});this.syncBuildings();},
  syncBuildings(){const a=campus.AREAS[this.data.form.area],b=a?a.buildings:campus.buildings(),lang=this.data.zh?'zh':'en';this.setData({buildings:b,buildingLabels:a?b.slice():b.map(x=>campus.buildingLabel(x,lang))});},
  field(e){this.setData({['form.'+e.currentTarget.dataset.field]:e.detail.value});},

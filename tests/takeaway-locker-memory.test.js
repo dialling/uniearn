@@ -1,0 +1,25 @@
+const assert=require('node:assert/strict');
+let definition,persisted;
+global.Page=p=>definition=p;
+global.wx={getStorageSync:()=>persisted?structuredClone(persisted):null,setStorageSync(key,value){persisted=structuredClone(value);},showToast(){},redirectTo(){}};
+const store=require('../utils/store'),routes=require('../utils/saved-routes').forService('parcel'),lockers=require('../utils/takeaway-lockers');
+const recipient={owner:'Student',phone:'13800138000',destinationType:'dorm',dorm:'D01',room:'101'};
+function page(options={}){delete require.cache[require.resolve('../pages/takeaway/index')];require('../pages/takeaway/index');const p={...definition,data:structuredClone(definition.data),setData(patch){Object.assign(this.data,patch);}};p.onLoad(options);return p;}
+const change=value=>({detail:{value}});
+store.reset();store.update(s=>{s.language='zh';s.profile={...s.profile,accountId:'student',campusId:'sip',name:'Student',phone:recipient.phone,dorm:'D01',room:'101'};});routes.save(recipient);
+let p=page();assert.equal(p.data.lockerReady,false);p.pickLocker(change(1));assert.equal(page().data.pickupPoint,'文缘夜市门口外卖柜','a new posting remembers the previous choice even before posting');
+p.pickLocker(change(3));assert.equal(page().data.pickupPoint,'文星水果店门口外卖点','the latest selection replaces the earlier one');
+p.applyRoute({...recipient,dorm:'A01'});assert.equal(p.data.pickupPoint,'文星水果店门口外卖点');
+p.applyRoute({...recipient,dorm:'C01'});assert.equal(p.data.pickupPoint,'','an unrelated area does not inherit an invalid choice');p.pickLocker(change(0));
+p.applyRoute(recipient);assert.equal(p.data.pickupPoint,'文星水果店门口外卖点');p.applyRoute({...recipient,dorm:'C01'});assert.equal(p.data.pickupPoint,'文萃北门外卖柜','each area retains its own last choice');
+p.applyRoute({...recipient,dorm:'B01'});p.customLocker(change(' 文荟南侧外卖点 '));let next=page();next.applyRoute({...recipient,dorm:'B01'});assert.equal(next.data.pickupPoint,'文荟南侧外卖点');
+p.applyRoute(recipient);p.pickLocker(change(4));p.customLocker(change('文星自填取件点'));assert.equal(page().data.pickupPoint,'文星自填取件点');assert.equal(page().data.lockerChoice,'other');
+p.customLocker(change('x'.repeat(201)));assert.equal(p.data.lockerReady,false);assert.equal(page().data.pickupPoint,'文星自填取件点','invalid input does not replace the last valid location');
+store.update(s=>s.language='en');next=page();assert.equal(next.data.pickupPoint,'文星自填取件点');assert.equal(next.data.lockerOptions.at(-1).label,'Other (type it yourself)');
+const night=page({night:'1'});night.customLocker(change('夜市不会覆盖外卖柜'));assert.equal(page().data.pickupPoint,'文星自填取件点');
+store.update(s=>s.profile.accountId='another-student');p.syncLockers();assert.equal(p.data.pickupPoint,'','changing accounts clears the old account selection');assert.equal(page().data.lockerReady,false);
+store.update(s=>s.profile.accountId='student');next=page();assert.equal(next.data.pickupPoint,'文星自填取件点','switching back restores only this account’s selection');
+store.update(s=>s.profile.campusId='another-campus');next.syncLockers();assert.equal(next.data.pickupPoint,'');store.update(s=>s.profile.campusId='sip');next.syncLockers();assert.equal(next.data.pickupPoint,'文星自填取件点');
+store.update(s=>{s.takeawayLockerMemory[lockers.memoryScope()].wencui={choice:'removed-locker',custom:''};});assert.equal(lockers.recall({...recipient,dorm:'C01'}),null,'removed options are not silently restored');
+assert.ok(persisted.takeawayLockerMemory['student:sip']);delete require.cache[require.resolve('../utils/store')];const reloaded=require('../utils/store');assert.equal(reloaded.get().profile.accountId,'student');assert.equal(lockers.recall(recipient).custom,'文星自填取件点','memory survives reloading the local cache');
+console.log('Takeaway locker memory: latest selection, custom text, per-area/campus/account isolation, language changes, invalid options, night exclusion and persistent-cache reload passed.');

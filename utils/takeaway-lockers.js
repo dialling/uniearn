@@ -27,4 +27,20 @@ function label(value,language='zh'){
  return preset&&language==='en'?preset.en:String(value||'');
 }
 
-module.exports={options,label};
+// Keep the most recent valid selection per account, campus and locker area.
+function memoryScope(){const p=require('./store').get().profile;return (p.accountId||'local')+':'+(p.campusId||'sip');}
+function selection(config,choice,custom){
+ const item=config.items.find(x=>x.id===choice),manual=config.manual||choice==='other';
+ if(config.manual?choice!=='other':!item)return null;
+ const text=String(custom||'').trim(),point=manual?text:item.value;
+ return point&&point.length<=200?{choice,custom:manual?text:''}:null;
+}
+function recall(address){
+ const state=require('./store').get(),config=options(address),saved=(state.takeawayLockerMemory||{})[memoryScope()]?.[config.group];
+ return saved?selection(config,saved.choice,saved.custom):null;
+}
+function remember(address,choice,custom){
+ const config=options(address),saved=selection(config,choice,custom);if(!saved)return;
+ const scope=memoryScope();require('./store').update(s=>{s.takeawayLockerMemory=s.takeawayLockerMemory||{};s.takeawayLockerMemory[scope]={...(s.takeawayLockerMemory[scope]||{}),[config.group]:saved};});
+}
+module.exports={options,label,memoryScope,recall,remember};

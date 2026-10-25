@@ -63,7 +63,7 @@
 <!-- ② 数据卡 -->
 <view class="me-stats"><view bindtap="firstStat"><text class="stats-number">{{isRunner?profile.jobsDone||0:postedCount}}</text><text>{{isRunner?ui.jobsRun:ui.orders}}</text></view><view bindtap="past"><text class="stats-number">{{isRunner?postedCount:deliveredCount}}</text><text>{{isRunner?ui.orders:ui.delivered}}</text></view><view bindtap="coupons"><text class="stats-number">{{couponCount}}</text><text>{{ui.coupons}}</text></view></view>
 <!-- ③ 收益卡（跑手） -->
-<block wx:if="{{isRunner}}"><view class="flow-card earnings-summary" bindtap="earnings"><view class="row card-heading"><text>{{ui.earnings}}</text><text class="green-text">{{ui.details}} ›</text></view><view class="row earnings-body"><view><view class="earnings-total">¥{{earnTotal}}</view><view class="hint"><text class="strong">¥{{earnWaiting}}</text> {{ui.waiting}}</view></view><view class="mini-bars"><view wx:for="{{earnBars}}" wx:key="index" style="height:{{item}}rpx"/></view></view><view class="earnings-note"><image src="/assets/balance-outline.svg"/><text>{{ui.testBalance}}</text></view></view></block>
+<block wx:if="{{isRunner}}"><view class="flow-card earnings-summary" bindtap="earnings"><view class="row card-heading"><text>{{ui.earnings}}</text><text class="green-text">{{ui.details}} ›</text></view><view class="row earnings-body"><view><view class="earnings-total">¥{{earnTotal}}</view><view class="hint"><text class="strong">¥{{earnWaiting}}</text> {{ui.waiting}}</view></view><view class="mini-bars"><view wx:for="{{earnBars}}" wx:key="index" style="height:{{item}}rpx"/></view></view><view class="earnings-note wallet-entry" catchtap="wallet"><image src="/assets/balance-outline.svg"/><text>{{language==='en'?'My wallet · test balance':'我的钱包 · 测试余额'}}</text><text class="wallet-entry-value">¥{{walletBalance}} ›</text></view></view></block>
 <!-- ④ Yuni 贴纸（折叠入口） -->
 <view class="flow-card stickers-card">
  <view class="row sticker-head" bindtap="toggleStickers" hover-class="sticker-head-press"><text class="strong">{{ui.stickers}}</text><text class="sticker-count">{{unlockedCount}} {{ui.of}} 6 {{stickersOpen?'⌄':'›'}}</text></view>
@@ -90,9 +90,9 @@
 <!-- ⑦ 通知与提醒（已删除考试模式） -->
 <view class="section">{{ui.notifyGroup}}</view>
 <view class="flow-card menu-card notifications-card">
- <view class="menu-row"><view><view class="strong">{{ui.tips}}</view><view class="hint">{{ui.tipsHelp}}</view></view><switch checked="{{tips}}" color="#41775b" bindchange="tipToggle"/></view>
- <block wx:if="{{isRunner}}"><view class="menu-row"><view><view class="strong">{{ui.near}}</view><view class="hint">{{ui.nearHelp}}</view></view><switch color="#41775b" checked="{{preferences.newJobs!==false}}" data-key="newJobs" bindchange="preference"/></view></block>
- <view class="menu-row"><view><view class="strong">{{ui.updates}}</view><view class="hint">{{ui.updatesHelp}}</view><text class="link" catchtap="notifyGuide">{{ui.notifyGuide}} ›</text></view><switch color="#41775b" checked="{{preferences.orderUpdates!==false}}" data-key="orderUpdates" bindchange="preference"/></view>
+ <view class="menu-row"><view><view class="strong">{{ui.tips}}</view><view class="hint">{{ui.tipsHelp}}</view></view><switch checked="{{tips}}" color="#0b7a55" bindchange="tipToggle"/></view>
+ <block wx:if="{{isRunner}}"><view class="menu-row"><view><view class="strong">{{ui.near}}</view><view class="hint">{{ui.nearHelp}}</view></view><switch color="#0b7a55" checked="{{preferences.newJobs!==false}}" data-key="newJobs" bindchange="preference"/></view></block>
+ <view class="menu-row"><view><view class="strong">{{ui.updates}}</view><view class="hint">{{ui.updatesHelp}}</view><text class="link" catchtap="notifyGuide">{{ui.notifyGuide}} ›</text></view><switch color="#0b7a55" checked="{{preferences.orderUpdates!==false}}" data-key="orderUpdates" bindchange="preference"/></view>
 </view>
 <!-- ⑧ 账户 -->
 <view class="section">{{ui.accountGroup}}</view>

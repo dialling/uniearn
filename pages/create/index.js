@@ -1,5 +1,5 @@
 const savedRoutes=require('../../utils/saved-routes').forService('parcel');
-const PERIODS=[{id:'noon',zh:'今天中午',en:'Today noon',end:'13:00'},{id:'afternoon',zh:'今天下午',en:'This afternoon',end:'18:00'},{id:'evening',zh:'今天晚上',en:'This evening',end:'23:59'},{id:'tomorrow',zh:'明天',en:'Tomorrow',end:'23:59',dayOffset:1}];
+const PERIODS=[{id:'noon',zh:'今天中午',en:'Today noon',end:'13:00'},{id:'afternoon',zh:'今天下午',en:'Afternoon',end:'18:00'},{id:'evening',zh:'今天晚上',en:'Night',end:'23:59'},{id:'tomorrow',zh:'明天',en:'Tomorrow',end:'23:59',dayOffset:1}];
 const PARCEL_STATIONS=[['翰林妈妈驿站','Hanlin Mama Station'],['翰林兔喜','Hanlin Tuxi'],['文缘菜鸟驿站','Wenyuan Cainiao Station'],['文星A03快递站','Wenxing A03 Parcel Station']];
 const rewards=require('../../utils/rewards');
 const orders=require('../../utils/orders');

@@ -4,7 +4,7 @@ function clock(ts){if(!ts)return '—';const t=new Date(ts+8*HOUR);return String
 function todayAt(value,now=Date.now()){const parts=String(value).split(':').map(Number);if(parts.length!==2||parts[0]<0||parts[0]>23||parts[1]<0||parts[1]>59||parts.some(x=>!Number.isInteger(x)))throw Error('Choose a valid time');const date=new Date(now+8*HOUR).toISOString().slice(0,10);return Date.parse(date+'T'+String(parts[0]).padStart(2,'0')+':'+String(parts[1]).padStart(2,'0')+':00+08:00');}
 function fee(r){return Number(r.serviceFee===undefined?d.serviceFee(d.boxes(r)):r.serviceFee);}
 function total(r){return Math.max(0,Math.round((r.reward+fee(r)-Number(r.discount||0))*100)/100);}
-function hours(r){return c.category(r)==='task'?24:c.category(r)==='takeout'?1:48;}
+function hours(){return 2;}
 function event(r,label,at=Date.now()){(r.history||(r.history=[])).push({label,at});}
 function migrate(s){
  s.installationId=s.installationId||('local-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));

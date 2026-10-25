@@ -12,7 +12,7 @@ Page({
   onShow(){
     this.setData({zh:store.get().language!=='en'});
     // Custom navigation: keep the status bar icons white on the dark page.
-    if(wx.setNavigationBarColor)wx.setNavigationBarColor({frontColor:'#ffffff',backgroundColor:'#070807',animation:{duration:0}});
+    if(wx.setNavigationBarColor)wx.setNavigationBarColor({frontColor:'#ffffff',backgroundColor:'#1b1c1a',animation:{duration:0}});
     orders.bind(this);
     if(store.get().profile.onboarded)orders.act('rewardsInit').catch(()=>{});
   },

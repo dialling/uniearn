@@ -26,9 +26,32 @@ async function archiveFinished() {
     });
   } catch (e) { console.error('orderService archive', e.code || e.errCode || '', e.message); }
 }
+// Invoked by the deployed CloudBase timer even when every mini program is closed.
+async function autoSettle() {
+  try {
+    const result = await db.runTransaction(async tx => {
+      const ref = tx.collection('uniearn_order_state').doc('team-test');
+      const state = (await ref.get()).data;
+      if (!state || !Array.isArray(state.requests) || !state.receipts) throw Error('Invalid team-test database document.');
+      delete state._id;
+      const before = JSON.stringify(state), now = Date.now();
+      engine.expire(state,now);require('./rewards').settle(state,now);require('./wallet').settle(state,now);
+      if (JSON.stringify(state) !== before) {
+        state.revision = (state.revision || 0) + 1;
+        if (Buffer.byteLength(JSON.stringify(state)) > 850000) throw Error('Team test storage is full. Export test data first.');
+        await ref.set({data:json(state)});
+      }
+      return {ok:true,mode:'test'};
+    });
+    return result && result.ok ? result : result.result;
+  } catch (e) { console.error('wallet-auto-settle',e.message);return {ok:false,error:e.message}; }
+}
 exports.main = async (event = {}) => {
   const openid = cloud.getWXContext().OPENID;
-  if (!openid) return {ok:false,error:'Open this mini program in WeChat to continue.'};
+  if (!openid) {
+    if (event.Type === 'Timer' && event.TriggerName === 'wallet-auto-settle') return autoSettle();
+    return {ok:false,error:'Open this mini program in WeChat to continue.'};
+  }
   const actor = engine.idFor(openid), action = event.action || 'sync';
   try {
     if (JSON.stringify(event).length > 18000) throw Error('Request is too large.');
@@ -40,9 +63,12 @@ exports.main = async (event = {}) => {
       delete state._id;
       const now = Date.now(), account = await getAccount(tx, actor);account._reviewer=String(process.env.REVIEWER_OPENIDS||'').split(',').map(x=>x.trim()).includes(openid);account._admin=!!(account.admin&&account.admin.until>now&&account.admin.revision===(account.authRevision||0));
       const before = JSON.stringify(state);
-      engine.expire(state, now);require('./rewards').settle(state,now);
+      engine.expire(state, now);require('./rewards').settle(state,now);require('./wallet').settle(state,now);
       let value = {};
-      if (action === 'prepareUpload') {
+      if (action === 'wallet') {
+        if (!account.profile || account.loggedOut) throw Error('Log in before opening your wallet.');
+        value = require('./wallet').overview(state,actor,now,event.lang==='en');
+      } else if (action === 'prepareUpload') {
         if (!account.profile || account.loggedOut) throw Error('Save your profile / log in in Me first.');
         value = {cloudPath:'order-photos/' + actor + '/' + crypto.randomBytes(16).toString('hex') + '.jpg'};
       } else if (action !== 'sync') {

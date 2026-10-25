@@ -17,14 +17,15 @@ Page({
  syncLockers(){
   const config=lockers.options(this.data,this.data.zh?'zh':'en');
   let choice=this.data.lockerChoice,custom=this.data.lockerCustomText;
-  if(this._lockerGroup!==config.group){choice='';custom='';this._lockerGroup=config.group;}
+  const scope=lockers.memoryScope();if(this._lockerGroup!==config.group||this._lockerAccount!==scope){const saved=lockers.recall(this.data);choice=saved?saved.choice:'';custom=saved?saved.custom:'';this._lockerGroup=config.group;this._lockerAccount=scope;}
   if(config.manual)choice='other';
   const index=config.items.findIndex(x=>x.id===choice),isCustom=config.manual||choice==='other';
   const point=isCustom?String(custom||'').trim():index>=0?config.items[index].value:'';
   this.setData({lockerChoice:choice,lockerCustomText:custom,lockerOptions:config.items,lockerIndex:Math.max(0,index),lockerChosen:index>=0,lockerCustom:isCustom,lockerManual:config.manual,pickupPoint:point,lockerReady:!!point&&point.length<=200});
  },
- pickLocker(e){const option=this.data.lockerOptions[Number(e.detail.value)];if(!option)return;this.setData({lockerChoice:option.id});this.syncLockers();},
- customLocker(e){this.setData({lockerCustomText:e.detail.value});this.syncLockers();},
+ pickLocker(e){const option=this.data.lockerOptions[Number(e.detail.value)];if(!option)return;this.setData({lockerChoice:option.id});this.syncLockers();this.rememberLocker();},
+ customLocker(e){this.setData({lockerCustomText:e.detail.value});this.syncLockers();this.rememberLocker();},
+ rememberLocker(){if(!this.data.night&&this.data.lockerReady)lockers.remember(this.data,this.data.lockerChoice,this.data.lockerCustomText);},
  restoreLocker(value){this.syncLockers();if(!value)return;const config=lockers.options(this.data),match=config.items.find(x=>x.value===value);if(match)this.setData({lockerChoice:match.id});else if(config.manual||config.items.some(x=>x.id==='other'))this.setData({lockerChoice:'other',lockerCustomText:value});this.syncLockers();},
  draft(){return savedRoutes.normalize({...this.data,id:this.data.routeId,name:this.data.routeName,station:this.data.station||'Takeaway pickup'});},
  autoSaveDorm(){if(this.data.tripId||!this.data.firstRoute||!this.data.saveDorm||this.data.destinationType!=='dorm')return;try{const a=this.draft();a.id=this.data.dormRouteId||'';a.name='My dorm';const route=savedRoutes.save(a);this.setData({dormRouteId:route.id,routes:savedRoutes.list()});}catch(e){}},
@@ -70,7 +71,7 @@ Page({
  parcels(){if(!this.data.routeLocked)wx.redirectTo({url:'/pages/create/index?mode=request&category=parcel&coupon='+encodeURIComponent(this.data.couponId||'')});},
  async post(){if(this.data.posting||this.data.photoBusy||!this.data.agreed)return;if(!this.data.routeLocked&&!this.data.dorm&&!this.data.deliveryAddress){ui.toast(this.data.zh?'请先添加常用配送地址':'Add a delivery address first');return this.addAddress();}this.syncLockers();if(!this.data.night&&!this.data.lockerReady){ui.toast(this.data.zh?'请选择外卖柜或填写取件位置':'Choose a takeaway locker or enter the pickup location');return;}if(!this.validatePhone())return;this.setData({posting:true});try{
   const address=savedRoutes.validate(this.draft());this.autoSaveDorm();await this.persistDorm();this.updateCancelClock();if(!this.data.arrived){if(this.data.arrivalError){ui.toast(this.data.arrivalError);return;}if(!this.data.arrivalTime){ui.toast(this.data.zh?'请填写外卖平台预计送达时间（最晚时间）':'Enter the latest arrival time shown by your food delivery app');return;}let late=false;try{late=f.todayAt(this.data.arrivalTime)<Date.now();}catch(e){late=true;}if(late){ui.toast(this.data.zh?'预计送达时间已过，请重新选择':'That arrival time has passed. Choose a new one.');return;}}const a=this.data,data={pickupCode:a.night?String(a.mealCode||'').trim():'',pickupPoint:a.night?'':a.pickupPoint,destinationType:a.destinationType,deliveryAddress:a.deliveryAddress,category:'takeout',purchaseStatus:a.night?a.purchaseStatus:'ordered',owner:a.owner,phone:a.phone,station:address.station,dorm:a.dorm.trim(),room:a.room.trim(),area:a.area,dormGender:a.dormGender,recipientGender:a.recipientGender,floor:a.floor,note:a.note,pickupNote:a.pickupNote,dropNote:a.dropNote,arrived:a.arrived,arrivalTime:a.arrivalTime,bags:a.bags,price:a.price,night:a.night,shop:(a.shop||'').trim(),soup:a.soup,riderPhoto:await orders.upload(a.riderPhoto),orderPictures:await Promise.all(a.orderPictures.map(path=>orders.upload(path)))};
-  const r=await orders.act('create',{data,couponId:a.couponId||'',tripId:a.tripId||''});store.update(s=>{s.agreements.pickup=true;});
+  const r=await orders.act('create',{data,couponId:a.couponId||'',tripId:a.tripId||''});this.rememberLocker();store.update(s=>{s.agreements.pickup=true;});
   wx.redirectTo({url:'/pages/posted/index?celebrate=1&id='+r.id});
  }catch(e){ui.toast(e);}finally{this.setData({posting:false});}}
 });
