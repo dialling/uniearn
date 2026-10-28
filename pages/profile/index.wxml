@@ -30,30 +30,18 @@
 </view>
 </view>
 <!-- ② 数据卡 -->
-<view class="me-stats"><view bindtap="firstStat"><text class="stats-number">{{isRunner?profile.jobsDone||0:postedCount}}</text><text>{{isRunner?ui.jobsRun:ui.orders}}</text></view><view bindtap="past"><text class="stats-number">{{isRunner?postedCount:deliveredCount}}</text><text>{{isRunner?ui.orders:ui.delivered}}</text></view><view bindtap="coupons"><text class="stats-number">{{couponCount}}</text><text>{{ui.coupons}}</text></view></view>
+<view class="me-stats"><view bindtap="firstStat"><text class="stats-number">{{isRunner?profile.jobsDone||0:postedCount}}</text><text>{{isRunner?ui.jobsRun:ui.orders}}</text></view><view bindtap="past"><text class="stats-number">{{isRunner?postedCount:deliveredCount}}</text><text>{{isRunner?(language==='en'?'Published orders':'已发布订单'):ui.delivered}}</text></view><view bindtap="coupons"><text class="stats-number">{{couponCount}}</text><text>{{ui.coupons}}</text></view></view>
 <!-- ③ 收益卡（跑手） -->
 <block wx:if="{{isRunner}}"><view class="flow-card earnings-summary" bindtap="wallet"><view class="row card-heading"><text>{{language==='en'?'My wallet':'我的钱包'}}</text><text class="green-text" catchtap="earnings">{{ui.earnings}} ›</text></view><view class="row earnings-body"><view><view class="earnings-total">¥{{earnTotal}}</view><view class="hint"><text class="strong">¥{{earnWaiting}}</text> {{ui.waiting}}</view></view><view class="mini-bars"><view wx:for="{{earnBars}}" wx:key="index" style="height:{{item}}rpx"/></view></view><view class="earnings-note wallet-entry" catchtap="wallet"><image src="/assets/balance-outline.svg"/><text>{{language==='en'?'My wallet · test balance':'我的钱包 · 测试余额'}}</text><text class="wallet-entry-value">¥{{walletBalance}} ›</text></view></view></block>
-<!-- ④ Yuni 贴纸（折叠入口） -->
-<view class="flow-card stickers-card">
- <view class="row sticker-head" bindtap="toggleStickers" hover-class="sticker-head-press"><text class="strong">{{ui.stickers}}</text><text class="sticker-count">{{unlockedCount}} {{ui.of}} 6 {{stickersOpen?'⌄':'›'}}</text></view>
- <view class="stickers-mini" bindtap="toggleStickers">
-  <view wx:for="{{stickers}}" wx:key="id" class="mini-sticker {{item.unlocked?'':'locked'}}"><image src="/assets/yuni-{{item.pose}}.png" mode="aspectFit"/></view>
- </view>
- <block wx:if="{{stickersOpen}}">
-  <view class="stickers"><view wx:for="{{stickers}}" wx:key="id" class="sticker {{item.unlocked?'':'locked'}}" data-id="{{item.id}}" bindtap="sticker"><image src="/assets/yuni-{{item.pose}}.png" mode="aspectFit"/><view>{{item.name}}</view></view></view>
-  <view class="hint sticker-hint">{{stickerHint||ui.tapSticker}}</view>
- </block>
-</view>
 <!-- 非跑手：成为跑手 -->
 <block wx:if="{{!isRunner}}"><view class="become-card"><view class="become-label">{{ui.become}}</view><view class="become-title">{{ui.earnTitle}}</view><view class="become-description">{{ui.earnHelp}}</view><button bindtap="studentCheck">{{ui.start}}</button></view></block>
 <!-- ⑤ 订单与工具 -->
 <view class="section">{{ui.tools}}</view>
 <view class="flow-card menu-card">
- <view class="menu-row" bindtap="myOrders"><view class="settings-icon"><image src="/assets/receipt-outline.svg"/></view><view class="menu-copy">{{ui.myOrders}}<view class="hint">{{ui.myOrdersSub}}</view></view><text class="setting-chevron">›</text></view>
+ <view class="menu-row" bindtap="myOrders"><view class="settings-icon"><image src="/assets/receipt-outline.svg"/></view><view class="menu-copy">{{language==='en'?'All orders':'全部订单'}}<view class="hint">{{ui.myOrdersSub}}</view></view><text class="setting-chevron">›</text></view>
  <view class="menu-row" bindtap="routes"><view class="settings-icon"><image src="/assets/route-outline.svg"/></view><view class="menu-copy">{{ui.routes}}<view class="hint">{{ui.routesHelp}}</view></view><text class="setting-chevron">›</text></view>
  <view class="menu-row" bindtap="dormDetails"><view class="settings-icon"><image src="/assets/university-outline.svg"/></view><view class="menu-copy">{{ui.delivery}}<view class="hint">{{deliverySummary||ui.notSetAdd}}</view></view><text class="setting-chevron">›</text></view>
 </view>
-<!-- ⑥ 邀请同学 -->
 
 <!-- ⑦ 通知与提醒（已删除考试模式） -->
 <view class="section">{{ui.notifyGroup}}</view>

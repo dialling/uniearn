@@ -32,14 +32,16 @@ const examplesZh = [
   {id: 'example-two', face: '¥2', sub: '立减', title: '任意订单立减 ¥2', description: '下一笔订单可用，不限大小', endLabel: '注册后'}
 ];
 
-const activity=require('../../utils/news-activity');
+const activityDisplay=require('../../utils/activity-display');
 Page({
-  data: {screen:'home',activityTab:'tasks',activityTasks:[],activityRewards:[],selectedNews:null,coupons: [], campaigns: [], weekly: {segments: []}, news: [], ready: 0, toCollect: 0, examples, registered: false, zh: false},
+  data: {screen:'home',activeOffers:[],latestOffer:null,activityTab:'tasks',activityTasks:[],activityRewards:[],selectedNews:null,coupons: [], campaigns: [], weekly: {segments: []}, news: [], ready: 0, toCollect: 0, examples, registered: false, zh: false},
   onShow() {
     const zh = store.get().language !== 'en';
     this.setData({zh, examples: zh ? examplesZh : examples});
     require('../../utils/appearance').apply(this);
     this.localizeActivity(zh);
+    if(this.stopActivities)this.stopActivities();
+    this.stopActivities=require('../../utils/activity-sync').subscribe(config=>{this.activityConfig=activityDisplay.latest(this.activityConfig,config);this.localizeActivity(this.data.zh);this.setData({activitySyncError:false});},()=>this.setData({activitySyncError:true}));
     if(wx.setNavigationBarTitle)wx.setNavigationBarTitle({title:zh?'资讯':'News'});
     orders.bind(this);
     if(this.stopNews)this.stopNews();
@@ -47,16 +49,19 @@ Page({
     this.stopNews=require('../../utils/news').subscribe(news=>this.setData({news,newsLoading:false,newsError:''},()=>measure(this)),e=>this.setData({newsLoading:false,newsError:e.message}),zh);
     if (store.get().profile.onboarded) orders.act('rewardsInit').catch(ui.toast);
   },
-  onHide() { orders.unbind(this);if(this.stopNews)this.stopNews(); },
-  onUnload() { orders.unbind(this);if(this.stopNews)this.stopNews(); },
+  onHide() { orders.unbind(this);if(this.stopNews)this.stopNews();if(this.stopActivities)this.stopActivities(); },
+  onUnload() { orders.unbind(this);if(this.stopNews)this.stopNews();if(this.stopActivities)this.stopActivities(); },
   refresh() {
     const state = store.get(), r = state.rewards || {}, campaigns = r.campaigns || [];
+    if(r.activities&&r.activities.config){this.activityConfig=activityDisplay.latest(this.activityConfig,r.activities.config);this.localizeActivity(this.data.zh);}
     const now = Date.now();
     const event = campaigns.find(c => c.event && (!c.start || now >= Date.parse(c.start)) && (!c.end || now < Date.parse(c.end))) ||
       (now >= Date.parse('2026-10-01T00:00:00+08:00') && now < Date.parse('2026-10-08T00:00:00+08:00') ? (this.data.zh ? goldenWeekZh : goldenWeek) : null);
     const zh=this.data.zh,coupons=(r.coupons||[]).map(c=>({...c,title:zh&&c.titleZh||c.title,description:zh&&c.descriptionZh||c.description,sub:zh&&c.subZh||c.sub,displayEnd:couponDate(c.endLabel,zh)||c.endLabel||'',validity:validity(c,zh),cash:c.kind==='total'})).sort((a,b)=>Number(!!b.event)-Number(!!a.event));
     const {news:legacyNews,...rewardData}=r;
+    const activeOffers=require('../../utils/news-offers').display(campaigns,zh,now);
     this.setData({...rewardData, coupons, campaigns, event,
+      activeOffers,latestOffer:activeOffers[0]||null,
       returning: campaigns.find(c => c.returning), campaignCards:campaigns.filter(c=>(!event||c.id!==event.id)&&(c.eligible||c.collected)).map(c=>({...c,title:zh&&c.titleZh||c.title,description:zh&&c.descriptionZh||c.description})),  registered: !!state.profile.onboarded,
       showExamples: !state.profile.onboarded && !(r.coupons || []).length,
       ready: (r.coupons || []).length,
@@ -72,10 +77,8 @@ Page({
   invite(e) { require('../../utils/nav').navigateTo({url: '/pages/invite/index' + (e && e.code ? '?invite=' + encodeURIComponent(e.code) : '')}); },
   onShareAppMessage() { return {title: this.data.zh ? '加入 UniEarn · 校园代取' : 'Join UniEarn · campus pickups', path: '/pages/invite/index?invite=' + this.data.inviteCode}; },
   onLoad(o={}) {if(o.section==='coupons'){this.couponFocus=true;this.setData({screen:'offers'});}if(o.openInvite==='1'||o.invite)this.invite({code:o.invite||''}); },
-  localizeActivity(zh){
-    const lang=zh?'zh':'en';
-    this.setData({activityTasks:activity.tasks.map(t=>({...t,label:t.title[lang],detail:t.description[lang],firstLabel:t.firstCompletion?(zh?'首单共 20 分，用户与跑手分别计算':'First completion: 20 total; each role separately'):''})),activityRewards:activity.rewards.map(r=>({range:r.rankFrom===r.rankTo?String(r.rankFrom):r.rankFrom+'~'+r.rankTo,prize:(r.physical?r.physical[lang]+' + ':'')+(r.coupon.discountRate===0?(zh?'免单':'Free order'):zh?Math.round(r.coupon.discountRate*10)+' 折券':Math.round((1-r.coupon.discountRate)*100)+'% off'),cap:(zh?'最高抵扣 ¥':'Up to ¥')+r.coupon.maxDiscount}))});
-  },
+  localizeActivity(zh){this.setData(activityDisplay.display(this.activityConfig,zh));},
+  openActivity(e){const tab=e.currentTarget.dataset.tab;this.setData({screen:'activity',activityTab:tab==='ranking'?'ranking':'tasks'});wx.pageScrollTo({scrollTop:0,duration:0});},
   openSection(e){const screen=e.currentTarget.dataset.screen;if(!['home','offers','university','uniearn','activity'].includes(screen))return;this.setData({screen,selectedNews:null});wx.pageScrollTo({scrollTop:0,duration:0});measure(this);},
   backToNews(){this.setData({screen:'home',selectedNews:null});wx.pageScrollTo({scrollTop:0,duration:0});},
   switchActivity(e){const tab=e.currentTarget.dataset.tab;if(['tasks','ranking'].includes(tab))this.setData({activityTab:tab});},

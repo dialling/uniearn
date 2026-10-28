@@ -8,6 +8,7 @@ async function getAccount(tx, actor) {
   try { return (await tx.collection('uniearn_accounts').doc(actor).get()).data || {}; }
   catch (e) { if (/not exist|not found|does not exist/i.test(e.message || '') || e.errCode === -502005 || e.code === -502005) return {}; throw e; }
 }
+async function loadActivityConfig(tx,state){try{const cfg=(await tx.collection('uniearn_news').doc('activity-config').get()).data;if(cfg&&cfg.value)state.activityConfig=require('./activity-config').validate(cfg.value);}catch(e){if(!/not exist|not found|does not exist/i.test(e.message||'')&&e.errCode!==-502005&&e.code!==-502005)throw e;}}
 const ARCHIVE_CHECK_MS = 3600000;
 // Runs in its own transaction so a missing archive collection never blocks orders.
 // Archived rows are written in the same transaction that removes them, so nothing is lost.
@@ -37,6 +38,7 @@ async function autoSettle() {
       if (!state || !Array.isArray(state.requests) || !state.receipts) throw Error('Invalid team-test database document.');
       delete state._id;
       const before = JSON.stringify(state), now = Date.now();state.loyaltyStartedAt=state.loyaltyStartedAt||now;
+      await loadActivityConfig(tx,state);
       engine.expire(state,now);require('./rewards').settle(state,now);require('./wallet').settle(state,now);
       if (JSON.stringify(state) !== before) {
         state.revision = (state.revision || 0) + 1;
@@ -69,6 +71,7 @@ exports.main = async (event = {}) => {
       // Read the shared admin configuration on every sync; issued coupons retain their terms.
       try {const cfg=(await tx.collection('uniearn_news').doc('promotion-config').get()).data;if(cfg&&cfg.value&&Array.isArray(cfg.value.campaigns))state.adminPromotions=cfg.value;}catch(e){if(!/not exist|not found|does not exist/i.test(e.message||'')&&e.errCode!==-502005&&e.code!==-502005)throw e;}
       state.loyaltyStartedAt=state.loyaltyStartedAt||now;
+      await loadActivityConfig(tx,state);
       if(account.profile&&!account.loggedOut)require('./rewards').dailyLogin(state,actor,now);
       engine.expire(state, now);require('./rewards').settle(state,now);require('./wallet').settle(state,now);
       let value = {};

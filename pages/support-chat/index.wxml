@@ -7,5 +7,5 @@
 </view>
 <view wx:for="{{messages}}" wx:key="at" class="message-row {{item.mine?'mine':''}}"><view class="bubble {{item.mine?'':'team-bubble'}}">{{item.text}}<view class="message-time">{{item.time}}</view></view></view>
 <view wx:if="{{error}}" class="notice-error">{{error}}</view>
-<view class="chat-compose"><view class="compose-row"><input class="compose-input" value="{{text}}" bindinput="input" bindconfirm="send" confirm-type="send" maxlength="500" placeholder="{{zh?'输入消息…':'Message…'}}" cursor-spacing="20" disabled="{{sending}}"/><button class="send-button" disabled="{{!canSend||sending}}" bindtap="send" aria-label="{{zh?'发送消息':'Send message'}}"><image src="/assets/send.svg" mode="aspectFit"/></button></view></view>
+<view class="chat-compose"><view class="compose-row"><input class="compose-input" value="{{text}}" bindinput="input" bindconfirm="send" confirm-type="send" maxlength="500" placeholder="{{zh?'输入消息…':'Message…'}}" cursor-spacing="20" disabled="{{sending}}"/><button class="send-button {{canSend&&!sending?'ready':''}}" disabled="{{!canSend||sending}}" bindtap="send" aria-label="{{zh?'发送消息':'Send message'}}"><image src="/assets/send.svg" mode="aspectFit"/></button></view></view>
 </view>

@@ -3,9 +3,9 @@
 const config=require('./order-filter-config');
 const areaNames={'文缘':'Wenyuan','文星':'Wenxing','文萃':'Wencui','文荟':'Wenhui','芭菲':'Bafei'};
 const areaIds={wenyuan:'文缘',wenxing:'文星',wencui:'文萃',wenhui:'文荟',bafei:'芭菲'};
-const typeNames={food:'Takeaway',express:'Parcels',night:'Night market'};
+const typeNames={food:'Takeaway',express:'Parcels',night:'Night market',other:'Any task'};
 const buildings=config.areas.reduce((all,area)=>all.concat(config.buildings[area]),[]);
-const types=config.types.map(x=>x.key).concat('other');
+const types=[...new Set(config.types.map(x=>x.key).concat('other'))];
 const text=value=>String(value||'').trim();
 
 function normalize(value={}){

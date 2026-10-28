@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const root=path.resolve(__dirname,'..');let pageDef,action;
+const request={id:'request-123456',isMine:true,runnerName:'Runner',messages:[{id:'m1',text:'[[uniearn-sticker:hello]]',mine:false,at:1000}]};
+const state={language:'zh',profile:{onboarded:true},requests:[request],trips:[],yuniUnlocked:{hello:true},rewards:{coupons:[]}};
+const orders={bind(page){page.refresh();},unbind(){},act:async(name,payload)=>{action={name,payload};}};
+const load=name=>name.includes('/orders-copy')?{translate:x=>x}:name.includes('/orders')?orders:name.includes('/store')?{get:()=>state,update:f=>f(state)}:name.includes('/workflow')?{view:()=>({unit:'box',dorm:'D01'}),clock:()=> '12:00'}:name.includes('/yuni')?{stickers:()=>[{id:'hello',pose:'wave',name:'Hello!',unlocked:true},{id:'post',pose:'party',name:'First post',unlocked:false}]}:require(path.resolve(root,'pages/chat',name));
+vm.runInNewContext(fs.readFileSync(root+'/pages/chat/index.js','utf8'),{Page:x=>pageDef=x,require:load,wx:{setNavigationBarTitle(){},showToast(){}}});
+const page={...pageDef,data:{...pageDef.data},setData(v){Object.assign(this.data,v)}};page.onLoad({id:request.id});page.onShow();
+assert.equal(page.data.messages[0].isSticker,true);assert.equal(page.data.messages[0].stickerPose,'wave');
+(async()=>{await page.sendSticker({currentTarget:{dataset:{id:'hello'}}});assert.equal(action.name,'message');assert.equal(action.payload.id,request.id);assert.equal(action.payload.text,'[[uniearn-sticker:hello]]');assert.equal(page.data.stickerOpen,false);console.log('Chat stickers render from persisted messages and send through the real message action.');})().catch(e=>{console.error(e);process.exitCode=1;});

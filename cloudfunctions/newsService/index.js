@@ -16,6 +16,7 @@ const repo={
 exports.main=async event=>{
   if(event&&event.httpMethod)return require('./http').createHttpHandler({repo,cloud,settings:settings()})(event);
   const openid=cloud.getWXContext().OPENID;
+  if(openid&&event?.action==='activityConfig'){try{return {ok:true,config:(await repo.activities()).value};}catch(_){return {ok:false,error:'活动暂不可用。'};}}
   if(openid&&event?.action==='analyticsBatch')try{return await repo.ingestAnalytics(openid,event,Date.now());}catch(_){return {ok:false,error:'Analytics temporarily unavailable.'};}
   if(!openid||!event||event.action!=='newsList')return {ok:false,code:'FORBIDDEN',error:'Only published news is available to Mini Program users.'};
   try{

@@ -12,7 +12,8 @@
 .chat-compose{position:fixed;left:0;right:0;bottom:0;z-index:20;background:#f7f7f7;border-top:1rpx solid #e2e0d9;padding:14rpx 24rpx calc(14rpx + env(safe-area-inset-bottom));box-shadow:0 -6rpx 24rpx #0000000d}
 .compose-row{display:flex;align-items:center;gap:12rpx;width:100%}
 .compose-input{flex:1;min-width:0;height:72rpx;background:#fff;border:1rpx solid #e2e0d9;border-radius:36rpx;padding:0 28rpx;font-size:28rpx;box-sizing:border-box}
-.send-button{flex:none;width:68rpx;height:68rpx;min-width:68rpx;min-height:68rpx;margin:0;padding:0;border-radius:50%;background:#0b7a55;display:flex;align-items:center;justify-content:center;line-height:0}
+.send-button{flex:none;width:68rpx;height:68rpx;min-width:68rpx;min-height:68rpx;margin:0;padding:0;border-radius:50%;background:#b8d7c7;display:flex;align-items:center;justify-content:center;line-height:0;opacity:1}
+.send-button.ready{background:#0b7a55}
 .send-button::after{border:0}
 .send-button image{width:31rpx;height:31rpx;margin-left:3rpx}
-.send-button[disabled]{opacity:.38}
+.send-button[disabled]{background:#b8d7c7;opacity:1}

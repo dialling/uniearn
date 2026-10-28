@@ -24,7 +24,7 @@ loadHallAsMiniProgram();
 const filters=require('../utils/order-filters');
 
 assert.deepEqual(filters.tabs().areaTabs.map(x=>x.key),['','文缘','文星','文萃','文荟','芭菲']);
-assert.deepEqual(filters.tabs().typeTabs.map(x=>x.key),['','food','express','night']);
+assert.deepEqual(filters.tabs().typeTabs.map(x=>x.key),['','food','express','night','other']);
 assert.deepEqual(filters.tabs().genderTabs.map(x=>x.key),['','male','female']);
 assert.equal(filters.matches({dorm:'D01',dormGender:'male'},{genderFilter:'male',areaFilter:'文缘'}),true);
 assert.equal(filters.matches({dorm:'D01',dormGender:'female'},{genderFilter:'male'}),false);

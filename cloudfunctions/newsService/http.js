@@ -7,14 +7,16 @@ function imageType(buffer){
 function createHttpHandler({repo,cloud,settings,now=Date.now}){
   return async event=>{
     const headers={};for(const [key,value] of Object.entries(event.headers||{}))headers[key.toLowerCase()]=value;
-    const origin=headers.origin||'',allowed=settings.allowedOrigins||[];
+    const origin=headers.origin||'',allowed=settings.allowedOrigins||[],publicOrigins=['https://uniearn-support-prototype.yz768771.chatgpt.site'];
     let renewedToken='';
-    const response=(statusCode,body)=>({statusCode,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff',...(allowed.includes(origin)?{'Access-Control-Allow-Origin':origin,'Vary':'Origin','Access-Control-Allow-Methods':'POST, OPTIONS','Access-Control-Allow-Headers':'Content-Type, Authorization'}:{})},body:JSON.stringify(renewedToken&&statusCode===200&&body.ok?{...body,sessionToken:renewedToken}:body)});
-    if(origin&&!allowed.includes(origin))return response(403,{ok:false,error:'不允许的网页来源。'});
+    const response=(statusCode,body)=>({statusCode,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff',...((allowed.includes(origin)||publicOrigins.includes(origin))?{'Access-Control-Allow-Origin':origin,'Vary':'Origin','Access-Control-Allow-Methods':'POST, OPTIONS','Access-Control-Allow-Headers':'Content-Type, Authorization'}:{})},body:JSON.stringify(renewedToken&&statusCode===200&&body.ok?{...body,sessionToken:renewedToken}:body)});
+    if(origin&&!allowed.includes(origin)&&!publicOrigins.includes(origin))return response(403,{ok:false,error:'不允许的网页来源。'});
     if(event.httpMethod==='OPTIONS')return response(204,{});
     if(event.httpMethod!=='POST')return response(405,{ok:false,error:'Use POST.'});
     let input;
     try{const raw=event.isBase64Encoded?Buffer.from(event.body||'','base64').toString('utf8'):event.body;if(typeof raw!=='string'||raw.length>4400000)throw Error();input=JSON.parse(raw);if(!input||typeof input!=='object')throw Error();}catch(_){return response(400,{ok:false,error:'请求格式错误或内容过大。'});}
+    if(input.action==='publicActivities'){try{return response(200,{ok:true,config:(await repo.activities()).value});}catch(_){return response(503,{ok:false,error:'活动暂时无法读取。'});}}
+    if(origin&&!allowed.includes(origin))return response(403,{ok:false,error:'不允许的管理来源。'});
     try{
       let admin=await repo.getAdmin();
       if(input.action==='webStatus')return response(200,{ok:true,setupRequired:!admin});
