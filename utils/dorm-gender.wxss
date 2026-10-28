@@ -1,0 +1,11 @@
+/* Shared dorm gender colours for labels and choices. */
+.dorm-male{color:#2563eb}.dorm-female{color:#db2777}
+.hall-gender.dorm-male,.pill.dorm-male{color:#1d4ed8;background:#eff6ff;border-color:#bfdbfe}
+.hall-gender.dorm-female,.pill.dorm-female{color:#be185d;background:#fdf2f8;border-color:#fbcfe8}
+.pill.selected.dorm-male{background:#2563eb;border-color:#2563eb;color:#fff}
+.pill.selected.dorm-female{background:#db2777;border-color:#db2777;color:#fff}
+.page-dark .dorm-male{color:#93c5fd}.page-dark .dorm-female{color:#f9a8d4}
+.page-dark .hall-gender.dorm-male,.page-dark .pill.dorm-male{background:#172b4d;border-color:#365784;color:#93c5fd}
+.page-dark .hall-gender.dorm-female,.page-dark .pill.dorm-female{background:#422037;border-color:#7e385e;color:#f9a8d4}
+.page-dark .pill.selected.dorm-male{background:#2563eb;border-color:#60a5fa;color:#fff}
+.page-dark .pill.selected.dorm-female{background:#be185d;border-color:#f472b6;color:#fff}

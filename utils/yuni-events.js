@@ -5,7 +5,8 @@ function subscribe(fn){listeners=listeners.filter(x=>x!==fn);listeners.push(fn);
 function next(){current=null;currentListener=null;flush();}
 function reset(){pending=[];current=null;currentListener=null;Object.keys(seen).forEach(k=>delete seen[k]);}
 function status(r,revision){const zh=store.get().language!=='en',mine=r.isMine;let title='',text='',pose='wave';
-if(r.status==='waiting'){title=zh?'已发布！':'It’s posted!';text=zh?'等待同学接单。':'Another student can now take your order.';}
+// The dedicated success video already confirms a new order; do not queue a second popup.
+if(r.status==='waiting')return;
 if(r.status==='taken'){title=mine?(zh?'有人接单了！':'A runner is on it!'):(zh?'出发吧！':'Let’s go!');text=mine?(zh?'留意订单消息，保持联系。':'Keep an eye on order messages.'):(zh?'前往取件地点，核对订单信息。':'Head to '+r.station+'. Check the order details before pickup.');pose='go';}
 if(r.status==='collected'){title=zh?'已取到！':'Picked up!';text=mine?(zh?'跑手正在送来。':'Your runner is bringing it to you.'):(zh?'现在送到约定地点，取件后 15 分钟内送达。':'Deliver to the agreed spot within 15 minutes of pickup.');pose='bag';}
 if(r.status==='delivered'){title=mine?(zh?'送到了！':'It’s here!'):(zh?'这单完成了！':'Nice run!');text=mine?(zh?'检查物品后，在订单里确认完成。':'Check it, then confirm completion on the order.'):(zh?'等待同学确认后计入测试收益。':'Your test earnings settle when the student confirms.');pose=mine?'happy':'deliver';}

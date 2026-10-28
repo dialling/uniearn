@@ -1,3 +1,4 @@
+@import "./dorm-gender.wxss";
 @import "./post-form.wxss";
 .addr-page{padding-top:24rpx}
 .addr-form{padding:30rpx 28rpx!important;border-radius:28rpx!important}

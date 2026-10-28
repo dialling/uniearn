@@ -129,7 +129,7 @@ function restoreDormGenders(s,actor,campusId,repairs,now){
   const rows=repairs.map(p=>{
     check(p&&typeof p.id==='string'&&p.id.length<=100&&['male','female'].includes(p.gender)&&typeof p.dorm==='string'&&p.dorm.length<=100&&typeof p.room==='string'&&p.room.length<=100,'Invalid dorm gender repair.');
     const r=ownRequest(s,p.id,actor);
-    check(r.campusId===campusId&&r.category!=='task'&&r.destinationType!=='place'&&OPEN_STATUSES.includes(r.status),'This order cannot restore a dorm gender.');
+    check(r.campusId===campusId&&r.category!=='task'&&r.destinationType!=='place'&&(OPEN_STATUSES.includes(r.status)||r.status==='confirmed'),'This order cannot restore a dorm gender.');
     check(r.dorm===p.dorm&&r.room===p.room,'The order address has changed.');
     return {r,gender:p.gender};
   });

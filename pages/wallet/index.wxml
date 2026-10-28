@@ -10,7 +10,7 @@
    <view class="ac-stat"><text>{{ui.total}}</text><text class="ac-strong">{{hideAmount?'***':'¥'+totalIncome}}</text></view>
    <view class="ac-stat"><text>{{ui.pending}}</text><text class="ac-pending {{pendingCents>0?'has':''}}">{{hideAmount?'***':'¥'+pendingYuan}}</text></view>
   </view>
-  <view class="chart"><view class="chart-max">{{hideAmount||!chartMax?'':'¥'+chartMax}}</view><canvas type="2d" id="assetChart" class="chart-cv"/></view>
+  <view class="chart"><view class="chart-max">{{hideAmount||!chartMax?'':'¥'+chartMax}}</view><canvas type="2d" id="assetChart" class="chart-cv {{chartReady?'':'chart-hidden'}}"/><view wx:if="{{!chartReady&&!error}}" class="chart-loading">{{ui.loading}}</view></view>
   <view class="chart-axis"><text>{{chartStart}}</text><text>{{ui.todayAxis}}<text wx:if="{{!hideAmount}}" class="axis-val"> ¥{{balance}}</text></text></view>
  </view>
  <view class="wallet-test-note">{{ui.testNote}}</view>

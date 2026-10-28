@@ -8,7 +8,8 @@ const route={accountId:actor,dorm:'A05',room:'1111',owner:'Customer',phone:'1380
 const request={...route,id:'r1',isMine:true,status:'waiting',category:'takeout',campusId:'sip',dormGender:''};
 const state={profile:{accountId:actor,campusId:'sip'},orderCapabilities:{restoreDormGenders:true},routes:[route],requests:[request]};
 assert.deepEqual(repairs(state),[{id:'r1',dorm:'A05',room:'1111',gender:'female'}]);
-for(const patch of [{isMine:false},{dormGender:'male'},{campusId:'taicang'},{status:'confirmed'},{destinationType:'place'},{category:'task'},{room:'1112'},{phone:'13900000000'},{owner:'Someone else'}])assert.deepEqual(repairs({...state,requests:[{...request,...patch}]}),[],JSON.stringify(patch));
+assert.deepEqual(repairs({...state,requests:[{...request,status:'confirmed'}]}),[{id:'r1',dorm:'A05',room:'1111',gender:'female'}],'completed orders also restore their saved gender');
+for(const patch of [{isMine:false},{dormGender:'male'},{campusId:'taicang'},{status:'cancelled'},{destinationType:'place'},{category:'task'},{room:'1112'},{phone:'13900000000'},{owner:'Someone else'}])assert.deepEqual(repairs({...state,requests:[{...request,...patch}]}),[],JSON.stringify(patch));
 assert.deepEqual(repairs({...state,routes:[{...route,accountId:'another'}]}),[]);
 assert.deepEqual(repairs({...state,routes:[route,{...route,dormGender:'male'}]}),[],'conflicting saved choices require user input');
 assert.deepEqual(repairs({...state,orderCapabilities:{}}),[],'old backends receive no unsupported repair action');
@@ -26,5 +27,7 @@ assert.deepEqual(repairs({...state,profile:{...state.profile,loggedOut:true}}),[
  await orders.sync();assert.equal(repairCalls,1,'a repaired order is not submitted again');
  const retry=await h.call('customer','restoreDormGenders',{repairs:[{...payload,gender:'male'}]});assert.equal(retry.ok,true,retry.error);assert.equal(retry.value.updated,0);assert.equal(h.state.requests.find(r=>r.id===id).dormGender,'female','existing choices cannot be overwritten');
  const view=(await h.call('runner','sync')).snapshot.publicJobs.find(r=>r.id===id);assert.equal(view.dormGender,'female');assert.equal(view.phone,undefined);
+ h.edit(s=>{const r=s.requests.find(r=>r.id===id);r.status='confirmed';r.confirmedAt=Date.now();delete r.dormGender;});
+ const completed=await h.call('customer','restoreDormGenders',{repairs:[payload]});assert.equal(completed.ok,true,completed.error);assert.equal(completed.value.updated,1);assert.equal(h.state.requests.find(r=>r.id===id).dormGender,'female');
  console.log('Dorm gender memory: exact saved address, account isolation, ambiguity, server ownership/stale-address guard, no overwrite and actual sync restoration passed.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

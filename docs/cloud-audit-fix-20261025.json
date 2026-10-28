@@ -1,0 +1,31 @@
+{
+  "downloadedAt": "2026-10-25 16:23 Asia/Shanghai",
+  "environment": "cloud1-d1g757cev03375e35",
+  "changedFiles": [
+    "engine.js",
+    "workflow.js",
+    "domain.js"
+  ],
+  "deployed": false,
+  "files": {
+    "activities.js": "308e5e71c53eebef2452119a510b1371a6a4761062eaf3db02ff7be9dd3568da",
+    "activity-config.js": "e5148ea572d189f4a2a714dce0f0dc9b4e27177308d0c747310b4c297c870790",
+    "activity-default.json": "25e380938d9d450690dcc173c3002ecb90782b4f55219768c78fa53d3954a38b",
+    "analytics.js": "91ae4e707e6a2a8a505d811b9ea6fd8eb194bdcdf17a13929142e878fd73b4f6",
+    "campus.js": "725afcfa670fecce80225d82304fd14ec2da3505702744e5502a9bd71f673e02",
+    "catalog.js": "7488bcba5bba39dafb17d6508f7ce92ea131ecc476a47867d4864be1b81339b6",
+    "config.json": "b786eeb4c63830a7a3c34e3f2f6b0ab527e15e8a8def308f1a03293ff2eb0f51",
+    "domain.js": "9814502a8dd070499fd03ce062cdf4f864536df2f371fd25deec81e91dbb68af",
+    "engine.js": "90802040c360a2596d2c4b30ffe4887e4c179ac275249330945df270715144db",
+    "index.js": "b1de160e8de0bc9c5d33418238a0bfe7573b1cb02b09c66534bc84b2991278a0",
+    "initial-state.json": "92be4b768ee8c73c439ad6aea1bc0867cec3d2cec2484555a618f6b4d91d6305",
+    "loyalty.js": "f755fb9be04fa22f224ca9f6962154bfbee455028c2129e0de00c36e2209cbfd",
+    "package.json": "2571ac00a39ce0b5090c2358b9025dd223dc5f0d3f92bb501391b7527269d27c",
+    "promotions.js": "2a826a96edb575e2a946de7098932b5ecefde6418eeff5a4827ec8116a22f5f3",
+    "rewards.js": "4fe593e2b3ac910cb07d56003beff7360f06c8268a790b95e9b6f40adbc7db6a",
+    "runner-contact.js": "f02631698d3199dccdecb68e3b1bbf45b2dbbf81f23ed13f06d2030844fc12c4",
+    "runner-level.js": "7abb8f5ce548d7b396e898aef0c5d16c3aa13edcf6f61f96411e1d440f5ab9b6",
+    "wallet.js": "9c23aa0a38818e5be160ae8dcacc78eba68096b975d39405b66e5f8452062eae",
+    "workflow.js": "2454b977a705b9dfc1ca855fee7baad6197c06e1d8e8bc9868d8e13a2003794a"
+  }
+}

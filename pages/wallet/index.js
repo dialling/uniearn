@@ -25,7 +25,7 @@ function tracePath(ctx, xs, ys) {
 
 
 Page({
- data: {ui: copy('zh'), language: 'zh', loading: true, withdrawing: false, rulesVisible: false, hideAmount: false, balance: '0.00', balanceCents: 0, todayIncome: '0.00', totalIncome: '0.00', pendingCents: 0, pendingYuan: '0.00', debt: '0.00', debtCents: 0, chartMax: '', chartStart: '', rules: {}, transactions: [], withdrawals: [], pending: [], error: ''},
+ data: {ui: copy('zh'), language: 'zh', loading: true, chartReady: false, withdrawing: false, rulesVisible: false, hideAmount: false, balance: '0.00', balanceCents: 0, todayIncome: '0.00', totalIncome: '0.00', pendingCents: 0, pendingYuan: '0.00', debt: '0.00', debtCents: 0, chartMax: '', chartStart: '', rules: {}, transactions: [], withdrawals: [], pending: [], error: ''},
  onLoad() { this._visible = true; },
  onShow() { this._visible = true; this.load(); },
  onHide() { this._visible = false; this._loadId = (this._loadId || 0) + 1; },
@@ -41,11 +41,11 @@ Page({
   wx.setStorageSync('wallet_hide_amount:' + actor, hide);
   this.setData({hideAmount: hide}, () => this.drawChart());
  },
- clearWallet() { this._series = []; this.setData({balance:'0.00',balanceCents:0,todayIncome:'0.00',totalIncome:'0.00',pendingCents:0,pendingYuan:'0.00',debt:'0.00',debtCents:0,transactions:[],withdrawals:[],pending:[],chartMax:'',chartStart:'',rules:{},rulesVisible:false}); },
+ clearWallet() { this._series = []; this.setData({balance:'0.00',balanceCents:0,todayIncome:'0.00',totalIncome:'0.00',pendingCents:0,pendingYuan:'0.00',debt:'0.00',debtCents:0,transactions:[],withdrawals:[],pending:[],chartMax:'',chartStart:'',rules:{},rulesVisible:false,chartReady:false}); },
  async load() {
   const request = this._loadId = (this._loadId || 0) + 1, language = store.get().language === 'en' ? 'en' : 'zh', ui = copy(language);
   const actor = store.get().profile.accountId;
-  this.setData({loading:true,error:'',ui,language});
+  this.setData({loading:true,chartReady:false,error:'',ui,language});
   if (store.get().profile.loggedOut || this._actor && actor !== this._actor) this.clearWallet();
   try {
    const res = await api.overview();
@@ -63,11 +63,13 @@ Page({
   } catch (e) { if (request === this._loadId && this._visible) { if (store.get().profile.loggedOut || this._actor && store.get().profile.accountId !== this._actor) this.clearWallet(); this.setData({loading:false,error:e.message || (language === 'en' ? 'Could not load your wallet.' : '钱包加载失败，请重试。')}); } }
  },
   drawChart() {
-    if (!this._ready || typeof wx.createSelectorQuery !== 'function') return;
-    const values = this._series && this._series.length ? this._series : [this.data.balanceCents || 0];
+    if (!this._ready || !this._visible || this.data.loading || this.data.error || !this._series?.length || typeof wx.createSelectorQuery !== 'function') return;
+    const values = this._series.slice(), request = this._loadId, draw = this._drawId = (this._drawId || 0) + 1;
     wx.createSelectorQuery().select('#assetChart').fields({ node: true, size: true }).exec((r) => {
+      // Canvas queries can return after a refresh or navigation has invalidated this draw.
+      if (request !== this._loadId || draw !== this._drawId || !this._visible || this.data.loading || this.data.error) return;
       const hit = r && r[0];
-      if (!hit || !hit.node) return;
+      if (!hit || !hit.node || !(hit.width > 0) || !(hit.height > 0)) return;
       const canvas = hit.node;
       const ctx = canvas.getContext('2d');
       let dpr = 2;
@@ -110,6 +112,7 @@ Page({
       ctx.beginPath(); ctx.arc(ex, ey, 7, 0, Math.PI * 2); ctx.fillStyle = 'rgba(11,122,85,.16)'; ctx.fill();
       ctx.beginPath(); ctx.arc(ex, ey, 3.5, 0, Math.PI * 2); ctx.fillStyle = '#0b7a55'; ctx.fill();
       ctx.lineWidth = 1.5; ctx.strokeStyle = '#fff'; ctx.stroke();
+      this.setData({chartReady:true});
     });
   },
 

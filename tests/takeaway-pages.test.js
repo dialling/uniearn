@@ -16,7 +16,8 @@ async function login(name){h.user=name;orders.invalidate();store.reset();const a
  await login('customer');assert.equal(store.get().requests.length,0,'no demo orders uploaded');
  const night=load('takeaway',{night:'1'});night.couponManual=true;night.setData({couponId:'',shop:'Night stall'});night.totals();assert.equal(night.data.total,'4.00');night.changePrice(e({delta:1}));assert.equal(night.data.reward,'5.00');assert.equal(night.data.total,'5.00');night.priceInput({detail:{value:'9'}});assert.equal(night.data.total,'9.00');night.priceInput({detail:{value:'3'}});assert.equal(night.data.price,9);night.changePrice(e({delta:-20}));assert.equal(night.data.total,'4.00');night.priceInput({detail:{value:'7'}});assert.equal(night.data.total,'7.00');
  const p=load('takeaway');p.customLocker({detail:{value:'Takeaway locker by Dorm 7'}});p.setData({arrived:true,agreed:true,bags:2});p.totals();assert.equal(p.data.total,'6.00');assert.equal(p.data.addressReady,true,'posting does not require selecting a gate');p.autoSaveDorm();assert.equal(store.get().routes.length,1);
- failAfterCommit=true;await p.post();assert.equal(h.state.requests.length,1,'lost response retry does not duplicate post');
+ const events=require('../utils/yuni-events'),postEvents=[];events.reset();const stopPostEvents=events.subscribe(event=>postEvents.push(event));
+ failAfterCommit=true;await p.post();assert.equal(postEvents.length,0,'successful posting must not queue a second status popup beside the video');stopPostEvents();assert.equal(h.state.requests.length,1,'lost response retry does not duplicate post');
  const rid=h.state.requests[0].id;assert.match(navigation,/posted\/index\?celebrate=1&id=/);
  const mine=load('requests');mine.refresh();assert.equal(mine.data.active.length,1);
  const request=load('request',{id:rid});request.refresh();await request.raise(e({amount:1.88}));assert.equal(h.state.requests[0].reward,7.88);

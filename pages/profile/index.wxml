@@ -54,7 +54,6 @@
  <view class="menu-row" bindtap="dormDetails"><view class="settings-icon"><image src="/assets/university-outline.svg"/></view><view class="menu-copy">{{ui.delivery}}<view class="hint">{{deliverySummary||ui.notSetAdd}}</view></view><text class="setting-chevron">›</text></view>
 </view>
 <!-- ⑥ 邀请同学 -->
-<view class="flow-card invite-card"><view class="invite-icon"><image src="/assets/invite-classmate.svg"/></view><view class="invite-copy"><view class="strong">{{ui.inviteTitle}}</view><view class="hint">{{ui.inviteHelp}}</view></view><button class="invite-button" bindtap="inviteFriends">{{ui.invite}}</button></view>
 
 <!-- ⑦ 通知与提醒（已删除考试模式） -->
 <view class="section">{{ui.notifyGroup}}</view>

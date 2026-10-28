@@ -22,8 +22,22 @@ page{background:#1b1c1a}
 .iv-body{position:relative;z-index:1;padding:28rpx 44rpx 0}
 .iv-title{font-family:"Invite Serif","Songti SC","STSong","SimSun",serif;font-size:52rpx;font-weight:800;line-height:1.3;letter-spacing:1rpx;transform:rotate(-3deg);transform-origin:left center}
 .iv-label{font-family:"Invite Serif","Songti SC",serif;margin-top:44rpx;font-size:30rpx;font-weight:700;color:#f4a06e;transform:rotate(-2deg);transform-origin:left center}
-.iv-big{margin-top:-6rpx;font-size:260rpx;font-weight:400;line-height:1;letter-spacing:-8rpx;color:#edebe4;text-shadow:8rpx 10rpx 0 #f4a06e;font-family:"Invite Display","Georgia",serif;transform:rotate(-7deg);transform-origin:55% 52%}
-.iv-unit{font-family:"Invite Serif","Songti SC",serif;margin-top:6rpx;font-size:64rpx;font-weight:700;color:#edebe4;letter-spacing:2rpx;transform:rotate(2deg);transform-origin:left center}
+.iv-reward{position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:24rpx;padding-top:6rpx}
+.iv-primary{flex:1;min-width:0}
+.iv-discount{display:flex;align-items:baseline;gap:12rpx;transform:rotate(-6deg);transform-origin:45% 65%;white-space:nowrap}
+.iv-big{font-size:250rpx;font-weight:400;line-height:1;letter-spacing:-8rpx;color:#edebe4;text-shadow:8rpx 10rpx 0 #f4a06e;font-family:"Invite Display","Georgia",serif}
+.iv-discount-unit{font-family:"Invite Serif","Songti SC","STSong","SimSun",serif;font-size:100rpx;font-weight:700;color:#edebe4;text-shadow:4rpx 5rpx 0 #f4a06e}
+.iv-unit{font-family:"Invite Serif","Songti SC",serif;margin-top:10rpx;font-size:58rpx;font-weight:700;line-height:1.2;color:#edebe4;letter-spacing:3rpx;transform:rotate(2deg);transform-origin:left center}
+.iv-points{flex:none;width:240rpx;padding-bottom:10rpx;transform:rotate(-3deg);transform-origin:center}
+.iv-points-label{font-size:23rpx;line-height:1.5;color:#a9a69c}
+.iv-points-value{display:flex;align-items:baseline;gap:10rpx;margin-top:8rpx;white-space:nowrap;color:#edebe4}
+.iv-points-number{font-family:"Invite Display","Georgia",serif;font-size:78rpx;font-weight:400;line-height:1;text-shadow:3rpx 4rpx 0 #f4a06e}
+.iv-points-unit{font-family:"Invite Serif","Songti SC",serif;font-size:32rpx;font-weight:700}
+.iv-reward-en .iv-big{font-size:180rpx;letter-spacing:-6rpx}
+.iv-reward-en .iv-discount{gap:6rpx}
+.iv-reward-en .iv-discount-unit{font-size:76rpx}
+.iv-reward-en .iv-unit{font-size:34rpx;letter-spacing:0}
+.iv-reward-en .iv-points{width:220rpx}
 
 .iv-rows{margin-top:44rpx}
 .iv-row{display:flex;align-items:flex-start;gap:14rpx;margin-bottom:18rpx;font-size:25rpx;line-height:1.5;color:#edebe4}

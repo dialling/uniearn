@@ -140,3 +140,7 @@
 .ac-stat{flex:1;min-width:0;display:flex;flex-direction:column;gap:10rpx}.ac-stat text:last-child{margin-left:0}.rules-sheet{box-sizing:border-box}.row-t{line-height:1.4}.wd-status{max-width:180rpx;line-height:1.4;text-align:center}.wallet-page .rules-ok{width:100%;flex-shrink:0}.wallet-page .wallet-row{min-width:0}.tx-amt{white-space:nowrap}.rules-link{padding-top:18rpx}.rules-body{height:58vh;flex:none}.page-dark.wallet-page{--ink:#edebe4;--ink-2:#c2bfb6;--ink-3:#aaa79f;--ink-4:#aaa79f;--line:#3a3b37;--line-2:#3a3b37;--surface:#242522;--surface-2:#1b1c1a;--brand:#6fd0a8;--brand-100:#183b2d;--brand-200:#3a3b37;--grad-brand:#0b7a55;--warn-bg:#3b2c20;--warn-ink:#f4a06e;--danger:#f4a06e;--danger-bg:#3b2c20;background:#1b1c1a}.page-dark .asset-card,.page-dark .rules-sheet{background:var(--surface)}.page-dark .ac-up,.page-dark .tx-amt.pos{color:#6fd0a8}.page-dark .row-ico.in{background:#183b2d;color:#6fd0a8}.page-dark .ac-pending.has{color:#f4a06e}.page-dark .rules-link-t,.page-dark .rules-link-a{color:#6fd0a8}.page-dark .rule-row+.rule-row,.page-dark .rule-note{border-color:#3a3b37}
 
 .wallet-page .wd-btn,.wallet-page .rules-ok{min-height:44px}.wallet-page .rules-hd-x{min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}
+
+/* Keep the canvas measurable but invisible until real wallet data is drawn. */
+.wallet-page .chart-hidden{opacity:0;pointer-events:none}
+.chart-loading{position:absolute;left:0;right:0;top:0;bottom:0;display:flex;align-items:center;justify-content:center;font-size:25rpx;color:var(--ink-3)}

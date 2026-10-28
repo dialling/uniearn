@@ -10,15 +10,23 @@
  <view class="iv-nav" style="padding-top:{{navTop}}px;height:{{navHeight}}px"><view class="iv-back" hover-class="iv-press" bindtap="back"><view class="iv-back-arrow"></view></view></view>
 
  <view class="iv-body">
-  <view class="iv-title">{{zh?'邀请同学，一起赚积分':'Invite a classmate and earn points together'}}</view>
+  <view class="iv-title">{{zh?'邀请同学，领五折券':'Invite a classmate, unlock 50% off'}}</view>
 
-  <view class="iv-label">{{zh?'你和同学各得':'You each get'}}</view>
-  <view class="iv-big">10</view>
-  <view class="iv-unit">{{zh?'积分':'points'}}</view>
+  <view class="iv-label">{{zh?'同学完成首单，即可解锁':'Unlock after their first completed order'}}</view>
+  <view class="iv-reward {{zh?'':'iv-reward-en'}}">
+   <view class="iv-primary">
+    <view class="iv-discount"><text class="iv-big">{{zh?'5':'50'}}</text><text class="iv-discount-unit">{{zh?'折':'%'}}</text></view>
+    <view class="iv-unit">{{zh?'配送券':'delivery coupon'}}</view>
+   </view>
+   <view class="iv-points">
+    <view class="iv-points-label">{{zh?'绑定邀请码，双方各得':'Link a code · you each get'}}</view>
+    <view class="iv-points-value"><text class="iv-points-number">10</text><text class="iv-points-unit">{{zh?'积分':'points'}}</text></view>
+   </view>
+  </view>
 
   <view class="iv-rows">
-   <view class="iv-row"><image class="iv-row-icon" src="/assets/invite/check.svg"/><text>{{zh?'同学首次登录并绑定邀请码后，双方各得 10 积分':'When a classmate signs in and links your code, you each get 10 points'}}</text></view>
    <view class="iv-row"><image class="iv-row-icon" src="/assets/invite/check.svg"/><text>{{zh?'同学完成首单后，你会解锁一张 5 折配送券，最高抵 ¥3.9':'After their first completed order, you unlock a 50% delivery coupon up to ¥3.9'}}</text></view>
+   <view class="iv-row"><image class="iv-row-icon" src="/assets/invite/check.svg"/><text>{{zh?'同学首次登录并绑定邀请码后，双方各得 10 积分':'When a classmate signs in and links your code, you each get 10 points'}}</text></view>
    <view class="iv-row"><image class="iv-row-icon" src="/assets/invite/check.svg"/><text>{{zh?'优惠券解锁后 30 天有效，每人只能绑定一次邀请码':'The coupon is valid for 30 days after unlocking. Each person can link one code'}}</text></view>
   </view>
 
