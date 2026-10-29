@@ -14,8 +14,9 @@
 .addr-tick{margin-left:auto;width:40rpx;height:40rpx;line-height:40rpx;text-align:center;border-radius:50%;background:#c2410c;color:#fff;font-size:22rpx;animation:ue-pop .25s ease backwards}
 .addr-phone{margin-top:8rpx;color:#6b6860;font-size:24rpx;letter-spacing:1rpx}.addr-place{margin-top:10rpx;font-size:28rpx;font-weight:650}
 .addr-actions{display:flex;align-items:center;justify-content:space-between;margin-top:20rpx;padding-top:18rpx;border-top:1rpx solid #f0efea}
-.addr-default{color:#c2410c;font-size:23rpx;font-weight:650}.addr-btns{display:flex;gap:14rpx}
+.addr-default{margin:0;padding:8rpx 20rpx;line-height:1.5;border:1rpx solid rgba(194,65,12,.18);border-radius:30rpx;background:#fdf1e9;color:#c2410c;font-size:23rpx;font-weight:650}.addr-default-press{opacity:.7}.addr-btns{display:flex;gap:14rpx}
 .addr-btn{padding:8rpx 24rpx;border-radius:30rpx;background:#f0efea;font-size:23rpx;font-weight:650}.addr-btn:active{opacity:.6}.addr-btn.danger{background:#fdf6f2;color:#0b7a55}
 .page-dark .addr-item{background:#242522;border-color:#3a3b37}.page-dark .addr-page .field{background:#242522;color:#edebe4}.page-dark .addr-actions{border-top-color:#3a3b37}.page-dark .addr-btn{background:#3a3b37;color:#edebe4}.page-dark .addr-empty{border-color:#3a3b37}
 
 .addr-new{margin-left:auto;font-size:36rpx;padding:0 8rpx}.addr-list-head{margin-top:8rpx}
+.page-dark .addr-default{background:rgba(244,160,110,.12);border-color:rgba(244,160,110,.28);color:#f4a06e}

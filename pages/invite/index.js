@@ -11,8 +11,9 @@ Page({
   },
   onShow(){
     this.setData({zh:store.get().language!=='en'});
-    // Custom navigation: keep the status bar icons white on the dark page.
-    if(wx.setNavigationBarColor)wx.setNavigationBarColor({frontColor:'#ffffff',backgroundColor:'#1b1c1a',animation:{duration:0}});
+    // Keep custom navigation and the page window on the invitation palette.
+    if(wx.setNavigationBarColor)wx.setNavigationBarColor({frontColor:'#000000',backgroundColor:'#f3ecd9',animation:{duration:0}});
+    if(wx.setBackgroundColor)wx.setBackgroundColor({backgroundColorTop:'#f3ecd9',backgroundColorBottom:'#f3ecd9'});
     orders.bind(this);
     if(store.get().profile.onboarded&&this.data.inviteInput){
       if(!this._autoBinding){this._autoBinding=true;this.setData({redeeming:true});orders.sync().then(()=>{

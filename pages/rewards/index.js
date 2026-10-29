@@ -33,9 +33,11 @@ const examplesZh = [
 ];
 
 const activityDisplay=require('../../utils/activity-display');
+const activityRanking=require('../../utils/activity-ranking');
 Page({
-  data: {screen:'home',activeOffers:[],latestOffer:null,activityTab:'tasks',activityTasks:[],activityRewards:[],selectedNews:null,coupons: [], campaigns: [], weekly: {segments: []}, news: [], ready: 0, toCollect: 0, examples, registered: false, zh: false},
+  data: {screen:'home',activeOffers:[],latestOffer:null,activityTab:'ranking',activityRulesOpen:false,rankingRows:[],rankingRewards:[],activityTasks:[],activityRewards:[],selectedNews:null,coupons: [], campaigns: [], weekly: {segments: []}, news: [], ready: 0, toCollect: 0, examples, registered: false, zh: false},
   onShow() {
+    this._activityVisible=true;
     const zh = store.get().language !== 'en';
     this.setData({zh, examples: zh ? examplesZh : examples});
     require('../../utils/appearance').apply(this);
@@ -44,13 +46,14 @@ Page({
     this.stopActivities=require('../../utils/activity-sync').subscribe(config=>{this.activityConfig=activityDisplay.latest(this.activityConfig,config);this.localizeActivity(this.data.zh);this.setData({activitySyncError:false});},()=>this.setData({activitySyncError:true}));
     if(wx.setNavigationBarTitle)wx.setNavigationBarTitle({title:zh?'资讯':'News'});
     orders.bind(this);
+    this.startActivityClock();
     if(this.stopNews)this.stopNews();
     this.setData({newsLoading:true,newsError:''});
     this.stopNews=require('../../utils/news').subscribe(news=>this.setData({news,newsLoading:false,newsError:''},()=>measure(this)),e=>this.setData({newsLoading:false,newsError:e.message}),zh);
     if (store.get().profile.onboarded) orders.act('rewardsInit').catch(ui.toast);
   },
-  onHide() { orders.unbind(this);if(this.stopNews)this.stopNews();if(this.stopActivities)this.stopActivities(); },
-  onUnload() { orders.unbind(this);if(this.stopNews)this.stopNews();if(this.stopActivities)this.stopActivities(); },
+  onHide() { this._activityVisible=false;this.stopActivityClock();orders.unbind(this);if(this.stopNews)this.stopNews();if(this.stopActivities)this.stopActivities(); },
+  onUnload() { this._activityVisible=false;this.stopActivityClock();orders.unbind(this);if(this.stopNews)this.stopNews();if(this.stopActivities)this.stopActivities(); },
   refresh() {
     const state = store.get(), r = state.rewards || {}, campaigns = r.campaigns || [];
     if(r.activities&&r.activities.config){this.activityConfig=activityDisplay.latest(this.activityConfig,r.activities.config);this.localizeActivity(this.data.zh);}
@@ -62,10 +65,11 @@ Page({
     const activeOffers=require('../../utils/news-offers').display(campaigns,zh,now);
     this.setData({...rewardData, coupons, campaigns, event,
       activeOffers,latestOffer:activeOffers[0]||null,
-      returning: campaigns.find(c => c.returning), campaignCards:campaigns.filter(c=>(!event||c.id!==event.id)&&(c.eligible||c.collected)).map(c=>({...c,title:zh&&c.titleZh||c.title,description:zh&&c.descriptionZh||c.description})),  registered: !!state.profile.onboarded,
+      returning: campaigns.find(c => c.returning), campaignCards:campaigns.filter(c=>(!event||c.id!==event.id)&&(c.eligible||c.collected)).map(c=>({...c,title:zh&&c.titleZh||c.title,description:zh&&c.descriptionZh||c.description})),  registered: !!state.profile.onboarded&&!state.profile.loggedOut,
       showExamples: !state.profile.onboarded && !(r.coupons || []).length,
       ready: (r.coupons || []).length,
       toCollect: !state.profile.onboarded && event ? 1 : campaigns.filter(c => c.eligible && !c.collected).length},()=>{measure(this);if(this.couponFocus){this.couponFocus=false;wx.pageScrollTo({selector:'#my-coupons',duration:250});}});
+    this.updateActivityBoard();
   },
   async collect(e) {
     if (!this.data.registered) return this.register();
@@ -77,11 +81,16 @@ Page({
   invite(e) { require('../../utils/nav').navigateTo({url: '/pages/invite/index' + (e && e.code ? '?invite=' + encodeURIComponent(e.code) : '')}); },
   onShareAppMessage() { return {title: this.data.zh ? '加入 UniEarn · 校园代取' : 'Join UniEarn · campus pickups', path: '/pages/invite/index?invite=' + this.data.inviteCode}; },
   onLoad(o={}) {if(o.section==='coupons'){this.couponFocus=true;this.setData({screen:'offers'});}if(o.openInvite==='1'||o.invite)this.invite({code:o.invite||''}); },
-  localizeActivity(zh){this.setData(activityDisplay.display(this.activityConfig,zh));},
-  openActivity(e){const tab=e.currentTarget.dataset.tab;this.setData({screen:'activity',activityTab:tab==='ranking'?'ranking':'tasks'});wx.pageScrollTo({scrollTop:0,duration:0});},
-  openSection(e){const screen=e.currentTarget.dataset.screen;if(!['home','offers','university','uniearn','activity'].includes(screen))return;this.setData({screen,selectedNews:null});wx.pageScrollTo({scrollTop:0,duration:0});measure(this);},
-  backToNews(){this.setData({screen:'home',selectedNews:null});wx.pageScrollTo({scrollTop:0,duration:0});},
-  switchActivity(e){const tab=e.currentTarget.dataset.tab;if(['tasks','ranking'].includes(tab))this.setData({activityTab:tab});},
+  localizeActivity(zh){this.setData(activityDisplay.display(this.activityConfig,zh));this.updateActivityBoard();},
+  updateActivityBoard(){const s=store.get();this.setData(activityRanking.view(this.activityConfig,s.rewards?.activities,s.progression,!!s.profile.onboarded&&!s.profile.loggedOut,this.data.zh,s.lastSyncAt));},
+  stopActivityClock(){if(this.activityClock)clearInterval(this.activityClock);this.activityClock=null;},
+  startActivityClock(){this.stopActivityClock();if(this.data.screen!=='activity'||this._activityVisible===false)return;this.activityClock=setInterval(()=>{const patch=activityRanking.timing(this.activityConfig,this.data.zh),changed=patch.rankingPhase!==this.data.rankingPhase;this.setData(patch);if(changed)this.updateActivityBoard();},1000);},
+  openActivity(e){const tab=e.currentTarget.dataset.tab;this.setData({screen:'activity',activityTab:['tasks','rewards'].includes(tab)?tab:'ranking',activityRulesOpen:false});this.updateActivityBoard();this.startActivityClock();wx.pageScrollTo({scrollTop:0,duration:0});},
+  openSection(e){const screen=e.currentTarget.dataset.screen;if(!['home','offers','university','uniearn','activity'].includes(screen))return;this.setData({screen,selectedNews:null});this.startActivityClock();wx.pageScrollTo({scrollTop:0,duration:0});measure(this);},
+  backToNews(){this.stopActivityClock();this.setData({screen:'home',selectedNews:null});wx.pageScrollTo({scrollTop:0,duration:0});},
+  switchActivity(e){const tab=e.currentTarget.dataset.tab;if(['tasks','ranking','rewards'].includes(tab))this.setData({activityTab:tab});},
+  toggleActivityRules(){this.setData({activityRulesOpen:!this.data.activityRulesOpen});},
+  earnActivityPoints(){if(!this.data.registered)return this.register();this.setData({activityTab:'tasks'});wx.pageScrollTo({selector:'#ranking-content',duration:250});},
   openArticle(e){const item=this.data.news.find(n=>n._id===e.currentTarget.dataset.id);if(item){this.setData({selectedNews:item,screen:'article'});wx.pageScrollTo({scrollTop:0,duration:0});}},
   closeArticle(){this.setData({selectedNews:null,screen:'uniearn'});},
   openCoupons(){require('../../utils/nav').navigateTo({url:'/pages/coupons/index'});},

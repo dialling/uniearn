@@ -1,3 +1,4 @@
+@import "../../utils/activity-board.wxss";
 .event-banner{background:#0b7a55;color:#fff;border-radius:30rpx;padding:30rpx;line-height:1.6;margin-bottom:35rpx}.event-tag{display:inline-block;background:white;color:#0b7a55;padding:5rpx 18rpx;border-radius:30rpx;font-size:21rpx;font-weight:700}.event-title{font-size:34rpx;font-weight:800;line-height:1.35;margin:18rpx 0}.collect-event{display:inline-block;background:#fff;color:#0b7a55;border-radius:45rpx;font-size:24rpx;margin-top:24rpx;padding:0 28rpx}.collected{font-weight:700;margin-top:30rpx}.coupon{display:flex;align-items:stretch;background:#fff;border:1rpx solid #e2e0d9;border-radius:27rpx;overflow:hidden;margin-bottom:18rpx;min-height:178rpx}.coupon-face{width:165rpx;flex:none;background:#f3faf6;border-right:2rpx dashed #e2e0d9;display:flex;flex-direction:column;justify-content:center;align-items:center;color:#0b7a55;font-weight:800;font-size:34rpx}.coupon-face text{font-size:21rpx;font-weight:600}.coupon-info{flex:1;padding:25rpx 20rpx;min-width:0}.coupon-info .hint{font-size:22rpx;margin:8rpx 0}.coupon-end{font-size:21rpx;color:#0b7a55;font-weight:700}.use{align-self:center;margin:0 24rpx 0 0;padding:0 24rpx;border-radius:50rpx;background:#0b7a55;color:white;font-size:23rpx;flex:none}.small-outline{margin:0;flex:none;background:white;color:#0b7a55;border:2rpx solid #0b7a55;border-radius:40rpx;font-size:23rpx;padding:0 20rpx}.runner-card{border-color:#cfe8dc}.segments{display:flex;gap:7rpx;margin:26rpx 0}.segments view{height:11rpx;flex:1;background:#e4e1d8;border-radius:10rpx}.segments .filled{background:#0b7a55}
 .rewards-page .summary-head{background:transparent;margin:-28rpx -30rpx 22rpx;padding:30rpx 30rpx 18rpx;border-bottom:1rpx solid #e2e0d9}.rewards-page .event-banner{margin-top:20rpx;min-height:280rpx}.rewards-page .section{margin:30rpx 0 18rpx}.examples-title{font-weight:700;font-size:26rpx;margin:25rpx 0 4rpx}.examples-note{margin-bottom:16rpx}.example-coupon{border-color:#cfe8dc}.example-coupon .use{font-size:21rpx;padding:0 15rpx}.rewards-page .coupon-info{overflow:hidden}.rewards-page .coupon-info .strong{line-height:1.35}.rewards-page .coupon-face{width:165rpx}.rewards-page .event-banner button{min-height:64rpx;line-height:64rpx}
 /* Explicit sizes override WeChat v2 button defaults inside flex cards. */
@@ -39,3 +40,27 @@
 .reference-header{padding-bottom:22rpx}.reference-header .news-heading{margin-bottom:0}
 
 .public-offer .news-small{margin-top:12rpx}.rewards-page .public-offer .small-outline{margin-top:22rpx;width:auto;max-width:none;min-width:160rpx;padding:0 20rpx}
+
+/* Invitation entry follows the coupon-first invitation poster. */
+.news-redesign .invite-primary{position:relative;overflow:hidden;box-sizing:border-box;width:100%;margin:0;background:#e7472f;border:1rpx solid #d33f2b;box-shadow:inset 0 1rpx 0 rgba(243,236,217,.24),0 5rpx 22rpx rgba(113,45,30,.08);-webkit-backdrop-filter:blur(16rpx);backdrop-filter:blur(16rpx);border-radius:24rpx;padding:18rpx 26rpx;color:#f3ecd9}
+.invite-primary::before{content:'';position:absolute;width:380rpx;height:380rpx;left:-100rpx;top:0;background:radial-gradient(circle,rgba(230,202,128,.14),rgba(230,202,128,0) 70%);pointer-events:none}
+.invite-primary-watermark{position:absolute;right:-56rpx;top:60rpx;font-family:"Georgia",serif;font-size:120rpx;font-weight:700;line-height:1;color:rgba(243,236,217,.07);transform:rotate(-12deg);filter:blur(3rpx);pointer-events:none}
+.invite-primary-content{position:relative;z-index:1}
+.news-redesign .invite-primary-kicker{font-family:"Invite Serif","Songti SC","STSong",serif;color:#f3ecd9;font-size:21rpx;letter-spacing:1rpx}
+.news-redesign .invite-primary-title{font-family:"Invite Serif","Songti SC","STSong","SimSun",serif;color:#f3ecd9;font-size:35rpx;line-height:1.4;margin-top:4rpx;transform:rotate(-2deg);transform-origin:left center}
+.invite-primary-rewards{display:flex;align-items:flex-end;justify-content:space-between;gap:24rpx;margin:4rpx 0 8rpx}
+.invite-primary-coupon{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:0 14rpx}
+.invite-primary-discount{display:flex;align-items:baseline;gap:12rpx;transform:rotate(-6deg);transform-origin:left bottom;color:#f3ecd9;-webkit-text-stroke:.6rpx rgba(36,34,27,.45);text-shadow:1rpx 1rpx 0 #343126,2rpx 3rpx 0 #343126,3rpx 4rpx 0 #343126,4rpx 6rpx 0 #343126;white-space:nowrap}
+.invite-primary-number{font-family:"Invite Display","Georgia",serif;font-size:138rpx;font-weight:700;font-style:italic;line-height:1;letter-spacing:-5rpx}
+.invite-primary-off{font-family:"Invite Serif","Songti SC","STSong",serif;font-size:66rpx;font-weight:700;line-height:1}
+.invite-primary-unit{display:block;flex:none;font-family:"Invite Serif","Songti SC","STSong",serif;font-size:30rpx;line-height:1.4;margin-top:7rpx;letter-spacing:2rpx}
+.invite-primary-points{width:220rpx;flex:none;padding-bottom:3rpx;transform:rotate(-3deg)}
+.invite-primary-points-value{display:flex;align-items:baseline;gap:10rpx;color:#f3ecd9}
+.invite-primary-points-value>text:first-child{font-family:"Invite Display","Georgia",serif;font-size:54rpx;font-weight:700;line-height:1;color:#f3ecd9;text-shadow:none}
+.invite-primary-points-value>text:last-child{font-family:"Invite Serif","Songti SC","STSong",serif;font-size:25rpx}
+.invite-primary-points-label{font-size:20rpx;line-height:1.5;color:rgba(243,236,217,.85);margin-top:8rpx}
+.news-redesign .invite-primary-subtitle{color:rgba(243,236,217,.85);font-size:22rpx;line-height:1.5;margin-top:0}
+.news-redesign .invite-primary-footer{border-top-color:rgba(243,236,217,.3);color:#f3ecd9;margin-top:12rpx;padding-top:10rpx;font-size:23rpx}
+.invite-primary-press{opacity:.88}
+
+.news-redesign.page-dark .invite-primary{background:#e7472f;border-color:#d33f2b}

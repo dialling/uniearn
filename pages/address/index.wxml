@@ -5,6 +5,6 @@
  <view wx:for="{{list}}" wx:key="id" class="addr-item {{selectedId===item.id?'selected':''}} {{flash===item.id?'flash':''}}" style="animation-delay:{{index*40}}ms" data-id="{{item.id}}" bindtap="choose" hover-class="{{pick?'addr-press':''}}" hover-stay-time="80">
   <view class="addr-row"><text class="addr-name">{{item.owner}}</text><text wx:if="{{item.default}}" class="addr-badge">{{zh?'默认':'Default'}}</text><text wx:if="{{selectedId===item.id}}" class="addr-tick">✓</text></view>
   <view class="addr-phone">{{item.phoneText}}</view><view class="addr-place">{{item.place}}</view>
-  <view class="addr-actions"><text wx:if="{{!item.default}}" class="addr-default" catchtap="setDefault" data-id="{{item.id}}">{{zh?'设为默认':'Set default'}}</text><text wx:else class="hint">{{zh?'当前默认地址':'Default address'}}</text><view class="addr-btns"><text class="addr-btn" catchtap="edit" data-id="{{item.id}}">{{zh?'编辑':'Edit'}}</text><text class="addr-btn danger" catchtap="remove" data-id="{{item.id}}">{{zh?'删除':'Delete'}}</text></view></view>
+  <view class="addr-actions"><button wx:if="{{!item.default}}" class="addr-default" catchtap="setDefault" data-id="{{item.id}}" hover-class="addr-default-press">{{zh?'设为默认':'Set default'}}</button><text wx:else class="hint">{{zh?'当前默认地址':'Default address'}}</text><view class="addr-btns"><text class="addr-btn" catchtap="edit" data-id="{{item.id}}">{{zh?'编辑':'Edit'}}</text><text class="addr-btn danger" catchtap="remove" data-id="{{item.id}}">{{zh?'删除':'Delete'}}</text></view></view>
  </view>
 </view>

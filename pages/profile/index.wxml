@@ -10,7 +10,7 @@
 <!-- ① 个人资料与等级成长 -->
 <view class="me-header">
  <view class="me-header-top">
-  <view class="avatar header-avatar"><text wx:if="{{profile.name}}">{{initial}}</text><image wx:else src="/assets/profile-green.svg" mode="aspectFit"/></view>
+  <view class="avatar header-avatar"><text wx:if="{{profile.name}}">{{initial}}</text><image wx:else src="/assets/profile-white.svg" mode="aspectFit"/></view>
   <view class="header-main">
    <view class="header-name">{{profile.name||ui.account}}</view>
    <view class="header-badge-row"><view class="header-badge {{isRunner?'verified':''}}" bindtap="studentCheck">{{isRunner?'✓ '+ui.verified+(verifiedDate?' '+verifiedDate:''):ui.check}}</view></view>
@@ -35,14 +35,6 @@
 <block wx:if="{{isRunner}}"><view class="flow-card earnings-summary" bindtap="wallet"><view class="row card-heading"><text>{{language==='en'?'My wallet':'我的钱包'}}</text><text class="green-text" catchtap="earnings">{{ui.earnings}} ›</text></view><view class="row earnings-body"><view><view class="earnings-total">¥{{earnTotal}}</view><view class="hint"><text class="strong">¥{{earnWaiting}}</text> {{ui.waiting}}</view></view><view class="mini-bars"><view wx:for="{{earnBars}}" wx:key="index" style="height:{{item}}rpx"/></view></view><view class="earnings-note wallet-entry" catchtap="wallet"><image src="/assets/balance-outline.svg"/><text>{{language==='en'?'My wallet · test balance':'我的钱包 · 测试余额'}}</text><text class="wallet-entry-value">¥{{walletBalance}} ›</text></view></view></block>
 <!-- 非跑手：成为跑手 -->
 <block wx:if="{{!isRunner}}"><view class="become-card"><view class="become-label">{{ui.become}}</view><view class="become-title">{{ui.earnTitle}}</view><view class="become-description">{{ui.earnHelp}}</view><button bindtap="studentCheck">{{ui.start}}</button></view></block>
-<!-- ⑤ 订单与工具 -->
-<view class="section">{{ui.tools}}</view>
-<view class="flow-card menu-card">
- <view class="menu-row" bindtap="myOrders"><view class="settings-icon"><image src="/assets/receipt-outline.svg"/></view><view class="menu-copy">{{language==='en'?'All orders':'全部订单'}}<view class="hint">{{ui.myOrdersSub}}</view></view><text class="setting-chevron">›</text></view>
- <view class="menu-row" bindtap="routes"><view class="settings-icon"><image src="/assets/route-outline.svg"/></view><view class="menu-copy">{{ui.routes}}<view class="hint">{{ui.routesHelp}}</view></view><text class="setting-chevron">›</text></view>
- <view class="menu-row" bindtap="dormDetails"><view class="settings-icon"><image src="/assets/university-outline.svg"/></view><view class="menu-copy">{{ui.delivery}}<view class="hint">{{deliverySummary||ui.notSetAdd}}</view></view><text class="setting-chevron">›</text></view>
-</view>
-
 <!-- ⑦ 通知与提醒（已删除考试模式） -->
 <view class="section">{{ui.notifyGroup}}</view>
 <view class="flow-card menu-card notifications-card">
