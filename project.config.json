@@ -56,6 +56,34 @@
       {
         "value": ".txt",
         "type": "suffix"
+      },
+      {
+        "value": "UniEarn-GitHub-Changes",
+        "type": "folder"
+      },
+      {
+        "value": "uniearn-upload",
+        "type": "folder"
+      },
+      {
+        "value": "docs",
+        "type": "folder"
+      },
+      {
+        "value": "cloudfunctions",
+        "type": "folder"
+      },
+      {
+        "value": ".git",
+        "type": "folder"
+      },
+      {
+        "value": ".workbuddy-ai",
+        "type": "folder"
+      },
+      {
+        "value": "outputs",
+        "type": "folder"
       }
     ],
     "include": []

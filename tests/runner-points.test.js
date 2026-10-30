@@ -1,0 +1,14 @@
+const assert=require('node:assert/strict');const {quote}=require('../utils/runner-points');
+const pending={id:'pending',status:'taken',isRunner:true};
+assert.equal(quote({profile:{jobsDone:0},requests:[pending],progression:{anyCompleted:true}},pending),20,'Customer first completion does not consume the runner first completion');
+assert.equal(quote({profile:{jobsDone:9},requests:[pending]},pending),15,'Archived runner history prevents another first-order bonus');
+const delivered={id:'first',status:'delivered',isRunner:true,deliveredAt:1};
+assert.equal(quote({profile:{jobsDone:1},requests:[delivered]},delivered),20,'Delivered but unconfirmed first runner order keeps its first-completion preview');
+const first={...delivered,status:'confirmed',confirmedAt:2},later={id:'later',isRunner:true,status:'confirmed',confirmedAt:3};
+const s={profile:{jobsDone:2},requests:[later,first,pending]};
+assert.equal(quote(s,first),20);assert.equal(quote(s,later),15);assert.equal(quote(s,pending),15);
+const custom={...s,rewards:{activities:{config:{tasks:[{kind:'runner_order',points:30,firstCompletion:{points:45}}]}}}};
+assert.equal(quote(custom,first),45);assert.equal(quote(custom,pending),30);
+assert.equal(quote(s,{...pending,status:'cancelled'}),0);
+assert.equal(quote(s,{...first,runnerPointsAwarded:22}),22,'Persisted award takes precedence');
+console.log('Runner points: 15 regular / 20 first, role isolation, pending confirmation, archived history, historical first and configured points passed.');
