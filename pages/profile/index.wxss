@@ -4,7 +4,7 @@
 .me-page .flow-card{padding:27rpx;border:1rpx solid #e2e0d9;border-radius:27rpx;margin-bottom:20rpx}
 
 /* ① 个人资料与等级成长 */
-.me-header{background:#c2410c;color:#fff;border-radius:29rpx;padding:27rpx 25rpx 21rpx;margin:8rpx 0 20rpx;box-shadow:0 9rpx 22rpx rgba(194,65,12,.12)}
+.me-header{background:#0b7a55;color:#fff;border-radius:29rpx;padding:27rpx 25rpx 21rpx;margin:8rpx 0 20rpx;box-shadow:0 9rpx 22rpx rgba(11,122,85,.14)}
 .me-header-top{display:flex;align-items:center;gap:12rpx;min-width:0}
 .avatar{width:108rpx;height:108rpx;line-height:108rpx;font-size:43rpx}
 .header-avatar{width:92rpx;height:92rpx;line-height:92rpx;font-size:35rpx;background:#ffffff24;color:#fff;border-radius:50%;text-align:center;flex:none;border:2rpx solid #ffffff38;box-sizing:border-box;box-shadow:0 5rpx 13rpx rgba(110,43,15,.1)}
@@ -15,18 +15,20 @@
 .header-name{min-width:0;max-width:100%;font-size:32rpx;font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
 .header-actions{display:flex;flex:none;flex-direction:row;align-items:center;gap:8rpx}
 .header-badge-row{display:flex;align-items:center;margin:5rpx 0 0;min-width:0}
-.header-badge{max-width:100%;box-sizing:border-box;overflow:hidden;text-overflow:ellipsis;font-size:16rpx;line-height:1.4;padding:4rpx 10rpx;background:#ffffffed;border-radius:26rpx;font-weight:600;color:#9a3412;display:inline-block;white-space:nowrap}
-.header-badge.verified{background:#fff7ed;color:#9a3412}
-.runner-tag{display:inline-block;margin:0;font-size:17rpx;font-weight:600;color:#9a3412;background:#fff7ed;border-radius:26rpx;padding:4rpx 10rpx;line-height:1.4;white-space:nowrap}
+.header-badge{max-width:100%;box-sizing:border-box;overflow:hidden;text-overflow:ellipsis;font-size:16rpx;line-height:1.4;padding:4rpx 10rpx;background:#e7f3ed;border-radius:26rpx;font-weight:600;color:#08523a;display:inline-block;white-space:nowrap}
+.header-badge.verified{background:#e7f3ed;color:#08523a}
+.runner-tag{display:inline-block;margin:0;font-size:17rpx;font-weight:600;color:#08523a;background:#e7f3ed;border-radius:26rpx;padding:4rpx 10rpx;line-height:1.4;white-space:nowrap}
 .level-journey{background:transparent;border:0;border-radius:0;padding:0;margin:20rpx 0 0;box-shadow:none}
+.level-journey-press{opacity:.82;transform:scale(.995)}
 .journey-heading{display:flex;align-items:center;justify-content:space-between;gap:12rpx}
-.journey-level{min-width:0;color:#fff7ed;font-size:27rpx;font-weight:750;line-height:1.35}
-.journey-points{display:flex;align-items:baseline;gap:6rpx;flex:none;color:#ffedd5;font-size:19rpx;font-weight:600}
+.journey-level{min-width:0;color:#e7f3ed;font-size:27rpx;font-weight:750;line-height:1.35}
+.journey-points{display:flex;align-items:baseline;gap:6rpx;flex:none;color:#d3eadf;font-size:19rpx;font-weight:600}
 .journey-points-number{color:#fff;font-size:41rpx;font-weight:750;line-height:1}
-.journey-nudge{margin:14rpx 0 0;color:#ffedd5;text-align:right;font-size:19rpx;font-weight:500;line-height:1.4;white-space:nowrap}
-.hl-track{height:12rpx;background:#fed7aa;border-radius:10rpx;overflow:hidden;margin:8rpx 0 8rpx}
-.hl-fill{height:100%;background:#9a3412;border-radius:10rpx}
-.hl-tiers{display:flex;justify-content:space-between;font-size:19rpx;font-weight:600;color:#ffedd5}
+.journey-arrow{font-size:38rpx;line-height:1;margin-left:5rpx;color:#fff}
+.journey-nudge{margin:14rpx 0 0;color:#d3eadf;text-align:right;font-size:19rpx;font-weight:500;line-height:1.4;white-space:nowrap}
+.hl-track{height:12rpx;background:#8fc9ae;border-radius:10rpx;overflow:hidden;margin:8rpx 0 8rpx}
+.hl-fill{height:100%;background:#e7f3ed;border-radius:10rpx}
+.hl-tiers{display:flex;justify-content:space-between;font-size:19rpx;font-weight:600;color:#d3eadf}
 .hl-tiers text{flex:1;text-align:left}.hl-tiers .hl-end{text-align:right}
 .hl-tiers .cur{color:#fff;font-weight:650}
 .level-detail{margin-top:24rpx;border-top:1rpx solid #ffffff30;padding-top:22rpx}
@@ -131,16 +133,16 @@
 .me-dark .address-privacy{border-color:#3a3b37}
 .me-dark .hint,.me-dark .setting-value{color:#a9a69c}
 .me-dark .green-text,.me-dark .earnings-total,.me-dark .sticker-count{color:#6fd0a8}
-.me-dark .me-header{background:#c2410c;border:1rpx solid #d96b39;color:#fff7ed}
+.me-dark .me-header{background:#08523a;border:1rpx solid #0b7a55;color:#e7f3ed}
 .me-dark .header-name{color:#fff7ed}
 .me-dark .level-journey{background:transparent;border-color:transparent;box-shadow:none}
-.me-dark .journey-level,.me-dark .journey-points,.me-dark .journey-nudge,.me-dark .hl-tiers{color:#ffedd5}
+.me-dark .journey-level,.me-dark .journey-points,.me-dark .journey-nudge,.me-dark .hl-tiers{color:#d3eadf}
 .me-dark .journey-points-number{color:#fff7ed}
 .me-dark .journey-arrow{color:#b7d0bd}
-.me-dark .hl-track{background:#fed7aa}
-.me-dark .hl-fill{background:#9a3412}
-.me-dark .header-badge{background:#fff7ed;color:#9a3412}
-.me-dark .header-badge.verified{background:#fff7ed;color:#9a3412}
+.me-dark .hl-track{background:#0b7a55}
+.me-dark .hl-fill{background:#e7f3ed}
+.me-dark .header-badge{background:#e7f3ed;color:#08523a}
+.me-dark .header-badge.verified{background:#e7f3ed;color:#08523a}
 .me-dark .level-detail{border-color:#ffffff42}
 .me-dark .level-detail .level-track{background:#3a3b37}
 

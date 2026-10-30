@@ -8,6 +8,7 @@
     "pages/earnings/index",
     "pages/wallet/index",
     "pages/profile/index",
+    "pages/levels/index",
     "pages/request/index",
     "pages/trip/index",
     "pages/join/index",

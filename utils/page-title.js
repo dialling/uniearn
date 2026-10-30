@@ -24,6 +24,7 @@ const MAP={
   admin:['管理后台','Admin'],
   earnings:['收益','Earnings'],
   wallet:['我的钱包','My wallet'],
+  levels:['等级成长','Level journey'],
   rewards:['动态','News'],
   routes:['常用路线','Saved routes'],
   'route-edit':['路线详情','Route details'],

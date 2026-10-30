@@ -19,10 +19,10 @@
    <view wx:if="{{isRunner}}" class="runner-tag">{{ui.runnerTag}}</view>
   </view>
  </view>
- <view class="level-journey">
+ <view class="level-journey" bindtap="levels" hover-class="level-journey-press">
  <view class="journey-heading">
   <text class="journey-level">{{language==='zh'?'等级：':'Level: '}}{{tierName}}</text>
-  <view class="journey-points"><text class="journey-points-number">{{points||0}}</text><text>{{language==='zh'?'积分':'pts'}}</text></view>
+  <view class="journey-points"><text class="journey-points-number">{{points||0}}</text><text>{{language==='zh'?'积分':'pts'}}</text><text class="journey-arrow">›</text></view>
  </view>
  <view class="journey-nudge">{{nextJobsText}}</view>
  <view class="hl-track"><view class="hl-fill" style="{{'width: '+progress+'%;'}}"></view></view>

@@ -8,8 +8,10 @@ const supportXml=fs.readFileSync(path.join(root,'pages/support-chat/index.wxml')
 const supportCss=fs.readFileSync(path.join(root,'pages/support-chat/index.wxss'),'utf8');
 assert.doesNotMatch(profileXml,/class="(?:profile-editor|edit-button)"/);
 assert.doesNotMatch(profileXml,/bindtap="dormDetails"|\{\{ui\.tools\}\}/);
-assert.match(profileCss,/\.hl-track\{[^}]*background:#fed7aa/);
-assert.match(profileCss,/\.hl-fill\{[^}]*background:#9a3412/);
+assert.match(profileCss,/\.me-header\{[^}]*background:#0b7a55/);
+assert.match(profileCss,/\.hl-track\{[^}]*background:#8fc9ae/);
+assert.match(profileCss,/\.hl-fill\{[^}]*background:#e7f3ed/);
+assert.doesNotMatch(profileCss,/#c2410c|#9a3412|#fed7aa|#ffedd5|#f4a06e/,'profile level header stays in the green palette');
 assert.match(chatXml,/class="compose-input"/);
 assert.match(chatXml,/class="send-button(?:\s|")/);
 assert.match(chatXml,/class="sticker-toggle/);

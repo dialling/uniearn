@@ -1,0 +1,29 @@
+<lang-switch></lang-switch>
+<view class="levels-page {{darkClass}}">
+ <view class="levels-intro">
+  <view class="eyebrow">{{language==='zh'?'Uniearn 等级成长':'Uniearn Level Journey'}}</view>
+  <view class="intro-title">{{language==='zh'?'五个等级，逐级成长':'Five levels, one journey'}}</view>
+ </view>
+ <view class="level-tabs final-tabs glass">
+  <view class="glass-thumb of-5" style="transform:translateX({{current*100}}%)"><view wx:for="{{[current]}}" wx:key="*this" class="glass-blob"/></view>
+  <view wx:for="{{levels}}" wx:key="level" data-index="{{index}}" bindtap="select" hover-class="glass-press" class="level-tab {{current===index?'active selected':''}} {{currentLevel===item.level?'is-current':''}}">
+   <view class="tab-copy"><text class="tab-level">Lv.{{item.level}}</text><text class="tab-name">Yuni {{item.shortName}}</text></view>
+  </view>
+ </view>
+ <block wx:for="{{[current]}}" wx:for-item="cardKey" wx:key="*this"><view class="level-slide {{currentItem.theme}}">
+    <view class="ambient ambient-one"></view><view class="ambient ambient-two"></view>
+    <view class="slide-top"><text class="level-count">{{currentItem.number}} / 05</text><text wx:if="{{currentLevel===currentItem.level}}" class="current-chip">{{language==='zh'?'当前等级':'CURRENT'}}</text></view>
+    <view class="hero-row">
+     <view class="level-emblem"><view class="emblem-ring"></view><text>{{currentItem.level}}</text></view>
+     <image class="level-mascot" src="{{currentItem.mascot}}" mode="aspectFit"/>
+    </view>
+    <view class="level-kicker">LEVEL {{currentItem.level}}</view>
+    <view class="level-title">{{currentItem.name}}</view><view class="level-subtitle">{{language==='zh'?currentItem.en:currentItem.zh}}</view>
+    <view class="detail-card">
+     <view class="detail-label">{{currentItem.contentTitle}}</view>
+     <view wx:for="{{currentItem.benefits}}" wx:key="title" class="benefit-row"><text class="detail-check">✓</text><view><view class="benefit-title">{{item.title}}</view><view class="benefit-detail">{{item.detail}}</view></view></view>
+    </view>
+    <view class="requirement-card"><view><view class="detail-label">{{currentItem.conditionTitle}}</view><view class="requirement-value">{{currentItem.condition}}</view></view><view class="point-orbit"><view></view></view></view>
+ </view></block>
+ <view class="source-note">{{language==='zh'?'当前材料未规定额外优惠券、折扣或优先服务；页面仅展示已确认内容。':'No extra coupons, discounts or priority service are defined in the current materials; only confirmed content is shown.'}}</view>
+</view>
