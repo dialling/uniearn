@@ -1,4 +1,4 @@
-const assert=require('node:assert/strict');
+const assert=require('node:assert/strict'),fs=require('node:fs');
 const now=Date.parse('2030-01-02T18:00:00+08:00');Date.now=()=>now;
 const {harness}=require('./helpers/order-cloud');
 const h=harness();let definition,notices=[];
@@ -13,6 +13,7 @@ const status=value=>({currentTarget:{dataset:{value}}});
  const p=page('takeaway');p.setData({firstRoute:false});p.customLocker({detail:{value:'Dorm 7 takeaway locker'}});
  assert.equal(p.data.arrived,true);p.arrival(status('later'));assert.equal(p.data.arrivalTime,'');assert.equal(p.data.closeTime,'');
  await p.post();assert.equal(h.state.requests.length,0);assert.match(notices.at(-1),/latest arrival time/);
+ const xml=fs.readFileSync('pages/takeaway/index.wxml','utf8');assert.doesNotMatch(xml,/arrival-editor-mask|点击后连续输入|Tap and enter 4 digits/);assert.match(xml,/class="arrival-sequence-input"[^>]*bindfocus="startArrivalDigits"/);p.startArrivalDigits();assert.equal(p.data.arrivalInputFocus,true);p.inputArrivalDigits({detail:{value:'2460'}});assert.equal(p.data.arrivalInputInvalid,true);p.startArrivalDigits();p.inputArrivalDigits({detail:{value:'1845'}});assert.equal(p.data.arrivalInputFocus,false,'four valid digits finish in the original field');assert.deepEqual([p.data.arrivalDigit1,p.data.arrivalDigit2,p.data.arrivalDigit3,p.data.arrivalDigit4],['1','8','4','5']);assert.equal(p.data.arrivalTime,'18:45');assert.equal(p.data.closeTime,'19:15');
  input(p,'hour','24');input(p,'minute','60');assert.equal(p.data.arrivalTime,'');assert.equal(p.data.closeTime,'');
  await p.post();assert.equal(h.state.requests.length,0);assert.match(notices.at(-1),/00–23/);
  input(p,'hour','7');input(p,'minute','5');p.blurArrival({currentTarget:{dataset:{part:'hour'}}});p.blurArrival({currentTarget:{dataset:{part:'minute'}}});assert.equal(p.data.arrivalTime,'07:05');

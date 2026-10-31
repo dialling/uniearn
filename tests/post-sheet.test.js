@@ -37,10 +37,11 @@ tap('trip');assert.equal(opened.url,'/pages/trip-start/index?category=takeout');
 tap('request');assert.equal(opened.url,'/pages/takeaway/index');
 assert.ok(require('../app.json').pages.includes('pages/task-post/index'),'task-post must be registered to be reachable');
 
-// The form keeps the requested shopping and textbook examples.
+// The free-form task page no longer shows canned examples below the description field.
 const form=read('pages/task-post/index.js');
-for(const example of ['帮我买一个枕头或一个盆儿','帮我拿一下课本'])
-  assert.ok(form.includes(example),`example missing from the task form: ${example}`);
-assert.match(form,/en:\['Buy me a pillow or a basin'/,'the examples stay bilingual');
+const formView=read('pages/task-post/index.wxml');
+for(const example of ['帮我买一个枕头或一个盆儿','帮我拿一下课本','Buy me a pillow or a basin','Pick up my textbook'])
+  assert.ok(!form.includes(example)&&!formView.includes(example),`canned example remains on the task form: ${example}`);
+assert.doesNotMatch(formView,/ui\.exampleLabel|wx:for="\{\{examples\}\}"/,'the example heading and chips are removed');
 
-console.log('Post sheet: pick-up, trip and free-form task, with routing and bilingual examples');
+console.log('Post sheet: pick-up, trip and a clean free-form task page without canned examples');
