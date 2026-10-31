@@ -39,7 +39,6 @@
 <view class="section">{{ui.notifyGroup}}</view>
 <view class="flow-card menu-card notifications-card">
  <view class="menu-row"><view><view class="strong">{{ui.tips}}</view><view class="hint">{{ui.tipsHelp}}</view></view><switch checked="{{tips}}" color="#0b7a55" bindchange="tipToggle"/></view>
- <block wx:if="{{isRunner}}"><view class="menu-row"><view><view class="strong">{{ui.near}}</view><view class="hint">{{ui.nearHelp}}</view></view><switch color="#0b7a55" checked="{{preferences.newJobs!==false}}" data-key="newJobs" bindchange="preference"/></view></block>
  <view class="menu-row"><view><view class="strong">{{ui.updates}}</view><view class="hint">{{ui.updatesHelp}}</view><text class="link" catchtap="notifyGuide">{{ui.notifyGuide}} ›</text></view><switch color="#0b7a55" checked="{{preferences.orderUpdates!==false}}" data-key="orderUpdates" bindchange="preference"/></view>
 </view>
 <!-- ⑧ 账户 -->
@@ -55,7 +54,6 @@
  <view class="menu-row" bindtap="info" data-topic="privacy"><view class="settings-icon"><image src="/assets/lock-outline.svg"/></view><view class="menu-copy">{{ui.privacy}}</view><text class="setting-chevron">›</text></view>
  <view class="menu-row" bindtap="info" data-topic="support"><view class="settings-icon"><image src="/assets/support-outline.svg"/></view><view class="menu-copy">{{ui.helpCenter}}<view class="hint">{{ui.helpCenterSub}}</view></view><text class="setting-chevron">›</text></view>
 </view>
-<view class="flow-card menu-card admin-entry"><view class="menu-row" bindtap="admin"><view class="settings-icon"><image src="/assets/shield-outline.svg"/></view><view class="menu-copy">{{ui.adminLogin}}<view class="hint">{{ui.adminHelp}}</view></view><text class="setting-chevron">›</text></view></view>
 <view class="me-footer">{{ui.footer}}<view>Uniearn v{{version}}</view></view>
 </block></view><app-nav active="profile"></app-nav>
 <yuni-assistant id="me-yuni" topic="me" language="{{language}}"></yuni-assistant>

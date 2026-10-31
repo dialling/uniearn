@@ -8,13 +8,16 @@
 .sheet-yuni{position:absolute;right:38rpx;top:-142rpx;width:150rpx;height:142rpx;pointer-events:none}
 .sheet-handle{width:78rpx;height:9rpx;margin-bottom:30rpx}
 .sheet-header{font-size:39rpx;margin-bottom:26rpx;gap:20rpx}
+.sheet-audience{margin:0 4rpx 12rpx;color:#6b6860;font-size:22rpx;font-weight:700;letter-spacing:1rpx}
+.sheet-runner-audience{margin-top:8rpx}
 .sheet-close{flex:none;width:74rpx;height:74rpx;line-height:70rpx;background:#f0efea}
 .sheet-choice{gap:24rpx;padding:26rpx;min-height:122rpx;border-radius:28rpx;margin-bottom:22rpx}
 .sheet-choice.parcel{border:1rpx solid #dc2626;background:#fff1f0;color:#dc2626}
 .parcel .sheet-icon{background:#dc2626}
 .sheet-choice.task{border:2rpx solid #9db4f0;background:#e6edfc;color:#1d4ed8}
 .task .sheet-icon{background:#1d4ed8}
-.sheet-choice.trip{border:2rpx solid #0b7a55;background:#e7f3ed;color:#0b7a55;margin-bottom:0}
+.sheet-choice.trip{border:2rpx solid #0b7a55;background:#e7f3ed;color:#0b7a55}
+.sheet-choice.trip{margin-bottom:0}
 .trip .sheet-icon{background:#0b7a55}
 .sheet-icon{width:88rpx;height:88rpx;border-radius:25rpx}
 .sheet-icon .nav-sheet-icon{width:40rpx;height:40rpx}
@@ -56,6 +59,7 @@
 .nav-dark .sheet-handle{background:#3a3b37}
 .nav-dark .sheet-close{background:#3a3b37;color:#edebe4}
 .nav-dark .sheet-soon-heading{color:#a9a69c}
+.nav-dark .sheet-audience{color:#a9a69c}
 .nav-dark .sheet-copy{color:#edebe4}
 .nav-dark .sheet-description{color:#a9a69c}
 .nav-dark .sheet-choice.parcel{background:#3d2020;border-color:#dc2626;color:#fca5a5}

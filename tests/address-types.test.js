@@ -8,16 +8,16 @@ const {harness}=require('./helpers/order-cloud'),h=harness();
 function page(name){delete require.cache[require.resolve('../pages/'+name+'/index')];require('../pages/'+name+'/index');return {...definition,data:structuredClone(definition.data),setData(patch){for(const [key,value] of Object.entries(patch)){const keys=key.split('.');let target=this.data;for(const part of keys.slice(0,-1))target=target[part];target[keys.at(-1)]=value;}}};}
 const event=value=>({currentTarget:{dataset:{value}}});
 (async()=>{
- store.reset();store.update(s=>{s.language='zh';s.profile={...s.profile,...h.accounts[h.engine.idFor('customer')].profile,accountId:h.engine.idFor('customer'),onboarded:true};});
+ store.reset();store.update(s=>{s.language='zh';s.profile={...s.profile,...h.accounts[h.engine.idFor('customer')].profile,accountId:h.engine.idFor('customer'),onboarded:true,verification:{gender:'female'}};});
  let manager=page('address-add');manager.onLoad();manager.onShow();
  assert.equal(manager.data.form.destinationType,'dorm');
  manager.setData({'form.owner':'同学','form.phone':'13800138000','form.area':0,'form.room':'101'});manager.syncBuildings();manager.setData({'form.building':0});manager.chooseGender(event('male'));
- manager.chooseType(event('place'));manager.chooseGender(event('female'));manager.setData({'form.deliveryAddress':'图书馆一楼前台'});
+ manager.chooseType(event('place'));assert.equal(manager.data.form.recipientGender,'female','other-address gender is filled from the profile');manager.setData({'form.name':'图书馆一楼前台','form.deliveryAddress':'图书馆一楼前台'});
  manager.chooseType(event('dorm'));assert.equal(manager.data.form.dormGender,'male');assert.equal(manager.data.form.building,0);assert.equal(manager.data.form.room,'101');
  manager.chooseType(event('place'));assert.equal(manager.data.form.recipientGender,'female');assert.equal(manager.data.form.deliveryAddress,'图书馆一楼前台');
  manager.setData({'form.deliveryAddress':'  '});await manager.save();assert.equal(routes.list().length,0);assert.match(notices.at(-1),/具体地点/);
  manager.setData({'form.deliveryAddress':'  图书馆一楼前台  '});await manager.save();
- const saved=routes.list()[0];assert.equal(saved.destinationType,'place');assert.equal(saved.deliveryAddress,'图书馆一楼前台');assert.equal(saved.recipientGender,'female');assert.equal(saved.dormGender,'');assert.equal(saved.room,'');assert.equal(saved.floor,0);assert.equal(saved.default,true);
+ const saved=routes.list()[0];assert.equal(saved.destinationType,'place');assert.equal(saved.name,'图书馆一楼前台');assert.equal(saved.deliveryAddress,'图书馆一楼前台');assert.equal(saved.recipientGender,'female');assert.equal(saved.dormGender,'');assert.equal(saved.room,'');assert.equal(saved.floor,0);assert.equal(saved.default,true);
  manager=page('address-edit');manager.onLoad({id:saved.id});manager.onShow();assert.equal(manager.data.form.destinationType,'place');assert.equal(manager.data.form.recipientGender,'female');
  manager.setData({'form.deliveryAddress':'图书馆东门'});await manager.save();assert.equal(routes.list().length,1);assert.equal(routes.list()[0].id,saved.id);assert.equal(routes.list()[0].deliveryAddress,'图书馆东门');
  const parcel=page('create');parcel.onLoad();const food=page('takeaway');food.onLoad();

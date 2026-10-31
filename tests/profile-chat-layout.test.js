@@ -8,6 +8,8 @@ const supportXml=fs.readFileSync(path.join(root,'pages/support-chat/index.wxml')
 const supportCss=fs.readFileSync(path.join(root,'pages/support-chat/index.wxss'),'utf8');
 assert.doesNotMatch(profileXml,/class="(?:profile-editor|edit-button)"/);
 assert.doesNotMatch(profileXml,/bindtap="dormDetails"|\{\{ui\.tools\}\}/);
+assert.doesNotMatch(profileXml,/ui\.near|data-key="newJobs"/,'the nearby-jobs notification row is removed');
+assert.doesNotMatch(profileXml,/admin-entry|ui\.adminLogin|ui\.adminHelp/,'the admin login card is removed from Me');
 assert.match(profileCss,/\.me-header\{[^}]*background:#0b7a55/);
 assert.match(profileCss,/\.hl-track\{[^}]*background:#8fc9ae/);
 assert.match(profileCss,/\.hl-fill\{[^}]*background:#e7f3ed/);

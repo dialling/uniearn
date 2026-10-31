@@ -26,7 +26,7 @@ console.log('Order board: decimal prices, price maximums, 10 open orders and 30 
 
 // Coupon split never makes a part negative, and abandoning restores the original discount.
 {
-  const s={nextId:1,requests:[],trips:[],profile:{jobsDone:40,onTime:40}};
+  const s={nextId:1,requests:[],trips:[],profile:{jobsDone:40}};
   const r=d.createRequest({...s,profile:{accountId:'owner'}},{category:'parcel',parcelItems:[{size:'oversized',code:'A'},{size:'small',code:'B'}],station:'A',dorm:'B',room:'1',phone:'13800000000'});
   s.requests=[r];s.nextId=5;r.campusId='sip';r.discount=10;
   const t=d.acceptBoxes(s,[{requestId:r.id,index:1}]);t.phase='collect';
@@ -41,7 +41,7 @@ console.log('Order board: decimal prices, price maximums, 10 open orders and 30 
 // acceptBoxes uses the same route rules as other accepts.
 {
   const base={category:'parcel',parcelItems:[{size:'small',code:'A'}],station:'A',dorm:'B',room:'1',phone:'13800000000'};
-  const s={nextId:1,requests:[],trips:[],profile:{accountId:'owner',jobsDone:40,onTime:40}};
+  const s={nextId:1,requests:[],trips:[],profile:{accountId:'owner',jobsDone:40}};
   const a=d.createRequest(s,base),b=d.createRequest(s,base);a.campusId=b.campusId='sip';a.destinationKey='x';b.destinationKey='y';
   assert.throws(()=>d.acceptBoxes(s,[{requestId:a.id,index:0},{requestId:b.id,index:0}]),/same route/);
   b.destinationKey='x';b.closesAt=Date.now()-1;assert.throws(()=>d.acceptBoxes(s,[{requestId:b.id,index:0}]),/no longer available/);
@@ -61,7 +61,7 @@ console.log('Coupon split caps, abandon restore, refund floor and acceptBoxes ro
   const removed=e.archive(state,now+e.ARCHIVE_AFTER+60000);
   assert.equal(removed.length,1);assert.equal(state.requests.length,0);assert.equal(state.trips.length,0);assert.equal(Object.keys(state.threads).length,0);
   const after=e.snapshot(state,runner,accounts[runner],now).stats;
-  assert.equal(after.jobsDone,before.jobsDone);assert.equal(after.onTime,before.onTime);assert.equal(after.paid,before.paid);
+  assert.equal(after.jobsDone,before.jobsDone);assert.equal(after.paid,before.paid);
   assert.equal(state.members[student].archivedOrders,1);assert.equal(state.members[student].confirmedMonths.length,1);
   require('../cloudfunctions/orderService/rewards').invite(state,student,runner.slice(0,12),now);
   assert.equal(state.members[student].invitedBy,runner,'archived orders do not prevent the first invitation binding');

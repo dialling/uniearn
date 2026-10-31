@@ -1,14 +1,32 @@
  <view class="flow-card addr-form">
-  <view class="addr-form-head"><text class="addr-title">{{editing?(zh?'编辑常用地址':'Edit address'):(zh?'新增常用地址':'New address')}}</text></view>
+  <view class="addr-form-head"><text class="addr-title">{{orderMode?(zh?'仅修改本单':'Edit for this order'):editing?(zh?'编辑常用地址':'Edit address'):(form.destinationType==='place'?(zh?'添加其他地址':'Add another address'):(zh?'新增常用地址':'New address'))}}</text></view>
+  <view wx:if="{{orderMode}}" class="addr-order-note">{{zh?'只修改这笔订单，你的常用地址保持不变。':'Only this order changes. Your saved address stays the same.'}}</view>
   <view class="final-tabs glass addr-type-tabs"><view class="glass-thumb of-2" style="transform:translateX({{(form.destinationType==='place'?1:0)*100}}%)"><view wx:for="{{[form.destinationType]}}" wx:key="*this" class="glass-blob"/></view><view class="{{form.destinationType==='dorm'?'active':''}}" hover-class="glass-press" data-value="dorm" bindtap="chooseType">{{zh?'宿舍区':'Dorms'}}</view><view class="{{form.destinationType==='place'?'active':''}}" hover-class="glass-press" data-value="place" bindtap="chooseType">{{zh?'其他':'Other'}}</view></view>
-  <view class="field-label">{{zh?'姓名':'Name'}}</view><input always-embed placeholder-class="ue-ph" class="field" value="{{form.owner}}" data-field="owner" bindinput="field" maxlength="40" placeholder="{{zh?'如：张三':'e.g. Ming Li'}}"/>
-  <view class="field-label">{{zh?'性别':'Gender'}}</view><view class="pills"><view class="pill dorm-male {{(form.destinationType==='place'?form.recipientGender:form.dormGender)==='male'?'selected':''}}" data-value="male" bindtap="chooseGender">{{zh?(form.destinationType==='place'?'男':'男寝'):(form.destinationType==='place'?'Male':'Men’s dorms')}}</view><view class="pill dorm-female {{(form.destinationType==='place'?form.recipientGender:form.dormGender)==='female'?'selected':''}}" data-value="female" bindtap="chooseGender">{{zh?(form.destinationType==='place'?'女':'女寝'):(form.destinationType==='place'?'Female':'Women’s dorms')}}</view></view>
-  <view class="field-label">{{zh?'电话':'Phone'}}</view><input always-embed placeholder-class="ue-ph" class="field" type="number" maxlength="11" value="{{form.phone}}" data-field="phone" bindinput="field" placeholder="{{zh?'方便跑手联系':'So the runner can reach you'}}"/>
   <block wx:if="{{form.destinationType==='dorm'}}">
+  <view class="field-label">{{zh?'姓名':'Name'}}</view><input always-embed placeholder-class="ue-ph" class="field" value="{{form.owner}}" data-field="owner" bindinput="field" maxlength="40" placeholder="{{zh?'如：张三':'e.g. Ming Li'}}"/>
+  <view class="field-label">{{zh?'性别':'Gender'}}</view><view class="pills"><view class="pill dorm-male {{form.dormGender==='male'?'selected':''}}" data-value="male" bindtap="chooseGender">{{zh?'男寝':'Men’s dorms'}}</view><view class="pill dorm-female {{form.dormGender==='female'?'selected':''}}" data-value="female" bindtap="chooseGender">{{zh?'女寝':'Women’s dorms'}}</view></view>
+  <view class="field-label">{{zh?'电话':'Phone'}}</view><input always-embed placeholder-class="ue-ph" class="field" type="number" maxlength="11" value="{{form.phone}}" data-field="phone" bindinput="field" placeholder="{{zh?'方便跑手联系':'So the runner can reach you'}}"/>
   <view class="field-label">{{zh?'宿舍区':'Dorm area'}}</view><picker range="{{areaLabels}}" value="{{form.area}}" bindchange="area"><view class="field ue-select addr-select {{form.area<0?'empty':''}}"><text class="ue-select-text">{{form.area>=0?areaLabels[form.area]:(zh?'请选择宿舍区':'Choose an area')}}</text><text class="ue-chev"></text></view></picker>
   <view class="field-label">{{zh?'楼栋':'Building'}}</view><picker range="{{buildingLabels}}" value="{{form.building}}" bindchange="building"><view class="field ue-select addr-select {{form.building<0?'empty':''}}"><text class="ue-select-text">{{form.building>=0?buildingLabels[form.building]:(zh?'请选择楼栋':'Choose a building')}}</text><text class="ue-chev"></text></view></picker>
   <view class="field-label">{{zh?'房间号':'Room'}}</view><input always-embed placeholder-class="ue-ph" class="field" value="{{form.room}}" data-field="room" bindinput="field" maxlength="20" placeholder="{{zh?'如：1218，方便跑手上楼':'e.g. 1218'}}"/>
   </block>
-  <block wx:else><view class="field-label">{{zh?'具体地点':'Exact location'}}</view><textarea always-embed placeholder-class="ue-ph" class="field addr-location" value="{{form.deliveryAddress}}" data-field="deliveryAddress" bindinput="field" maxlength="500" placeholder="{{zh?'请填写详细地点，例如：图书馆一楼前台':'Enter the exact location, e.g. the library ground-floor front desk'}}"/></block>
-  <button class="btn addr-save" bindtap="save" loading="{{saving}}" disabled="{{saving}}">{{editing?(zh?'保存修改':'Save changes'):(zh?'保存地址':'Save address')}}</button>
+  <block wx:else>
+   <view class="addr-section addr-place-section">
+    <view class="addr-section-head"><view><view class="addr-section-title">{{zh?'地址信息':'Address details'}}</view><view class="addr-section-sub">{{zh?'名称用于快速查找，具体位置提供给跑手。':'Use a short name for lookup and give the runner exact directions.'}}</view></view></view>
+    <view class="field-label addr-field-label">{{zh?'地址名称':'Address name'}}<text class="addr-label-note">{{zh?'简短名称':'Short label'}}</text></view>
+    <input always-embed placeholder-class="ue-ph" class="field addr-name-input" value="{{form.name}}" data-field="name" bindinput="field" maxlength="80" placeholder="{{zh?'例如：BS楼':'e.g. BS Building'}}"/>
+    <view class="field-label addr-field-label">{{zh?'具体地点':'Exact location'}}<text class="addr-label-note">{{zh?'写清入口或门牌':'Add an entrance or room'}}</text></view>
+    <textarea always-embed placeholder-class="ue-ph" class="field addr-location" value="{{form.deliveryAddress}}" data-field="deliveryAddress" bindinput="field" maxlength="500" placeholder="{{zh?'例如：2楼东侧玻璃门，咖啡厅旁':'e.g. Level 2 east glass door, next to the café'}}"/>
+   </view>
+   <view class="addr-section addr-contact-section">
+    <view class="addr-section-head"><view><view class="addr-section-title">{{zh?'收件信息':'Recipient details'}}<text class="addr-auto-tag">{{zh?'已自动填入 · 可修改':'Filled in · Editable'}}</text></view><view class="addr-section-sub">{{zh?'默认使用个人资料，也可以为这个地址单独修改。':'Uses your profile by default. You can change it for this address.'}}</view></view></view>
+    <view class="field-label addr-field-label">{{zh?'姓名':'Name'}}</view>
+    <input always-embed placeholder-class="ue-ph" class="field" value="{{form.owner}}" data-field="owner" bindinput="field" maxlength="40" placeholder="{{zh?'请输入收件人姓名':'Enter the recipient name'}}"/>
+    <view class="field-label addr-field-label">{{zh?'性别':'Gender'}}</view>
+    <view class="pills addr-recipient-gender"><view class="pill dorm-male {{form.recipientGender==='male'?'selected':''}}" data-value="male" bindtap="chooseGender">{{zh?'男':'Male'}}</view><view class="pill dorm-female {{form.recipientGender==='female'?'selected':''}}" data-value="female" bindtap="chooseGender">{{zh?'女':'Female'}}</view></view>
+    <view class="field-label addr-field-label">{{zh?'电话':'Phone'}}</view>
+    <input always-embed placeholder-class="ue-ph" class="field" type="number" maxlength="11" value="{{form.phone}}" data-field="phone" bindinput="field" placeholder="{{zh?'请输入 11 位手机号':'Enter an 11-digit phone number'}}"/>
+   </view>
+  </block>
+  <button class="btn addr-save" bindtap="save" loading="{{saving}}" disabled="{{saving}}">{{orderMode?(zh?'用于这笔订单':'Use for this order'):editing?(zh?'保存修改':'Save changes'):(zh?'保存地址':'Save address')}}</button>
  </view>

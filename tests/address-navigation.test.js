@@ -19,12 +19,14 @@ function page(name,options={},events={}){
  const editor=page('address-edit',{id:saved.id},navigation.events);editor.onShow();
  assert.equal(editor.data.editing,true);assert.equal(editor.data.form.destinationType,'dorm','editing keeps the saved address type');assert.equal(editor.data.form.room,'1111');assert.equal(editor.data.list,undefined);
  editor.setData({'form.room':'2222'});await editor.save();assert.equal(back.delta,1);assert.equal(routes.list().length,1);assert.equal(routes.list()[0].room,'2222');assert.equal(list.data.list[0].room,'2222');assert.equal(food.data.room,'2222','editing the selected address updates the order draft');
+ food.edit();assert.equal(navigation.url,'/pages/address-add/index?mode=order','per-order edits reuse the built-in address form');
+ const orderEdit=page('address-add',{mode:'order'},navigation.events);orderEdit.loadDraft({...food.draft(),name:food.data.routeName});orderEdit.onShow();assert.equal(orderEdit.data.orderMode,true);assert.equal(orderEdit.data.form.room,'2222');orderEdit.setData({'form.room':'3333'});await orderEdit.save();assert.equal(food.data.room,'3333','the edited address is applied to this order');assert.equal(routes.list()[0].room,'2222','per-order editing does not change the saved address');
  const cancel=page('address-edit',{id:saved.id});cancel.setData({'form.room':'not saved'});assert.equal(routes.list()[0].room,'2222','typing in edit does not change saved data');
- food.addAddress();assert.equal(navigation.url,'/pages/address-add/index');
+ food.addAddress();assert.equal(navigation.url,'/pages/address-add/index');food.addOtherAddress();assert.equal(navigation.url,'/pages/address-add/index?type=place');
  const add=page('address-add',{},navigation.events);add.onShow();assert.equal(add.data.editing,false);assert.equal(add.data.form.destinationType,'place','additional addresses start in Other');add.chooseType({currentTarget:{dataset:{value:'dorm'}}});add.onShow();assert.equal(add.data.form.destinationType,'dorm','returning to the form keeps a manual tab selection');assert.equal(add.data.form.id,'');assert.equal(add.data.list,undefined);
- add.chooseType({currentTarget:{dataset:{value:'place'}}});add.setData({'form.deliveryAddress':'图书馆前台'});await add.save();
+ add.chooseType({currentTarget:{dataset:{value:'place'}}});add.setData({'form.name':'图书馆一楼前台','form.deliveryAddress':'图书馆前台'});await add.save();
  assert.equal(routes.list().length,2);assert.equal(food.data.deliveryAddress,'图书馆前台');assert.equal(food.data.routeId,routes.list()[1].id,'new address is selected after saving');assert.equal(back.delta,1);
- const parcel=page('create');parcel.manageAddresses();assert.match(navigation.url,/^\/pages\/address\/index\?pick=1/);parcel.addAddress();assert.equal(navigation.url,'/pages/address-add/index');
+ const parcel=page('create');parcel.manageAddresses();assert.match(navigation.url,/^\/pages\/address\/index\?pick=1/);parcel.addAddress();assert.equal(navigation.url,'/pages/address-add/index');parcel.addOtherAddress();assert.equal(navigation.url,'/pages/address-add/index?type=place');
  const parcelAdd=page('address-add',{},navigation.events);assert.equal(parcelAdd.data.form.destinationType,'place');
  list.add();assert.equal(navigation.url,'/pages/address-add/index');assert.equal(page('address-add').data.form.destinationType,'place');
  const listXml=fs.readFileSync(require.resolve('../pages/address/index.wxml'),'utf8');assert.doesNotMatch(listXml,/<input|<textarea|addr-form/);

@@ -2,22 +2,27 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const root=path.resolve(__dirname,'..');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 
-// Three choices now, in reading order: pick-up, free-form task, then trip.
+// Customer actions stay together above the runner action.
 const nav=read('components/nav/index.wxml');
 const modes=[...nav.matchAll(/class="sheet-choice [a-z]+" data-mode="([a-z]+)"/g)].map(m=>m[1]);
-assert.deepEqual(modes,['request','task','trip'],'the post sheet offers pick-up, trip and a free-form task');
+assert.deepEqual(modes,['request','task','trip'],'the post sheet groups customer actions above Start a trip');
+assert.match(nav,/为顾客/);assert.match(nav,/For customers/);
+assert.match(nav,/为跑手/);assert.match(nav,/For runners/);
 
 // The task card is bilingual and names the needs people actually post.
 assert.match(nav,/其他需求/);
 assert.match(nav,/Something else/);
 assert.match(nav,/class="sheet-new"/);
 assert.match(nav,/src="\/assets\/sheet-task\.svg"/);
-for(const word of ['枕头','课本','老师','签到']) assert.ok(nav.includes(word),`the task card should mention ${word}`);
+assert.match(nav,/src="\/assets\/sheet-yuan\.svg"/,'Start a trip uses the RMB icon at the existing image size');
+assert.match(read('assets/sheet-yuan.svg'),/M5 4l7 8 7-8M12 12v8M6\.5 12h11M6\.5 16h11/,'the icon draws a yuan sign with two diagonals, two bars and one stem');
+for(const word of ['枕头','课本','老师','签到']) assert.ok(nav.includes(word),`the third card should mention ${word}`);
 
 // Only the last card drops its bottom margin, so the sheet still ends flush.
 const navCss=read('components/nav/index.wxss');
-assert.match(navCss,/\.sheet-choice\.trip\{[^}]*margin-bottom:0\}/);
+assert.match(navCss,/\.sheet-choice\.trip\{margin-bottom:0\}/);
 assert.doesNotMatch(navCss,/\.sheet-choice\.task\{[^}]*margin-bottom:0\}/);
+assert.match(navCss,/\.sheet-runner-audience\{margin-top:8rpx\}/);
 assert.match(navCss,/\.sheet-choice\.parcel\{animation-delay:\.08s\}\.sheet-choice\.task\{animation-delay:\.13s\}\.sheet-choice\.trip\{animation-delay:\.2s\}/);
 
 // Routing: mode=task opens the free-form form, and that page has to be registered.

@@ -10,13 +10,12 @@ function check(ok, message) { if (!ok) throw Error(message); }
 // One shared document holds every order, so each student gets a fair share of it.
 const OPEN_STATUSES = ['waiting','taken','collected','delivered','disputed'], MAX_OPEN_PER_USER = 10, MAX_CREATES_PER_DAY = 30, MAX_TASK_PRICE = 500;
 function initial() { return { nextId: 1, requests: [], trips: [], members: {}, receipts: {}, revision: 0, loyaltyStartedAt:Date.now() }; }
-const onTime = r => r.category==='task'?(!r.dueAt||r.deliveredAt<=r.dueAt):r.deliveredAt-r.collectedAt<=15*60000;
 function stats(s, id) {
   const ownTrips = new Set(s.trips.filter(t => t.runnerAccountId === id).map(t => t.id));
   const paid = s.requests.filter(r => r.status === 'confirmed' && ownTrips.has(r.runnerId));
   const done=s.requests.filter(r=>ownTrips.has(r.runnerId)&&['delivered','confirmed'].includes(r.status));
   const old = (s.members[id] || {}).archived || {};
-  return { jobsDone: done.length+(old.jobsDone||0), onTime:done.filter(onTime).length+(old.onTime||0), paid: Math.round((paid.reduce((n, r) => n + r.reward+Number(r.runnerBonus||0), 0)+(old.paid||0)) * 100) / 100,
+  return { jobsDone: done.length+(old.jobsDone||0), paid: Math.round((paid.reduce((n, r) => n + r.reward+Number(r.runnerBonus||0), 0)+(old.paid||0)) * 100) / 100,
     marks: (s.members[id] || {}).marks || [] };
 }
 // Finished orders leave the shared document after ARCHIVE_AFTER. That window is longer than a
@@ -36,8 +35,8 @@ function archive(s, now = Date.now()) {
     }
     const t = r.status === 'confirmed' && s.trips.find(x => x.id === r.runnerId);
     if (t && t.runnerAccountId) {
-      const runner = member(t.runnerAccountId), a = runner.archived || (runner.archived = { jobsDone: 0, onTime: 0, paid: 0 });
-      a.jobsDone++; if (onTime(r)) a.onTime++; a.paid = Math.round((a.paid + r.reward + Number(r.runnerBonus || 0)) * 100) / 100;
+      const runner = member(t.runnerAccountId), a = runner.archived || (runner.archived = { jobsDone: 0, paid: 0 });
+      a.jobsDone++; a.paid = Math.round((a.paid + r.reward + Number(r.runnerBonus || 0)) * 100) / 100;
     }
   }
   s.requests = s.requests.filter(r => !ids.has(r.id));
@@ -87,7 +86,7 @@ function input(data, actor) {
     if(out.destinationType==='place'){check(!!out.deliveryAddress,'Describe exactly where to deliver.');out.dorm=/library|图书馆/i.test(out.deliveryAddress)?'Library':/classroom|教室/i.test(out.deliveryAddress)?'Classroom':/sports|体育/i.test(out.deliveryAddress)?'Sports centre':'Campus meeting point';out.destinationKey=crypto.createHash('sha256').update(out.deliveryAddress.toLowerCase().replace(/\s+/g,' ').trim()).digest('hex');out.room='';out.dropNote='Meet at the stated location';}
   }
   if(data.deliverAt!==undefined){check(Number.isSafeInteger(data.deliverAt),'Invalid delivery time');out.deliverAt=data.deliverAt;}
-  out.arrived = data.arrived === true; out.soup = data.soup === true; out.fragile = data.category === 'parcel' && data.fragile === true; out.night = data.category === 'takeout' && data.night === true;
+  out.arrived = data.arrived === true; out.soup = data.soup === true; out.lobbyPickupAllowed = data.category === 'takeout' && data.lobbyPickupAllowed === true; out.fragile = data.category === 'parcel' && data.fragile === true; out.night = data.category === 'takeout' && data.night === true;
   for (const key of ['bags','price','tip']) out[key] = Number(data[key] || 0);
   if (out.category === 'takeout') {
     check(data.purchaseStatus===undefined||['ordered','needs_purchase'].includes(data.purchaseStatus),'Choose a valid food order status.');
@@ -274,17 +273,19 @@ function snapshot(s, actor, account, now = Date.now()) {
     if (isMine || isRunner) {
       const out = clone(r); delete out.splitOriginal; delete out.ownerId;delete out.analytics;delete out.analyticsEvents;delete out.analyticsRunnerId;delete out.analyticsHistoryCapped;
       const rt=s.trips.find(t=>t.id===r.runnerId),thread=rt&&(s.threads||{})[r.id+':'+rt.id];
-      out.runnerPhone=rt&&rt.runnerPhone||'';out.runnerStats=rt?(()=>{const st=stats(s,rt.runnerAccountId);return{jobsDone:st.jobsDone,onTime:st.onTime};})():{};out.unread=thread?thread.messages.filter(m=>m.sender!==actor&&m.at>(thread.read[actor]||0)).length:0;
+      out.runnerPhone=rt&&rt.runnerPhone||'';out.runnerStats=rt?(()=>{const st=stats(s,rt.runnerAccountId);return{jobsDone:st.jobsDone};})():{};out.unread=thread?thread.messages.filter(m=>m.sender!==actor&&m.at>(thread.read[actor]||0)).length:0;
       out.messages=thread?thread.messages.map(m=>({id:m.id,text:m.text,at:m.at,mine:m.sender===actor})):[];
       return { ...out, runnerName:(s.trips.find(t=>t.id===r.runnerId)||{}).runnerName||'', ownerId: isMine ? actor : '', isMine, isRunner };
     }
-    // Allowlist hall fields, including requested dorm room details. Contacts, codes and photo IDs stay private.
+    // Exact delivery addresses stay private until this runner accepts the order.
     const out = {};
-    for (const k of ['destinationKey','destinationType','dormGender','id','campusId','universityId','category','station','dorm','room','small','big','reward','serviceFee','status','deadline','deliveryDate','createdAt','arrivalAt','closesAt','arrived','deliverBy','soup','fragile','night','purchaseStatus','shop','raised','tip','parcelSize']) if (r[k] !== undefined) out[k] = r[k];
+    const hallKeys=['destinationType','dormGender','id','campusId','universityId','category','station','dorm','small','big','reward','serviceFee','status','deadline','deliveryDate','createdAt','arrivalAt','closesAt','arrived','deliverBy','soup','lobbyPickupAllowed','fragile','night','purchaseStatus','shop','raised','tip','parcelSize'];
+    for (const k of hallKeys) if (r[k] !== undefined) out[k] = r[k];
     if (r.category === 'takeout' && r.note) out.note = r.note;
     if (r.category === 'takeout' && !r.night && r.pickupPoint) out.pickupPoint = r.pickupPoint;
-    return { ...out, owner:'Request', phone:'', room:r.category!=='task'&&r.destinationType!=='place'?r.room||'':'', codes:Array(d.boxes(r)).fill(''), collected:[], photo:'',
+    const hallRequest={ ...out, owner:'Request', phone:'', codes:Array(d.boxes(r)).fill(''), collected:[], photo:'',
       parcelItems:r.parcelItems && r.parcelItems.map(p => ({size:p.size, price:p.price, code:''})), isMine:false, isRunner:false };
+    return hallRequest;
   });
   const trips = s.trips.filter(t => myTrips.has(t.id)).map(t => ({...clone(t), isRunner:true}));
   const publicTrips = s.trips.filter(t => inCampus(t) && t.joinUntil && !t.cancelled && t.phase === 'collect' && t.joinUntil > now).map(t => ({
@@ -292,7 +293,7 @@ function snapshot(s, actor, account, now = Date.now()) {
     runnerJobs:stats(s,t.runnerAccountId).jobsDone, departAt:t.departAt, joinUntil:t.joinUntil, phase:t.phase,
     cancelled:false, remaining:t.capacity-t.requestIds.reduce((n,id)=>n+d.boxes(s.requests.find(r=>r.id===id)),0)
   }));
-  const publicJobs=s.requests.filter(r=>inCampus(r)&&!['cancelled','refunded','disputed'].includes(r.status)).map(r=>{const o={};for(const k of ['destinationKey','destinationType','dormGender','id','campusId','universityId','category','station','dorm','room','small','big','reward','status','arrivalAt','closesAt','deadline','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','arrived','deliverBy','soup','fragile','night','purchaseStatus','shop','raised','title','dueAt'])if(r[k]!==undefined)o[k]=r[k];if(r.category==='takeout'&&!r.night&&r.pickupPoint)o.pickupPoint=r.pickupPoint;if(r.category==='task'||r.destinationType==='place')delete o.room;return o;});
+  const publicJobs=s.requests.filter(r=>inCampus(r)&&!['cancelled','refunded','disputed'].includes(r.status)).map(r=>{const o={},keys=['destinationType','dormGender','id','campusId','universityId','category','station','dorm','small','big','reward','status','arrivalAt','closesAt','deadline','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','arrived','deliverBy','soup','lobbyPickupAllowed','fragile','night','purchaseStatus','shop','raised','title','dueAt'];for(const k of keys)if(r[k]!==undefined)o[k]=r[k];if(r.category==='takeout'&&!r.night&&r.pickupPoint)o.pickupPoint=r.pickupPoint;return o;});
   const supportInbox=(account&&account._admin||account&&account._reviewer)?Object.entries(s.members).flatMap(([accountId,member])=>(member.supportTickets||[]).filter(t=>t.status==='open').map(t=>({...clone(t),accountId}))).sort((a,b)=>((b.messages||[]).at(-1)?.at||b.createdAt)-((a.messages||[]).at(-1)?.at||a.createdAt)).slice(0,50):[];
   return {walletSummary:loggedIn?wallet.summary(s,actor):null,progression:loggedIn?rewards.loyaltyView(s.members[actor]||{}):null,revision:s.revision,serverTime:now,capabilities:{restoreDormGenders:loggedIn},publicJobs,deliveredThisWeek:s.requests.filter(r=>inCampus(r)&&r.deliveredAt>now-7*86400000).length,requests,trips,publicTrips,accountId:actor,supportInbox,
     adjustments:loggedIn?(s.adjustments||[]).filter(a=>a.runnerAccountId===actor).map(({runnerAccountId,...a})=>a):[],rewards:loggedIn?rewards.view(s,actor,now):null,preferences:loggedIn?(s.members[actor]||{}).preferences||{}:{},

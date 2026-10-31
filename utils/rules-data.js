@@ -30,7 +30,7 @@ module.exports={
     ]
   },
   "runners": {
-    "intro": "What every runner agrees to at sign-up. Breaking one adds a mark. A mark expires after 2 weeks and costs no money, but 3 active marks put you back to New, and 5 pause you from taking jobs for 7 days. Levels: New (up to ¥10 a trip), Trusted after 10 finished jobs (up to ¥25), Top after 40 jobs at 95% on time with no active marks (no limit). Up to 5 bags per trip.",
+    "intro": "What every runner agrees to at sign-up. Breaking one adds a mark. A mark expires after 2 weeks and costs no money, but 3 active marks put you back to New, and 5 pause you from taking jobs for 7 days. Levels: New (up to ¥10 a trip), Trusted after 10 finished jobs (up to ¥25), Top after 40 finished jobs with no active marks (no limit). Up to 5 bags per trip.",
     "rules": [
       {
         "n": "1",
@@ -55,7 +55,7 @@ module.exports={
       {
         "n": "5",
         "title": "Deliver within 15 minutes of pickup",
-        "text": "Late deliveries count against your on-time record."
+        "text": "Please complete delivery within 15 minutes after pickup."
       },
       {
         "n": "6",
@@ -75,7 +75,7 @@ module.exports={
       {
         "n": "2",
         "title": "Who sees your room and phone",
-        "text": "The hall displays dorm area, building and room. Only the assigned customer and runner can see contact details, codes and photos. This version uses direct phone calls, so participants can see the real phone number. Private-number calling is not connected."
+        "text": "The hall shows the dorm area and building but hides the room number. The room, contact details, codes and photos are visible only to the customer and the assigned runner after acceptance. This version uses direct phone calls, so participants can see the real phone number. Private-number calling is not connected."
       },
       {
         "n": "3",
@@ -85,7 +85,7 @@ module.exports={
       {
         "n": "4",
         "title": "The public job hall",
-        "text": "Shows routes, dorm gender, takeaway locker, dorm area, building, room, prices and times. Names, phone numbers and pickup codes stay private."
+        "text": "Shows pickup information, dorm gender, takeaway locker, dorm area, building, prices and times. Room numbers, names, phone numbers and pickup codes stay private until a runner accepts the order."
       }
     ]
   }

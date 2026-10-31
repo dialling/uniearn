@@ -29,8 +29,8 @@ function page(name){delete require.cache[require.resolve('../pages/'+name+'/inde
  for(const request of h.state.requests)assert.equal(request.dormGender,'male','posting preserves the selected address dorm gender');
  const view=await h.call('other','sync');
  assert.equal(view.snapshot.publicJobs.length,2);
- for(const request of view.snapshot.publicJobs)assert.equal(request.dormGender,'male','hall can filter before acceptance');
- for(const request of view.snapshot.requests){assert.equal(request.phone,'');assert.equal(request.room,'101');assert.equal(request.dormGender,'male');}
+ for(const request of view.snapshot.publicJobs){assert.equal(request.dormGender,'male','hall can filter before acceptance');assert.equal(request.dorm,'D01');assert.equal(request.room,undefined);}
+ for(const request of view.snapshot.requests){assert.equal(request.phone,'');assert.equal(request.dorm,'D01');assert.equal(request.room,undefined);assert.equal(request.dormGender,'male');}
  const base={category:'takeout',owner:'同学',phone:'13800138000',station:'取餐点',dorm:'D01',room:'101',bags:1,price:3,arrived:true};
  const invalid=await h.call('customer','create',{data:{...base,dormGender:'unknown'}});assert.equal(invalid.ok,false);
  const xml=fs.readFileSync(require.resolve('../utils/address-form.wxml'),'utf8');assert.ok(xml.indexOf("zh?'姓名'")<xml.indexOf("zh?'性别'"));assert.ok(xml.indexOf("zh?'性别'")<xml.indexOf("zh?'电话'"));

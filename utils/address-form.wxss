@@ -1,11 +1,24 @@
 @import "./dorm-gender.wxss";
 @import "./post-form.wxss";
-.addr-page{padding-top:24rpx}
+.addr-page{padding-top:24rpx;padding-bottom:40rpx}
 .addr-form{padding:30rpx 28rpx!important;border-radius:28rpx!important}
-.addr-form-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6rpx}.addr-title{font-size:32rpx;font-weight:800}
-.addr-type-tabs{margin:24rpx 0 8rpx}
-.addr-page .addr-location{box-sizing:border-box;height:170rpx;min-height:170rpx;padding:22rpx;line-height:1.6}
+.addr-form-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6rpx}.addr-title{font-size:34rpx;font-weight:800;letter-spacing:-.5rpx}
+.addr-type-tabs{margin:24rpx 0 18rpx}
+.addr-order-note{margin:18rpx 0 8rpx;padding:18rpx 20rpx;border-radius:18rpx;background:#fff1e6;color:#a33b15;font-size:22rpx;line-height:1.5}
+.addr-page .addr-location{box-sizing:border-box;height:154rpx;min-height:154rpx;padding:22rpx;line-height:1.6}
 .addr-page .field-label{margin:22rpx 0 10rpx;font-size:24rpx;color:#6b6860;font-weight:600}
-.addr-page .field{background:#f6f5f1;border:1rpx solid transparent;border-radius:18rpx;transition:border-color .2s,background .2s}
+.addr-page .field{box-sizing:border-box;background:#f7f6f2;border:2rpx solid transparent;border-radius:18rpx;transition:border-color .2s,background .2s}
+.addr-section{margin-top:18rpx;padding:24rpx 22rpx 26rpx;border:2rpx solid #ebe8df;border-radius:24rpx;background:#fff}
+.addr-place-section{margin-top:10rpx}.addr-contact-section{margin-top:20rpx;background:#fcfbf8}
+.addr-section-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6rpx}
+.addr-section-title{color:#1d1f22;font-size:28rpx;font-weight:800;line-height:1.35}
+.addr-section-sub{margin-top:6rpx;color:#8a877e;font-size:21rpx;line-height:1.5}
+.addr-page .addr-field-label{display:flex;align-items:center;margin-top:20rpx}
+.addr-label-note{margin-left:auto;color:#9a968d;font-size:20rpx;font-weight:400}
+.addr-auto-tag{display:inline-block;margin-left:12rpx;padding:4rpx 10rpx;border-radius:10rpx;background:#e7f5ef;color:#0b7a55;font-size:19rpx;font-weight:650;vertical-align:middle}
+.addr-name-input{font-weight:650}
+.addr-recipient-gender{margin-top:0}.addr-recipient-gender .pill{min-width:104rpx}
+.page-dark .addr-section{background:#1f201e;border-color:#3a3b37}.page-dark .addr-contact-section{background:#242522}.page-dark .addr-section-title{color:#edebe4}.page-dark .addr-auto-tag{background:#173c31;color:#75d7b5}
+.page-dark .addr-order-note{background:#3a2416;color:#f4a06e}
 
-.addr-save{margin-top:34rpx!important;transition:transform .15s}.addr-save:active{transform:scale(.98)}
+.addr-save{margin-top:28rpx!important;transition:transform .15s}.addr-save:active{transform:scale(.98)}

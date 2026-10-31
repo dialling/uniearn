@@ -50,6 +50,22 @@
         "type": "folder"
       },
       {
+        "value": "uniearn-github-latest",
+        "type": "folder"
+      },
+      {
+        "value": "uniearn-github-main-latest",
+        "type": "folder"
+      },
+      {
+        "value": "UniEarn-GitHub-Changes",
+        "type": "folder"
+      },
+      {
+        "value": "uniearn-upload",
+        "type": "folder"
+      },
+      {
         "value": ".md",
         "type": "suffix"
       },

@@ -7,7 +7,7 @@ const demo = [
   {id:'r4',owner:'Lina',station:'Station C',dorm:'Building C',room:'107',small:1,big:0,codes:['73-1-2321'],phone:'138 0102 1872',note:'Please call on arrival',deadline:'14:00',reward:5,status:'waiting',runnerId:null,collected:[],photo:''}
 ];
 function boxes(r) { return Number(r.small || 0) + Number(r.big || 0); }
-function limit(jobs) { return require('./runner-level').level(typeof jobs==='object'?jobs:{jobsDone:jobs,onTime:jobs}).limit; }
+function limit(jobs) { return require('./runner-level').level(typeof jobs==='object'?jobs:{jobsDone:jobs}).limit; }
 function serviceFee() { return 0; }
 // Prices are typed as decimals, so 4.35*100 is 434.99999999999994. Compare against the rounded cent value.
 function wholeCents(value) { const n=Number(value); return Number.isFinite(n) && Math.abs(n*100-Math.round(n*100)) < 1e-6; }

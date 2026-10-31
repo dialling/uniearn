@@ -30,7 +30,7 @@
     ]
   },
   "runners": {
-    "intro": "What every runner agrees to at sign-up. Breaking one adds a mark. A mark expires after 2 weeks and costs no money, but 3 active marks put you back to New, and 5 pause you from taking jobs for 7 days. Levels: New (up to ¥10 a trip), Trusted after 10 finished jobs (up to ¥25), Top after 40 jobs at 95% on time with no active marks (no limit). Up to 5 bags per trip.",
+    "intro": "What every runner agrees to at sign-up. Breaking one adds a mark. A mark expires after 2 weeks and costs no money, but 3 active marks put you back to New, and 5 pause you from taking jobs for 7 days. Levels: New (up to ¥10 a trip), Trusted after 10 finished jobs (up to ¥25), Top after 40 finished jobs with no active marks (no limit). Up to 5 bags per trip.",
     "rules": [
       {
         "n": "1",
@@ -55,7 +55,7 @@
       {
         "n": "5",
         "title": "Deliver within 15 minutes of pickup",
-        "text": "Late deliveries count against your on-time record."
+        "text": "Please complete delivery within 15 minutes after pickup."
       },
       {
         "n": "6",

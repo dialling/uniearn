@@ -1,10 +1,11 @@
 <lang-switch/>
 <view class="post-page addr-page {{darkClass}}">
- <view class="addr-list-head"><text>{{zh?'我的常用地址':'My addresses'}}</text><text class="addr-count">{{list.length}}</text><text wx:if="{{pick && list.length}}" class="hint addr-pick-hint">{{zh?'点选一个用于本单':'Tap one to use it'}}</text><text class="link addr-new" bindtap="add">＋</text></view>
- <view wx:if="{{!list.length}}" class="addr-empty">{{zh?'还没有常用地址，点右上方的＋添加。':'No saved addresses yet. Tap + to add one.'}}</view>
+ <view class="addr-list-head"><text>{{zh?'我的常用地址':'My addresses'}}</text><text class="addr-count">{{list.length}}</text><text wx:if="{{pick && list.length}}" class="hint addr-pick-hint">{{zh?'点选一个用于本单':'Tap one to use it'}}</text></view>
+ <view wx:if="{{!list.length}}" class="addr-empty">{{zh?'还没有常用地址，可以在下方添加。':'No saved addresses yet. Add one below.'}}</view>
  <view wx:for="{{list}}" wx:key="id" class="addr-item {{selectedId===item.id?'selected':''}} {{flash===item.id?'flash':''}}" style="animation-delay:{{index*40}}ms" data-id="{{item.id}}" bindtap="choose" hover-class="{{pick?'addr-press':''}}" hover-stay-time="80">
-  <view class="addr-row"><text class="addr-name">{{item.owner}}</text><text wx:if="{{item.default}}" class="addr-badge">{{zh?'默认':'Default'}}</text><text wx:if="{{selectedId===item.id}}" class="addr-tick">✓</text></view>
-  <view class="addr-phone">{{item.phoneText}}</view><view class="addr-place">{{item.place}}</view>
+  <view class="addr-row"><text class="addr-name">{{item.displayName}}</text><text wx:if="{{item.default}}" class="addr-badge">{{zh?'默认':'Default'}}</text><text wx:if="{{selectedId===item.id}}" class="addr-tick">✓</text></view>
+  <view class="addr-phone">{{item.owner}} · {{item.phoneText}}</view><view class="addr-place">{{item.place}}</view>
   <view class="addr-actions"><button wx:if="{{!item.default}}" class="addr-default" catchtap="setDefault" data-id="{{item.id}}" hover-class="addr-default-press">{{zh?'设为默认':'Set default'}}</button><text wx:else class="hint">{{zh?'当前默认地址':'Default address'}}</text><view class="addr-btns"><text class="addr-btn" catchtap="edit" data-id="{{item.id}}">{{zh?'编辑':'Edit'}}</text><text class="addr-btn danger" catchtap="remove" data-id="{{item.id}}">{{zh?'删除':'Delete'}}</text></view></view>
  </view>
+ <view class="addr-add-card" bindtap="add" hover-class="addr-add-press" hover-stay-time="80"><view class="addr-add-icon">＋</view><view class="addr-add-copy"><view class="addr-add-title">{{zh?'添加常用地址':'Add an address'}}</view><view class="addr-add-help">{{zh?'添加宿舍或其他配送地址':'Add a dorm or another delivery address'}}</view></view><text class="addr-add-arrow">›</text></view>
 </view>
