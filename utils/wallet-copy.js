@@ -1,5 +1,5 @@
 const words = {
- title: ['我的钱包', 'My wallet'], balance: ['可用余额（元）', 'Available balance (CNY)'], range: ['近 30 天', 'Last 30 days'],
+ title: ['我的钱包', 'My wallet'], balance: ['可用余额（元）', 'Available balance (CNY)'], range: ['最近 7 天', 'Last 7 days'], week: ['最近 7 天', 'Last 7 days'], entries: ['笔收支', 'entries'], weekIn: ['已入账', 'In'], weekOut: ['已提现', 'Out'],
  today: ['今日入账', 'Today’s income'], total: ['累计入账', 'Total income'], pending: ['待入账', 'Pending'], todayAxis: ['今天', 'Today'],
  test: ['测试钱包', 'Test wallet'], testNote: ['余额仅用于测试，模拟提现不会转入微信零钱。', 'Test funds only. Simulated withdrawals do not reach WeChat.'],
  withdraw: ['模拟提现', 'Simulate withdrawal'], rules: ['提现规则', 'Withdrawal rules'], view: ['查看', 'View'],

@@ -73,8 +73,12 @@
 .nav-dark .nav-create{color:#f4a06e}
 
 .nav-orders.selected{color:#c2410c}
+.nav-rewards.selected{color:#2b5c93}
+.nav-rewards.selected .nav-icon{filter:none}
 .nav-dark .plus{background:#f4a06e;color:#16181c}
 .nav-dark .nav-orders.selected .nav-label{color:#f4a06e}
+.nav-dark .nav-rewards.selected .nav-label{color:#a6c8f0}
+.nav-dark .nav-rewards.selected .nav-icon{filter:none}
 .selected .nav-icon{filter:brightness(0) saturate(100%) invert(45.37%) sepia(2.50%) saturate(5078.05%) hue-rotate(108.73deg) brightness(95.70%) contrast(196.17%)}
 .nav-orders.selected .nav-icon{filter:brightness(0) saturate(100%) invert(39.60%) sepia(48.26%) saturate(6193.06%) hue-rotate(360.00deg) brightness(78.82%) contrast(90.52%)}
 .nav-dark .selected .nav-icon{filter:brightness(0) saturate(100%) invert(86.63%) sepia(18.71%) saturate(1169.50%) hue-rotate(87.84deg) brightness(104.89%) contrast(63.13%)}
