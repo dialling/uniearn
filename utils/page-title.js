@@ -11,7 +11,7 @@ const MAP={
   requests:['我的订单','My orders'],
   request:['订单详情','Order details'],
   posted:['已发布','Posted'],
-  'public-job':['任务详情','Job details'],
+  'public-job':['订单公开详情','Public order details'],
   create:['发布代取','Post a pick-up'],
   takeaway:['发布外卖代取','Post a pick-up'],
   'task-post':['发布任务','Post a task'],
@@ -74,4 +74,17 @@ function relocalize(page){
   return false;
 }
 function toggle(page){require('./onboarding').toggle();apply(page);relocalize(page);}
-module.exports={MAP,lang,titleOf,apply,relocalize,toggle,current};
+// Component attachment may still see the previous page in getCurrentPages().
+// Page lifecycle hooks have the actual destination instance and run again once ready.
+function install(){
+ if(typeof Page!=='function'||Page._uniearnPageTitle)return;
+ const original=Page,wrapped=function(options){
+  const show=options.onShow,ready=options.onReady;
+  const paint=page=>{const top=current();if(!top||top===page||routeOf(top)===routeOf(page))apply(page);};
+  options.onShow=function(...args){const result=show&&show.apply(this,args);paint(this);return result;};
+  options.onReady=function(...args){const result=ready&&ready.apply(this,args);require('./nav').pageReady(this);paint(this);return result;};
+  return original(options);
+ };
+ wrapped._uniearnPageTitle=true;wrapped._uniearnAnalytics=original._uniearnAnalytics;wrapped._uniearnMotion=original._uniearnMotion;Page=wrapped;
+}
+module.exports={MAP,lang,titleOf,apply,relocalize,toggle,current,install};

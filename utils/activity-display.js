@@ -10,7 +10,7 @@ function display(config,zh,now=Date.now()){
   activityStatusLabel:zh?(active?'日常积分已开启':'日常积分已暂停'):(active?'Daily points active':'Daily points paused'),
   rankingStatusLabel:zh?(open?'排行榜进行中':ended?'排行榜已结束':c.status==='scheduled'?'排行榜已安排':'排行榜暂未开放'):(open?'Ranking open':ended?'Ranking ended':c.status==='scheduled'?'Ranking scheduled':'Ranking not open'),
   rankingDescription:zh?'每期 '+schedule.durationDays+' 天，每月最多一期。':'Each event lasts '+schedule.durationDays+' days, at most once per month.',
-  activityTasks:(c.tasks||[]).filter(t=>t.enabled).map(t=>({...t,label:tr(t.title),detail:tr(t.description),firstLabel:t.firstCompletion?(zh?'该角色首单共 '+t.firstCompletion.points+' 分，不叠加普通奖励':'First completion in this role: '+t.firstCompletion.points+' points total'):''})),
+  activityTasks:(c.tasks||[]).filter(t=>t.enabled).map(t=>t.kind==='weekly_login'?{...t,...fallback.tasks.find(rule=>rule.kind==='weekly_login'),enabled:t.enabled}:t).map(t=>({...t,label:tr(t.title),detail:tr(t.description),firstLabel:t.firstCompletion?(zh?'该角色首单共 '+t.firstCompletion.points+' 分，不叠加普通奖励':'First completion in this role: '+t.firstCompletion.points+' points total'):''})),
   activityRewards:(c.rewards||[]).map(r=>({range:r.rankFrom===r.rankTo?String(r.rankFrom):r.rankFrom+'~'+r.rankTo,prize:(r.physical&&tr(r.physical)?tr(r.physical)+' + ':'')+(r.coupon.discountRate===0?(zh?'免单':'Free order'):zh?Math.round(r.coupon.discountRate*10)+' 折券':Math.round((1-r.coupon.discountRate)*100)+'% off'),cap:(zh?'最高抵扣 ¥':'Up to ¥')+r.coupon.maxDiscount}))
  };
 }

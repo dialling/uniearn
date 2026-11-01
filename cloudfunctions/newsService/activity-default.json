@@ -85,17 +85,17 @@
       "id": "weekly-login",
       "kind": "weekly_login",
       "enabled": true,
-      "points": 20,
+      "points": 10,
       "title": {
-        "zh": "每周 7 天登录",
-        "en": "Open the app all 7 days"
+        "zh": "连续签到 7 天",
+        "en": "Check in 7 days in a row"
       },
       "description": {
-        "zh": "周一至周日，每天打开小程序。漏一天则不获得当周奖励。",
-        "en": "Open the mini program every day, Monday through Sunday. Missing a day means no reward for that week."
+        "zh": "每天首次登录自动签到。每连续签到 7 天获得 10 积分，断签后重新累计。",
+        "en": "Your first login each day checks you in. Earn 10 points for every 7 consecutive days; missing a day resets the streak."
       },
       "daysRequired": 7,
-      "weekStartsOn": "monday"
+      "repeat": "consecutive"
     },
     {
       "id": "invite",

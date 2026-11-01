@@ -1,0 +1,25 @@
+const assert=require('node:assert/strict'),fs=require('node:fs');
+const {harness}=require('./helpers/order-cloud'),detail=require('../utils/public-order');
+let definition;global.Page=x=>definition=x;global.wx={getStorageSync:()=>null,setStorageSync(){},navigateTo(){throw Error('Open cards should show the detail sheet instead of navigating.');}};
+const store=require('../utils/store');require('../pages/jobs/index');
+const page={...definition,data:structuredClone(definition.data),setData(p){Object.assign(this.data,p)}};
+const h=harness(),now=Date.now(),food={category:'takeout',station:'Takeaway pickup',dorm:'D01',room:'1515',dormGender:'female',owner:'PRIVATE-OWNER',phone:'13801026092',pickupPoint:'丰食汇KFC外卖柜',bags:2,price:3,arrived:true,note:'不要敲门',soup:true};
+const tap=id=>({currentTarget:{dataset:{ids:[id]}}});
+(async()=>{
+ const created=await h.call('customer','create',{data:food});assert.equal(created.ok,true,created.error);const id=created.value.id;
+ const snapshot=(await h.call('runner','sync')).snapshot,row=snapshot.publicJobs.find(r=>r.id===id);
+ store.reset();store.update(s=>{s.profile={...s.profile,campusId:'sip',accountId:h.engine.idFor('runner'),onboarded:true};s.language='zh';s.publicJobs=[row];s.requests=snapshot.requests;});
+ page.refresh();page.completedOrder(tap(id));const job=page.data.publicDetail;assert.ok(job);assert.equal(job.id,id);assert.equal(job.canTake,true);assert.equal(job.statusLabel,'待接单');assert.equal(job.rewardText,'6.00');assert.equal(job.note,food.note);assert.equal(job.pickupPointDisplay,food.pickupPoint);assert.equal(job.fields.find(f=>f.label==='数量').value,'2 袋');assert.match(job.fields.find(f=>f.label==='送达地点').value,/D01/);assert.equal(job.steps[1].done,false);
+ const full={...row,owner:food.owner,room:food.room,phone:food.phone,photo:'PRIVATE-PHOTO',orderPictures:['PRIVATE-IMAGE'],codes:['PRIVATE-CODE'],deliveryAddress:'PRIVATE-ADDRESS'};
+ const safe=JSON.stringify(detail.view(full));for(const secret of [food.owner,food.room,food.phone,'PRIVATE-PHOTO','PRIVATE-IMAGE','PRIVATE-CODE','PRIVATE-ADDRESS'])assert.ok(!safe.includes(secret),'public view must omit '+secret);
+ store.update(s=>{s.publicJobs=[{...row,status:'taken',takenAt:now}];});page.refresh();assert.equal(page.data.publicDetail.statusLabel,'已接单');assert.equal(page.data.publicDetail.canTake,false);assert.equal(page.data.publicDetail.steps[1].done,true);
+ store.update(s=>{s.publicJobs=[];});page.refresh();assert.equal(page.data.publicDetail,null,'removed or no-longer-public orders dismiss the stale sheet');
+ store.update(s=>{s.publicJobs=[row];s.profile.accountId=h.engine.idFor('customer');s.requests=created.snapshot.requests;});page.completedOrder(tap(id));assert.equal(page.data.publicDetail.canTake,false,'own public detail never offers self-acceptance');page.closePublicDetail();assert.equal(page.data.publicDetail,null);
+ const english=detail.view(row,'en');assert.equal(english.statusLabel,'Waiting for a runner');assert.equal(english.fields.find(f=>f.label==='Quantity').value,'2 bags');assert.equal(english.pickupPointDisplay,'Fengshihui KFC takeaway locker');
+ const place=detail.view({...full,destinationType:'place'});assert.equal(place.fields.find(f=>f.label==='送达地点').value,'其他地址 · 接单后可见');assert.equal(place.fields.some(f=>f.label==='宿舍类型'),false);
+ const night=detail.view({...row,night:true,shop:'KFC',purchaseStatus:'needs_purchase'});assert.equal(night.fields.find(f=>f.label==='店铺').value,'KFC');assert.match(night.fields.find(f=>f.label==='下单状态').value,/垫付/);
+ const task=detail.view({...row,category:'task',title:'还书',dueAt:now+3600000});assert.equal(task.label,'还书');assert.equal(task.steps.length,4);assert.ok(task.fields.some(f=>f.label==='完成截止'));assert.equal(task.note,'');
+ const xml=fs.readFileSync(require.resolve('../pages/public-job/detail.wxml'),'utf8');assert.doesNotMatch(xml,/job\.(owner|room|phone|photo|codes|orderPictures)/);
+ const hall=fs.readFileSync(require.resolve('../pages/jobs/index.wxml'),'utf8');assert.match(hall,/catchtap="take"/,'card Take action remains separate');assert.match(hall,/bindtap="closePublicDetail"/);assert.match(hall,/publicDetail.canTake/);
+ console.log('Public detail: card sheet, exact public fields, waiting status, full-order privacy allowlist, stale updates, ownership, bilingual copy, place/night/task variants and original acceptance controls passed.');
+})().catch(e=>{console.error(e);process.exitCode=1});
