@@ -225,7 +225,14 @@ function execute(s, actor, account, event, now = Date.now()) {
     if (action === 'confirm') { d.confirm(s, r.id); f.event(r, 'Confirmed', now); }
     if (action === 'report') { check(r.category!=='takeout'||now<=r.deliveredAt+30*60000,'Report takeaway problems within 30 minutes of delivery.'); check(typeof event.note === 'string' && event.note.length <= 500, 'Keep the note under 500 characters.'); f.report(s, r.id, event.reason, photo(event.photo, actor), event.note); }
     if (action === 'foodArrived') { check(r.category==='takeout'&&['waiting','taken'].includes(r.status)&&!r.arrived, 'Only food awaiting pickup can be marked as arrived.'); r.arrived=true; r.arrivalAt=now; f.event(r,'Food is there now',now); }
-    if (action === 'riderPhoto') { check(['waiting','taken'].includes(r.status), 'Pickup has already started.'); r.riderPhoto = photo(event.photo, actor, true); r.arrived = true; }
+    if (action === 'riderPhoto') {
+      check(r.category==='takeout'&&['waiting','taken'].includes(r.status), 'Pickup has already started.');
+      const photos=event.photos===undefined?[event.photo]:event.photos;
+      check(Array.isArray(photos)&&photos.length<=3, 'Up to three rider photos.');
+      const uploaded=photos.map(p=>photo(p,actor,true));
+      r.riderPhotos=[...new Set(uploaded)];r.riderPhoto=r.riderPhotos[0]||'';
+      if(r.riderPhotos.length)r.arrived=true;
+    }
   } else if (['pickup','deliver','runnerCancel','taskDone','sealBroken'].includes(action)) {
     const r = runnerRequest(s, event.id, actor);
     if(action==='taskDone'){check(r.category==='task'&&r.status==='taken','This task cannot be completed now.');const note=String(event.note||'').trim();check(note.length>=3&&note.length<=500,'Add a short completion note.');r.status='delivered';r.photo=photo(event.photo,actor,true);r.completionNote=note;r.deliveredAt=now;ownTrip(s,r.runnerId,actor).phase='done';f.event(r,'Photo and note sent',now);rewards.recordBonus(s,actor,r,now);}
@@ -293,9 +300,9 @@ function snapshot(s, actor, account, now = Date.now()) {
     runnerJobs:stats(s,t.runnerAccountId).jobsDone, departAt:t.departAt, joinUntil:t.joinUntil, phase:t.phase,
     cancelled:false, remaining:t.capacity-t.requestIds.reduce((n,id)=>n+d.boxes(s.requests.find(r=>r.id===id)),0)
   }));
-  const publicJobs=s.requests.filter(r=>inCampus(r)&&!['cancelled','refunded','disputed'].includes(r.status)).map(r=>{const o={},keys=['destinationType','dormGender','id','campusId','universityId','category','station','dorm','small','big','reward','status','arrivalAt','closesAt','deadline','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','arrived','deliverBy','soup','lobbyPickupAllowed','fragile','night','purchaseStatus','shop','raised','title','dueAt'];for(const k of keys)if(r[k]!==undefined)o[k]=r[k];if(r.category==='takeout'&&!r.night&&r.pickupPoint)o.pickupPoint=r.pickupPoint;return o;});
+  const publicJobs=s.requests.filter(r=>inCampus(r)&&!['cancelled','refunded','disputed'].includes(r.status)).map(r=>{const o={},keys=['destinationType','dormGender','id','campusId','universityId','category','station','dorm','small','big','reward','status','arrivalAt','closesAt','deadline','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','arrived','deliverBy','soup','lobbyPickupAllowed','fragile','night','purchaseStatus','shop','raised','title','dueAt'];for(const k of keys)if(r[k]!==undefined)o[k]=r[k];if(r.category==='takeout'&&!r.night&&r.pickupPoint)o.pickupPoint=r.pickupPoint;if(r.category==='takeout'&&String(r.note||'').trim())o.note=r.note;return o;});
   const supportInbox=(account&&account._admin||account&&account._reviewer)?Object.entries(s.members).flatMap(([accountId,member])=>(member.supportTickets||[]).filter(t=>t.status==='open').map(t=>({...clone(t),accountId}))).sort((a,b)=>((b.messages||[]).at(-1)?.at||b.createdAt)-((a.messages||[]).at(-1)?.at||a.createdAt)).slice(0,50):[];
-  return {walletSummary:loggedIn?wallet.summary(s,actor):null,progression:loggedIn?rewards.loyaltyView(s.members[actor]||{}):null,revision:s.revision,serverTime:now,capabilities:{restoreDormGenders:loggedIn},publicJobs,deliveredThisWeek:s.requests.filter(r=>inCampus(r)&&r.deliveredAt>now-7*86400000).length,requests,trips,publicTrips,accountId:actor,supportInbox,
+  return {walletSummary:loggedIn?wallet.summary(s,actor):null,progression:loggedIn?rewards.loyaltyView(s.members[actor]||{}):null,revision:s.revision,serverTime:now,capabilities:{restoreDormGenders:loggedIn,riderPhotos:loggedIn},publicJobs,deliveredThisWeek:s.requests.filter(r=>inCampus(r)&&r.deliveredAt>now-7*86400000).length,requests,trips,publicTrips,accountId:actor,supportInbox,
     adjustments:loggedIn?(s.adjustments||[]).filter(a=>a.runnerAccountId===actor).map(({runnerAccountId,...a})=>a):[],rewards:loggedIn?rewards.view(s,actor,now):null,preferences:loggedIn?(s.members[actor]||{}).preferences||{}:{},
     supportTickets:loggedIn?((s.members[actor]||{}).supportTickets||[]):[],stats:loggedIn ? stats(s,actor) : {jobsDone:0,paid:0,marks:[]} };
 }

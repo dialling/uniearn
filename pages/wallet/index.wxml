@@ -1,3 +1,4 @@
+<view style="{{motionStyle}}">
 <lang-switch/>
 <view class="wallet-page {{darkClass}}">
  <view class="wallet-header"><text class="wallet-title">{{ui.title}}</text><text class="test-label">{{ui.test}}</text></view>
@@ -14,7 +15,7 @@
   <view class="chart-axis"><text>{{chartStart}}</text><text>{{ui.todayAxis}}<text wx:if="{{!hideAmount}}" class="axis-val"> ¥{{balance}}</text></text></view>
  </view>
  <view class="wallet-test-note">{{ui.testNote}}</view>
- <button class="wd-btn" bindtap="withdraw" loading="{{withdrawing}}" disabled="{{loading||withdrawing||!!error||balanceCents<=0}}">{{ui.withdraw}}</button>
+ <button class="wd-btn" bindtap="withdraw" loading="{{motionEnabled && (withdrawing)}}" disabled="{{loading||withdrawing||!!error||balanceCents<=0}}">{{ui.withdraw}}</button>
  <view class="rules-link" bindtap="openRules"><text class="rules-link-t">{{ui.ruleHint}}</text><text class="rules-link-a">{{ui.view}} ›</text></view>
  <view wx:if="{{debtCents>0}}" class="wallet-debt"><view>{{ui.debt}} {{hideAmount?'***':'¥'+debt}}</view><text>{{ui.debtHint}}</text></view>
  <block wx:if="{{pending.length}}"><view class="sec-title">{{ui.pending}}</view><view class="list-card"><view wx:for="{{pending}}" wx:key="id" class="wallet-row"><view class="row-main"><view class="row-t">{{item.title}}</view><view class="row-time">{{item.detail}}</view></view><text class="pending-amount">{{hideAmount?'***':'¥'+item.amount}}</text></view></view></block>
@@ -31,4 +32,6 @@
   <view class="rule-row"><text class="rule-k">{{ui.fee}}</text><text class="rule-v">{{rules.fee}}</text></view>
   <view class="rule-note">{{ui.notice}}：{{rules.notice}}</view>
  </scroll-view><button class="rules-ok" bindtap="closeRules">{{ui.close}}</button></view></view>
+</view>
+
 </view>

@@ -3,7 +3,7 @@ const root=path.resolve(__dirname,'..');
 let definition,emitted,back=false;
 const parser=require('../cloudfunctions/parseSmsScreenshot/parser');
 vm.runInNewContext(fs.readFileSync(path.join(root,'pages/sms-scan/index.js'),'utf8'),{
- require:n=>n==='./parser'?parser:n==='../../utils/pickup-point'?require('../utils/pickup-point'):n==='../../utils/store'?{get:()=>({language:'en'})}:{ensureCloud:()=>({})},Page:p=>definition=p,
+ require:n=>n.endsWith('/motion')?{data:()=>({motionEnabled:true,motionStyle:''})}:n==='./parser'?parser:n==='../../utils/pickup-point'?require('../utils/pickup-point'):n==='../../utils/store'?{get:()=>({language:'en'})}:{ensureCloud:()=>({})},Page:p=>definition=p,
  wx:{navigateBack:()=>{back=true;}}
 });
 const page={...definition,data:JSON.parse(JSON.stringify(definition.data)),setData(v){Object.assign(this.data,v);},getOpenerEventChannel(){return{emit:(name,v)=>{emitted={name,v};}};}};
@@ -18,7 +18,7 @@ console.log('Review page: select/deselect, event payload, parcel cap and per-par
 (async()=>{
  let input,deleted=[],downloads=0;const cloud={init(){},DYNAMIC_CURRENT_ENV:'test',getWXContext(){return{OPENID:'test-user'};},database(){return{runTransaction:async f=>f({collection:()=>({doc:()=>({get:async()=>({data:null}),set:async()=>{}})})})};},downloadFile:async()=>{downloads++;return{fileContent:Buffer.from('image-test')};},deleteFile:async({fileList})=>deleted.push(...fileList)};
  const module={exports:{}};
- vm.runInNewContext(fs.readFileSync(path.join(root,'cloudfunctions/parseSmsScreenshot/index.js'),'utf8'),{exports:module.exports,require:n=>n==='wx-server-sdk'?cloud:n==='crypto'?require('node:crypto'):n==='./parser'?parser:n==='./parcel-parser'?require('../cloudfunctions/parseSmsScreenshot/parcel-parser'):{ocr:{v20181119:{Client:class{async GeneralBasicOCR(v){input=v;return{TextDetections:[{DetectedText:'Today 11:00'},{DetectedText:'【菜鸟驿站】凭1-2-8011到太仓青草巷广场二十一号店取件'}]};}}}}},process:{env:{TENCENT_SECRET_ID:'test-only',TENCENT_SECRET_KEY:'test-only'}},Buffer});
+ vm.runInNewContext(fs.readFileSync(path.join(root,'cloudfunctions/parseSmsScreenshot/index.js'),'utf8'),{exports:module.exports,require:n=>n.endsWith('/motion')?{data:()=>({motionEnabled:true,motionStyle:''})}:n==='wx-server-sdk'?cloud:n==='crypto'?require('node:crypto'):n==='./parser'?parser:n==='./parcel-parser'?require('../cloudfunctions/parseSmsScreenshot/parcel-parser'):{ocr:{v20181119:{Client:class{async GeneralBasicOCR(v){input=v;return{TextDetections:[{DetectedText:'Today 11:00'},{DetectedText:'【菜鸟驿站】凭1-2-8011到太仓青草巷广场二十一号店取件'}]};}}}}},process:{env:{TENCENT_SECRET_ID:'test-only',TENCENT_SECRET_KEY:'test-only'}},Buffer});
  const prepare=await module.exports.main({action:'prepareUpload'});assert.ok(prepare.ok);assert.equal(downloads,0);
  const bad=await module.exports.main({fileID:'cloud://test/sms-temp/other-user/fake.jpg'});assert.equal(bad.ok,false);assert.equal(downloads,0);
  const fileID='cloud://test/'+prepare.cloudPath,result=await module.exports.main({fileID});assert.ok(result.ok);assert.equal(input.LanguageType,'zh');assert.equal(result.fields.candidates[0].code,'1-2-8011');assert.ok(deleted.includes(fileID));

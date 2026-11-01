@@ -1,0 +1,39 @@
+/* Matches the hall's compact route slips; each accepted order keeps its own details. */
+.requests-page .runner-card{padding:20rpx 24rpx 16rpx;margin:16rpx 0;border:1rpx solid #e0e5dd;border-radius:26rpx;background:#fff;box-shadow:0 5rpx 18rpx rgba(32,53,39,.035)}
+.runner-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16rpx}
+.runner-badges{display:flex;flex:1;min-width:0;flex-wrap:wrap;gap:7rpx;align-items:center}
+.requests-page .runner-card .badge{margin:0;padding:5rpx 11rpx;border-radius:9rpx;font-size:20rpx;font-weight:550;line-height:1.45}
+.requests-page .runner-card .badge.takeout{color:#0b7a55;background:#eaf4ee}
+.requests-page .runner-card .badge.runner-raised{color:#0b7a55;background:#eaf4ee}
+.requests-page .runner-card .badge.runner-caution{color:#b45321;background:#fff2e9}
+.runner-price{display:flex;align-items:baseline;gap:3rpx;flex:none;color:#c2410c;font-size:48rpx;font-weight:750;font-variant-numeric:tabular-nums;letter-spacing:-1rpx;line-height:1.05;white-space:nowrap}
+.runner-currency{font-size:27rpx;font-weight:650;letter-spacing:0}
+.runner-order+.runner-order{margin-top:16rpx;padding-top:14rpx;border-top:1rpx solid #edf0e9}
+.runner-order-heading{display:flex;justify-content:space-between;gap:15rpx;color:#7b817a;font-size:21rpx;line-height:1.5;margin-top:14rpx}
+.runner-route{display:flex;align-items:baseline;gap:10rpx;margin-top:12rpx;font-size:30rpx;font-weight:750;line-height:1.4}
+.runner-order-heading+.runner-route{margin-top:10rpx}
+.runner-origin{flex:0 1 auto;max-width:40%;min-width:0;color:#7b817a;font-size:24rpx;font-weight:500;overflow-wrap:anywhere}
+.runner-arrow{flex:none;color:#a0a79f;font-size:24rpx;font-weight:400}
+.runner-destination{flex:1;min-width:0;overflow-wrap:anywhere;color:#16181c}
+.runner-state{display:flex;flex-wrap:wrap;align-items:baseline;gap:6rpx 14rpx;margin:8rpx 0 10rpx;color:#0b7a55;font-size:22rpx;font-weight:550;line-height:1.45}
+.runner-state>text:first-child::before{content:'';display:inline-block;width:8rpx;height:8rpx;margin-right:10rpx;border-radius:50%;background:currentColor;vertical-align:middle}
+.runner-timing{color:#7b817a;font-weight:400}
+.runner-info{display:flex;align-items:baseline;gap:12rpx;margin:8rpx 0 0;line-height:1.45}
+.runner-info-label{flex:none;min-width:76rpx;color:#7b817a;font-size:22rpx}
+.runner-info-value{flex:1;min-width:0;color:#303930;font-size:26rpx;font-weight:600;white-space:pre-wrap;overflow-wrap:anywhere}
+.runner-note .runner-info-value{font-size:23rpx;color:#687268;font-weight:400;line-height:1.55}
+.runner-flag{padding:2rpx 8rpx;background:#fff2e9;border-radius:8rpx;color:#b45321;font-size:20rpx;font-weight:400}
+.runner-card-footer{display:flex;align-items:center;justify-content:space-between;gap:20rpx;margin-top:12rpx;padding-top:12rpx;border-top:1rpx solid #edf0e9;line-height:1.4}
+.runner-count{color:#7b817a;font-size:21rpx;flex:1;min-width:0}
+.runner-open{color:#0b7a55;font-size:24rpx;font-weight:650;white-space:nowrap}
+.runner-open>text{font-size:31rpx;margin-left:12rpx}
+.runner-card-press{opacity:.8}
+.page-dark.requests-page .runner-card{background:#242522;border-color:#3a4338}
+.page-dark .runner-price{color:#f4a06e}
+.page-dark .runner-destination,.page-dark .runner-info-value{color:#edebe4}
+.page-dark .runner-origin,.page-dark .runner-timing,.page-dark .runner-info-label,.page-dark .runner-count,.page-dark .runner-order-heading{color:#aaaf9f}
+.page-dark .runner-note .runner-info-value{color:#b7c0b3}
+.page-dark .runner-state,.page-dark .runner-open{color:#6fd0a8}
+.page-dark .runner-card-footer,.page-dark .runner-order+.runner-order{border-color:#3a4338}
+.page-dark .runner-flag,.page-dark .runner-card .badge.runner-caution{background:#422b20;color:#f4b582}
+.page-dark .runner-card .badge.runner-raised{background:#203c2d;color:#6fd0a8}

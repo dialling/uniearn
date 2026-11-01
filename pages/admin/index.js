@@ -3,7 +3,7 @@ const STATUS={zh:{waiting:'待接单',taken:'已接单',collected:'已取件',de
 const CATEGORY={zh:{takeout:'外卖',parcel:'快递',task:'任务'},en:{takeout:'Takeaway',parcel:'Parcel',task:'Task'}};
 const time=require('../../utils/china-time').short;
 Page({
- data:{zh:true,checking:true,admin:false,busy:false,error:'',username:'',password:'',stats:null,cards:[],bucket:'all',bucketLabel:'',orders:[],ordersLoading:false,applications:[],reviewing:'',supportInbox:[],supportDraft:{},replying:''},
+ data:{...require('../../utils/motion').data(),zh:true,checking:true,admin:false,busy:false,error:'',username:'',password:'',stats:null,cards:[],bucket:'all',bucketLabel:'',orders:[],ordersLoading:false,applications:[],reviewing:'',supportInbox:[],supportDraft:{},replying:''},
  onLoad(){this.setData({zh:store.get().language!=='en'});wx.setNavigationBarTitle({title:this.data.zh?'管理后台':'Admin'});},
  async onShow(){this.setData({checking:true,error:''});try{const r=await account.call('adminStatus');this.setData({admin:!!r.admin});if(r.admin)await this.load();}catch(e){this.setData({error:e.message});}finally{this.setData({checking:false});}},
  async onPullDownRefresh(){try{if(this.data.admin)await this.load();}catch(e){this.setData({error:e.message});}finally{wx.stopPullDownRefresh();}},

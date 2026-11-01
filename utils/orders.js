@@ -1,6 +1,7 @@
 const store = require('./store');
 const {ensureCloud} = require('./cloud');
 const yuniEvents=require('./yuni-events');
+const cloudErrors=require('./cloud-errors');
 function track(name,props){try{require('./analytics').record(name,props);}catch(_){}}
 function pairMap(rows,value){const result={};rows.forEach(r=>{result[r.id]=value(r);});return result;}
 let queue = Promise.resolve(), syncing = null, mutating = false, timer = null;
@@ -20,7 +21,10 @@ function apply(snapshot) {
     const changes = snapshot.requests.filter(r => (r.isMine||r.isRunner) && previous.status[r.id] && previous.status[r.id] !== r.status && (r.status!=='delivered'||prefs.deliveredUpdates!==false));
     const joined=snapshot.requests.some(r=>r.isRunner&&!previous.status[r.id]);
     const newJobs = snapshot.requests.filter(r => !r.isMine && r.status==='waiting' && !previous.status[r.id]);
-    if (changes.length && state.preferences?.orderUpdates!==false && foreground) changes.forEach(r=>yuniEvents.status(r,snapshot.revision));
+    if (changes.length && state.preferences?.orderUpdates!==false && foreground) {
+      if(state.yuniTips===false)tell(state.language==='en'?'Order progress updated · open My orders':'订单进度已更新，请查看我的订单。');
+      else changes.forEach(r=>yuniEvents.status(r,snapshot.revision));
+    }
     else if(joined&&state.preferences?.orderUpdates!==false)tell('A customer joined your trip');
     else if (state.profile.studentVerified && newJobs.length && state.preferences?.newJobs!==false) tell('New pickup jobs available');
   }
@@ -50,7 +54,13 @@ function sync() {
     if(repairs.length)try{await call({action:'restoreDormGenders',repairs,operationId:'restore_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2)});}catch(e){console.warn('Dorm gender restoration deferred',e.message);}
     return value;
   }).then(v=>{lastError='';return v;}).catch(e=>{
-    if (e.message!==lastError) { tell('Orders not synced: '+e.message); lastError=e.message; }
+    const state=store.get(),message=cloudErrors.syncMessage(e,state.language);
+    if(message!==lastError){
+      // Login explains missing tool credentials inline; do not cover that screen
+      // with another background-sync toast. SDK call IDs change on each retry.
+      if(!cloudErrors.accessTokenMissing(e)||(state.profile.onboarded&&!state.profile.loggedOut))tell(message);
+      lastError=message;
+    }
     throw e;
   }).finally(()=>{syncing=null;});
   return syncing;

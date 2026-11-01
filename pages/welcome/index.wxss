@@ -8,9 +8,9 @@
 
 @keyframes welcome-yuni{0%{opacity:0;transform:translate3d(0,30rpx,0) scale(.8) rotate(-6deg)}60%{opacity:1;transform:translate3d(0,-8rpx,0) scale(1.05) rotate(2deg)}100%{opacity:1;transform:translate3d(0,0,0) scale(1) rotate(0)}}
 @keyframes welcome-bubble{from{opacity:.4;transform:translate3d(-20rpx,0,0) scale(.96)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
-.welcome-yuni image{animation:welcome-yuni .6s cubic-bezier(.3,1.3,.5,1) backwards,ue-float 3.4s ease-in-out .6s infinite}
-.hello{animation:welcome-bubble .36s cubic-bezier(.22,.8,.3,1) .08s backwards}
-.headline,.intro,.feature{animation:ue-settle .32s cubic-bezier(.22,.8,.3,1) .1s backwards}
+.welcome-yuni image{animation:var(--ue-animation,welcome-yuni .6s cubic-bezier(.3,1.3,.5,1) backwards,ue-float 3.4s ease-in-out .6s infinite)}
+.hello{animation:var(--ue-animation,welcome-bubble .36s cubic-bezier(.22,.8,.3,1) .08s backwards)}
+.headline,.intro,.feature{animation:var(--ue-animation,ue-settle .32s cubic-bezier(.22,.8,.3,1) .1s backwards)}
 .feature+.feature{animation-delay:.14s}.feature+.feature+.feature{animation-delay:.18s}
 
 .welcome-check{display:inline-flex;align-items:center;justify-content:center;flex:none;width:32rpx;height:32rpx;border:2rpx solid #c9c5b8;border-radius:8rpx;background:#fff;color:#fff;font-size:24rpx;line-height:1}.welcome-check.checked{background:#0b7a55;border-color:#0b7a55}

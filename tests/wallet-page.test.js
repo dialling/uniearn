@@ -24,7 +24,7 @@ require('../pages/wallet/index');const page={...def,data:structuredClone(def.dat
  h.accounts[id('other')].loggedOut=true;store.update(s=>{s.profile.loggedOut=true;});await page.load();assert.equal(page.data.transactions.length,0);assert.ok(page.data.error);
  // The page ignores late responses after it is hidden.
  let resolve;const state={language:'zh',profile:{accountId:'a'}};
- vm.runInNewContext(fs.readFileSync(require.resolve('../pages/wallet/index'),'utf8'),{Page:x=>def=x,require:name=>name.includes('wallet-copy')?require('../utils/wallet-copy'):name.includes('store')?{get:()=>state}:{overview:()=>new Promise(r=>resolve=r)},wx:{getStorageSync:()=>false}});
+ vm.runInNewContext(fs.readFileSync(require.resolve('../pages/wallet/index'),'utf8'),{Page:x=>def=x,require:name=>name.endsWith('/motion')?{data:()=>({motionEnabled:true,motionStyle:''})}:name.includes('wallet-copy')?require('../utils/wallet-copy'):name.includes('store')?{get:()=>state}:{overview:()=>new Promise(r=>resolve=r)},wx:{getStorageSync:()=>false}});
  const hidden={...def,data:structuredClone(def.data),setData(patch,fn){Object.assign(this.data,patch);fn&&fn();}};hidden.onLoad();const pending=hidden.load();hidden.onHide();resolve({balance_cents:999999});await pending;assert.equal(hidden.data.balanceCents,0);
  const xml=fs.readFileSync(require.resolve('../pages/wallet/index.wxml'),'utf8');assert.ok(xml.includes('hideAmount?\'***\':(item.positive'));assert.ok(xml.includes('ui.testNote'));
  console.log('Wallet page: cloud overview, double-tap guard, lost-response recovery, test labels, isolated hide preferences, account switch/logout and hidden-page response guard passed.');

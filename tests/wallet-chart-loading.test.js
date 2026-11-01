@@ -4,7 +4,7 @@ function setup(){
  let definition,strokes=0;const calls=[],queries=[],state={language:'zh',profile:{accountId:'runner'}};
  const ctx=new Proxy({createLinearGradient:()=>({addColorStop(){}}),stroke(){strokes++;}},{get:(o,k)=>k in o?o[k]:()=>{}});
  const hit={node:{getContext:()=>ctx},width:320,height:150};
- vm.runInNewContext(source,{Page:p=>definition=p,require:name=>name.includes('wallet-copy')?require('../utils/wallet-copy'):name.includes('store')?{get:()=>state}:{overview:()=>new Promise((resolve,reject)=>calls.push({resolve,reject}))},wx:{getStorageSync:()=>false,setStorageSync(){},getWindowInfo:()=>({pixelRatio:2}),createSelectorQuery:()=>({select(){return this;},fields(){return this;},exec(fn){queries.push(()=>fn([hit]));}})}});
+ vm.runInNewContext(source,{Page:p=>definition=p,require:name=>name.endsWith('/motion')?{data:()=>({motionEnabled:true,motionStyle:''})}:name.includes('wallet-copy')?require('../utils/wallet-copy'):name.includes('store')?{get:()=>state}:{overview:()=>new Promise((resolve,reject)=>calls.push({resolve,reject}))},wx:{getStorageSync:()=>false,setStorageSync(){},getWindowInfo:()=>({pixelRatio:2}),createSelectorQuery:()=>({select(){return this;},fields(){return this;},exec(fn){queries.push(()=>fn([hit]));}})}});
  const page={...definition,data:structuredClone(definition.data),setData(patch,fn){Object.assign(this.data,patch);fn&&fn();}};
  page.onLoad();return {page,calls,queries,get strokes(){return strokes;}};
 }

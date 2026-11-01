@@ -4,7 +4,7 @@ function stickerToken(id){return '[[uniearn-sticker:'+id+']]';}
 function stickerId(text){const match=String(text||'').match(/^\[\[uniearn-sticker:([a-z0-9_-]{1,40})\]\]$/);return match&&match[1]||'';}
 function stickers(zh){return yuni.stickers().map(item=>({...item,name:(STICKER_NAMES[item.id]||[item.name,item.name])[zh?0:1]}));}
 Page({
- data:{request:null,text:'',canSend:false,sending:false,messages:[],quick:['I’m on my way','I’m downstairs','Thank you!'],zh:false,stickerOpen:false,stickers:[]},
+ data:{...require('../../utils/motion').data(),request:null,text:'',canSend:false,sending:false,messages:[],quick:['I’m on my way','I’m downstairs','Thank you!'],zh:false,stickerOpen:false,stickers:[]},
  onLoad(o){this.id=o.id;},
  onShow(){const zh=store.get().language!=='en';this.setData({zh,quick:['I’m on my way','I’m downstairs','Thank you!'].map(x=>copy.translate(x,zh?'zh':'en'))});if(wx.setNavigationBarTitle&&zh)wx.setNavigationBarTitle({title:'聊天'});orders.bind(this);},
  onHide(){orders.unbind(this);},

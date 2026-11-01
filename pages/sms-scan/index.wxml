@@ -1,3 +1,4 @@
+<view style="{{motionStyle}}">
 <lang-switch/>
 <view class="sms-page {{darkClass}}">
  <view class="heading">{{heading}}</view>
@@ -17,3 +18,4 @@
  <view class="intro">{{zh?'这会替换订单中现有的取件码。确认后请核对包裹尺寸。':'This replaces the codes currently in your request. Check the parcel sizes after confirming.'}}</view>
 </view>
 <yuni-assistant topic=""/>
+</view>

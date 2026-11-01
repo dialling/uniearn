@@ -2,7 +2,7 @@ const store=require('../../utils/store'),copy=require('../../utils/create-copy')
 const orders=require('../../utils/orders');
 const dateLabel=value=>{if(!value)return '';const p=require('../../utils/china-time').parts(Number(value));return p.month+'月'+p.day+'日';};
 Page({
- data:{language:'zh',tab:'available',items:[],showUseFor:'',couponName:'',loading:false},
+ data:{...require('../../utils/motion').data(),language:'zh',tab:'available',items:[],showUseFor:'',couponName:'',loading:false},
  onShow(){require('../../utils/appearance').apply(this);orders.bind(this,'refresh');},
  onHide(){orders.unbind(this);},
  onUnload(){orders.unbind(this);},

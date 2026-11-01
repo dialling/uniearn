@@ -1,3 +1,4 @@
+<view style="{{motionStyle}}">
 <view class="iv-page">
  <view class="iv-bg">
   <text class="iv-mark m1">UniEarn</text>
@@ -56,4 +57,6 @@
    <text>{{zh?'复制邀请码':'Copy code'}}</text>
   </view>
  </view>
+</view>
+
 </view>

@@ -1,6 +1,6 @@
 const routes=require('../../utils/saved-routes').forService('parcel'),campus=require('../../utils/campus'),store=require('../../utils/store'),ui=require('../../utils/ui');
 Page({
- data:{zh:true,list:[],pick:false,selectedId:''},
+ data:{...require('../../utils/motion').data(),zh:true,list:[],pick:false,selectedId:''},
  onLoad(o={}){this.pick=o.pick==='1';this.channel=this.getOpenerEventChannel&&this.getOpenerEventChannel();this.setData({pick:this.pick,selectedId:o.selected||''});},
  onShow(){this.setData({zh:store.get().language!=='en'});if(wx.setNavigationBarTitle)wx.setNavigationBarTitle({title:this.data.zh?'我的常用地址':'My addresses'});this.refresh();},
  refresh(){const zh=this.data.zh,list=routes.list().sort((a,b)=>b.default-a.default).map(x=>({...x,displayName:x.destinationType==='place'?(x.name||(zh?'其他地址':'Other address')):x.owner,place:x.destinationType==='place'?x.deliveryAddress:campus.buildingLabel(x.dorm,zh?'zh':'en')+(x.room?' '+x.room:''),phoneText:routes.formatPhone(x.phone)}));this.setData({list,selectedId:list.some(x=>x.id===this.data.selectedId)?this.data.selectedId:''});},

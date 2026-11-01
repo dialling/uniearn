@@ -3,7 +3,7 @@ const store=require('../../utils/store');
 const ui=require('../../utils/ui');
 
 Page({
-  data:{zh:true,inviteCode:'',registered:false,inviteInput:'',navTop:20,navHeight:32,redeeming:false},
+  data:{...require('../../utils/motion').data(),zh:true,inviteCode:'',registered:false,inviteInput:'',navTop:20,navHeight:32,redeeming:false},
   onLoad(o={}){
     let top=20,height=32;
     try{const m=wx.getMenuButtonBoundingClientRect();if(m&&m.top){top=m.top;height=m.height;}}catch(e){}

@@ -1,6 +1,6 @@
 const rewards=require('../../utils/rewards'),store=require('../../utils/store'),copy=require('../../utils/create-copy');
 const day=t=>{const d=new Date(t+28800000);return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0')+'-'+String(d.getUTCDate()).padStart(2,'0');};
-Page({data:{zh:true,tab:'usable',usable:[],expired:[],selected:'',best:''},
+Page({data:{...require('../../utils/motion').data(),zh:true,tab:'usable',usable:[],expired:[],selected:'',best:''},
  onLoad(o={}){this.amount=Number(o.amount)||0;this.fee=Number(o.fee)||0;this.channel=this.getOpenerEventChannel&&this.getOpenerEventChannel();this.setData({selected:o.selected||''});this.refresh();},
  refresh(){const zh=store.get().language!=='en',lang=zh?'zh':'en',now=Date.now(),q=rewards.quote(null,this.amount,this.fee),all=(store.get().rewards&&store.get().rewards.coupons)||[];
   const view=c=>({id:c.id,name:copy.coupon(c.short||c.title||'Coupon',lang),title:copy.coupon(c.title||c.short||'',lang),save:c.save||'0.00',max:Number(c.stored?c.balance:c.max||0).toFixed(2),until:(c.stored?(zh?'余额 ¥':'¥')+Number(c.balance||0).toFixed(2)+(zh?' · ':' left · '):'')+(c.expiresAt?(zh?'有效期 ':'Valid ')+(c.issuedAt?day(c.issuedAt)+(zh?' 至 ':' to '):(zh?'至 ':'until '))+day(c.expiresAt-1):(zh?'长期有效':'No expiry')),usable:!!c.usable&&c.save!=='0.00',note:c.usable?'':copy.coupon(c.unavailableLabel,lang)});

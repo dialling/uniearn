@@ -1,3 +1,4 @@
+<view style="{{motionStyle}}">
 <lang-switch></lang-switch>
 <view class="levels-page {{darkClass}}">
  <view class="levels-intro"><view class="eyebrow">{{language==='zh'?'Uniearn 等级成长':'Uniearn Level Journey'}}</view><view class="intro-title">{{language==='zh'?'我的等级':'My level'}}</view></view>
@@ -12,4 +13,6 @@
   <view class="benefit-grid"><view wx:for="{{currentItem.benefits}}" wx:key="title" class="benefit-card"><view class="benefit-icon"><image src="{{item.icon}}" mode="aspectFit"/></view><view><view class="benefit-title">{{item.title}}</view><view class="benefit-detail">{{item.detail}}</view></view></view></view>
  </view>
  <view class="source-note">{{language==='zh'?'当前材料未规定额外优惠券、折扣或优先服务；页面仅展示已确认内容。':'No extra coupons, discounts or priority service are defined in the current materials; only confirmed content is shown.'}}</view>
+</view>
+
 </view>

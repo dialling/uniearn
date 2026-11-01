@@ -113,7 +113,7 @@ const DOC={
 };
 
 Page({
-  data:{tab:0,zh:true,tabs:[],doc:DOC.notice.zh,updated:''},
+  data:{...require('../../utils/motion').data(),tab:0,zh:true,tabs:[],doc:DOC.notice.zh,updated:''},
   onLoad(o={}){
     const i=TABS.findIndex(t=>t.id===o.id||String(t.id)===String(o.tab));
     if(i>=0)this.setData({tab:i});

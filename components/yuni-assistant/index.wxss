@@ -7,23 +7,23 @@
 @keyframes ya-rise{from{opacity:0;transform:translate3d(0,18rpx,0)}to{opacity:1;transform:translate3d(0,0,0)}}
 @keyframes ya-bounce{0%{opacity:0;transform:translate(-50%,40rpx) scale(.8)}65%{opacity:1;transform:translate(-50%,-10rpx) scale(1.04)}100%{opacity:1;transform:translate(-50%,0) scale(1)}}
 @keyframes ya-float{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,-6rpx,0)}}
-.guidance{animation:ya-rise .4s ease-out backwards}.guidance>.ya-avatar{animation:ya-float 3.4s ease-in-out .4s infinite}
-.ask{animation:ya-pop .45s cubic-bezier(.3,1.3,.5,1) .3s backwards;transition:transform .16s ease,opacity .16s ease}
+.guidance{animation:var(--ue-animation,ya-rise .4s ease-out backwards)}.guidance>.ya-avatar{animation:var(--ue-animation,ya-float 3.4s ease-in-out .4s infinite)}
+.ask{animation:var(--ue-animation,ya-pop .45s cubic-bezier(.3,1.3,.5,1) .3s backwards);transition:var(--ue-transition,transform .16s ease,opacity .16s ease)}
 .ya-press{transform:scale(.94);opacity:.85}
-.event-shade,.help-shade{animation:ya-fade .22s ease-out backwards}
-.event-card{animation:ya-pop .42s cubic-bezier(.3,1.3,.5,1) backwards}
-.event-card .ya-event-avatar{animation:ya-bounce .6s cubic-bezier(.3,1.3,.5,1) .12s backwards}
-.event-toast{animation:ya-toast .34s cubic-bezier(.2,.9,.3,1.15) backwards}
-.help-sheet{animation:ya-sheet .36s cubic-bezier(.2,.9,.3,1) backwards}
-.step{animation:ya-rise .32s ease-out backwards}.step:nth-child(4){animation-delay:.06s}.step:nth-child(5){animation-delay:.12s}.step:nth-child(6){animation-delay:.18s}
-.answer{animation:ya-fade .25s ease-out backwards}
-.question-title>.ya-q-toggle{transition:transform .2s ease}
-.close,.got,.still{transition:transform .16s ease,opacity .16s ease}
+.event-shade,.help-shade{animation:var(--ue-animation,ya-fade .22s ease-out backwards)}
+.event-card{animation:var(--ue-animation,ya-pop .42s cubic-bezier(.3,1.3,.5,1) backwards)}
+.event-card .ya-event-avatar{animation:var(--ue-animation,ya-bounce .6s cubic-bezier(.3,1.3,.5,1) .12s backwards)}
+.event-toast{animation:var(--ue-animation,ya-toast .34s cubic-bezier(.2,.9,.3,1.15) backwards)}
+.help-sheet{animation:var(--ue-animation,ya-sheet .36s cubic-bezier(.2,.9,.3,1) backwards)}
+.step{animation:var(--ue-animation,ya-rise .32s ease-out backwards)}.step:nth-child(4){animation-delay:.06s}.step:nth-child(5){animation-delay:.12s}.step:nth-child(6){animation-delay:.18s}
+.answer{animation:var(--ue-animation,ya-fade .25s ease-out backwards)}
+.question-title>.ya-q-toggle{transition:var(--ue-transition,transform .2s ease)}
+.close,.got,.still{transition:var(--ue-transition,transform .16s ease,opacity .16s ease)}
 
 .trip-ask{bottom:calc(170rpx + env(safe-area-inset-bottom));z-index:20}
 
 .guidance.runner-guidance{gap:16rpx;margin:18rpx 0 24rpx;align-items:center}
-.runner-guidance>.ya-avatar{width:64rpx;height:78rpx;animation:none}
+.runner-guidance>.ya-avatar{width:64rpx;height:78rpx;animation:var(--ue-animation,none)}
 .runner-guidance .guide-bubble{padding:18rpx 22rpx;border-radius:22rpx;font-size:23rpx;line-height:1.5;color:#16181c}
 .runner-guidance .green{font-size:21rpx}
 .runner-guidance .how{margin-top:8rpx;font-size:21rpx}

@@ -1,5 +1,5 @@
 const orders=require('../../utils/orders'),store=require('../../utils/store'),f=require('../../utils/workflow');
-Page({data:{zh:true,topic:'other',messages:[],text:'',canSend:false,sending:false,hello:'',error:'',topicOptions:[]},
+Page({data:{...require('../../utils/motion').data(),zh:true,topic:'other',messages:[],text:'',canSend:false,sending:false,hello:'',error:'',topicOptions:[]},
  onLoad(o={}){if(['order','payment','other','deletion'].includes(o.topic))this.setData({topic:o.topic});},
  onShow(){orders.bind(this);this.refresh();},
  onHide(){orders.unbind(this);},

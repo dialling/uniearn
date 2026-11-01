@@ -7,7 +7,7 @@
 .addr-order-note{margin:18rpx 0 8rpx;padding:18rpx 20rpx;border-radius:18rpx;background:#fff1e6;color:#a33b15;font-size:22rpx;line-height:1.5}
 .addr-page .addr-location{box-sizing:border-box;height:154rpx;min-height:154rpx;padding:22rpx;line-height:1.6}
 .addr-page .field-label{margin:22rpx 0 10rpx;font-size:24rpx;color:#6b6860;font-weight:600}
-.addr-page .field{box-sizing:border-box;background:#f7f6f2;border:2rpx solid transparent;border-radius:18rpx;transition:border-color .2s,background .2s}
+.addr-page .field{box-sizing:border-box;background:#f7f6f2;border:2rpx solid transparent;border-radius:18rpx;transition:var(--ue-transition,border-color .2s,background .2s)}
 .addr-section{margin-top:18rpx;padding:24rpx 22rpx 26rpx;border:2rpx solid #ebe8df;border-radius:24rpx;background:#fff}
 .addr-place-section{margin-top:10rpx}.addr-contact-section{margin-top:20rpx;background:#fcfbf8}
 .addr-section-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6rpx}
@@ -21,4 +21,4 @@
 .page-dark .addr-section{background:#1f201e;border-color:#3a3b37}.page-dark .addr-contact-section{background:#242522}.page-dark .addr-section-title{color:#edebe4}.page-dark .addr-auto-tag{background:#173c31;color:#75d7b5}
 .page-dark .addr-order-note{background:#3a2416;color:#f4a06e}
 
-.addr-save{margin-top:28rpx!important;transition:transform .15s}.addr-save:active{transform:scale(.98)}
+.addr-save{margin-top:28rpx!important;transition:var(--ue-transition,transform .15s)}.addr-save:active{transform:scale(.98)}

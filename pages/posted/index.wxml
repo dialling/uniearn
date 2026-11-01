@@ -1,1 +1,4 @@
+<view style="{{motionStyle}}">
 <view class="{{darkClass}}"/>
+
+</view>

@@ -34,7 +34,7 @@ function rows(language){
  }));
 }
 Page({
- data:{language:'zh',levels:rows('zh'),current:0,currentItem:rows('zh')[0],currentLevel:1,points:0,arcMoveMs:ARC_MOVE_MS,arcReleaseMs:ARC_RELEASE_MS,gestureActive:false,dragX:0,dragY:0},
+ data:{...require('../../utils/motion').data(),language:'zh',levels:rows('zh'),current:0,currentItem:rows('zh')[0],currentLevel:1,points:0,arcMoveMs:ARC_MOVE_MS,arcReleaseMs:ARC_RELEASE_MS,gestureActive:false,dragX:0,dragY:0},
  onLoad(){this.localize(true);},
  onReady(){wx.createSelectorQuery().in(this).select('.level-orbit').boundingClientRect(rect=>{this.orbitRect=rect;}).exec();},
  onShow(){this.localize(false);require('../../utils/page-title').apply(this);},
@@ -43,6 +43,7 @@ Page({
   const levels=rows(language);
   this.setData({language,levels,current,currentItem:levels[current],currentLevel:view.level,points:view.points});
  },
+ onMotionChange(enabled){this.stopArcMotion();this.setData({gestureActive:false,dragX:0,dragY:0,arcMoveMs:enabled?ARC_MOVE_MS:0,arcReleaseMs:enabled?ARC_RELEASE_MS:0});},
  stopArcMotion(){this.gestureVelocity=0;this.arcStartX=undefined;},
  setCurrent(current,fromArc=false){
   if(!fromArc)this.stopArcMotion();
@@ -65,14 +66,14 @@ Page({
   const step=Math.max(36,rect.width*ARC_STEP_RATIO),rawShift=(this.arcStartX-touch.clientX)/step;
   const target=Math.max(0,Math.min(this.data.levels.length-1,Math.round(this.arcStartLevel+rawShift)));
   if(target!==this.data.current)this.setCurrent(target,true);
-  const remainder=rawShift-Math.round(rawShift),dragX=Math.max(-54,Math.min(54,-remainder*92));
+  const remainder=require('../../utils/motion').enabled()?rawShift-Math.round(rawShift):0,dragX=Math.max(-54,Math.min(54,-remainder*92));
   this.setData({gestureActive:true,dragX,dragY:-Math.abs(dragX)*.12});
  },
  onArcEnd(e){
   const touch=e.changedTouches&&e.changedTouches[0],rect=this.orbitRect;
   if(!touch||!rect||!rect.width||this.arcStartX===undefined){this.setData({gestureActive:false,dragX:0,dragY:0});return;}
   const step=Math.max(36,rect.width*ARC_STEP_RATIO),base=(this.arcStartX-touch.clientX)/step;
-  const momentum=Math.max(-ARC_MAX_MOMENTUM,Math.min(ARC_MAX_MOMENTUM,-this.gestureVelocity*ARC_MOMENTUM_MS/step));
+  const momentum=require('../../utils/motion').enabled()?Math.max(-ARC_MAX_MOMENTUM,Math.min(ARC_MAX_MOMENTUM,-this.gestureVelocity*ARC_MOMENTUM_MS/step)):0;
   const target=Math.max(0,Math.min(this.data.levels.length-1,Math.round(this.arcStartLevel+base+momentum)));
   this.setCurrent(target,true);this.stopArcMotion();
   this.setData({gestureActive:false,dragX:0,dragY:0});

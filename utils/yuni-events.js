@@ -1,9 +1,11 @@
 const store=require('./store');let listeners=[],pending=[],current=null,currentListener=null;const seen={};
-function emit(event){if(!event||seen[event.key])return;seen[event.key]=true;pending.push(event);flush();}
-function flush(){if(current||!listeners.length||!pending.length)return;current=pending.shift();currentListener=listeners[listeners.length-1];currentListener(current);}
+function emit(event){if(!event||seen[event.key])return;seen[event.key]=true;if(store.get().yuniTips===false)return;pending.push(event);flush();}
+function flush(){if(store.get().yuniTips===false||current||!listeners.length||!pending.length)return;current=pending.shift();currentListener=listeners[listeners.length-1];currentListener(current);}
 function subscribe(fn){listeners=listeners.filter(x=>x!==fn);listeners.push(fn);flush();return()=>{listeners=listeners.filter(x=>x!==fn);if(currentListener===fn&&current){pending.unshift(current);current=null;currentListener=null;}flush();};}
 function next(){current=null;currentListener=null;flush();}
 function reset(){pending=[];current=null;currentListener=null;Object.keys(seen).forEach(k=>delete seen[k]);}
+// Discard cosmetic events muted by the user; order notifications use a separate channel.
+if(store.subscribe)store.subscribe(()=>{if(store.get().yuniTips===false){pending=[];current=null;currentListener=null;}});
 function status(r,revision){const zh=store.get().language!=='en',mine=r.isMine;let title='',text='',pose='wave';
 // The dedicated success video already confirms a new order; do not queue a second popup.
 if(r.status==='waiting')return;

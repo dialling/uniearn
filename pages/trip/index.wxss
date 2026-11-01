@@ -1,6 +1,16 @@
 @import "../../utils/order-pictures.wxss";
 @import "../../utils/flow.wxss";
 
+.trip-takeout{padding-bottom:calc(35rpx + env(safe-area-inset-bottom))}
+.pickup-actions{display:flex;flex-direction:column;gap:14rpx;margin:24rpx 0 18rpx}
+.pickup-actions .btn{width:100%;margin:0;min-height:82rpx;border-radius:20rpx;font-size:27rpx;box-sizing:border-box}
+.pickup-actions .pickup-deliver{background:#0b7a55;color:#fff}
+.pickup-actions .pickup-cancel{background:#f9eee7;color:#b45321;border:1rpx solid #efd9cb}
+.pickup-actions .btn[disabled]{background:#eeede8;color:#95998f;border-color:transparent}
+.page-dark .pickup-actions .pickup-cancel{background:#3c2c23;color:#f4b582;border-color:#614434}
+.page-dark .pickup-actions .btn[disabled]{background:#343831;color:#8f9888}
+.cancel-sheet .action-row{margin-top:22rpx}
+
 .pickup-code-line{display:flex;align-items:center;justify-content:space-between;margin:10rpx 0;padding:14rpx 18rpx;border-radius:14rpx;background:#f3faf6;color:#0b7a55;font-size:24rpx}.pickup-code-value{font-weight:800;letter-spacing:3rpx;font-size:30rpx}.page-dark .pickup-code-line{background:#44423c;color:#6fd0a8}
 
 .seal-report-row{gap:20rpx;margin:16rpx 0}.seal-report-description{flex:1;min-width:0}.seal-report-action,.seal-report-recorded{flex-shrink:0;white-space:nowrap}

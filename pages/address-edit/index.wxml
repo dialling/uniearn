@@ -1,2 +1,5 @@
+<view style="{{motionStyle}}">
 <lang-switch/>
 <view class="post-page addr-page {{darkClass}}"><include src="../../utils/address-form.wxml"/></view>
+
+</view>

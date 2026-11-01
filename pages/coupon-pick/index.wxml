@@ -1,3 +1,4 @@
+<view style="{{motionStyle}}">
 <lang-switch/>
 <view class="cp-page {{darkClass}}">
  <view class="cp-tabs"><view class="cp-tab {{tab==='usable'?'on':''}}" data-tab="usable" bindtap="switchTab">{{zh?'可使用':'Available'}} {{usable.length}}</view><view class="cp-tab {{tab==='expired'?'on':''}}" data-tab="expired" bindtap="switchTab">{{zh?'已过期':'Expired'}} {{expired.length}}</view><view class="cp-slider {{tab==='expired'?'right':''}}"></view></view>
@@ -14,4 +15,6 @@
   <view wx:if="{{!expired.length}}" class="cp-empty">{{zh?'没有过期的优惠券。':'No expired coupons.'}}</view>
   <view wx:for="{{expired}}" wx:key="id" class="cp-card expired"><view class="cp-left"><view class="cp-amt"><text class="cp-yen">¥</text>{{item.max}}</view><view class="cp-sub">{{zh?'最高减':'Up to'}}</view></view><view class="cp-right"><view class="cp-name">{{item.name}}</view><view class="cp-until">{{item.until}}</view></view><text class="cp-stamp">{{zh?'已过期':'Expired'}}</text></view>
  </block>
+</view>
+
 </view>

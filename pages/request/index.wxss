@@ -2,7 +2,20 @@
 @import "../../utils/order-pictures.wxss";
 @import "../../utils/flow.wxss";
 
-.status-card{background:#fff1e6;border:1rpx solid #f2b48a;border-left:1rpx solid #f2b48a;min-height:130rpx;padding-right:110rpx;position:relative}.status-card .flow-title{font-size:30rpx;color:#c2410c}.status-yuni{position:absolute;right:18rpx;top:20rpx;width:78rpx;height:90rpx}.timeline{padding:20rpx 0}.timeline text{font-size:24rpx}.cancel-order-button{display:flex;align-items:center;justify-content:center;width:100%;min-height:88rpx;padding:20rpx 24rpx;margin:24rpx 0 0;border:2rpx solid #f2b48a;border-radius:20rpx;background:#fdf6f2;color:#c2410c;font-size:28rpx;font-weight:700;line-height:1.5;transition:transform .16s ease,background .16s ease}.cancel-order-press{transform:scale(.98);background:#fff1e6}.page-dark .cancel-order-button{background:#3a2416;border-color:#3a3b37;color:#f4a06e}.contact-actions{display:flex;gap:16rpx}.contact-button{position:relative;width:66rpx;height:66rpx;border:1rpx solid #e2e0d9;border-radius:50%;display:flex;align-items:center;justify-content:center}.contact-button image{width:30rpx;height:30rpx}
+.rider-photo-upload{position:relative;padding-right:85rpx}
+.rider-photo-upload .strong{font-size:28rpx;line-height:1.5}
+.rider-photo-count{font-size:22rpx;color:#0b7a55;margin-top:8rpx}
+.rider-photo-busy{opacity:.6}
+.rider-photo-list{display:flex;flex-wrap:wrap;align-items:center;gap:18rpx;margin:18rpx 0 28rpx}
+.rider-photo-item{position:relative;width:160rpx;height:160rpx;flex:none}
+.rider-photo-remove{position:absolute;right:-9rpx;top:-9rpx;display:flex;align-items:center;justify-content:center;width:42rpx;height:42rpx;border:3rpx solid #eeede8;border-radius:50%;background:#fff2e9;color:#c2410c;font-size:29rpx;line-height:1}
+.rider-photo-add{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6rpx;width:160rpx;height:160rpx;box-sizing:border-box;border:2rpx dashed #abd1be;border-radius:16rpx;background:#f3faf6;color:#0b7a55;font-size:22rpx}
+.rider-photo-add>text:first-child{font-size:40rpx;line-height:1}
+.page-dark .rider-photo-add{background:#293c31;border-color:#557b63;color:#6fd0a8}
+.page-dark .rider-photo-remove{background:#422b20;color:#f4a06e;border-color:#242522}
+.page-dark .rider-photo-count{color:#6fd0a8}
+
+.status-card{background:#fff1e6;border:1rpx solid #f2b48a;border-left:1rpx solid #f2b48a;min-height:130rpx;padding-right:110rpx;position:relative}.status-card .flow-title{font-size:30rpx;color:#c2410c}.status-yuni{position:absolute;right:18rpx;top:20rpx;width:78rpx;height:90rpx}.timeline{padding:20rpx 0}.timeline text{font-size:24rpx}.cancel-order-button{display:flex;align-items:center;justify-content:center;width:100%;min-height:88rpx;padding:20rpx 24rpx;margin:24rpx 0 0;border:2rpx solid #f2b48a;border-radius:20rpx;background:#fdf6f2;color:#c2410c;font-size:28rpx;font-weight:700;line-height:1.5;transition:var(--ue-transition,transform .16s ease,background .16s ease)}.cancel-order-press{transform:scale(.98);background:#fff1e6}.page-dark .cancel-order-button{background:#3a2416;border-color:#3a3b37;color:#f4a06e}.contact-actions{display:flex;gap:16rpx}.contact-button{position:relative;width:66rpx;height:66rpx;border:1rpx solid #e2e0d9;border-radius:50%;display:flex;align-items:center;justify-content:center}.contact-button image{width:30rpx;height:30rpx}
 
 .flow-page .btn.orange{background:#c2410c}
 .page-dark.flow-page .btn.orange{background:#f4a06e;color:#16181c}

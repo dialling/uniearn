@@ -35,7 +35,7 @@ const examplesZh = [
 const activityDisplay=require('../../utils/activity-display');
 const activityRanking=require('../../utils/activity-ranking');
 Page({
-  data: {screen:'home',activeOffers:[],latestOffer:null,activityTab:'ranking',activityRulesOpen:false,rankingRows:[],rankingRewards:[],activityTasks:[],activityRewards:[],selectedNews:null,coupons: [], campaigns: [], weekly: {segments: []}, news: [], ready: 0, toCollect: 0, examples, registered: false, zh: false},
+  data: {...require('../../utils/motion').data(),screen:'home',activeOffers:[],latestOffer:null,activityTab:'ranking',activityRulesOpen:false,rankingRows:[],rankingRewards:[],activityTasks:[],activityRewards:[],selectedNews:null,coupons: [], campaigns: [], weekly: {segments: []}, news: [], ready: 0, toCollect: 0, examples, registered: false, zh: false},
   onShow() {
     this._activityVisible=true;
     const zh = store.get().language !== 'en';
@@ -44,7 +44,7 @@ Page({
     this.localizeActivity(zh);
     if(this.stopActivities)this.stopActivities();
     this.stopActivities=require('../../utils/activity-sync').subscribe(config=>{this.activityConfig=activityDisplay.latest(this.activityConfig,config);this.localizeActivity(this.data.zh);this.setData({activitySyncError:false});},()=>this.setData({activitySyncError:true}));
-    if(wx.setNavigationBarTitle)wx.setNavigationBarTitle({title:zh?'资讯':'News'});
+    if(wx.setNavigationBarTitle)wx.setNavigationBarTitle({title:zh?'动态':'News'});
     orders.bind(this);
     this.startActivityClock();
     if(this.stopNews)this.stopNews();
@@ -68,7 +68,7 @@ Page({
       returning: campaigns.find(c => c.returning), campaignCards:campaigns.filter(c=>(!event||c.id!==event.id)&&(c.eligible||c.collected)).map(c=>({...c,title:zh&&c.titleZh||c.title,description:zh&&c.descriptionZh||c.description})),  registered: !!state.profile.onboarded&&!state.profile.loggedOut,
       showExamples: !state.profile.onboarded && !(r.coupons || []).length,
       ready: (r.coupons || []).length,
-      toCollect: !state.profile.onboarded && event ? 1 : campaigns.filter(c => c.eligible && !c.collected).length},()=>{measure(this);if(this.couponFocus){this.couponFocus=false;wx.pageScrollTo({selector:'#my-coupons',duration:250});}});
+      toCollect: !state.profile.onboarded && event ? 1 : campaigns.filter(c => c.eligible && !c.collected).length},()=>{measure(this);if(this.couponFocus){this.couponFocus=false;wx.pageScrollTo({selector:'#my-coupons',duration:require('../../utils/motion').duration(250)});}});
     this.updateActivityBoard();
   },
   async collect(e) {
@@ -90,7 +90,7 @@ Page({
   backToNews(){this.stopActivityClock();this.setData({screen:'home',selectedNews:null});wx.pageScrollTo({scrollTop:0,duration:0});},
   switchActivity(e){const tab=e.currentTarget.dataset.tab;if(['tasks','ranking','rewards'].includes(tab))this.setData({activityTab:tab});},
   toggleActivityRules(){this.setData({activityRulesOpen:!this.data.activityRulesOpen});},
-  earnActivityPoints(){if(!this.data.registered)return this.register();this.setData({activityTab:'tasks'});wx.pageScrollTo({selector:'#ranking-content',duration:250});},
+  earnActivityPoints(){if(!this.data.registered)return this.register();this.setData({activityTab:'tasks'});wx.pageScrollTo({selector:'#ranking-content',duration:require('../../utils/motion').duration(250)});},
   openArticle(e){const item=this.data.news.find(n=>n._id===e.currentTarget.dataset.id);if(item){this.setData({selectedNews:item,screen:'article'});wx.pageScrollTo({scrollTop:0,duration:0});}},
   closeArticle(){this.setData({selectedNews:null,screen:'uniearn'});},
   openCoupons(){require('../../utils/nav').navigateTo({url:'/pages/coupons/index'});},

@@ -18,13 +18,13 @@
 .apply-form .field:focus{border-color:#a6d0be;background:#fff}
 .runner-ph{color:#8a877e;font-weight:400}
 .runner-gender-row{display:flex;gap:16rpx}
-.runner-gender-option{display:flex;align-items:center;justify-content:space-between;gap:12rpx;flex:1;min-width:0;height:88rpx;min-height:88rpx;padding:0 24rpx;margin:0;border:2rpx solid #e2e0d9;border-radius:18rpx;background:#f7f6f2;color:#5e5c55;font-size:27rpx;font-weight:650;line-height:1.4;transition:background .18s,color .18s,border-color .18s,transform .15s}
+.runner-gender-option{display:flex;align-items:center;justify-content:space-between;gap:12rpx;flex:1;min-width:0;height:88rpx;min-height:88rpx;padding:0 24rpx;margin:0;border:2rpx solid #e2e0d9;border-radius:18rpx;background:#f7f6f2;color:#5e5c55;font-size:27rpx;font-weight:650;line-height:1.4;transition:var(--ue-transition,background .18s,color .18s,border-color .18s,transform .15s)}
 .runner-gender-option.selected{background:#e7f3ed;border-color:#0b7a55;color:#0b7a55}
 .gender-check{display:flex;align-items:center;justify-content:center;flex:none;width:30rpx;height:30rpx;border:2rpx solid #d3cfc4;border-radius:50%;font-size:20rpx;line-height:1;background:transparent;color:transparent}
 .selected .gender-check{border-color:#0b7a55;background:#0b7a55;color:#fff}
 .runner-privacy{display:flex;align-items:flex-start;gap:10rpx;margin-top:26rpx;color:#6b6860;font-size:22rpx;line-height:1.5}
 .runner-privacy image{flex:none;width:25rpx;height:27rpx;margin-top:2rpx}
-.apply-form .runner-submit{display:flex;align-items:center;justify-content:center;width:100%;min-height:92rpx;margin:26rpx 0 0;padding:20rpx 24rpx;border-radius:20rpx;background:#0b7a55;color:#fff;font-size:28rpx;font-weight:750;line-height:1.4;transition:transform .15s,opacity .15s}
+.apply-form .runner-submit{display:flex;align-items:center;justify-content:center;width:100%;min-height:92rpx;margin:26rpx 0 0;padding:20rpx 24rpx;border-radius:20rpx;background:#0b7a55;color:#fff;font-size:28rpx;font-weight:750;line-height:1.4;transition:var(--ue-transition,transform .15s,opacity .15s)}
 .runner-option-press{transform:scale(.985);opacity:.85}
 .apply-form .runner-submit[disabled]{background:#e4e1d8;color:#8a877e}
 .student-check-page .apply-line{padding:17rpx 0;gap:20rpx}

@@ -1,6 +1,6 @@
 const store=require('../../utils/store'),orders=require('../../utils/orders'),ui=require('../../utils/ui'),{postCopy}=require('../../utils/post-copy');
 const examples={zh:['帮我买一个枕头或一个盆儿','帮我拿一下课本'],en:['Buy me a pillow or a basin','Pick up my textbook']};
-Page({data:{zh:true,ui:postCopy('taskPost','zh'),title:'',price:3,priceText:'5',priceLabel:'5.00',total:'5.50',photo:'',agreed:true,busy:false,validTitle:false,validPrice:true,examples:examples.zh,prices:[3,5,8,15]},
+Page({data:{...require('../../utils/motion').data(),zh:true,ui:postCopy('taskPost','zh'),title:'',price:3,priceText:'5',priceLabel:'5.00',total:'5.50',photo:'',agreed:true,busy:false,validTitle:false,validPrice:true,examples:examples.zh,prices:[3,5,8,15]},
  lang(){const language=store.get().language==='en'?'en':'zh';this.setData({zh:language==='zh',ui:postCopy('taskPost',language),examples:examples[language]});},
  onLoad(o={}){this.lang();if(o.repeat){const r=store.get().requests.find(r=>r.id===o.repeat);if(r)this.setData({title:r.title,price:r.reward,priceText:String(r.reward)});}this.handleTotal();},
  onShow(){this.lang();this.handleTotal();},text(e){this.setData({[e.currentTarget.dataset.field]:e.detail.value});this.handleTotal();},

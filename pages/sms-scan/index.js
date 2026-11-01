@@ -3,7 +3,7 @@ const {normalizePoint}=require('../../utils/pickup-point');
 const store=require('../../utils/store');
 const zhText={'Read pickup SMS':'识别取件短信','Read pickup screenshot':'识别取件截图','Read pending pickup list':'识别待取件列表','Read parcel details':'识别包裹详情','Pickup code':'取件码','Time unclear':'时间不清晰','All detected codes are listed. Select up to 12 from one pickup point.':'已列出识别到的取件码，请核对每个包裹的驿站，最多选择 12 个。','Review the codes and select parcels from one pickup point.':'请核对取件码，并选择同一取件点的包裹。','No pickup codes found. Try a clearer screenshot.':'未找到取件码。请换一张更清晰的截图。','Could not start upload.':'无法开始上传。','Could not read the SMS.':'无法识别短信。','Different pickup points found. Select codes for one point per request.':'识别到不同的取件点。每个订单请只选择同一取件点的取件码。','Select codes for one pickup point per request.':'每个订单请只选择同一取件点的取件码。','Select 1–12 pickup codes.':'请选择 1–12 个取件码。','Fill in each code and remove duplicates.':'请填写每个取件码，并删除重复项。','Please confirm the pickup point.':'请确认取件点。','These messages have different pickup points. Select one point per request.':'这些短信的取件点不同。每个订单请只选择一个取件点。'};
 Page({
-  data:{zh:true,labels:zhText,mode:'sms',heading:'Read pickup SMS',busy:false,error:'',note:'',candidates:[],selectedCount:0,pickupPoint:'',pickupAddress:'',preview:''},
+  data:{...require('../../utils/motion').data(),zh:true,labels:zhText,mode:'sms',heading:'Read pickup SMS',busy:false,error:'',note:'',candidates:[],selectedCount:0,pickupPoint:'',pickupAddress:'',preview:''},
   onLoad(o={}){const mode=['detail','list'].includes(o.mode)?o.mode:'sms';this.autoCapture=o.auto==='1';this.setData({mode});this.localize();},
   onReady(){if(this.autoCapture){this.autoCapture=false;this.capture();}},
   onShow(){this.localize();},

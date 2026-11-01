@@ -50,7 +50,7 @@ page{background:#f3ecd9}
 .iv-muted{flex:1;font-size:26rpx;color:#7c7768}
 .iv-input{flex:1;min-width:0;height:60rpx;font-size:30rpx;color:#22221d;letter-spacing:2rpx}
 .iv-ph{color:#7c7768}
-.iv-chip{flex:none;height:60rpx;line-height:60rpx;padding:0 30rpx;border-radius:6rpx;border:2rpx solid #a66a56;color:#a66a56;font-size:25rpx;font-weight:700;transition:transform .15s ease,opacity .15s ease}
+.iv-chip{flex:none;height:60rpx;line-height:60rpx;padding:0 30rpx;border-radius:6rpx;border:2rpx solid #a66a56;color:#a66a56;font-size:25rpx;font-weight:700;transition:var(--ue-transition,transform .15s ease,opacity .15s ease)}
 .iv-chip.solid{background:#a66a56;color:#22221d}
 .iv-chip.busy{opacity:.5}
 

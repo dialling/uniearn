@@ -6,7 +6,7 @@ function dormSummary(s){
 }
 function postTier(n){return n>=30?'gold':n>=10?'silver':'bronze';}
 Page({
- data:{ui:meCopy('zh'),language:'zh',appearance:'light',initial:'?',postedCount:0,deliveredCount:0,couponCount:0,unlockedCount:0,profile:{},loading:false,loggingOut:false,error:'',level:'Yuni 新星',limit:10,remaining:15,levelOpen:false,stickersOpen:false,settingsOpen:false,postedBadge:'bronze',jobsBadge:'bronze',tierName:'Yuni 新星',rankName:'Yuni 新星',nextJobsText:''},
+ data:{...require('../../utils/motion').data(),ui:meCopy('zh'),language:'zh',appearance:'light',initial:'?',postedCount:0,deliveredCount:0,couponCount:0,unlockedCount:0,profile:{},loading:false,loggingOut:false,error:'',level:'Yuni 新星',limit:10,remaining:15,levelOpen:false,stickersOpen:false,settingsOpen:false,postedBadge:'bronze',jobsBadge:'bronze',tierName:'Yuni 新星',rankName:'Yuni 新星',nextJobsText:''},
  onLoad(o={}){this.pendingInviteCode=String(o.invite||'').trim();},
  async onShow(){if(this.pendingInviteCode){store.update(s=>{s.pendingInviteCode=this.pendingInviteCode;});this.pendingInviteCode='';return wx.reLaunch({url:'/pages/welcome/index'});}this.setData({loading:true,error:''});try{this.refresh();this.refreshTier();await account.call('status');await require('../../utils/orders').sync();this.refresh();this.refreshTier();}catch(e){this.setData({error:e.message});}finally{this.setData({loading:false});}},
 

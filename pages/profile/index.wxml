@@ -1,3 +1,4 @@
+<view style="{{motionStyle}}">
 <lang-switch></lang-switch>
 <view class="page navpage me-page {{appearance==='dark'?'me-dark':''}}">
 <view wx:if="{{loading}}" class="muted">{{language==='zh'?'正在加载账户…':'Loading your account…'}}</view><view wx:if="{{error}}" class="notice-error">{{error}}</view>
@@ -57,3 +58,5 @@
 <view class="me-footer">{{ui.footer}}<view>Uniearn v{{version}}</view></view>
 </block></view><app-nav active="profile"></app-nav>
 <yuni-assistant id="me-yuni" topic="me" language="{{language}}"></yuni-assistant>
+
+</view>

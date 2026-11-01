@@ -1,3 +1,4 @@
+<view style="{{motionStyle}}">
 <lang-switch/>
 <view class="flow-page trip-start-page {{darkClass}}"><view class="flow-title">{{zh?'发起行程':'Start a trip'}}</view><view class="flow-sub">{{zh?'回去路上顺便帮同学带'+(category==='takeout'?'外卖':'快递')+'。':'Bring other people’s '+(category==='takeout'?'takeaway':'parcels')+' on your way back.'}}</view><view class="preview-label">{{zh?'团队测试 · 分享行程，让同学加入你的路线':'Team test · share this trip so students can join your route'}}</view>
 <view class="strong">{{zh?'你要取什么？':'What are you picking up?'}}</view><view class="choices"><view class="choice-box {{category==='takeout'?'selected':''}}" data-value="takeout" bindtap="changeCategory"><view class="strong">{{zh?'外卖代取':'Takeaway'}}</view><view class="hint">{{zh?'校门口的外卖':'Food at the gate'}}</view></view><view class="choice-box {{category==='parcel'?'selected':''}}" data-value="parcel" bindtap="changeCategory"><view class="strong">{{zh?'快递代取':'Parcels'}}</view><view class="hint">{{zh?'从快递站取':'from a station'}}</view></view></view>
@@ -16,5 +17,7 @@
  <view class="selection-summary">{{zh?'已选 '+selectedCount+' 单 · '+selectedBoxes+'/'+capacity+(category==='takeout'?' 袋':' 件')+' · 赏金 ¥'+reward:selectedCount+' selected · '+selectedBoxes+'/'+capacity+(category==='takeout'?' bags':' parcels')+' · ¥'+reward}}</view>
  <view class="hint">{{zh?'不勾选也能分享空行程，等待同学加入。':'You can also share an empty trip and wait for others to join.'}}</view>
 </view><view wx:if="{{error}}" class="orange-note">{{names[error]||error}}</view>
-<view class="flow-bottom trip-start-bottom"><button class="btn" bindtap="start" disabled="{{!!error||starting}}" loading="{{starting}}">{{zh?(selectedCount?'开始行程 · 已选 '+selectedCount+' 单 · ¥'+reward:'分享空行程 · 等待加入'):(selectedCount?'Start trip · '+selectedCount+' selected · ¥'+reward:'Share empty trip')}}</button></view></view>
+<view class="flow-bottom trip-start-bottom"><button class="btn" bindtap="start" disabled="{{!!error||starting}}" loading="{{motionEnabled && (starting)}}">{{zh?(selectedCount?'开始行程 · 已选 '+selectedCount+' 单 · ¥'+reward:'分享空行程 · 等待加入'):(selectedCount?'Start trip · '+selectedCount+' selected · ¥'+reward:'Share empty trip')}}</button></view></view>
 <yuni-assistant topic=""/>
+
+</view>

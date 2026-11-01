@@ -1,3 +1,4 @@
+<view style="{{motionStyle}}">
 <lang-switch/>
 <view class="post-page addr-page {{darkClass}}">
  <view class="addr-list-head"><text>{{zh?'我的常用地址':'My addresses'}}</text><text class="addr-count">{{list.length}}</text><text wx:if="{{pick && list.length}}" class="hint addr-pick-hint">{{zh?'点选一个用于本单':'Tap one to use it'}}</text></view>
@@ -8,4 +9,6 @@
   <view class="addr-actions"><button wx:if="{{!item.default}}" class="addr-default" catchtap="setDefault" data-id="{{item.id}}" hover-class="addr-default-press">{{zh?'设为默认':'Set default'}}</button><text wx:else class="hint">{{zh?'当前默认地址':'Default address'}}</text><view class="addr-btns"><text class="addr-btn" catchtap="edit" data-id="{{item.id}}">{{zh?'编辑':'Edit'}}</text><text class="addr-btn danger" catchtap="remove" data-id="{{item.id}}">{{zh?'删除':'Delete'}}</text></view></view>
  </view>
  <view class="addr-add-card" bindtap="add" hover-class="addr-add-press" hover-stay-time="80"><view class="addr-add-icon">＋</view><view class="addr-add-copy"><view class="addr-add-title">{{zh?'添加常用地址':'Add an address'}}</view><view class="addr-add-help">{{zh?'添加宿舍或其他配送地址':'Add a dorm or another delivery address'}}</view></view><text class="addr-add-arrow">›</text></view>
+</view>
+
 </view>

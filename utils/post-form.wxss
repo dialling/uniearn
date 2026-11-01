@@ -2,7 +2,7 @@
 .post-page{min-height:100vh;padding:0 30rpx calc(230rpx + env(safe-area-inset-bottom));background:#eeede8;color:#16181c;font-size:26rpx;line-height:1.5}
 .post-page .post-header{background:transparent;margin:0 -30rpx 20rpx;padding:18rpx 30rpx 22rpx;border-bottom:1rpx solid #e2e0d9}
 .post-page .post-tabs{display:flex;gap:0;margin-top:0;padding:5rpx;border:1rpx solid #d7d8d2;border-radius:23rpx;background:#f0efea}
-.post-page .post-tab{position:relative;z-index:1;display:block;flex:1;min-width:0;height:72rpx;line-height:72rpx;padding:0;margin:0;border-radius:19rpx;background:transparent;color:#6b6860;font-size:26rpx;font-weight:700;transition:color .3s ease,transform .3s cubic-bezier(.34,1.5,.55,1)}
+.post-page .post-tab{position:relative;z-index:1;display:block;flex:1;min-width:0;height:72rpx;line-height:72rpx;padding:0;margin:0;border-radius:19rpx;background:transparent;color:#6b6860;font-size:26rpx;font-weight:700;transition:var(--ue-transition,color .3s ease,transform .3s cubic-bezier(.34,1.5,.55,1))}
 .post-page .post-tabs.glass .post-tab.active{background:transparent;color:#16181c;box-shadow:none}
 .post-page .post-tabs .glass-thumb{pointer-events:none}
 .post-page .post-tab[disabled]{opacity:.65}
@@ -54,9 +54,9 @@
 .ue-ph{color:#8a877e;font-weight:400}
 .post-page .flow-card,.post-page .step-card{padding:28rpx 26rpx;border:0;border-radius:28rpx;box-shadow:0 6rpx 24rpx rgba(22,24,28,.06)}
 .post-page .flow-head,.post-page .step-head{margin-bottom:16rpx;font-size:30rpx}
-.post-page .field{border:2rpx solid transparent;border-radius:18rpx;background:#f6f5f1;transition:background .2s ease,border-color .2s ease}
+.post-page .field{border:2rpx solid transparent;border-radius:18rpx;background:#f6f5f1;transition:var(--ue-transition,background .2s ease,border-color .2s ease)}
 .post-page .soft,.post-page .delivery-box{background:#f7f6f2;border-radius:22rpx}
-.post-page .pill,.post-page .address-chip{padding:12rpx 26rpx;border:2rpx solid transparent;background:#f0efea;color:#44423c;font-weight:600;transition:background .2s ease,color .2s ease,transform .15s ease,box-shadow .2s ease}
+.post-page .pill,.post-page .address-chip{padding:12rpx 26rpx;border:2rpx solid transparent;background:#f0efea;color:#44423c;font-weight:600;transition:var(--ue-transition,background .2s ease,color .2s ease,transform .15s ease,box-shadow .2s ease)}
 .post-page .pill:active,.post-page .address-chip:active{transform:scale(.95)}
 .post-page .pill.selected,.post-page .pill.chosen,.post-page .address-chip.chosen{box-shadow:0 6rpx 16rpx rgba(194,65,12,.25)}
 .post-page .pill.link,.post-page .address-chip.new{background:#fff;border-color:#f2b48a}
@@ -72,35 +72,35 @@
 
 .coupon-head{margin-top:18rpx}.coupon-save{color:#c2410c;font-size:28rpx;font-weight:800}
 .coupon-scroll{margin:14rpx -26rpx 0;width:auto;white-space:nowrap}.coupon-track{display:inline-flex;gap:16rpx;padding:4rpx 26rpx 10rpx}
-.coupon-chip{position:relative;display:inline-flex;flex-direction:column;justify-content:center;min-width:180rpx;height:112rpx;padding:0 26rpx;box-sizing:border-box;border:2rpx dashed #f2b48a;border-radius:20rpx;background:#fff1e6;transition:border-color .2s ease,background .2s ease,box-shadow .2s ease,transform .15s ease}
+.coupon-chip{position:relative;display:inline-flex;flex-direction:column;justify-content:center;min-width:180rpx;height:112rpx;padding:0 26rpx;box-sizing:border-box;border:2rpx dashed #f2b48a;border-radius:20rpx;background:#fff1e6;transition:var(--ue-transition,border-color .2s ease,background .2s ease,box-shadow .2s ease,transform .15s ease)}
 .coupon-chip:active{transform:scale(.96)}.coupon-chip.on{border-style:solid;border-color:#c2410c;background:#fdf6f2;box-shadow:0 8rpx 20rpx rgba(194,65,12,.16)}.coupon-chip.off{opacity:.45}
 .coupon-chip.none{min-width:140rpx;align-items:center;border-color:#e2e0d9;background:#fff1e6}.coupon-chip.none.on{border-color:#c2410c;background:#fdf6f2}
 .coupon-amt{color:#c2410c;font-size:32rpx;font-weight:800;line-height:1.2}.coupon-name{margin-top:4rpx;color:#5e5c55;font-size:22rpx}
-.coupon-tick{position:absolute;top:-2rpx;right:-2rpx;width:36rpx;height:36rpx;line-height:36rpx;text-align:center;border-radius:0 20rpx 0 16rpx;background:#c2410c;color:#fff;font-size:19rpx;opacity:0;transform:scale(.6);transition:opacity .2s,transform .25s cubic-bezier(.3,1.5,.5,1)}.coupon-chip.on .coupon-tick{opacity:1;transform:scale(1)}
+.coupon-tick{position:absolute;top:-2rpx;right:-2rpx;width:36rpx;height:36rpx;line-height:36rpx;text-align:center;border-radius:0 20rpx 0 16rpx;background:#c2410c;color:#fff;font-size:19rpx;opacity:0;transform:scale(.6);transition:var(--ue-transition,opacity .2s,transform .25s cubic-bezier(.3,1.5,.5,1))}.coupon-chip.on .coupon-tick{opacity:1;transform:scale(1)}
 .coupon-auto{color:#c2410c!important}
 .page-dark .coupon-chip{background:#242522;border-color:#3a3b37}.page-dark .coupon-chip.on{background:#242522;border-color:#f4a06e}.page-dark .coupon-name{color:#a9a69c}
-.coupon-row{display:flex;align-items:center;justify-content:space-between;margin:18rpx -12rpx 0;padding:18rpx 12rpx;border-radius:16rpx;transition:background .15s}.coupon-row-press{background:#f6f5f1}
+.coupon-row{display:flex;align-items:center;justify-content:space-between;margin:18rpx -12rpx 0;padding:18rpx 12rpx;border-radius:16rpx;transition:var(--ue-transition,background .15s)}.coupon-row-press{background:#f6f5f1}
 .coupon-row-right{display:flex;align-items:center;gap:12rpx;min-width:0}.coupon-row-name{padding:4rpx 12rpx;border-radius:8rpx;background:#fdf6f2;color:#c2410c;font-size:22rpx;font-weight:650;max-width:260rpx;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .coupon-row-right .hint{margin:0}.coupon-arrow{color:#8a877e;font-size:34rpx;line-height:1}
 .page-dark .coupon-row-press{background:#242522}.page-dark .coupon-row-name{background:#242522}
 .addr-label{display:flex;align-items:center;margin:20rpx 0 12rpx;font-size:24rpx;color:#6b6860;font-weight:650}.addr-manage{margin-left:auto;color:#c2410c;font-size:23rpx}
 .takeaway-page .pill.locked{opacity:.6}
 .addr-scroll{width:auto;margin:0 -24rpx;white-space:nowrap}.addr-track{display:inline-flex;gap:18rpx;padding:6rpx 24rpx 14rpx}
-.addr-chip{position:relative;display:inline-flex;flex-direction:column;justify-content:center;min-width:250rpx;max-width:360rpx;height:136rpx;padding:0 28rpx;box-sizing:border-box;border:2rpx solid #e2e0d9;border-radius:22rpx;background:#fafaf7;transition:border-color .22s ease,background .22s ease,box-shadow .22s ease,transform .18s ease}
+.addr-chip{position:relative;display:inline-flex;flex-direction:column;justify-content:center;min-width:250rpx;max-width:360rpx;height:136rpx;padding:0 28rpx;box-sizing:border-box;border:2rpx solid #e2e0d9;border-radius:22rpx;background:#fafaf7;transition:var(--ue-transition,border-color .22s ease,background .22s ease,box-shadow .22s ease,transform .18s ease)}
 .addr-chip:active{transform:scale(.97)}
 .addr-chip.selected{border-color:#c2410c;background:#fdf6f2;box-shadow:0 10rpx 24rpx rgba(194,65,12,.16)}
 .addr-chip.dim{opacity:.45}
-.addr-chip-name{font-size:28rpx;font-weight:800;color:#16181c;transition:color .22s}.addr-chip.selected .addr-chip-name{color:#c2410c}
+.addr-chip-name{font-size:28rpx;font-weight:800;color:#16181c;transition:var(--ue-transition,color .22s)}.addr-chip.selected .addr-chip-name{color:#c2410c}
 .addr-chip-tag{margin-left:10rpx;padding:1rpx 10rpx;border-radius:8rpx;background:#f0efea;color:#6b6860;font-size:19rpx;font-weight:600;vertical-align:middle}
 .addr-chip-place{margin-top:6rpx;font-size:25rpx;color:#5e5c55;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.addr-chip-check{position:absolute;top:-2rpx;right:-2rpx;width:40rpx;height:40rpx;padding:11rpx;box-sizing:border-box;border-radius:0 22rpx 0 18rpx;background:#c2410c;opacity:0;transform:scale(.6);transition:opacity .2s ease,transform .25s cubic-bezier(.3,1.5,.5,1)}
+.addr-chip-check{position:absolute;top:-2rpx;right:-2rpx;width:40rpx;height:40rpx;padding:11rpx;box-sizing:border-box;border-radius:0 22rpx 0 18rpx;background:#c2410c;opacity:0;transform:scale(.6);transition:var(--ue-transition,opacity .2s ease,transform .25s cubic-bezier(.3,1.5,.5,1))}
 .addr-chip.selected .addr-chip-check{opacity:1;transform:scale(1)}
 .addr-chip.add{min-width:136rpx;width:136rpx;align-items:center;border-style:dashed;background:#fff}
 .addr-chip.add.other-address{min-width:230rpx;width:230rpx;gap:10rpx;padding:0 22rpx;text-align:center}.addr-add-label{color:#c2410c;font-size:23rpx;font-weight:650;white-space:normal;line-height:1.35}
 .addr-plus{display:block;width:34rpx;height:34rpx;flex:none}.addr-plus.big{flex:none;width:76rpx;height:76rpx;padding:22rpx;box-sizing:border-box;border-radius:20rpx;background:#fff1e6}
-.addr-empty-card{display:flex;align-items:center;gap:20rpx;padding:24rpx;border:2rpx dashed #f2b48a;border-radius:22rpx;background:#fdf6f2;transition:transform .18s}.addr-empty-card .hint{margin:2rpx 0 0}
+.addr-empty-card{display:flex;align-items:center;gap:20rpx;padding:24rpx;border:2rpx dashed #f2b48a;border-radius:22rpx;background:#fdf6f2;transition:var(--ue-transition,transform .18s)}.addr-empty-card .hint{margin:2rpx 0 0}
 .addr-press{transform:scale(.97)}
-.addr-summary{display:flex;align-items:center;gap:18rpx;margin:8rpx 0 18rpx;padding:22rpx 24rpx;border-radius:22rpx;background:#fff1e6;animation:ue-settle .26s cubic-bezier(.22,.8,.3,1) backwards}
+.addr-summary{display:flex;align-items:center;gap:18rpx;margin:8rpx 0 18rpx;padding:22rpx 24rpx;border-radius:22rpx;background:#fff1e6;animation:var(--ue-animation,ue-settle .26s cubic-bezier(.22,.8,.3,1) backwards)}
 .addr-send{flex:none;width:48rpx;height:48rpx;line-height:48rpx;text-align:center;border-radius:12rpx;background:#c2410c;color:#fff;font-size:23rpx;font-weight:800}
 .addr-summary-body{flex:1;min-width:0}.addr-summary-place{font-size:30rpx;font-weight:800}.addr-summary .hint{margin:4rpx 0 0}
 .page-dark .addr-chip,.page-dark .addr-empty-card,.page-dark .addr-summary{background:#3a2416;border-color:#3a2416}.page-dark .addr-chip.selected{border-color:#c2410c;background:#242522}.page-dark .addr-chip-name{color:#edebe4}.page-dark .addr-chip-place{color:#a9a69c}
