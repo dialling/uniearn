@@ -1,16 +1,17 @@
 const orders=require('../../utils/orders');
 const store=require('../../utils/store'),f=require('../../utils/workflow'),d=require('../../utils/domain'),ui=require('../../utils/ui'),account=require('../../utils/account'),rc=require('../../utils/runner-copy'),campus=require('../../utils/campus'),zh=()=>rc.zh(store.get().language);
 const selectionMessages={
+ 'Choose a duration between 1 and 30 minutes':'开放加入时长请输入 1 到 30 之间的整数分钟。',
+ 'Choose a departure more than 10 minutes from now':'请选择今天至少 10 分钟以后的出发时间；若今天已无合适时间，请选择“现在”。',
  'Too many boxes for this trip':'已选件数超过行程容量，请减少勾选或增加容量。',
  'Up to 5 bags per trip':'每趟最多携带 5 袋外卖。',
- 'This trip exceeds your runner limit':'已选赏金超过当前跑手等级上限，请减少勾选。',
  'Choose requests with the same delivery address':'请勾选送达同一具体地址的订单。',
  'Food arrival times must be within 15 minutes':'已选外卖的到达时间需相差不超过 15 分钟。',
  'A selected order changed. Refresh and choose again.':'所选订单已变化，请刷新后重新选择。'
 };
 Page({
  data:{"category":"takeout","when":"now","time":"18:30","duration":10,"durations":[10,20,30],"station":"","stations":[],"stationHints":[],"profileDorm":"","dorm":"D01","capacity":5,"waiting":0,"requestIds":[],"recommendedOrders":[],"selectedCount":0,"selectedBoxes":0,"reward":"0.00","departLabel":"","joinLabel":"","remindLabel":"","error":"","starting":false,"customDurationOpen":false,"customDurationInput":"15","stationOptions":[],"stationManual":false,"areaIndex":0,"areaLabels":[],"buildingIndex":0,"buildingLabels":[]},
- onLoad(o={}){const p=store.get().profile;this.setData({dorm:p.dorm||'D01',profileDorm:p.dorm||'',time:f.clock(Date.now()+60*60000)});if(o.category==='parcel')this.changeCategory({currentTarget:{dataset:{value:'parcel'}}});if(o.selfRequestId){const r=store.get().requests.find(x=>x.id===o.selfRequestId&&x.isMine);if(r)this.setData({selfRequestId:r.id,station:r.category==='takeout'?(r.pickupPoint||''):r.station,stationManual:!!r.pickupPoint,dorm:r.dorm,stations:[r.station]});}this.refresh();},
+ onLoad(o={}){const p=store.get().profile;this.setData({dorm:p.dorm||'D01',profileDorm:p.dorm||'',time:f.clock(Math.min(Date.now()+60*60000,f.todayAt('23:59')))});if(o.category==='parcel')this.changeCategory({currentTarget:{dataset:{value:'parcel'}}});if(o.selfRequestId){const r=store.get().requests.find(x=>x.id===o.selfRequestId&&x.isMine);if(r)this.setData({selfRequestId:r.id,station:r.category==='takeout'?(r.pickupPoint||''):r.station,stationManual:!!r.pickupPoint,dorm:r.dorm,stations:[r.station]});}this.refresh();},
  onShow(){if(wx.setNavigationBarTitle)wx.setNavigationBarTitle({title:zh()?'发起行程':'Start a trip'});orders.bind(this);if(!store.get().profile.studentVerified||!store.get().profile.runnerRulesAccepted){const next='/pages/trip-start/index?category='+this.data.category+(this.data.selfRequestId?'&selfRequestId='+this.data.selfRequestId:'');wx.redirectTo({url:'/pages/student-check/index?next='+encodeURIComponent(next)});}},
  onHide(){orders.unbind(this);},
  onUnload(){orders.unbind(this);},
@@ -40,10 +41,13 @@ Page({
  text(e){if(this.data.starting)return;this.setData({requestIds:[],[e.currentTarget.dataset.field]:e.detail.value});this.refresh();},
  changeCapacity(e){if(this.data.starting)return;this.setData({capacity:Math.max(1,Math.min(this.data.category==='takeout'?5:12,this.data.capacity+Number(e.currentTarget.dataset.delta)))});this.refresh();},
  async start(){
-  if(this.data.starting||this.data.error)return;
+  if(this.data.starting)return;
   this.setData({starting:true});
   try{
    if(!await account.requireRunner())return;
+   // Account refresh can update orders; validate the current selection and clock again.
+   f.previewTrip(this.selectionState(),this.data);
+   this.setData({error:''});
    const a=this.data,data={category:a.category,when:a.when,time:a.time,duration:a.duration,station:a.station,dorm:a.dorm,capacity:a.capacity,requestIds:a.requestIds.slice(),...(a.selfRequestId?{selfRequestId:a.selfRequestId}:{})};
    const t=await orders.act('startTrip',{data});wx.redirectTo({url:'/pages/trip/index?id='+t.id});
   }catch(e){ui.toast(this.selectionMessage(e));orders.sync().catch(()=>{});}finally{this.setData({starting:false});}
@@ -53,6 +57,6 @@ Page({
  destinationArea(e){if(this.data.starting)return;const area=campus.AREAS[Number(e.detail.value)]||campus.AREAS[0],areaIndex=campus.AREAS.indexOf(area),dorm=area.buildings[0];this.setData({requestIds:[],areaIndex,dorm,buildingIndex:0});this.refresh();},
  destinationBuilding(e){if(this.data.starting)return;const buildingIndex=Number(e.detail.value),dorm=this.data.buildingLabels[buildingIndex]||this.data.buildingLabels[0];this.setData({requestIds:[],buildingIndex,dorm});this.refresh();},
  stationChoice(e){if(this.data.starting)return;const option=this.data.stationOptions[Number(e.currentTarget.dataset.index)];if(!option)return;this.setData({requestIds:[],stationManual:!!option.manual,station:option.manual?'':option.value});this.refresh();},
- toggleCustomDuration(){if(this.data.starting)return;const customDurationInput=this.data.customDurationInput||'70';this.setData({requestIds:[],customDurationOpen:true,customDurationInput,duration:Number(customDurationInput)});this.refresh();},
+ toggleCustomDuration(){if(this.data.starting)return;const customDurationInput=this.data.customDurationInput||'15';this.setData({requestIds:[],customDurationOpen:true,customDurationInput,duration:Number(customDurationInput)});this.refresh();},
  setCustomDuration(e){if(this.data.starting)return;const customDurationInput=String(e.detail.value||'');this.setData({requestIds:[],customDurationInput,duration:customDurationInput===''?0:Number(customDurationInput)});this.refresh();}
 });

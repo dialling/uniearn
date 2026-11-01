@@ -1,7 +1,7 @@
 const crypto=require('crypto');
 const digest=(s,v)=>crypto.createHmac('sha256',s).update(v).digest('hex');
 async function handle(cloud,event){const db=cloud.database(),openid=cloud.getWXContext().OPENID;if(!openid)throw Error('Open the mini program in WeChat.');const id=crypto.createHash('sha256').update(openid).digest('hex'),ref=db.collection('uniearn_accounts').doc(id),now=Date.now();
- if(event.action==='agreeRules'){await db.runTransaction(async tx=>{const r=tx.collection('uniearn_accounts').doc(id),a=(await r.get()).data;if(a.loggedOut||a.verification?.status!=='verified')throw Error('Complete student verification first.');if(event.accepted!==true)throw Error('Agree to all five rules.');await r.update({data:{runnerRulesAcceptedAt:now,runnerRulesVersion:'1.0'}});});return {ok:true};}
+ if(event.action==='agreeRules'){await db.runTransaction(async tx=>{const r=tx.collection('uniearn_accounts').doc(id),a=(await r.get()).data;if(a.loggedOut||!a.profile)throw Error('Sign in and save your profile first.');if(event.accepted!==true)throw Error('Agree to all runner rules.');await r.update({data:{runnerRulesAcceptedAt:now,runnerRulesVersion:'1.0'}});});return {ok:true};}
  const env=process.env;if(!env.EMAIL_CODE_SECRET||env.EMAIL_CODE_SECRET.length<32)throw Error('Email verification is not configured. Contact the organiser or use your student card.');
  if(event.action==='sendEmailCode'){
  const prefix=String(event.prefix||'').trim().toLowerCase();if(!/^[a-z0-9][a-z0-9._-]{0,63}$/.test(prefix))throw Error('Enter only your student email prefix.');const address=prefix+'@student.xjtlu.edu.cn';

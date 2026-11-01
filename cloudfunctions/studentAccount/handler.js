@@ -78,6 +78,7 @@ function createHandler({getOpenId,repo,env,now=Date.now}) {
         if(account.verification&&account.verification.status==='verified')return {ok:true,account:publicAccount(account,id)};
         const checked=validateApplication(event.application,zh);if(checked.error)return fail(checked.code,checked.error);
         const app=checked.value;
+        if(!account.runnerRulesAcceptedAt)return fail('RULES_REQUIRED',zh?'请先阅读并同意跑手规则。':'Read and agree to the runner rules before applying.');
         stage='check-student-id';
         if((await repo.findStudent(app.studentId)).some(owner=>owner!==id))return fail('STUDENT_ID_USED',zh?'该学号已被其他账号申请，请联系管理员。':'This student ID is already used by another account. Contact an admin.');
         stage='check-phone';
@@ -90,8 +91,8 @@ function createHandler({getOpenId,repo,env,now=Date.now}) {
         return {ok:true,account:publicAccount({...account,verification},id)};
       }
       if(action==='agreeRules') {
-        if(account.loggedOut||!account.verification||account.verification.status!=='verified')return fail('NOT_VERIFIED','Complete student verification first.');
-        if(event.accepted!==true)return fail('RULES_REQUIRED','Agree to all five rules.');
+        if(account.loggedOut||!account.profile)return fail('LOGIN_REQUIRED','Sign in and save your profile first.');
+        if(event.accepted!==true)return fail('RULES_REQUIRED','Agree to all runner rules.');
         const patch={runnerRulesAcceptedAt:now(),runnerRulesVersion:'1.0'};await repo.patch(id,patch);
         return {ok:true,account:publicAccount({...account,...patch},id)};
       }

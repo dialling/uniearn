@@ -2,3 +2,5 @@
 @import "../../utils/flow.wxss";
 
 .pickup-code-line{display:flex;align-items:center;justify-content:space-between;margin:10rpx 0;padding:14rpx 18rpx;border-radius:14rpx;background:#f3faf6;color:#0b7a55;font-size:24rpx}.pickup-code-value{font-weight:800;letter-spacing:3rpx;font-size:30rpx}.page-dark .pickup-code-line{background:#44423c;color:#6fd0a8}
+
+.seal-report-row{gap:20rpx;margin:16rpx 0}.seal-report-description{flex:1;min-width:0}.seal-report-action,.seal-report-recorded{flex-shrink:0;white-space:nowrap}

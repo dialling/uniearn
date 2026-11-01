@@ -27,7 +27,7 @@ for(const form of [parcel,page('takeaway')]){
 (async()=>{
  orders.sync=async()=>{throw Error('offline');};
  await parcel.loadCoupons();
- assert.equal(parcel.data.coupons[0].id,'owned');
+ assert.equal(parcel.data.coupons.length,0);assert.equal(parcel.data.discount,'0.00');assert.equal(parcel._couponsReady,false);
  assert.ok(parcel.data.couponError);
  assert.equal(parcel.data.scanBusy,false);
  console.log('Read exact screenshot SMS, two parcel totals, owned coupon display/selection and offline refresh passed.');

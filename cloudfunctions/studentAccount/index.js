@@ -18,7 +18,7 @@ const repo={
   });},
   async submitApplication(id,expected,verification,updatedAt){return db.runTransaction(async tx=>{
     const a=await readAccount(tx,id);
-    if(!a||a.loggedOut||!a.profile||(a.authRevision||0)!==(expected.authRevision||0)||a.profile.name!==expected.profile.name||a.verification?.status==='verified')return 'APPLICATION_CHANGED';
+    if(!a||a.loggedOut||!a.profile||!a.runnerRulesAcceptedAt||(a.authRevision||0)!==(expected.authRevision||0)||a.profile.name!==expected.profile.name||a.verification?.status==='verified')return 'APPLICATION_CHANGED';
     const lock=await studentReservation(tx,id,verification.studentId);
     if(!lock)return 'STUDENT_ID_USED';
     await lock.set({data:{ownerId:id}});

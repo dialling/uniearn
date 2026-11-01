@@ -23,13 +23,13 @@ assert.equal(validateApplication({realName:'张三',gender:'female',phone:'13800
  const handle=createHandler({getOpenId:()=>caller,repo,env:{ADMIN_USERNAME:'boss',ADMIN_PASSWORD:'correct-horse',ADMIN_ACCOUNTS:'ops:second-pass-1;short:1234567'},now:()=>clock});
  const app={realName:'张三',gender:'male',phone:'13800000000',studentId:'2512345'};
  assert.equal((await handle({action:'apply',application:app})).code,'LOGIN_REQUIRED');
- await handle({action:'saveProfile',profile:{name:'张三',phone:'13800000000'}});
+ await handle({action:'saveProfile',profile:{name:'张三',phone:'13800000000'}});await handle({action:'agreeRules',accepted:true});
  assert.equal((await handle({action:'apply',application:{...app,studentId:'x'}})).code,'INVALID_STUDENT_ID');
  let r=await handle({action:'apply',application:app});
  assert.equal(r.account.verification.status,'pending');assert.equal(r.account.verification.studentLast4,'2345');assert.equal(r.account.verification.gender,'male');assert.equal(r.account.verification.phone,app.phone);assert.equal(records[idFor('student')].verification.phoneSource,'manual');
  assert.ok(!JSON.stringify(r.account).includes('2512345'),'full student ID is not echoed to the client');
- assert.equal((await handle({action:'agreeRules',accepted:true})).code,'NOT_VERIFIED');
- caller='other';await handle({action:'saveProfile',profile:{name:'李四',phone:'13900000000'}});
+ assert.equal((await handle({action:'agreeRules',accepted:true})).account.runnerRulesAccepted,true);
+ caller='other';await handle({action:'saveProfile',profile:{name:'李四',phone:'13900000000'}});await handle({action:'agreeRules',accepted:true});
  assert.equal((await handle({action:'apply',application:{...app,realName:'李四'}})).code,'STUDENT_ID_USED');
  r=await handle({action:'apply',application:{realName:'李四',gender:'female',phone:'13900000000',studentId:'2512346'}});assert.equal(r.account.verification.status,'pending');
 
@@ -69,7 +69,7 @@ assert.equal(validateApplication({realName:'张三',gender:'female',phone:'13800
  const noSetup=createHandler({getOpenId:()=>'admin',repo,env:{},now:()=>clock});
  assert.equal((await noSetup({action:'adminLogin',username:'',password:''})).code,'ADMIN_SETUP');
  assert.equal((await noSetup({action:'scan'})).code,'INVALID_ACTION','student-card scanning is removed');
- caller='third';await handle({action:'saveProfile',profile:{name:'王五',phone:'13700000000'}});
+ caller='third';await handle({action:'saveProfile',profile:{name:'王五',phone:'13700000000'}});await handle({action:'agreeRules',accepted:true});
  assert.equal((await handle({action:'apply',application:{realName:'王五',gender:'male',phone:'13800000000',studentId:'2512399'}})).code,'PHONE_USED','a runner phone cannot be reused by another account');
  await handle({action:'apply',application:{realName:'王五',gender:'male',phone:'13700000000',studentId:'2512399'}});assert.equal(records[idFor('third')].verification.phoneVerified,false);assert.equal(records[idFor('third')].verification.phoneSource,'manual');
  await repo.patch(idFor('third'),{wechatPhone:'13700000000'});r=await handle({action:'apply',application:{realName:'王五',gender:'male',phone:'13700000000',studentId:'2512399'}});assert.equal(records[idFor('third')].verification.phoneVerified,true);assert.equal(r.account.verification.phoneVerified,true);assert.equal(r.account.wechatPhone,'13700000000');
@@ -80,20 +80,20 @@ assert.equal(validateApplication({realName:'张三',gender:'female',phone:'13800
  const state={language:'zh',requests:[],profile:{name:'张三',phone:'13800000000',onboarded:true,jobsDone:0}};
  vm.runInNewContext(fs.readFileSync(require.resolve('../pages/student-check/index.js'),'utf8'),{
   Page:v=>def=v,wx:{reLaunch:options=>calls.push({action:'reLaunch',...options})},
-  require:n=>n.includes('china-time')?require('../utils/china-time'):n.includes('store')?{get:()=>state,update:fn=>fn(state)}:n.includes('domain')?{limit:()=>10,boxes:()=>1}:n.includes('runner-level')?require('../utils/runner-level'):{call:async(action,args)=>{calls.push({action,...args});return {account:{id:'x',profile:state.profile,verification:action==='apply'?{status:'pending',studentName:'张三',studentLast4:'2345',submittedAt:1}:{status:'unverified'}}};}}
+  require:n=>n.includes('china-time')?require('../utils/china-time'):n.includes('store')?{get:()=>state,update:fn=>fn(state)}:n.includes('domain')?{limit:()=>10,boxes:()=>1}:n.includes('runner-level')?require('../utils/runner-level'):{call:async(action,args)=>{calls.push({action,...args});return {account:{id:'x',profile:state.profile,runnerRulesAccepted:true,verification:action==='apply'?{status:'pending',studentName:'张三',studentLast4:'2345',submittedAt:1}:{status:'unverified'}}};}}
  });
  const xml=fs.readFileSync(require.resolve('../pages/student-check/index.wxml'),'utf8');assert.doesNotMatch(xml,/getPhoneNumber|bindgetphonenumber|微信验证|phone-state/);assert.deepEqual([...xml.matchAll(/data-field="([^"]+)"/g)].map(x=>x[1]),['realName','phone','studentId']);assert.equal(typeof def.wechatPhone,'undefined');
  const page={...def,data:structuredClone(def.data),setData(v){for(const [k,val] of Object.entries(v)){const parts=k.split('.');let t=this.data;parts.slice(0,-1).forEach(p=>t=t[p]);t[parts.at(-1)]=val;}}};
  await page.onShow();assert.equal(page.data.stage,'apply');assert.equal(page.data.form.realName,'张三');assert.equal(page.data.form.phone,'13800000000');
  await page.submit();assert.match(page.data.error,/性别/);assert.equal(calls.filter(c=>c.action==='apply').length,0);page.chooseGender({currentTarget:{dataset:{gender:'female'}}});await page.submit();assert.match(page.data.error,/学号/);assert.equal(calls.filter(c=>c.action==='apply').length,0);
- page.field({currentTarget:{dataset:{field:'studentId'}},detail:{value:'2512345'}});await page.submit();
+ page.field({currentTarget:{dataset:{field:'studentId'}},detail:{value:'2512345'}});await page.submit();assert.equal(page.data.stage,'rules');assert.equal(calls.filter(c=>c.action==='apply').length,0);await page.finish();assert.equal(calls.filter(c=>c.action==='apply').length,0);page.rule({currentTarget:{dataset:{index:-1}}});assert.equal(page.data.ruleCount,page.data.rules.length);await page.finish();
  assert.deepEqual(JSON.parse(JSON.stringify(calls.at(-1))),{action:'apply',application:{realName:'张三',gender:'female',phone:'13800000000',studentId:'2512345'}});assert.equal(page.data.stage,'pending');assert.equal(page.data.busy,false);assert.ok(calls.every(x=>x.action!=='wechatLogin'),'manual submission never requests WeChat phone authorization');
  page.reapply();assert.equal(page.data.stage,'apply');
  page.next='/pages/trip-start/index';page.startTrip();assert.deepEqual(calls.at(-1),{action:'reLaunch',url:'/pages/jobs/index'});
  let component;
  vm.runInNewContext(fs.readFileSync(require.resolve('../components/yuni-assistant/index.js'),'utf8'),{Component:value=>component=value,require:name=>name.includes('store')?{get:()=>state}:{emit(){}}});
  const guide={...component.methods,data:{topic:'runner'},setData:patch=>Object.assign(guide.data,patch)};
- guide.setGuidance('pending');assert.equal(guide.data.step,2);assert.match(guide.data.guidance,/admin|\u7ba1\u7406\u5458/);
- guide.setGuidance('rules');assert.equal(guide.data.step,3);guide.setGuidance('apply');assert.equal(guide.data.step,1);
+ guide.setGuidance('pending');assert.equal(guide.data.step,3);assert.match(guide.data.guidance,/admin|\u7ba1\u7406\u5458/);
+ guide.setGuidance('rules');assert.equal(guide.data.step,2);guide.setGuidance('apply');assert.equal(guide.data.step,1);
  console.log('Student check page: manual four-field application, no phone authorization, pending review and matching guidance stages passed.');
 })().catch(e=>{console.error(e);process.exitCode=1});

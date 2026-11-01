@@ -7,7 +7,8 @@ const demo = [
   {id:'r4',owner:'Lina',station:'Station C',dorm:'Building C',room:'107',small:1,big:0,codes:['73-1-2321'],phone:'138 0102 1872',note:'Please call on arrival',deadline:'14:00',reward:5,status:'waiting',runnerId:null,collected:[],photo:''}
 ];
 function boxes(r) { return Number(r.small || 0) + Number(r.big || 0); }
-function limit(jobs) { return require('./runner-level').level(typeof jobs==='object'?jobs:{jobsDone:jobs}).limit; }
+// Compatibility for callers: runner rank no longer restricts order value.
+function limit() { return Infinity; }
 function serviceFee() { return 0; }
 // Prices are typed as decimals, so 4.35*100 is 434.99999999999994. Compare against the rounded cent value.
 function wholeCents(value) { const n=Number(value); return Number.isFinite(n) && Math.abs(n*100-Math.round(n*100)) < 1e-6; }
@@ -56,7 +57,6 @@ function assign(s, trip, ids) {
   const totalBoxes=selection.concat(existing).reduce((n,r)=>n+boxes(r),0), reward=selection.concat(existing).reduce((n,r)=>n+r.reward,0);
   if(catalog.category(trip)==='takeout'){if(totalBoxes>5)throw Error('Up to 5 bags per trip');const ats=selection.concat(existing).map(r=>r.arrivalAt||r.createdAt);if(Math.max(...ats)-Math.min(...ats)>15*60000)throw Error('Food arrival times must be within 15 minutes');}
   if (totalBoxes>trip.capacity) throw Error('Too many boxes for this trip');
-  if (reward>limit(s.profile)) throw Error('This trip exceeds your runner limit');
   if(!trip.destinationKey&&selection[0]&&selection[0].destinationKey){trip.destinationKey=selection[0].destinationKey;trip.destinationType=selection[0].destinationType;}
   selection.forEach(r=>{r.status='taken';r.runnerId=trip.id;r.takenAt=Date.now();});
   trip.requestIds.push(...ids); return trip;
@@ -74,7 +74,6 @@ function acceptJob(s,ids) {
   if(selected.some(r=>!r||r.status!=='waiting'))throw Error('A selected request is no longer available');
   const station=routeStation(selected[0]),dorm=selected[0].dorm;
   if(selected.some(r=>routeStation(r)!==station||r.dorm!==dorm||(r.destinationKey||'')!==(selected[0].destinationKey||'')||catalog.category(r)!==catalog.category(selected[0])))throw Error('Choose requests on the same route');
-  if(selected.reduce((n,r)=>n+r.reward,0)>limit(s.profile))throw Error('This trip exceeds your runner limit');
   const t={id:'t'+s.nextId++,campusId:selected[0].campusId,universityId:selected[0].universityId,category:catalog.category(selected[0]),station,dorm,capacity:selected.reduce((n,r)=>n+boxes(r),0),depart:'Now',phase:'collect',requestIds:[],cancelled:false};
   assign(s,t,ids);s.trips.unshift(t);return t;
 }
@@ -91,7 +90,6 @@ function acceptBoxes(s,refs) {
   const station=originals[0].station,dorm=originals[0].dorm;
   if(originals.some(r=>r.station!==station||r.dorm!==dorm||(r.destinationKey||'')!==(originals[0].destinationKey||'')||r.campusId!==originals[0].campusId||catalog.category(r)!==catalog.category(originals[0])))throw Error('Choose parcels on the same route');
   const rewards=originals.map(r=>{const idxs=groups[r.id];if(!r.parcelItems)return Math.round(r.reward*idxs.length/boxes(r)*100)/100;const prices=idxs.reduce((n,i)=>n+r.parcelItems[i].price,0);return prices+(idxs.length===boxes(r)?Number(r.tip||0):0);});
-  if(rewards.reduce((n,v)=>n+v,0)>limit(s.profile))throw Error('This trip exceeds your runner limit');
   const t={id:'t'+s.nextId++,campusId:originals[0].campusId,universityId:originals[0].universityId,category:catalog.category(originals[0]),station,dorm,capacity:refs.length,depart:'Now',phase:'collect',requestIds:[],cancelled:false};
   originals.forEach((r,i)=>{
     const indices=groups[r.id].sort((a,b)=>a-b),remaining=r.codes.filter((_,idx)=>!indices.includes(idx)),originalTip=Number(r.tip||0);

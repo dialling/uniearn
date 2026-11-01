@@ -38,7 +38,7 @@ vm.runInNewContext(fs.readFileSync(require.resolve('../cloudfunctions/studentAcc
 const profile={name:'Test Student',phone:'13800000000'};
 const application={realName:'Test Student',gender:'male',phone:'13800000000',studentId:'2512345'};
 const user=n=>handler.createHandler({getOpenId:()=>n,repo,env:{},now:()=>1000});
-async function add(n){records[handler.idFor(n)]={profile:clone(profile)};}
+async function add(n){records[handler.idFor(n)]={profile:clone(profile),runnerRulesAcceptedAt:1};}
 (async()=>{
  await add('one');await add('two');
  const result=await Promise.all(['one','two'].map(n=>user(n)({action:'apply',application})));

@@ -27,7 +27,6 @@ function raise(s,id,amount){const r=s.requests.find(x=>x.id===id);if(!r||r.statu
 function cancelReason(r,reason,now=Date.now()){
  if(r.status!=='taken'||r.collected.length)throw Error('Only an uncollected order can be cancelled');
  if(!['missing','quantity','personal','mismatch'].includes(reason))throw Error('Choose a reason');
- if(c.category(r)==='takeout'&&reason==='missing'&&now<(r.arrivalAt||0)+10*MIN)throw Error('Wait until '+clock((r.arrivalAt||0)+10*MIN)+' before reporting missing food');
  if(c.category(r)==='task')return reason!=='mismatch';
  if(r.etaChangedAfterAccept&&reason==='personal')return false;
  return reason==='personal'&&(c.category(r)!=='takeout'||!r.arrivalAt||now>r.arrivalAt-15*MIN);
@@ -52,7 +51,7 @@ function candidates(s,t,now=Date.now()){
 function plan(s,cfg,now=Date.now()){
  const capacity=Number(cfg.capacity);if(!Number.isInteger(capacity)||capacity<1||capacity>(cfg.category==='takeout'?5:12))throw Error('Choose a capacity between 1 and 12');
  if(!cfg.station||!cfg.dorm)throw Error('Choose a pickup point and destination');
- const later=cfg.when==='later',duration=cfg.duration===undefined||cfg.duration===null||cfg.duration===''?10:Number(cfg.duration);if(!Number.isInteger(duration)||duration<1||duration>30)throw Error('Choose a duration between 1 and 30 minutes');
+ const later=cfg.when==='later',duration=cfg.duration===undefined||cfg.duration===null||cfg.duration===''?10:Number(cfg.duration);if(!later&&(!Number.isInteger(duration)||duration<1||duration>30))throw Error('Choose a duration between 1 and 30 minutes');
  const departAt=later?todayAt(cfg.time,now):now+duration*MIN;
  if(later&&departAt<=now+10*MIN)throw Error('Choose a departure more than 10 minutes from now');
  return {campusId:s.profile.campusId,universityId:s.profile.universityId,category:cfg.category||'takeout',station:cfg.station,dorm:cfg.dorm,capacity,departAt,depart:clock(departAt),joinUntil:later?departAt-10*MIN:departAt,remindAt:later?departAt-15*MIN:0,phase:'collect',requestIds:[],cancelled:false,runnerName:s.profile.name||'You',runnerJobs:s.profile.jobsDone||0};
@@ -72,7 +71,7 @@ function previewTrip(s,cfg,now=Date.now()){
   d.assign({...s,requests:selected.map(r=>({...r}))},{...t,requestIds:[]},cfg.requestIds);
   return {trip:t,ids:cfg.requestIds.slice(),boxes:selected.reduce((n,r)=>n+d.boxes(r),0),reward:selected.reduce((n,r)=>n+r.reward,0)};
  }
- for(const r of candidates(s,t,now).sort((a,b)=>(a.arrivalAt||0)-(b.arrivalAt||0))){if(boxes+d.boxes(r)<=t.capacity&&reward+r.reward<=d.limit(s.profile)){const first=ids.length&&s.requests.find(x=>x.id===ids[0]);if(first&&(r.destinationKey||'')!==(first.destinationKey||''))continue;if(t.category==='takeout'&&first&&Math.abs(r.arrivalAt-first.arrivalAt)>15*MIN)continue;ids.push(r.id);boxes+=d.boxes(r);reward+=r.reward;}}
+ for(const r of candidates(s,t,now).sort((a,b)=>(a.arrivalAt||0)-(b.arrivalAt||0))){if(boxes+d.boxes(r)<=t.capacity){const first=ids.length&&s.requests.find(x=>x.id===ids[0]);if(first&&(r.destinationKey||'')!==(first.destinationKey||''))continue;if(t.category==='takeout'&&first&&Math.abs(r.arrivalAt-first.arrivalAt)>15*MIN)continue;ids.push(r.id);boxes+=d.boxes(r);reward+=r.reward;}}
  return {trip:t,ids,boxes,reward};
 }
 function startTrip(s,cfg,now=Date.now()){const p=previewTrip(s,cfg,now),t={...p.trip,id:'t'+s.nextId++};d.assign(s,t,p.ids);s.trips.unshift(t);return t;}

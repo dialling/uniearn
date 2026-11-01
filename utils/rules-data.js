@@ -30,7 +30,7 @@ module.exports={
     ]
   },
   "runners": {
-    "intro": "What every runner agrees to at sign-up. Breaking one adds a mark. A mark expires after 2 weeks and costs no money, but 3 active marks put you back to New, and 5 pause you from taking jobs for 7 days. Levels: New (up to ¥10 a trip), Trusted after 10 finished jobs (up to ¥25), Top after 40 finished jobs with no active marks (no limit). Up to 5 bags per trip.",
+    "intro": "What every runner agrees to at sign-up. Breaking one adds a mark. A mark expires after 2 weeks and costs no money, but 3 active marks put you back to New, and 5 pause you from taking jobs for 7 days. Levels: New, Trusted after 10 finished jobs, Top after 40 finished jobs with no active marks. Order value is not restricted by runner level. Up to 5 bags per trip.",
     "rules": [
       {
         "n": "1",
@@ -54,13 +54,8 @@ module.exports={
       },
       {
         "n": "5",
-        "title": "Deliver within 15 minutes of pickup",
-        "text": "Please complete delivery within 15 minutes after pickup."
-      },
-      {
-        "n": "6",
         "title": "Cancel early, or with a reason",
-        "text": "Cancelling less than 15 minutes before the food arrives adds a mark. No mark if the food isn’t there 10 minutes after it was due, or the bags don’t match."
+        "text": "Cancelling less than 15 minutes before the food arrives adds a mark. No mark for reporting missing food or mismatched bags. Missing food can be reported without waiting."
       }
     ]
   },
