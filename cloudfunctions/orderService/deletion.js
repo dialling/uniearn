@@ -56,6 +56,7 @@ function purge(state, actor, now = Date.now()) {
   for (const t of state.trips) {
     if (t.runnerAccountId !== actor) continue;
     t.runnerName = '';
+    t.runnerAvatar = '';
     t.runnerPhone = '';
     t.runnerAccountId = '';
     t.anonymized = true;

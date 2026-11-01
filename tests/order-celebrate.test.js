@@ -30,11 +30,8 @@ assert.match(xml,/request\.riderPhotos\.length\}\}\/3/,'the upload count reports
 assert.doesNotMatch(xml,/美团或饿了么|Meituan or Ele\.me/,'platform labels are removed from the rider photo card');
 assert.doesNotMatch(xml,/class="dash" bindtap="riderPhoto"/,'the old full-width dashed banner is removed');
 assert.doesNotMatch(xml,/class="flow-card customer-arrival-card"/,'the green food-arrived card was removed on request');
-assert.match(xml,/class="btn outline customer-status-button"[^>]*hover-class="customer-status-button-press"[^>]*>\{\{zh\?\(request\.etaMoved\?'已更新送达时间':'我的外卖晚到了'\)/,'the late-food action keeps its full wording on one line');
-assert.doesNotMatch(xml,/bindchange="late"/,'the late-food action no longer opens a time picker');
-assert.deepEqual(page.data.latePresets,[10,20,30]);assert.match(xml,/wx:for="\{\{latePresets\}\}"/);
-assert.match(xml,/bindtap="chooseLateOther"/);assert.match(xml,/bindinput="inputLateMinutes"/);
-assert.doesNotMatch(xml,/maxlength="2"|1–30|最多可将预计送达时间延后 30 分钟|up to 30 minutes/,'custom late duration is not capped in the interface');
+assert.doesNotMatch(xml,/bindtap="openLateOptions"|customer-late-card/);
+assert.match(xml,/bindtap="confirm"/);
 for(const v of ['yuni-takeout.mp4','yuni-express.mp4']){assert.ok(fs.statSync('pages/posted/yuni/'+v).size<400000,v+' stays small for the main package');}
 (async()=>{const files={'/pages/posted/yuni/yuni-express.mp4':'clip'};global.wx={env:{USER_DATA_PATH:'wxfile://usr'},getFileSystemManager:()=>({access:o=>files[o.path]?o.success():o.fail(),readFile:o=>files[o.filePath]?o.success({data:files[o.filePath]}):o.fail(new Error('missing')),writeFile:o=>{files[o.filePath]=o.data;o.success();}})};
 const video=require('../utils/yuni-video');

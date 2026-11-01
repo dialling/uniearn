@@ -1,0 +1,6 @@
+.deadline-fields{display:flex;gap:18rpx}
+.deadline-picker{flex:1;min-width:0}
+.deadline-field{padding:18rpx 20rpx;border:1rpx solid #e2e0d9;border-radius:18rpx;background:#f7f6f2}
+.deadline-label{display:block;margin-bottom:8rpx;color:#6b6860;font-size:21rpx}
+.deadline-value{display:flex;align-items:center;justify-content:space-between;color:#16181c;font-size:27rpx;font-weight:750}
+.deadline-chevron{color:#1d4ed8;font-size:36rpx;line-height:1}

@@ -1,5 +1,5 @@
 <view style="{{motionStyle}}">
-<lang-switch/>
+<lang-switch></lang-switch>
 <view class="v8-page chat-page {{darkClass}}">
 <view class="hint center chat-note">{{zh?'团队人工支持 · 服务时间目标 10:00–22:00':'A person from the team · planned hours 10:00–22:00'}}</view>
 <view class="message-row"><view class="bubble team-bubble">{{hello}}<view class="message-time">{{zh?'Uniearn 团队':'Uniearn team'}}</view></view></view>

@@ -1,5 +1,5 @@
 <view style="{{motionStyle}}">
-<lang-switch/>
+<lang-switch></lang-switch>
 <view class="post-page create-page {{darkClass}}">
  <view wx:if="{{mode==='choose'}}">
   <view class="title">{{ui['What do you want to do?']}}</view>

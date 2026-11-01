@@ -1,5 +1,5 @@
 <view style="{{motionStyle}}">
-<lang-switch/>
+<lang-switch></lang-switch>
 <view class="wallet-page {{darkClass}}">
  <view class="wallet-header"><text class="wallet-title">{{ui.title}}</text><text class="test-label">{{ui.test}}</text></view>
  <view wx:if="{{error}}" class="wallet-error"><text>{{error}}</text><button bindtap="load">{{ui.refresh}}</button></view>

@@ -1,5 +1,5 @@
 <view style="{{motionStyle}}">
-<lang-switch/>
+<lang-switch></lang-switch>
 <view class="post-page addr-page {{darkClass}}">
  <view class="addr-list-head"><text>{{zh?'我的常用地址':'My addresses'}}</text><text class="addr-count">{{list.length}}</text><text wx:if="{{pick && list.length}}" class="hint addr-pick-hint">{{zh?'点选一个用于本单':'Tap one to use it'}}</text></view>
  <view wx:if="{{!list.length}}" class="addr-empty">{{zh?'还没有常用地址，可以在下方添加。':'No saved addresses yet. Add one below.'}}</view>

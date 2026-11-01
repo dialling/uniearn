@@ -1,5 +1,5 @@
 <view style="{{motionStyle}}">
-<lang-switch/>
+<lang-switch></lang-switch>
 <view class="sms-page {{darkClass}}">
  <view class="heading">{{heading}}</view>
  <view class="intro">{{mode==='sms'?(zh?'选择一张取件通知、待取件列表或短信截图。':'Choose a screenshot of the pickup notice, pending parcels or messages.'):(zh?'上传完整截图，核对取件点并选择你的包裹。':'Upload the full screenshot. Review the pickup point and select your parcels.')}}</view>

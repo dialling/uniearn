@@ -1,5 +1,5 @@
 <view style="{{motionStyle}}">
-<lang-switch/>
+<lang-switch></lang-switch>
 <view class="v8-page rewards-page news-redesign {{screen==='activity'?'ranking-page':''}} {{darkClass}}">
  <view wx:if="{{screen==='home'}}" class="reference-header"><view class="news-heading"><view><view class="news-title">{{zh?'动态':'News'}}</view></view><view class="campus-badge"><image src="/assets/news-campus.svg"/><text>XJTLU</text></view></view></view>
  <view wx:else class="news-back" bindtap="backToNews">‹ {{zh?'返回动态':'Back to News'}}</view>

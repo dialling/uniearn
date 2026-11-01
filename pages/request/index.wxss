@@ -1,3 +1,4 @@
+@import "../../utils/contact-identity.wxss";
 @import "../../utils/order-success.wxss";
 @import "../../utils/order-pictures.wxss";
 @import "../../utils/flow.wxss";

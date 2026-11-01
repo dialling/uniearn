@@ -1,5 +1,5 @@
 <view style="{{motionStyle}}">
-<lang-switch/>
+<lang-switch></lang-switch>
 <view class="post-page takeaway-page {{darkClass}}" wx:if="{{!unavailable}}">
  <view class="post-header"><view class="post-tabs final-tabs glass"><view class="glass-thumb of-3" style="transform:translateX({{night?200:0}}%)"><view wx:for="{{[night]}}" wx:key="*this" class="glass-blob"/></view><button class="post-tab {{night?'':'active'}}" data-night="0" bindtap="setNight" hover-class="glass-press">{{ui.tabTakeaway}}</button><button class="post-tab" bindtap="parcels" hover-class="glass-press" disabled="{{routeLocked}}">{{ui.tabParcels}}</button><button class="post-tab {{night?'active':''}}" data-night="1" bindtap="setNight" hover-class="glass-press">{{zh?'夜市代买':'Night market'}}</button></view></view>
  
