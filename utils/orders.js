@@ -7,7 +7,17 @@ function pairMap(rows,value){const result={};rows.forEach(r=>{result[r.id]=value
 let queue = Promise.resolve(), syncing = null, mutating = false, timer = null;
 let previous = null, lastError = '', foreground = true, generation = 0;
 const subscribers = new Set(), uploads = new Map(), STALE_OPERATION_MS = 20 * 3600000;
+// A cloud call that never answers must not freeze every later tap.
+const CALL_TIMEOUT_MS = 20000, MUTATION_STALE_MS = 30000;
+let mutatingAt = 0;
 function enqueue(fn) { const p = queue.then(fn); queue = p.catch(()=>{}); return p; }
+// Photo uploads must not queue behind sync()/act(): three photos should upload together, not one by one.
+const UPLOAD_SLOTS = 3; let uploadRunning = 0; const uploadWaiters = [];
+function uploadJob(fn) {
+  const run = () => { uploadRunning++; const p = Promise.resolve().then(fn); const free = () => { uploadRunning--; const next = uploadWaiters.shift(); if (next) next(); }; p.then(free, free); return p; };
+  if (uploadRunning < UPLOAD_SLOTS) return run();
+  return new Promise((resolve, reject) => { uploadWaiters.push(() => { run().then(resolve, reject); }); });
+}
 function tell(title) { if (foreground) wx.showToast({title,icon:'none',duration:2500}); }
 function apply(snapshot) {
   if (!snapshot) return;
@@ -38,7 +48,12 @@ function apply(snapshot) {
 }
 async function call(data) {
   const expectedGeneration=generation;
-  const {result} = await ensureCloud().callFunction({name:'orderService',data:{...data,checkinVersion:1}});
+  let timer=null;
+  const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error(store.get().language==='en'?'The cloud is taking too long. Check your network and try again.':'云端响应超时，请检查网络后重试。')),CALL_TIMEOUT_MS);});
+  let response;
+  try { response = await Promise.race([ensureCloud().callFunction({name:'orderService',data:{...data,checkinVersion:1}}), timeout]); }
+  finally { if (timer) clearTimeout(timer); }
+  const {result} = response;
   if (!result || !result.ok) {
     const error = Error(result && result.error || 'Cloud order service returned no result.');
     error.business = !!result; throw error;
@@ -66,8 +81,14 @@ function sync() {
   return syncing;
 }
 async function act(action, payload = {}) {
-  if (mutating) throw Error('Please wait for the current action.');
-  mutating=true;
+  if (mutating) {
+    // A lost cloud response used to leave this flag set forever; recover instead of blocking taps.
+    if (Date.now() - mutatingAt > MUTATION_STALE_MS) { console.warn('orders.act recovered a stale action'); mutating = false; }
+    else throw Error(store.get().language === 'en'
+      ? 'The previous action is still finishing. Try again in a second.'
+      : '上一个操作还在处理，请稍等一下再点。');
+  }
+  mutating=true; mutatingAt=Date.now();
   const started=Date.now();
   try {
     return await enqueue(async()=>{
@@ -104,7 +125,7 @@ async function act(action, payload = {}) {
 async function upload(path) {
   if (!path || path.startsWith('cloud://')) return path || '';
   if (uploads.has(path)) return uploads.get(path);
-  const job=enqueue(async()=>{
+  const job=uploadJob(async()=>{
     const {cloudPath}=await call({action:'prepareUpload'});
     const file=await ensureCloud().uploadFile({cloudPath,filePath:path});return file.fileID;
   });
@@ -118,7 +139,7 @@ function bind(page, method='refresh') {
 }
 function subscribe(fn) { subscribers.add(fn); return ()=>subscribers.delete(fn); }
 function unbind(page) { if(page._orderRender)subscribers.delete(page._orderRender);page._orderRender=null; }
-function start() { foreground=true;stopTimer();sync().catch(()=>{});timer=setInterval(()=>sync().catch(()=>{}),10000); }
+function start() { foreground=true;stopTimer();sync().catch(()=>{});timer=setInterval(()=>{if(uploadRunning)return;sync().catch(()=>{});},10000); }
 function stopTimer() { if(timer)clearInterval(timer);timer=null; }
 function stop() { foreground=false;stopTimer(); }
 function photoURL(path) { return store.get().photoURLs[path] || path; }

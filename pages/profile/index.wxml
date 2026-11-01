@@ -17,7 +17,7 @@
    <view class="header-badge-row"><view class="header-badge {{isRunner?'verified':''}}" bindtap="studentCheck">{{isRunner?'✓ '+ui.verified+(verifiedDate?' '+verifiedDate:''):ui.check}}</view></view>
   </view>
   <view wx:if="{{isRunner}}" class="header-actions">
-   <view wx:if="{{isRunner}}" class="runner-tag">{{ui.runnerTag}}</view>
+   <view wx:if="{{isRunner}}" class="runner-tag"><text class="runner-tag-dot"></text>{{ui.runnerTag}}</view>
   </view>
  </view>
  <view class="level-journey" bindtap="levels" hover-class="level-journey-press">

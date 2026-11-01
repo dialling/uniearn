@@ -1,5 +1,5 @@
 <template name="runner-card">
- <view class="flow-card runner-card" data-id="{{item.id}}" bindtap="trip" hover-class="runner-card-press" role="button" aria-label="{{zh?'查看任务':'Open job'}} {{item.route}}">
+ <view class="flow-card runner-card" data-id="{{item.id}}" data-taskid="{{item.taskId}}" bindtap="trip" hover-class="runner-card-press" role="button" aria-label="{{zh?'查看任务':'Open job'}} {{item.route}}">
   <view class="runner-card-header">
    <view class="runner-badges">
     <text class="badge {{item.category}}">{{item.type}}</text>
