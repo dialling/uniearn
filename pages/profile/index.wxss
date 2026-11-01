@@ -170,3 +170,4 @@
 .me-dark .me-stats>view.stat-blue{background:#222f40;border-color:#425c7b}.me-dark .me-stats>view.stat-blue .stats-number{color:#a6c8f0}
 .me-dark .me-stats>view.stat-green{background:#25372c;border-color:#44644f}.me-dark .me-stats>view.stat-green .stats-number{color:#9ed5ae}
 .me-dark .me-stats>view.stat-orange{background:#352b23;border-color:#66503b}.me-dark .me-stats>view.stat-orange .stats-number{color:#f2b780}
+.runner-tag-dot{display:inline-block;width:9rpx;height:9rpx;margin-right:7rpx;border-radius:50%;background:#08523a;vertical-align:middle;transform:translateY(-1rpx)}

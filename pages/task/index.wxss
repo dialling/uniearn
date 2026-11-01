@@ -1,2 +1,20 @@
 @import "../../utils/flow.wxss";
 .task-title{white-space:pre-wrap;word-break:break-word}
+/* Task details keep the pickup page layout but use the blue accent of the task posting flow. */
+.task-page .pill-row .pill{border:2rpx solid #c3d2f7;background:#eef2ff;color:#1d4ed8;font-weight:700}
+.task-page .pill-blue-press{background:#dbe5fb;border-color:#9fb6ee}
+.task-page .cancel-order-button{display:flex;align-items:center;justify-content:center;width:100%;min-height:88rpx;padding:20rpx 24rpx;margin:24rpx 0 0;border:2rpx solid #c3d2f7;border-radius:20rpx;background:#f3f6fd;color:#1d4ed8;font-size:28rpx;font-weight:700;line-height:1.5;transition:var(--ue-transition,transform .16s ease,background .16s ease)}
+.task-page .cancel-order-press{background:#e3eaf9;transform:scale(.99)}
+.task-page .btn{background:#1d4ed8;color:#fff}
+.task-page .btn.light{background:#eef2ff;color:#1d4ed8;border:1rpx solid #c3d2f7}
+.task-page .btn.outline{background:#fff;color:#1d4ed8;border:1rpx solid #c3d2f7}
+.task-page .btn[disabled]{background:#e4e1d8;color:#8a877e}
+.page-dark .task-page .pill{background:#1d2433!important;border-color:#33406b!important;color:#9db4ff!important}
+.page-dark .task-page .pill-blue-press{background:#233050}
+.page-dark .task-page .cancel-order-button{background:#1d2433;border-color:#33406b;color:#9db4ff}
+.page-dark .task-page .cancel-order-press{background:#233050}
+.page-dark .task-page .btn{background:#9db4ff!important;color:#16181c!important}
+.page-dark .task-page .btn.light,.page-dark .task-page .btn.outline{background:#1d2433!important;color:#9db4ff!important;border-color:#33406b!important}
+.page-dark .task-page .btn[disabled]{background:#242522!important;color:#a9a69c!important}
+.task-page .pill.selected{background:#1d4ed8;border-color:#1d4ed8;color:#fff}
+.page-dark .task-page .pill.selected{background:#9db4ff!important;border-color:#9db4ff!important;color:#16181c!important}

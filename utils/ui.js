@@ -1,9 +1,9 @@
 const images=require('./image-input');
 // wx.saveFile shares a 10 MB quota with no automatic expiry. Photos only need to
-// survive until they are uploaded, so old copies are removed before each save.
+// survive until they are uploaded, so old copies are cleared in the background.
 const KEEP_MS=24*3600000,MAX_BYTES=6*1024*1024;
 function toast(e){wx.showToast({title:e.message||String(e),icon:'none'});}
-function confirm(title,content){return new Promise(resolve=>wx.showModal({title,content,success:r=>resolve(!!r.confirm),fail:()=>resolve(false)}));}
+function confirm(title,content){return new Promise(resolve=>{const ask=left=>wx.showModal({title,content,success:r=>resolve(!!r.confirm),fail:()=>{if(left>0)return setTimeout(()=>ask(left-1),350);wx.showToast({title:'弹窗没打开，请再点一次',icon:'none'});resolve(false);}});ask(1);});}
 function savedFiles(){return new Promise(resolve=>{if(!wx.getSavedFileList)return resolve([]);wx.getSavedFileList({success:r=>resolve(r.fileList||[]),fail:()=>resolve([])});});}
 function remove(filePath){return new Promise(resolve=>wx.removeSavedFile({filePath,complete:()=>resolve()}));}
 async function cleanSaved(now=Date.now()){
@@ -15,15 +15,16 @@ async function cleanSaved(now=Date.now()){
   }
 }
 async function photo(source=['album']){
-  const path=await images.chooseImage(source);
-  try{await cleanSaved();}catch(_){}
+  const path=await images.compress(await images.chooseImage(source));
+  // Old copies are cleared in the background: awaiting the file list blocked the tap for seconds.
+  cleanSaved().catch(()=>{});
   // If saving fails (for example the quota is full) the temporary path still works for this session.
   return new Promise(resolve=>wx.saveFile({tempFilePath:path,success:r=>resolve(r.savedFilePath),fail:()=>resolve(path)}));
 }
 function preview(path){if(path)wx.previewImage({urls:[path],current:path});}
 async function photos(source=['album'],count=3){
- const paths=await images.chooseImages(source,count);
- try{await cleanSaved();}catch(_){}
+ const paths=await images.compressAll(await images.chooseImages(source,count));
+ cleanSaved().catch(()=>{});
  return Promise.all(paths.map(path=>new Promise(resolve=>wx.saveFile({tempFilePath:path,success:r=>resolve(r.savedFilePath),fail:()=>resolve(path)}))));
 }
 module.exports={toast,confirm,photo,photos,preview,cleanSaved};

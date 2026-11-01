@@ -29,8 +29,7 @@ assert.match(xml,/request\.riderPhotos\.length<3[^>]*class="rider-photo-add-more
 assert.match(xml,/request\.riderPhotos\.length\}\}\/3/,'the upload count reports the three-photo limit');
 assert.doesNotMatch(xml,/美团或饿了么|Meituan or Ele\.me/,'platform labels are removed from the rider photo card');
 assert.doesNotMatch(xml,/class="dash" bindtap="riderPhoto"/,'the old full-width dashed banner is removed');
-assert.match(xml,/request\.category==='takeout' && \(request\.status===.*class="flow-card customer-arrival-card"/,'the customer arrival card remains visible after arrival is confirmed');
-assert.match(xml,/hover-class="customer-status-button-press"[^>]*bindtap="foodArrived">\{\{zh\?'外卖已送达取件点'/,'the arrival action is a clear single-line pressable button');
+assert.doesNotMatch(xml,/class="flow-card customer-arrival-card"/,'the green food-arrived card was removed on request');
 assert.match(xml,/class="btn outline customer-status-button"[^>]*hover-class="customer-status-button-press"[^>]*>\{\{zh\?\(request\.etaMoved\?'已更新送达时间':'我的外卖晚到了'\)/,'the late-food action keeps its full wording on one line');
 assert.doesNotMatch(xml,/bindchange="late"/,'the late-food action no longer opens a time picker');
 assert.deepEqual(page.data.latePresets,[10,20,30]);assert.match(xml,/wx:for="\{\{latePresets\}\}"/);

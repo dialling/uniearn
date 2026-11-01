@@ -1,6 +1,7 @@
 const cloud = require('wx-server-sdk');
 const crypto = require('crypto');
 const engine = require('./engine');
+const deletion = require('./deletion');
 cloud.init({env:cloud.DYNAMIC_CURRENT_ENV});
 const db = cloud.database();
 const json = value => JSON.parse(JSON.stringify(value));
@@ -59,6 +60,7 @@ exports.main = async (event = {}) => {
   const actor = engine.idFor(openid), action = event.action || 'sync';
   try {
     if (JSON.stringify(event).length > 18000) throw Error('Request is too large.');
+    let deletionPlan = null;
     const result = await db.runTransaction(async tx => {
       const ref = tx.collection('uniearn_order_state').doc('team-test');
       let state;
@@ -81,6 +83,27 @@ exports.main = async (event = {}) => {
       } else if (action === 'prepareUpload') {
         if (!account.profile || account.loggedOut) throw Error('Save your profile / log in in Me first.');
         value = {cloudPath:'order-photos/' + actor + '/' + crypto.randomBytes(16).toString('hex') + '.jpg'};
+      } else if (action === 'closeMyOrders') {
+        if (!account.profile || account.loggedOut) throw Error('Sign in before closing your orders.');
+        value = { counts: deletion.closeOwn(state, actor, now) };
+        if (!value.counts.orders) throw Error(event.lang === 'en' ? 'You have no open orders.' : '你当前没有进行中的订单。');
+      } else if (action === 'deleteAccount') {
+        // Real deletion: wipe the account's personal fields inside the shared ledger first, then
+        // remove the account documents and uploaded photos once the transaction commits.
+        if (!account.profile) throw Error('Sign in with WeChat before deleting your account.');
+        if (event.confirm !== 'DELETE') throw Error('Confirm the deletion inside the app.');
+        if (event.closeOrders === true) {
+          const closed = deletion.closeOwn(state, actor, now);
+          if (closed.orders) console.log('orderService deleteAccount closed', closed.orders, 'open orders');
+        }
+        const busy = deletion.openWork(state, actor);
+        if (busy.requests.length || busy.trips.length) {
+          throw Error(event.lang === 'en'
+            ? 'Finish or cancel your active orders before deleting your account.'
+            : '请先完成或取消进行中的订单，再删除账户。');
+        }
+        value = deletion.purge(state, actor, now);
+        deletionPlan = { account, photos: value.photos || [] };
       } else if (action !== 'sync') {
         if (!/^[a-zA-Z0-9_-]{12,100}$/.test(event.operationId || '')) throw Error('Invalid operation ID. Please update the mini program.');
         const key = actor + '_' + event.operationId;
@@ -108,6 +131,16 @@ exports.main = async (event = {}) => {
     const response = result && result.ok ? result : result.result;
     if (response.archiveDue) await archiveFinished();
     delete response.archiveDue;
+    if (deletionPlan) {
+      try {
+        const cleaned = await deletion.eraseDocuments({ cloud, db, actor, account: deletionPlan.account, photos: deletionPlan.photos });
+        response.value = { ...(response.value || {}), documents: cleaned.documents, files: cleaned.photos };
+      } catch (e) {
+        console.error('orderService deleteAccount cleanup', e.code || e.errCode || '', e.message);
+        response.cleanupWarning = 'Some records could not be removed yet. Tap delete again to finish.';
+      }
+      deletionPlan = null;
+    }
     // Private storage remains private. Only photos in this authorized snapshot get URLs.
     const ids = new Set();
     for (const r of response.snapshot.requests) {

@@ -7,7 +7,7 @@ const unique=values=>[...new Set(values.filter(Boolean))];
 function card(trip,requests,language='zh',now=Date.now()){
  const zh=language!=='en',name=value=>runner.name(post.label(value,language),language);
  const items=requests.map(r=>{
-  const category=r.category||trip.category,food=category==='takeout',task=category==='task',loc=location.detail({...r,category},language,true);
+  const category=r.category||trip.category,food=category==='takeout',task=category==='task';let loc;try{loc=location.detail({...r,category},language,true);}catch(e){loc={area:'',building:r.dorm||trip.dorm||'',room:'',gender:'',genderKey:'',showDorm:false};}
   const destination=r.destinationType==='place'?clean(r.deliveryAddress)||clean(r.dorm):[loc.area,loc.building,loc.room?(zh?loc.room+'室':'Room '+loc.room):''].filter(Boolean).join(' ');
   const status=({taken:zh?'待取件':'To collect',collected:zh?'配送中':'Delivering',delivered:zh?'已送达 · 等待确认':'Delivered · awaiting confirmation',confirmed:zh?'已完成':'Completed',disputed:zh?'有反馈 · 审核中':'Issue under review',cancelled:zh?'已取消':'Cancelled',refunded:zh?'已退款':'Refunded'})[r.status]||(zh?'进行中':'In progress');
   let timing='';
@@ -26,7 +26,8 @@ function card(trip,requests,language='zh',now=Date.now()){
  });
  const done=trip.phase==='done'||requests.length>0&&requests.every(r=>['confirmed','cancelled','refunded'].includes(r.status));
  const genders=items.filter((r,i)=>r.genderKey&&items.findIndex(x=>x.genderKey===r.genderKey)===i).map(r=>({key:r.genderKey,label:r.gender}));
- return {...trip,done,items,genders,type:trip.category==='task'?(zh?'任务':'Task'):trip.category==='takeout'?(requests.some(r=>r.night)?(zh?'夜市代买':'Night market'):(zh?'外卖代取':'Takeaway')):(zh?'快递代取':'Parcels'),
+ const taskId=trip.category==='task'&&requests[0]?requests[0].id:'';
+ return {...trip,taskId,done,items,genders,type:trip.category==='task'?(zh?'任务':'Task'):trip.category==='takeout'?(requests.some(r=>r.night)?(zh?'夜市代买':'Night market'):(zh?'外卖代取':'Takeaway')):(zh?'快递代取':'Parcels'),
   route:trip.category==='task'?(items[0]?.title||(zh?'任务':'Task')):name(trip.station)+' → '+name(trip.dorm),
   total:requests.reduce((sum,r)=>sum+Number(r.reward||0),0).toFixed(2),quantity:items.reduce((sum,r)=>sum+r.quantity,0)};
 }
