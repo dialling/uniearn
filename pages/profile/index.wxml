@@ -11,7 +11,7 @@
 <!-- ① 个人资料与等级成长 -->
 <view class="me-header">
  <view class="me-header-top">
-  <view class="avatar header-avatar"><text wx:if="{{profile.name}}">{{initial}}</text><image wx:else src="/assets/profile-white.svg" mode="aspectFit"/></view>
+  <view class="avatar header-avatar"><image class="rank-avatar" src="{{tierAvatar}}" mode="aspectFit" aria-label="{{tierName}}"/></view>
   <view class="header-main">
    <view class="header-name">{{profile.name||ui.account}}</view>
    <view class="header-badge-row"><view class="header-badge {{isRunner?'verified':''}}" bindtap="studentCheck">{{isRunner?'✓ '+ui.verified+(verifiedDate?' '+verifiedDate:''):ui.check}}</view></view>
@@ -22,7 +22,7 @@
  </view>
  <view class="level-journey" bindtap="levels" hover-class="level-journey-press">
  <view class="journey-heading">
-  <text class="journey-level">{{language==='zh'?'等级：':'Level: '}}{{tierName}}</text>
+  <view class="journey-rank"><image class="rank-badge" src="/assets/profile-ranks/badge-{{tierLevel}}.png" mode="aspectFit" aria-label="{{tierName}}"/><view class="journey-rank-copy"><view class="journey-level">{{tierName}}</view><view class="journey-rank-number">LEVEL {{tierLevel}}</view></view></view>
   <view class="journey-points"><text class="journey-points-number">{{points||0}}</text><text>{{language==='zh'?'积分':'pts'}}</text><text class="journey-arrow">›</text></view>
  </view>
  <view class="journey-nudge">{{nextJobsText}}</view>

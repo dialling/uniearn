@@ -15,3 +15,10 @@ page{background:#f2efe6;color:#15221d;overflow-x:hidden}
 @keyframes mascot-power-in{0%{opacity:.2;transform:translateX(-50%) scale(.66) translateY(24rpx)}65%{opacity:1;transform:translateX(-50%) scale(calc(var(--power) + .08)) translateY(-8rpx)}100%{opacity:1;transform:translateX(-50%) scale(var(--power)) translateY(0)}}
 @keyframes mascot-float{0%,100%{transform:translateX(-50%) scale(var(--power)) translateY(0) rotate(-1deg)}50%{transform:translateX(-50%) scale(var(--power)) translateY(-10rpx) rotate(1deg)}}
 @keyframes aura-pulse{0%,100%{transform:scale(.94);opacity:.35}50%{transform:scale(1.06);opacity:.8}}
+
+/* Tap response stays on its own layer so floating and arc dragging keep working. */
+.mascot-tap-layer{position:absolute;inset:0;pointer-events:none}
+.mascot-tap-layer .level-mascot{pointer-events:auto}
+.mascot-jumping{animation:var(--ue-animation,mascot-tap-hop 600ms cubic-bezier(.22,.68,.35,1) both)}
+@keyframes mascot-tap-hop{0%,100%{transform:translateY(0) scale(1)}12%{transform:translateY(5rpx) scale(1.025,.96)}42%{transform:translateY(-58rpx) scale(.98,1.03)}68%{transform:translateY(0) scale(1.035,.96)}84%{transform:translateY(-10rpx) scale(1)}}
+@media(prefers-reduced-motion:reduce){.mascot-jumping{animation:var(--ue-animation,none)}}

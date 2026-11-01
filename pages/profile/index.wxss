@@ -7,8 +7,12 @@
 .me-header{background:#0b7a55;color:#fff;border-radius:29rpx;padding:27rpx 25rpx 21rpx;margin:8rpx 0 20rpx;box-shadow:0 9rpx 22rpx rgba(11,122,85,.14)}
 .me-header-top{display:flex;align-items:center;gap:12rpx;min-width:0}
 .avatar{width:108rpx;height:108rpx;line-height:108rpx;font-size:43rpx}
-.header-avatar{width:92rpx;height:92rpx;line-height:92rpx;font-size:35rpx;background:#ffffff24;color:#fff;border-radius:50%;text-align:center;flex:none;border:2rpx solid #ffffff38;box-sizing:border-box;box-shadow:0 5rpx 13rpx rgba(110,43,15,.1)}
-.header-avatar image{width:48rpx;height:48rpx}
+.header-avatar{width:152rpx;height:152rpx;flex:none;display:flex;align-items:center;justify-content:center;background:transparent;border:0;border-radius:0;box-shadow:none;box-sizing:border-box;line-height:normal}
+.header-avatar image{display:block;width:100%;height:100%}
+.journey-rank{display:flex;align-items:center;gap:10rpx;flex:1;min-width:0}
+.rank-badge{display:block;width:100rpx;height:100rpx;flex:none}
+.journey-rank-copy{flex:1;min-width:0}
+.journey-rank-number{margin-top:7rpx;color:#a77b29;font-size:19rpx;font-weight:750;letter-spacing:2rpx}
 .customer-avatar{background:#ffffff24}
 .runner-avatar{background:#ffffff24}
 .header-main{flex:1;min-width:0}
@@ -20,11 +24,11 @@
 .runner-tag{display:inline-block;margin:0;font-size:17rpx;font-weight:600;color:#08523a;background:#e7f3ed;border-radius:26rpx;padding:4rpx 10rpx;line-height:1.4;white-space:nowrap}
 .level-journey{background:transparent;border:0;border-radius:0;padding:0;margin:20rpx 0 0;box-shadow:none}
 .level-journey-press{opacity:.82;transform:scale(.995)}
-.journey-heading{display:flex;align-items:center;justify-content:space-between;gap:12rpx}
-.journey-level{min-width:0;color:#e7f3ed;font-size:27rpx;font-weight:750;line-height:1.35}
-.journey-points{display:flex;align-items:baseline;gap:6rpx;flex:none;color:#d3eadf;font-size:19rpx;font-weight:600}
-.journey-points-number{color:#fff;font-size:41rpx;font-weight:750;line-height:1}
-.journey-arrow{font-size:38rpx;line-height:1;margin-left:5rpx;color:#fff}
+.journey-heading{display:flex;align-items:center;justify-content:space-between;gap:12rpx;padding:20rpx 18rpx;background:#fffcf3;border-radius:24rpx}
+.journey-level{min-width:0;color:#192d49;font-size:28rpx;font-weight:750;line-height:1.35;overflow-wrap:break-word}
+.journey-points{display:flex;align-items:baseline;gap:6rpx;flex:none;color:#276c50;font-size:19rpx;font-weight:600}
+.journey-points-number{color:#276c50;font-size:41rpx;font-weight:750;line-height:1}
+.journey-arrow{font-size:38rpx;line-height:1;margin-left:5rpx;color:#276c50}
 .journey-nudge{margin:14rpx 0 0;color:#d3eadf;text-align:right;font-size:19rpx;font-weight:500;line-height:1.4;white-space:nowrap}
 .hl-track{height:12rpx;background:#8fc9ae;border-radius:10rpx;overflow:hidden;margin:8rpx 0 8rpx}
 .hl-fill{height:100%;background:#e7f3ed;border-radius:10rpx}
@@ -171,3 +175,8 @@
 .me-dark .me-stats>view.stat-green{background:#25372c;border-color:#44644f}.me-dark .me-stats>view.stat-green .stats-number{color:#9ed5ae}
 .me-dark .me-stats>view.stat-orange{background:#352b23;border-color:#66503b}.me-dark .me-stats>view.stat-orange .stats-number{color:#f2b780}
 .runner-tag-dot{display:inline-block;width:9rpx;height:9rpx;margin-right:7rpx;border-radius:50%;background:#08523a;vertical-align:middle;transform:translateY(-1rpx)}
+
+/* The avatar is a transparent penguin; only the separate rank plaque has a medal. */
+.me-dark .journey-heading .journey-level{color:#192d49}
+.me-dark .journey-heading .journey-points,.me-dark .journey-heading .journey-points-number,.me-dark .journey-heading .journey-arrow{color:#276c50}
+@media(max-width:350px){.header-avatar{width:128rpx;height:128rpx}.rank-badge{width:82rpx;height:82rpx}.journey-level{font-size:25rpx}.journey-points-number{font-size:36rpx}}

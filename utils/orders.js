@@ -40,7 +40,7 @@ function apply(snapshot) {
   }
   previous = {accountId:snapshot.accountId,unread:pairMap(snapshot.requests,r=>r.unread||0),tripIds:(snapshot.publicTrips||[]).map(t=>t.id),status:pairMap(snapshot.requests,r=>r.status)};
   store.update(s=>{
-    s.orderCapabilities=snapshot.capabilities||{};s.walletSummary=snapshot.walletSummary||null;s.progression=snapshot.progression||null;s.publicJobs=snapshot.publicJobs||[];s.deliveredThisWeek=snapshot.deliveredThisWeek||0;s.requests=snapshot.requests; s.trips=snapshot.trips; s.publicTrips=snapshot.publicTrips;
+    s.orderCapabilities=snapshot.capabilities||{};s.walletSummary=snapshot.walletSummary||null;s.progression=snapshot.progression||null;s.progressionAccountId=snapshot.accountId;s.serverTime=snapshot.serverTime;s.publicJobs=snapshot.publicJobs||[];s.deliveredThisWeek=snapshot.deliveredThisWeek||0;s.requests=snapshot.requests; s.trips=snapshot.trips; s.publicTrips=snapshot.publicTrips;
     s.supportTickets=snapshot.supportTickets||[];s.supportInbox=snapshot.supportInbox||[];s.adjustments=snapshot.adjustments||[];s.rewards=snapshot.rewards;s.preferences=snapshot.preferences||{};s.photoURLs=snapshot.photoURLs||{}; s.cloudRevision=snapshot.revision; s.lastSyncAt=Date.now();
     s.profile={...s.profile,...snapshot.stats,accountId:snapshot.accountId};
   });
@@ -51,7 +51,7 @@ async function call(data) {
   let timer=null;
   const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error(store.get().language==='en'?'The cloud is taking too long. Check your network and try again.':'云端响应超时，请检查网络后重试。')),CALL_TIMEOUT_MS);});
   let response;
-  try { response = await Promise.race([ensureCloud().callFunction({name:'orderService',data}), timeout]); }
+  try { response = await Promise.race([ensureCloud().callFunction({name:'orderService',data:{...data,checkinVersion:1}}), timeout]); }
   finally { if (timer) clearTimeout(timer); }
   const {result} = response;
   if (!result || !result.ok) {

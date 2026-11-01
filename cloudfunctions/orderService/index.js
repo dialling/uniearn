@@ -125,7 +125,10 @@ exports.main = async (event = {}) => {
         if (Buffer.byteLength(JSON.stringify(state)) > 850000) throw Error('Team test storage is full. Export and archive test data first.');
         await ref.set({data:json(state)});
       }
-      return {ok:true,value,archiveDue:now-(state.archiveCheckedAt||0)>ARCHIVE_CHECK_MS,snapshot:json(engine.snapshot(state,actor,account,now))};
+      const snapshot=json(engine.snapshot(state,actor,account,now));
+      // Older mini-program versions do not know the daily popup notice type.
+      if(event.checkinVersion!==1&&snapshot.progression)snapshot.progression.notices=snapshot.progression.notices.filter(n=>n.type!=='checkin');
+      return {ok:true,value,archiveDue:now-(state.archiveCheckedAt||0)>ARCHIVE_CHECK_MS,snapshot};
     });
     // wx-server-sdk versions may return the callback result directly or under result.
     const response = result && result.ok ? result : result.result;

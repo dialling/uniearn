@@ -1,1 +1,3 @@
 <view class="lang-host"></view>
+
+<daily-checkin id="daily-checkin"/>

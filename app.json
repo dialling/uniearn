@@ -50,7 +50,8 @@
     "yuni-tip": "/components/yuni/index",
     "yuni-assistant": "/components/yuni-assistant/index",
     "lang-switch": "/components/lang-switch/index",
-    "level-up": "/components/level-up/index"
+    "level-up": "/components/level-up/index",
+    "daily-checkin": "/components/daily-checkin/index"
   },
   "entryPagePath": "pages/jobs/index",
   "lazyCodeLoading": "requiredComponents",

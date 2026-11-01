@@ -6,6 +6,9 @@ global.wx={getStorageSync:()=>null,setStorageSync(){},showToast:o=>notices.push(
 const store=require('../utils/store'),routes=require('../utils/saved-routes').forService('parcel');
 const orders=require('../utils/orders'),flow=require('../utils/workflow');
 const lockers=require('../utils/takeaway-lockers');
+const features=require('../utils/feature-flags');
+assert.equal(features.lobbyDelivery,false,'lobby delivery stays off in the shipped mini program');
+features.lobbyDelivery=true; // Keep the retained feature covered while it is not shipped.
 const recipient={name:'My dorm',destinationType:'dorm',dorm:'D01',room:'201',owner:'Student',phone:'13800138000'};
 function page(options={}){
  delete require.cache[require.resolve('../pages/takeaway/index')];
@@ -85,6 +88,19 @@ const change=value=>({detail:{value}});
  p.applyRoute({...recipient,dorm:'B01'});
  p.setNight({currentTarget:{dataset:{night:'1'}}});p.setData({mealCode:'A23',shop:'Night stall'});
  await p.post();assert.equal(posted.at(-1).night,true);assert.equal(posted.at(-1).pickupCode,'A23');assert.equal(posted.at(-1).pickupPoint,'');assert.equal(posted.at(-1).lobbyPickupAllowed,true,'the lobby delivery option remains available for every takeaway order');
+ // The release must ignore remembered choices, repeat orders and stale page values.
+ features.lobbyDelivery=false;
+ const disabled=page({repeat:id});
+ assert.equal(disabled.data.lobbyDeliveryEnabled,false);
+ assert.equal(disabled.data.lobbyPickupAllowed,false,'repeat cannot restore the disabled option');
+ disabled.toggleLobbyPickup();assert.equal(disabled.data.lobbyPickupAllowed,false);
+ const fresh=page();assert.equal(fresh.data.lobbyPickupAllowed,false,'remembered true choice stays inactive');
+ fresh.pickLocker(change(0));fresh.setData({lobbyPickupAllowed:true});await fresh.post();
+ assert.equal(posted.at(-1).lobbyPickupAllowed,false,'even stale true values are not submitted');
+ store.update(s=>{s.publicJobs=publicView.publicJobs;s.requests=[];});board.refresh();
+ assert.ok(board.data.cards.length>0);assert.ok(board.data.cards.every(c=>c.lobbyPickupAllowed===false),'old orders cannot display the disabled hall feature');
+ const fs=require('node:fs'),xml=fs.readFileSync(require.resolve('../pages/takeaway/index.wxml'),'utf8');
+ assert.ok(xml.includes('wx:if="{{lobbyDeliveryEnabled}}" class="lobby-pickup-option"'),'entry is hidden behind the release flag');
  assert.equal(lockers.options({dorm:'Unknown dorm'}).manual,true,'unknown areas support manual entry');
  console.log('Takeaway lockers: dorm-specific choices, manual entry, area changes, bilingual labels, repeat orders, public hall/progress visibility and private contacts passed.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

@@ -38,7 +38,20 @@ function profileCompleted(s,id,now){
  l.profileAwarded=true;addPoints(s,id,activities.task(s,'profile').points,'profile',now);return true;
 }
 function dayKey(now){return new Date(now+CHINA).toISOString().slice(0,10);}
-function dailyLogin(s,id,now){const l=data(member(s,id)),today=dayKey(now);if(l.lastLoginDay===today)return false;const d=new Date(now+CHINA);d.setUTCDate(d.getUTCDate()-(d.getUTCDay()+6)%7);const week=d.toISOString().slice(0,10);if(l.loginWeek!==week){l.loginWeek=week;l.loginDays=[];l.weekAwarded=false;}l.lastLoginDay=today;l.loginDays=(l.loginDays||[]).concat(today);l.loginStreak=l.loginDays.length;if(l.loginDays.length===7&&!l.weekAwarded){l.weekAwarded=true;const points=activities.task(s,'weekly_login').points;addPoints(s,id,points,'weekly-login',now);if(activities.enabled(s,'weekly_login',now))l.notices=(l.notices||[]).concat({id:'wk-'+week,type:'weekly',points,at:now}).slice(-10);return true;}return false;}
+// A separate record starts the new rolling streak without treating legacy weekly counts as consecutive days.
+function dailyLogin(s,id,now){
+ const l=data(member(s,id)),today=dayKey(now),c=l.checkin||(l.checkin={day:'',streak:0,totalDays:0});
+ if(c.day>=today)return false;
+ const yesterday=dayKey(now-DAY);
+ c.streak=c.day===yesterday?(Number(c.streak)||0)+1:1;
+ c.day=today;c.at=now;c.totalDays=(Number(c.totalDays)||0)+1;c.cycleDay=(c.streak-1)%7+1;
+ c.rewardPoints=c.cycleDay===7&&activities.enabled(s,'weekly_login',now)?10:0;
+ l.lastLoginDay=today;l.loginStreak=c.streak;
+ if(c.rewardPoints)addPoints(s,id,c.rewardPoints,'weekly-login',now);
+ // Only today's unacknowledged check-in is relevant; level-up notices retain their queue.
+ l.notices=(l.notices||[]).filter(n=>n.type!=='checkin').concat({id:'checkin-'+today,type:'checkin',day:today,streak:c.streak,cycleDay:c.cycleDay,points:c.rewardPoints,at:now}).slice(-10);
+ return true;
+}
 function invite(s,inviter,invitee,now){
  addPoints(s,inviter,activities.task(s,'referral').points,'invite-'+invitee,now);
  addPoints(s,invitee,activities.task(s,'referral').points,'invite-welcome',now);
@@ -47,6 +60,6 @@ function acknowledge(s,id,noticeId){const l=data(member(s,id)),i=(l.notices||[])
 function view(m){
  const l=data(m||{}),points=Number(l.points)||0,level=LEVELS[Math.min(4,Math.max(0,(l.level||1)-1))],next=LEVELS[level.level]||null;
  const start=level.points,to=next?next.points:start,segment=Math.max(0,points-start);
- return {points,level:level.level,nameZh:level.zh,nameEn:level.en,next:next?{level:next.level,nameZh:next.zh,nameEn:next.en,points:next.points,remaining:Math.max(0,next.points-points)}:null,remaining:next?Math.max(0,next.points-points):0,progress:next?Math.min(100,Math.max(0,(segment/(to-start))*100)):100,anyCompleted:!!l.anyCompleted,loginStreak:l.loginStreak||0,notices:(l.notices||[]).slice()};
+ return {points,level:level.level,nameZh:level.zh,nameEn:level.en,next:next?{level:next.level,nameZh:next.zh,nameEn:next.en,points:next.points,remaining:Math.max(0,next.points-points)}:null,remaining:next?Math.max(0,next.points-points):0,progress:next?Math.min(100,Math.max(0,(segment/(to-start))*100)):100,anyCompleted:!!l.anyCompleted,loginStreak:l.loginStreak||0,checkin:l.checkin?{...l.checkin}:null,notices:(l.notices||[]).slice()};
 }
 module.exports={LEVELS,member,addPoints,completeOrder,profileCompleted,dailyLogin,invite,acknowledge,view};
