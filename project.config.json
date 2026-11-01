@@ -100,6 +100,86 @@
       {
         "value": "outputs",
         "type": "folder"
+      },
+      {
+        "value": "assets/profile-ranks/avatar-1.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/profile-ranks/avatar-2.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/profile-ranks/avatar-3.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/profile-ranks/avatar-4.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/profile-ranks/avatar-5.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/yuni-bag.svg",
+        "type": "file"
+      },
+      {
+        "value": "assets/yuni-deliver.svg",
+        "type": "file"
+      },
+      {
+        "value": "assets/yuni-earn.svg",
+        "type": "file"
+      },
+      {
+        "value": "assets/yuni-go.svg",
+        "type": "file"
+      },
+      {
+        "value": "assets/yuni-happy.svg",
+        "type": "file"
+      },
+      {
+        "value": "assets/yuni-hello.svg",
+        "type": "file"
+      },
+      {
+        "value": "assets/yuni-look.svg",
+        "type": "file"
+      },
+      {
+        "value": "assets/yuni-oops.svg",
+        "type": "file"
+      },
+      {
+        "value": "assets/yuni-party.svg",
+        "type": "file"
+      },
+      {
+        "value": "assets/yuni-phone.svg",
+        "type": "file"
+      },
+      {
+        "value": "assets/yuni-sleep.svg",
+        "type": "file"
+      },
+      {
+        "value": "assets/yuni-think.svg",
+        "type": "file"
+      },
+      {
+        "value": "assets/yuni-wave.svg",
+        "type": "file"
+      },
+      {
+        "value": "assets/yuni-work.svg",
+        "type": "file"
+      },
+      {
+        "value": "assets/yuni-worried.svg",
+        "type": "file"
       }
     ],
     "include": []
