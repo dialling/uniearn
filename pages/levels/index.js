@@ -1,5 +1,6 @@
 'use strict';
 const store=require('../../utils/store'),levelData=require('../../utils/yuni-level');
+const activityDisplay=require('../../utils/activity-display');
 const THEMES=['star','helper','pro','ace','captain'];
 const MASCOTS=['star','helper','pro','ace','captain'];
 const ACTIONS_ZH=['展开地图，准备出发','挥旗回应，一起同行','放眼远方，发现方向','乘风破浪，勇往直前','稳稳掌舵，带领同行'];
@@ -37,14 +38,16 @@ function rows(language){
  }));
 }
 Page({
- data:{...require('../../utils/motion').data(),language:'zh',levels:rows('zh'),current:0,currentItem:rows('zh')[0],currentLevel:1,points:0,arcMoveMs:ARC_MOVE_MS,arcReleaseMs:ARC_RELEASE_MS,gestureActive:false,dragX:0,dragY:0,mascotJumping:false},
+ data:{...require('../../utils/motion').data(),language:'zh',pointTasks:[],pointsStatus:'',pointsSyncError:false,levels:rows('zh'),current:0,currentItem:rows('zh')[0],currentLevel:1,points:0,arcMoveMs:ARC_MOVE_MS,arcReleaseMs:ARC_RELEASE_MS,gestureActive:false,dragX:0,dragY:0,mascotJumping:false},
  onLoad(){this.localize(true);},
  onReady(){wx.createSelectorQuery().in(this).select('.level-orbit').boundingClientRect(rect=>{this.orbitRect=rect;}).exec();},
- onShow(){this.localize(false);require('../../utils/page-title').apply(this);},
+ onShow(){this.localize(false);require('../../utils/page-title').apply(this);this.stopPointsSync();this.stopPoints=require('../../utils/activity-sync').subscribe(config=>{this.pointsConfig=activityDisplay.latest(this.pointsConfig,config);this.updatePointTasks();this.setData({pointsSyncError:false});},()=>this.setData({pointsSyncError:true}));},
+ stopPointsSync(){if(this.stopPoints){this.stopPoints();this.stopPoints=null;}},
+ updatePointTasks(){const cached=(store.get().rewards||{}).activities;this.pointsConfig=activityDisplay.latest(this.pointsConfig,cached&&cached.config);const view=activityDisplay.display(this.pointsConfig,this.data.language==='zh');this.setData({pointTasks:view.activityTasks,pointsStatus:view.activityStatusLabel});},
  localize(first){
   const state=store.get(),language=state.language==='en'?'en':'zh',view=levelData.view(state.progression||{}),current=first?Math.max(0,view.level-1):this.data.current;
   const levels=rows(language);
-  this.setData({language,levels,current,currentItem:levels[current],currentLevel:view.level,points:view.points});
+  this.setData({language,levels,current,currentItem:levels[current],currentLevel:view.level,points:view.points});this.updatePointTasks();
  },
  onMotionChange(enabled){this.stopMascotJump();this.stopArcMotion();this.setData({gestureActive:false,dragX:0,dragY:0,arcMoveMs:enabled?ARC_MOVE_MS:0,arcReleaseMs:enabled?ARC_RELEASE_MS:0});},
  stopMascotJump(){
@@ -93,6 +96,6 @@ Page({
   this.setCurrent(target,true);this.stopArcMotion();
   this.setData({gestureActive:false,dragX:0,dragY:0});
  },
- onHide(){this.stopMascotJump();},
- onUnload(){this.stopMascotJump();this.stopArcMotion();}
+ onHide(){this.stopPointsSync();this.stopMascotJump();},
+ onUnload(){this.stopPointsSync();this.stopMascotJump();this.stopArcMotion();}
 });

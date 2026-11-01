@@ -31,12 +31,7 @@ let definition;global.Page=d=>definition=d;
 global.wx={getStorageSync:()=>null,setStorageSync(){},showToast(){},pageScrollTo(){}};
 require('../pages/rewards/index');
 const page={...definition,data:structuredClone(definition.data),setData(patch){Object.assign(this.data,patch);}};
-const originalSet=global.setInterval,originalClear=global.clearInterval;let tick,cleared=0;
-try{
- global.setInterval=fn=>{tick=fn;return 11;};global.clearInterval=id=>{assert.equal(id,11);cleared++;};
- page.openActivity({currentTarget:{dataset:{tab:'ranking'}}});assert.equal(page.data.activityTab,'ranking');assert.equal(page.data.screen,'activity');assert.equal(typeof tick,'function');
- page.switchActivity({currentTarget:{dataset:{tab:'rewards'}}});assert.equal(page.data.activityTab,'rewards');
- page.onHide();assert.equal(page.activityClock,null);assert.equal(cleared,1);page.startActivityClock();assert.equal(page.activityClock,null,'hidden pages cannot keep a countdown timer');
-}finally{global.setInterval=originalSet;global.clearInterval=originalClear;}
-const xml=fs.readFileSync('pages/rewards/index.wxml','utf8');assert.match(xml,/wx:for="\{\{rankingRows\}\}"/);assert.match(xml,/\{\{rankingShortStatus\}\}/);
+assert.equal(page.openActivity,undefined,'Rank has no live entry handler');
+page.openSection({currentTarget:{dataset:{screen:'activity'}}});assert.equal(page.data.screen,'home','activity cannot be opened through generic sections');
+const xml=fs.readFileSync('pages/rewards/index.wxml','utf8');assert.doesNotMatch(xml,/rankingRows|activityTab|screen==='activity'/);assert.match(xml,/rank-coming-soon/);assert.match(xml,/aria-disabled="true"/);
 console.log('Activity leaderboard: cloud tie ordering, real personal scores, exact boundaries, round isolation, logged-out privacy, capped counts, bilingual periods, reward mapping and hidden timer cleanup passed.');

@@ -64,3 +64,8 @@
 .invite-primary-press{opacity:.88}
 
 .news-redesign.page-dark .invite-primary{background:#e7472f;border-color:#d33f2b}
+
+/* Rank is a static preview until launch. */
+.rank-coming-soon{display:block}
+.rank-preview-note{border-top:1rpx solid #78927b;padding-top:17rpx;margin-top:23rpx;font-size:22rpx;line-height:1.5;color:#edf3eb}
+.news-redesign.page-dark .rank-preview-note{border-color:#526b53;color:#c8dac9}
