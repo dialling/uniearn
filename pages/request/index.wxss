@@ -7,7 +7,7 @@
 .status-yuni{position:absolute;right:18rpx;top:20rpx;width:78rpx;height:90rpx}
 .timeline{padding:20rpx 0}
 .timeline text{font-size:24rpx}
-.cancel-order-button{display:flex;align-items:center;justify-content:center;width:100%;min-height:88rpx;padding:20rpx 24rpx;margin:24rpx 0 0;border:2rpx solid #f2b48a;border-radius:20rpx;background:#fdf6f2;color:#c2410c;font-size:28rpx;font-weight:700;line-height:1.5;transition:transform .16s ease,background .16s ease}
+.cancel-order-button{display:flex;align-items:center;justify-content:center;width:100%;min-height:88rpx;padding:20rpx 24rpx;margin:24rpx 0 0;border:2rpx solid #f2b48a;border-radius:20rpx;background:#fdf6f2;color:#c2410c;font-size:28rpx;font-weight:700;line-height:1.5;transition:var(--ue-transition,transform .16s ease,background .16s ease)}
 .cancel-order-press{transform:scale(.98);background:#fff1e6}
 .page-dark .cancel-order-button{background:#3a2416;border-color:#3a3b37;color:#f4a06e}
 .contact-actions{display:flex;gap:16rpx}
@@ -21,7 +21,7 @@
 
 
 .rider-photo-card{padding:28rpx}
-.rider-photo-action{position:relative;display:flex;flex-direction:column;align-items:stretch;gap:22rpx;min-height:176rpx;padding:24rpx;border:2rpx dashed #f2a678;border-radius:28rpx;background:#fff;transition:transform .16s ease,background .16s ease}
+.rider-photo-action{position:relative;display:flex;flex-direction:column;align-items:stretch;gap:22rpx;min-height:176rpx;padding:24rpx;border:2rpx dashed #f2a678;border-radius:28rpx;background:#fff;transition:var(--ue-transition,transform .16s ease,background .16s ease)}
 .rider-photo-empty{flex-direction:row;align-items:center;gap:24rpx}
 .rider-photo-empty .rider-photo-copy{flex:1}
 .rider-photo-press{transform:scale(.985);background:#fff7f0}
@@ -44,7 +44,7 @@
 .page-dark .rider-photo-media,.page-dark .rider-photo-count{background:#173c31;color:#76d7b3}
 .page-dark .rider-photo-help{color:#aaa79f}
 
-.btn.outline.customer-status-button{display:flex;align-items:center;justify-content:center;width:58%;min-width:300rpx;min-height:88rpx;margin:22rpx auto 10rpx;padding:18rpx 22rpx;border:2rpx solid #b9d6ca;border-radius:22rpx;background:#f3faf6;color:#16815e;font-size:27rpx;font-weight:800;line-height:1.35;text-align:center;white-space:nowrap;box-shadow:0 4rpx 10rpx rgba(11,122,85,.08);transition:transform .14s ease,background .14s ease,border-color .14s ease}
+.btn.outline.customer-status-button{display:flex;align-items:center;justify-content:center;width:58%;min-width:300rpx;min-height:88rpx;margin:22rpx auto 10rpx;padding:18rpx 22rpx;border:2rpx solid #b9d6ca;border-radius:22rpx;background:#f3faf6;color:#16815e;font-size:27rpx;font-weight:800;line-height:1.35;text-align:center;white-space:nowrap;box-shadow:0 4rpx 10rpx rgba(11,122,85,.08);transition:var(--ue-transition,transform .14s ease,background .14s ease,border-color .14s ease)}
 .btn.outline.customer-status-button-press{transform:scale(.97);background:#e4f3ec;border-color:#79bfa4}
 .btn.outline.customer-status-button[disabled]{border-color:#d6e5de;background:#f4f8f6;color:#74a391;box-shadow:none;opacity:1}
 .late-options-panel{margin-top:20rpx;padding:20rpx;border-radius:20rpx;background:#f7f9f7;border:1rpx solid #dce8e2}

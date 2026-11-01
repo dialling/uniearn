@@ -42,7 +42,6 @@ function raise(s,id,amount){const r=s.requests.find(x=>x.id===id);if(!r||r.statu
 function cancelReason(r,reason,now=Date.now()){
  if(r.status!=='taken'||r.collected.length)throw Error('Only an uncollected order can be cancelled');
  if(!['missing','quantity','personal','mismatch'].includes(reason))throw Error('Choose a reason');
- if(c.category(r)==='takeout'&&reason==='missing'&&now<(r.arrivalAt||0)+10*MIN)throw Error('Wait until '+clock((r.arrivalAt||0)+10*MIN)+' before reporting missing food');
  if(c.category(r)==='task')return reason!=='mismatch';
  if(r.etaChangedAfterAccept&&reason==='personal')return false;
  if(r.etaChangedAfterAccept&&reason==='personal')return false;
@@ -68,7 +67,7 @@ function candidates(s,t,now=Date.now()){
 function plan(s,cfg,now=Date.now()){
  const capacity=Number(cfg.capacity);if(!Number.isInteger(capacity)||capacity<1||capacity>(cfg.category==='takeout'?5:12))throw Error('Choose a capacity between 1 and 12');
  if(!cfg.station||!cfg.dorm)throw Error('Choose a pickup point and destination');
- const later=cfg.when==='later',duration=cfg.duration===undefined||cfg.duration===null||cfg.duration===''?10:Number(cfg.duration);if(!Number.isInteger(duration)||duration<1||duration>30)throw Error('Choose a duration between 1 and 30 minutes');
+ const later=cfg.when==='later',duration=cfg.duration===undefined||cfg.duration===null||cfg.duration===''?10:Number(cfg.duration);if(!later&&(!Number.isInteger(duration)||duration<1||duration>30))throw Error('Choose a duration between 1 and 30 minutes');
  const departAt=later?todayAt(cfg.time,now):now+duration*MIN;
  if(later&&departAt<=now+10*MIN)throw Error('Choose a departure more than 10 minutes from now');
  return {campusId:s.profile.campusId,universityId:s.profile.universityId,category:cfg.category||'takeout',station:cfg.station,dorm:cfg.dorm,capacity,departAt,depart:clock(departAt),joinUntil:later?departAt-10*MIN:departAt,remindAt:later?departAt-15*MIN:0,phase:'collect',requestIds:[],cancelled:false,runnerName:s.profile.name||'You',runnerJobs:s.profile.jobsDone||0};
