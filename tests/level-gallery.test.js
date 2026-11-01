@@ -10,7 +10,7 @@ assert.equal(instance.data.current,2,'gallery opens on the current account level
 assert.equal(instance.data.currentItem.name,'Yuni 达人','the visible card is the current account level');
 assert.match(instance.data.levels[1].condition,/首笔订单/);
 assert.equal(instance.data.levels[4].benefits[0].detail,'「Yuni 船长」');
-assert.equal(instance.data.levels[2].mascot,'/assets/yuni-happy.png');
+assert.equal(instance.data.levels[2].mascot,'/assets/yuni-adventure-pro.png');
 const xml=fs.readFileSync('pages/levels/index.wxml','utf8'),css=fs.readFileSync('pages/levels/index.wxss','utf8');
 assert.doesNotMatch(xml,/class="level-list"/,'the page is not a vertical gallery');
 assert.doesNotMatch(xml,/<swiper/,'level content does not slide horizontally');

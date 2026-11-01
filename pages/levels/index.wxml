@@ -5,14 +5,14 @@
  <view class="level-orbit" style="--arc-move:{{arcMoveMs}}ms" bindtouchstart="onArcStart" bindtouchmove="onArcMove" bindtouchend="onArcEnd" bindtouchcancel="onArcEnd">
   <view class="orbit-line"></view>
   <view wx:for="{{levels}}" wx:key="level" data-index="{{index}}" bindtap="select" hover-class="orbit-press" class="orbit-level orbit-{{index}} {{current===index?'selected':''}} {{currentLevel===item.level?'is-current':''}}"><view class="orbit-dot"></view><text class="orbit-name">{{item.name}}</text></view>
-  <view class="hero-motion {{gestureActive?'dragging':''}}" style="--drag-x:{{dragX}}rpx;--drag-y:{{dragY}}rpx;--arc-release:{{arcReleaseMs}}ms"><block wx:for="{{[current]}}" wx:for-item="heroKey" wx:key="*this"><view class="mascot-aura power-{{currentItem.level}}"><view></view><view></view><view></view></view><image class="level-mascot power-{{currentItem.level}}" src="{{currentItem.mascot}}" mode="aspectFit"/></block><view class="current-label">{{language==='zh'?'当前查看':'VIEWING'}}</view><view class="level-title">{{currentItem.name}}</view><view class="level-kicker">LEVEL {{currentItem.level}}</view><view wx:if="{{currentLevel===currentItem.level}}" class="current-chip">{{language==='zh'?'当前等级':'CURRENT'}}</view></view>
+  <view class="hero-motion {{gestureActive?'dragging':''}}" style="--drag-x:{{dragX}}rpx;--drag-y:{{dragY}}rpx;--arc-release:{{arcReleaseMs}}ms"><block wx:for="{{[current]}}" wx:for-item="heroKey" wx:key="*this"><view class="mascot-aura power-{{currentItem.level}}"><view></view><view></view><view></view></view><image class="level-mascot power-{{currentItem.level}}" src="{{currentItem.mascot}}" mode="aspectFit"/></block><view class="current-label">{{currentItem.action}}</view><view class="level-title">{{currentItem.name}}</view><view class="level-kicker">LEVEL {{currentItem.level}}</view><view wx:if="{{currentLevel===currentItem.level}}" class="current-chip">{{language==='zh'?'当前等级':'CURRENT'}}</view></view>
  </view>
  <view class="level-progress"><view><view class="progress-label">{{currentItem.conditionTitle}}</view><view class="progress-condition">{{currentItem.condition}}</view></view><view class="progress-points"><text>{{currentItem.min}}</text><text>{{language==='zh'?'积分':'PTS'}}</text></view></view>
  <view class="content-section">
-  <view class="content-head"><view><view class="content-title">{{currentItem.contentTitle}}</view><view class="content-sub">{{language==='zh'?'当前等级的已确认内容':'Confirmed content for this level'}}</view></view><text class="level-chip">Lv.{{currentItem.level}}</text></view>
+  <view class="content-head"><view><view class="content-title">{{currentItem.contentTitle}}</view><view class="content-sub">{{language==='zh'?'记录成长，点亮每一段航程':'Celebrate every step of your journey'}}</view></view><text class="level-chip">Lv.{{currentItem.level}}</text></view>
   <view class="benefit-grid"><view wx:for="{{currentItem.benefits}}" wx:key="title" class="benefit-card"><view class="benefit-icon"><image src="{{item.icon}}" mode="aspectFit"/></view><view><view class="benefit-title">{{item.title}}</view><view class="benefit-detail">{{item.detail}}</view></view></view></view>
  </view>
- <view class="source-note">{{language==='zh'?'当前材料未规定额外优惠券、折扣或优先服务；页面仅展示已确认内容。':'No extra coupons, discounts or priority service are defined in the current materials; only confirmed content is shown.'}}</view>
+ <view class="source-note">{{language==='zh'?'左右滑动或点击上方等级，探索你的航海旅程':'Swipe or tap a level above to explore your journey'}}</view>
 </view>
 
 </view>

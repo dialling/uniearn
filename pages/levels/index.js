@@ -1,7 +1,9 @@
 'use strict';
 const store=require('../../utils/store'),levelData=require('../../utils/yuni-level');
 const THEMES=['star','helper','pro','ace','captain'];
-const MASCOTS=['hello','bag','happy','party','wave'];
+const MASCOTS=['star','helper','pro','ace','captain'];
+const ACTIONS_ZH=['展开地图，准备出发','挥旗回应，一起同行','放眼远方，发现方向','乘风破浪，勇往直前','稳稳掌舵，带领同行'];
+const ACTIONS_EN=['Open the map. Begin your journey.','Wave hello. Travel together.','Look ahead. Find your direction.','Ride the waves. Keep exploring.','Take the helm. Lead the way.'];
 // Arc gesture tuning: adjust these values to fine-tune feel on real devices.
 const ARC_MOVE_MS=340;       // level-change animation duration
 const ARC_RELEASE_MS=420;    // ease-out duration after the finger lifts
@@ -14,7 +16,8 @@ function rows(language){
  return levelData.levels.map((level,index)=>({
   ...level,
   theme:THEMES[index],
-  mascot:'/assets/yuni-'+MASCOTS[index]+'.png',
+  mascot:'/assets/yuni-adventure-'+MASCOTS[index]+'.png',
+  action:(en?ACTIONS_EN:ACTIONS_ZH)[index],
   name:en?level.en:level.zh,
   shortName:(en?level.en:level.zh).replace('Yuni ',''),
   number:String(index+1).padStart(2,'0'),
