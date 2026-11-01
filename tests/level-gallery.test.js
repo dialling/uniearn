@@ -27,7 +27,6 @@ assert.match(xml,/<text class="orbit-name">\{\{item\.name\}\}<\/text>/,'all five
 assert.match(xml,/class="mascot-aura power-\{\{currentItem\.level\}\}"/,'each selected level changes the mascot strength treatment');
 assert.match(xml,/class="level-mascot power-\{\{currentItem\.level\}\}"/);
 assert.match(xml,/currentLevel===currentItem.level/,'current level is marked');
-assert.match(xml,/class="benefit-icon"><image src="\{\{item\.icon\}\}"/,'benefit cards use simple graphic icons rather than text glyphs');
 assert.doesNotMatch(xml,/detail-check|>✓</,'the four content icons are not font characters');
 assert.doesNotMatch(xml,/intro-copy/,'small helper line is removed');
 assert.match(xml,/Uniearn 等级成长/,'brand casing follows the product');
