@@ -206,7 +206,7 @@ function execute(s, actor, account, event, now = Date.now()) {
     const ids = action === 'accept' ? event.ids : (Array.isArray(event.refs) ? event.refs.map(x => x && x.requestId) : []);
     rejectOwn(s, ids, actor);check(ids.every(id=>s.requests.find(r=>r.id===id).campusId===campusId),'Choose orders from your selected campus.');
     const selected=ids.map(id=>s.requests.find(r=>r.id===id));let t;if(selected[0].category==='task'){check(action==='accept'&&ids.length===1,'Take one task at a time.');const r=selected[0];check(r.status==='waiting'&&r.reward<=d.limit(s.profile),'This task exceeds your runner limit.');t={id:'t'+s.nextId++,category:'task',station:'Task',dorm:r.dorm,capacity:1,phase:'deliver',requestIds:[r.id]};r.status='taken';r.runnerId=t.id;r.takenAt=now;s.trips.unshift(t);}else t=action==='accept'?d.acceptJob(s,event.ids):d.acceptBoxes(s,event.refs);
-    t.campusId=campusId;t.universityId='xjtlu';t.runnerAccountId = actor; t.runnerName = contact.name; t.runnerPhone=contact.phone; t.createdAt = now;
+    t.campusId=campusId;t.universityId='xjtlu';t.runnerAccountId = actor; t.runnerName = contact.name; t.runnerPhone=contact.phone; t.runnerAvatar=account.profile.avatarUrl||''; t.createdAt = now;
     t.requestIds.forEach(id => f.event(s.requests.find(r => r.id === id), 'Runner accepted', now)); value = { id: t.id };
   } else if (action === 'startTrip') {
     const cfg = event.data || {};
@@ -219,7 +219,7 @@ function execute(s, actor, account, event, now = Date.now()) {
     }
     const tripState={...s,requests:s.requests.filter(r=>r.campusId===campusId)};
     const t = f.startTrip(tripState, { category: cfg.category, when: cfg.when, time: cfg.time, duration: cfg.duration, station: cfg.station, dorm: cfg.dorm, capacity: cfg.capacity, ...(Object.prototype.hasOwnProperty.call(cfg,'requestIds')?{requestIds:cfg.requestIds}:{}) }, now);s.nextId=tripState.nextId;
-    t.campusId=campusId;t.universityId='xjtlu';t.runnerAccountId = actor; t.runnerName=contact.name; t.runnerPhone=contact.phone; t.createdAt = now;
+    t.campusId=campusId;t.universityId='xjtlu';t.runnerAccountId = actor; t.runnerName=contact.name; t.runnerPhone=contact.phone; t.runnerAvatar=account.profile.avatarUrl||''; t.createdAt = now;
     t.requestIds.forEach(id => f.event(s.requests.find(r => r.id === id), 'Runner accepted', now)); value = { id: t.id };
   } else if (['raise','cancel','confirm','report','riderPhoto','foodArrived'].includes(action)) {
     const r = ownRequest(s, event.id, actor);
@@ -249,6 +249,13 @@ function execute(s, actor, account, event, now = Date.now()) {
   } else if(action==='resolveDispute'){
     check(account._reviewer===true,'Reviewer access required.');const r=s.requests.find(x=>x.id===event.id);check(r&&r.status==='disputed','Order is not under review.');check(['release','refund'].includes(event.decision),'Choose release or refund.');
     if(event.decision==='release'){r.status='confirmed';r.confirmedAt=now;f.event(r,'Review resolved · confirmed',now);}else{const amount=Number(event.deduction||0);check(Number.isFinite(amount)&&amount>=0&&amount<=1000,'Invalid reviewed deduction.');const note=String(event.note||'').trim();check(note.length>=10&&note.length<=500,'Explain the reviewed deduction.');r.status='refunded';r.refundAmount=f.total(r);r.refundedAt=now;r.refundReason=note;const t=s.trips.find(x=>x.id===r.runnerId);if(amount&&t)(s.adjustments||(s.adjustments=[])).push({id:'a'+s.nextId++,runnerAccountId:t.runnerAccountId,requestId:r.id,amount:Math.round(amount*100)/100,reason:r.dispute.reason,note,at:now});f.event(r,'Review resolved · simulated refund',now);}
+  } else if(action==='changeTaskDeadline'){
+    const r=s.requests.find(x=>x.id===event.id);
+    check(r && r.ownerId===actor && r.category==='task' && ['waiting','taken'].includes(r.status),'当前任务无法更改截止时间');
+    const dueAt=event.dueAt;
+    check(Number.isSafeInteger(dueAt) && dueAt>now && Number.isFinite(new Date(dueAt).getTime()),'请选择未来的截止时间');
+    r.dueAt=dueAt;
+    r.deadline=f.clock(dueAt);
   } else if(action==='foodLate'){
     const r=ownRequest(s,event.id,actor);check(['waiting','taken'].includes(r.status)&&r.category==='takeout'&&!r.etaMoved&&now<=(r.arrivalAt+600000),'Move arrival once, before the original ETA + 10 minutes.');const minutes=Number(event.minutes),at=Number.isSafeInteger(minutes)&&minutes>0?r.arrivalAt+minutes*60000:f.todayAt(event.time,now);check(Number.isSafeInteger(at)&&at>r.arrivalAt,'Choose a later arrival time.');r.originalArrivalAt=r.arrivalAt;r.arrivalAt=at;r.closesAt=at+1800000;r.etaMoved=true;r.etaChangedAfterAccept=r.status==='taken';f.event(r,'Arrival moved to '+f.clock(at),now);
   } else if(action==='collectCoupon'){rewards.collect(s,actor,event.campaignId,now);
@@ -278,7 +285,7 @@ function snapshot(s, actor, account, now = Date.now()) {
       const rt=s.trips.find(t=>t.id===r.runnerId),thread=rt&&(s.threads||{})[r.id+':'+rt.id];
       out.runnerPhone=rt&&rt.runnerPhone||'';out.runnerStats=rt?(()=>{const st=stats(s,rt.runnerAccountId);return{jobsDone:st.jobsDone};})():{};out.unread=thread?thread.messages.filter(m=>m.sender!==actor&&m.at>(thread.read[actor]||0)).length:0;
       out.messages=thread?thread.messages.map(m=>({id:m.id,text:m.text,at:m.at,mine:m.sender===actor})):[];
-      return { ...out, runnerName:(s.trips.find(t=>t.id===r.runnerId)||{}).runnerName||'', ownerId: isMine ? actor : '', isMine, isRunner };
+      return { ...out, runnerName:rt&&rt.runnerName||'', runnerAvatar:rt&&rt.runnerAvatar||'', ownerId: isMine ? actor : '', isMine, isRunner };
     }
     // Exact delivery addresses stay private until this runner accepts the order.
     const out = {};

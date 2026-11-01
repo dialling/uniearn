@@ -1,5 +1,5 @@
 <view style="{{motionStyle}}">
-<lang-switch/>
+<lang-switch></lang-switch>
 <view class="rules-page {{darkClass}}">
  <view class="rules-header">
   <view class="flow-title">{{labels.title}}</view>

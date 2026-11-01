@@ -1,5 +1,5 @@
 <view style="{{motionStyle}}">
-<lang-switch/>
+<lang-switch></lang-switch>
 <view class="flow-page notify-page {{darkClass}}">
  <view class="flow-title">{{zh?'微信通知设置':'WeChat notifications'}}</view>
  <view class="flow-sub">{{zh?'开启后，有人接单、有人发消息，即使关掉小程序也会在微信「服务通知」里提醒你。':'Once enabled, a new job or a message still reaches you in WeChat Service Notifications, even with the mini program closed.'}}</view>

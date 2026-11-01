@@ -1,5 +1,5 @@
 <view style="{{motionStyle}}">
-<lang-switch/>
+<lang-switch></lang-switch>
 <view class="help-page {{darkClass}}">
 <view class="help-header">
 <view class="help-title">{{labels.title}}</view>
