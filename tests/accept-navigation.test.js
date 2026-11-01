@@ -7,7 +7,7 @@ const actor=id('runner'),runner=h.accounts[actor];
 runner.profile={...runner.profile,name:'',phone:''};runner.verification={status:'verified',studentName:'Private Real Name',phone:'13800001111',gender:'female'};
 h.user='runner';
 global.Page=value=>definition=value;
-global.wx={getStorageSync:()=>null,setStorageSync(){},showToast(){},showModal:()=>{throw Error('Accepting a job must not show a confirmation modal.');},navigateTo:options=>navigations.push(options.url),redirectTo:options=>navigations.push(options.url),reLaunch:options=>navigations.push(options.url),cloud:{init(){},async callFunction({name,data}){
+global.wx={getStorageSync:()=>null,setStorageSync(){},showToast(){},showModal:options=>options.success({confirm:true}),navigateTo:options=>navigations.push(options.url),redirectTo:options=>navigations.push(options.url),reLaunch:options=>navigations.push(options.url),cloud:{init(){},async callFunction({name,data}){
  if(name==='studentAccount'){const a=publicAccount(h.accounts[id(h.user)],id(h.user));if(legacyStatus)delete a.verification.phone;return{result:{ok:true,account:a}};}
  assert.equal(name,'orderService');if(data.action==='accept')acceptCalls++;return{result:await h.client(data)};
 }}};

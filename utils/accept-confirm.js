@@ -1,0 +1,2 @@
+const store=require('./store');
+module.exports=function confirmTake(count,reward){const zh=store.get().language!=='en',amount=Number(reward).toFixed(2);return new Promise(resolve=>wx.showModal({title:zh?'确定接单吗？':'Take this job?',content:zh?'即将接取 '+count+' 单，预计赏金 ¥'+amount+'。请确认你能完成取件和送达。':'You are accepting '+count+' order(s) for ¥'+amount+'. Please confirm you can complete the pickup and delivery.',confirmText:zh?'确认接单':'Take job',cancelText:zh?'暂不接单':'Cancel',success:r=>resolve(!!r.confirm),fail:()=>resolve(false)}));};
