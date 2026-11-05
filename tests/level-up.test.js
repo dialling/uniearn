@@ -66,6 +66,7 @@ assert.match(xml,/bindtap="close"/);
 assert.match(xml,/binderror="videoError"/);
 assert.match(xml,/assets\/yuni-party\.png/,'a still image stands in when the clip cannot play');
 assert.match(xml,/noticeType==='weekly'\?'✦ 7 DAY STREAK':'✦ LEVEL UP'/);
+assert.match(xml,/ui\.unit/);assert.doesNotMatch(xml,/积分/,'English level-up copy is not hardcoded in Chinese');
 for(const p of ['jobs','earnings','profile','requests'])assert.match(fs.readFileSync('pages/'+p+'/index.wxml','utf8'),/<app-nav/,p+' mounts the shared bottom bar');
 assert.match(fs.readFileSync('components/nav/index.wxml','utf8'),/<level-up\s*\/>/,'the popup rides with the shared bottom bar, so every tab gets it once');
 assert.ok(require('../app.json').usingComponents['level-up']);

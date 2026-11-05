@@ -10,6 +10,10 @@ function quote(state,request){
  const archived=Math.max(0,Number((state.profile||{}).jobsDone||0)-confirmed.length-delivered);
  if(request&&request.status==='confirmed')return !archived&&confirmed[0]&&confirmed[0].id===request.id?first:regular;
  const completedRunner=archived>0||confirmed.length>0||(state.progression||{}).firstRunnerOrder===true;
- return completedRunner?regular:first;
+ if(completedRunner)return regular;
+ const deliveredOrders=runnerOrders.filter(r=>r.status==='delivered').sort((a,b)=>(a.deliveredAt||0)-(b.deliveredAt||0)||String(a.id).localeCompare(String(b.id)));
+ if(request&&request.status==='delivered')return deliveredOrders[0]&&deliveredOrders[0].id===request.id?first:regular;
+ if(deliveredOrders.length)return regular;
+ return first;
 }
 module.exports={quote};

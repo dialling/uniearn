@@ -83,7 +83,7 @@ function purge(state, actor, now = Date.now()) {
 
   if (Array.isArray(state.adjustments)) {
     const before = state.adjustments.length;
-    state.adjustments = state.adjustments.filter(a => a && a.actor !== actor && a.accountId !== actor);
+    state.adjustments = state.adjustments.filter(a => a && a.runnerAccountId !== actor && a.actor !== actor && a.accountId !== actor);
     counts.adjustments = before - state.adjustments.length;
   } else if (state.adjustments && state.adjustments[actor]) {
     delete state.adjustments[actor];
@@ -146,9 +146,11 @@ function closeOwn(state, actor, now = Date.now()) {
   const domain = require('./domain');
   const counts = { orders: 0, trips: 0 };
   const trips = new Set();
-  const closed = r => ['cancelled', 'refunded', 'confirmed'].includes(r.status);
+  // Delivered and disputed orders already belong to the runner's settlement. Closing them here would cancel pay.
+  const dropFromTrip = r => ['cancelled', 'refunded', 'confirmed'].includes(r.status);
+  const doNotClose = r => dropFromTrip(r) || r.status === 'delivered' || r.status === 'disputed';
   for (const r of state.requests) {
-    if (r.ownerId !== actor || closed(r)) continue;
+    if (r.ownerId !== actor || doNotClose(r)) continue;
     if (r.runnerId) trips.add(r.runnerId);
     const fee = r.serviceFee === undefined ? domain.serviceFee(domain.boxes(r)) : r.serviceFee;
     r.status = 'cancelled';
@@ -161,12 +163,13 @@ function closeOwn(state, actor, now = Date.now()) {
     if (!trips.has(t.id) || t.cancelled) continue;
     const alive = (t.requestIds || []).filter(id => {
       const r = state.requests.find(x => x.id === id);
-      return r && !closed(r);
+      return r && !dropFromTrip(r);
     });
     if (!alive.length) { t.cancelled = true; t.cancelReason = 'customer-closed'; }
     else t.requestIds = alive;
     counts.trips++;
   }
+  if (counts.orders) require('./rewards').settle(state, now);
   return counts;
 }
 

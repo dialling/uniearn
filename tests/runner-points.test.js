@@ -7,6 +7,10 @@ assert.equal(quote({profile:{jobsDone:1},requests:[delivered]},delivered),20,'De
 const first={...delivered,status:'confirmed',confirmedAt:2},later={id:'later',isRunner:true,status:'confirmed',confirmedAt:3};
 const s={profile:{jobsDone:2},requests:[later,first,pending]};
 assert.equal(quote(s,first),20);assert.equal(quote(s,later),15);assert.equal(quote(s,pending),15);
+const early={id:'early',status:'delivered',isRunner:true,deliveredAt:1},laterDelivered={id:'later-delivered',status:'delivered',isRunner:true,deliveredAt:2};
+const openPair={profile:{jobsDone:2},requests:[laterDelivered,early]};
+assert.equal(quote(openPair,early),20,'only the earliest unconfirmed delivery previews the first-order bonus');
+assert.equal(quote(openPair,laterDelivered),15);
 const custom={...s,rewards:{activities:{config:{tasks:[{kind:'runner_order',points:30,firstCompletion:{points:45}}]}}}};
 assert.equal(quote(custom,first),45);assert.equal(quote(custom,pending),30);
 assert.equal(quote(s,{...pending,status:'cancelled'}),0);
