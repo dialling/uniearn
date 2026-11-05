@@ -18,7 +18,7 @@ function database(seed){
 async function main(){
  let clock=1800000000000;const student=hash('student'),runner=hash('runner'),other=hash('other');
  const state=engine.initial();
- state.members[student]={marks:[],supportTickets:[{id:'support-1',topic:'order',status:'open',createdAt:clock-1000,messages:[{text:'Where is my order?',mine:true,at:clock-1000}]}]};
+ state.members[student]={marks:[],loyalty:{points:42,level:3,pointHistory:[{key:'secret-history'}],notices:[{id:'secret-notice'}]},supportTickets:[{id:'support-1',topic:'order',status:'open',createdAt:clock-1000,messages:[{text:'Where is my order?',mine:true,at:clock-1000}]}]};
  state.members[runner]={marks:[]};
  state.requests=[{id:'r1',ownerId:student,runnerId:'t1',status:'disputed',category:'takeout',reward:4,serviceFee:0,createdAt:clock-10000,deliveredAt:clock-2000,dispute:{reason:'Not received',at:clock-1000}}];
  state.trips=[{id:'t1',runnerAccountId:runner,requestIds:['r1']}];
@@ -33,7 +33,8 @@ async function main(){
  const admin=await service.run({action:'login',username:'boss',password:'correct-password'}),token=admin.token;
  assert.equal(admin.user.role,'admin');
  const snapshot=await service.run({action:'snapshot'},token);
- assert.equal(snapshot.data.accounts.length,2);assert.equal(snapshot.data.accounts.find(a=>a.id===student).verification.gender,'male');assert.equal(snapshot.data.requests[0].id,'r1');
+ assert.equal(snapshot.data.accounts.length,2);assert.equal(snapshot.data.accounts.find(a=>a.id===student).verification.gender,'male');assert.deepEqual(snapshot.data.accounts.find(a=>a.id===student).loyalty,{points:42,level:3});assert.equal(snapshot.data.requests[0].id,'r1');
+ assert(!JSON.stringify(snapshot).includes('secret-history'));assert(!JSON.stringify(snapshot).includes('secret-notice'));
  assert(!JSON.stringify(snapshot).includes('never-export'));assert(!JSON.stringify(snapshot).includes('correct-password'));
  const helper=await service.run({action:'login',username:'helper',password:'helper-password'});
  await rejects(service.run({action:'review',accountId:student,decision:'approve',submittedAt:clock,operationId:'helper_review_0001'},helper.token),'FORBIDDEN');

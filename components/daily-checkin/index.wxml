@@ -1,5 +1,5 @@
-<view wx:if="{{open}}" class="checkin-mask" catchtouchmove="noop" bindtap="noop">
- <view class="checkin-card" catchtap="noop" style="{{motionEnabled?'':'--ue-animation:none;--ue-transition:none;'}}">
+<view wx:if="{{open}}" class="checkin-mask" catchtouchmove="noop" bindtap="noop" style="{{motionEnabled?'':'--ue-animation:none;--ue-transition:none;'}}">
+ <view class="checkin-card" catchtap="noop">
   <button class="checkin-close" bindtap="close" aria-label="{{ui.close}}">×</button>
   <view class="checkin-eyebrow">✦ CHECK IN</view>
   <view class="checkin-title">{{ui.title}}</view>

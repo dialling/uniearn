@@ -20,6 +20,7 @@ require('../pages/wallet/index');const page={...def,data:structuredClone(def.dat
  assert.equal(withdrawCalls,2,'lost response retries the saved operation');assert.equal(page.data.balanceCents,0);assert.equal(page.data.withdrawals.length,1);assert.equal(page.data.withdrawals[0].statusText,'模拟提现完成');assert.equal(page.data.transactions.length,2);assert.equal(store.get().pendingOrderOperation,undefined);
  assert.equal(h.state.wallets[id('runner')].withdrawals.length,1);assert.ok(!('requestMerchantTransfer' in wx),'simulation never calls a merchant transfer');
  h.user='other';store.update(s=>{s.profile={...h.accounts[id('other')].profile,accountId:id('other')};s.language='en';});await page.load();assert.equal(page.data.balanceCents,0);assert.equal(page.data.transactions.length,0);assert.equal(page.data.hideAmount,false);assert.equal(page.data.ui.withdraw,'Simulate withdrawal');
+assert.equal(page.data.weekLabels.at(-1),'Today');assert.ok(page.data.weekLabels.every(label=>!/[\u4e00-\u9fff]/.test(label)),'English wallet weekdays stay in English');
  page.openRules();assert.equal(page.data.rulesVisible,true);page.closeRules();assert.equal(page.data.rulesVisible,false);
  h.accounts[id('other')].loggedOut=true;store.update(s=>{s.profile.loggedOut=true;});await page.load();assert.equal(page.data.transactions.length,0);assert.ok(page.data.error);
  // The page ignores late responses after it is hidden.

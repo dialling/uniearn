@@ -442,9 +442,11 @@ function memberStats(u){
   const done=asC.filter(o=>o.status==='confirmed');
   const cancelled=asC.filter(o=>o.cancelledBy==='student');
   const since=NOW-MEMBER.windowMonths*30*DAY,inW=o=>(o.confirmedAt||o.postedAt)>=since;
-  let pts=done.filter(inW).length*MEMBER.order+asR.filter(inW).length*MEMBER.job+(done.length&&inW(done[0])?MEMBER.first:0)+(asC.length?MEMBER.details:0)+sum(u.goodwill.filter(g=>g.at>=since).map(g=>g.pts));
+  let live=false;try{live=typeof adminConnection!=='undefined'&&adminConnection.mode==='live'&&!!u.loyalty;}catch(_){live=false;}
+  const yuniNames=['','Star','Helper','Pro','Ace','Captain'];
+  let pts=live?u.loyalty.points:done.filter(inW).length*MEMBER.order+asR.filter(inW).length*MEMBER.job+(done.length&&inW(done[0])?MEMBER.first:0)+(asC.length?MEMBER.details:0)+sum(u.goodwill.filter(g=>g.at>=since).map(g=>g.pts));
   const cr=asC.length?Math.round(cancelled.length/asC.length*100):0;
-  const level=levelFor(pts,cr);
+  const level=live?(yuniNames[u.loyalty.level]||'Star'):levelFor(pts,cr);
   const days=(NOW-u.lastActive)/DAY;
   const fav=Object.entries(asC.reduce((m,o)=>(m[o.type]=(m[o.type]||0)+1,m),{})).sort((a,b)=>b[1]-a[1])[0];
   const conf=done.filter(o=>o.confirmedBy==='student').map(o=>(o.confirmedAt-o.deliveredAt)/MIN);
@@ -903,7 +905,7 @@ function vMembers(){
   <div class="tbl-wrap"><table><thead><tr><th>Member</th><th>Level</th><th class="n">Points</th><th class="n">Orders</th><th class="n">Jobs</th><th>Last active</th><th>Dorm</th><th translate="no">${LANG==='zh'?'性别':'Girl / boy'}</th><th>Tags</th><th>News</th></tr></thead>
   <tbody>${L.slice(F.page*per,F.page*per+per).map(u=>{const s=MS.get(u.id);return`<tr class="click${u.isTest?' is-test':''}" data-act="member:${u.id}"><td>${who(u.id)}</td><td>${levelPill(s.level)}</td><td class="n">${s.points}</td><td class="n">${s.orders}</td><td class="n">${s.jobs}</td><td>${ago(u.lastActive)}</td><td>${esc(BLD[u.bld].name)}</td><td translate="no">${sexCell(u)}</td><td>${[...u.tags].map(t=>`<span class="tag">${t}</span>`).join('')||'<span class="faint">—</span>'}</td><td>${u.consent?'<span class="pill good">On</span>':'<span class="pill plain">Off</span>'}</td></tr>`}).join('')||'<tr><td colspan="10"><div class="empty">No members in this segment.</div></td></tr>'}</tbody></table></div>
   <div class="pager">${pages>1?`<button class="btn small" data-act="page:members:-1"${F.page?'':' disabled'}>Previous</button><span>Page ${F.page+1} of ${pages}</span><button class="btn small" data-act="page:members:1"${F.page<pages-1?'':' disabled'}>Next</button>`:''}</div>`}
-const levelPill=l=>l==='Gold'?'<span class="pill warn plain">Gold</span>':l==='Silver'?'<span class="pill info plain">Silver</span>':'<span class="pill plain">Member</span>';
+const levelPill=l=>l==='Gold'?'<span class="pill warn plain">Gold</span>':l==='Silver'?'<span class="pill info plain">Silver</span>':['Star','Helper','Pro','Ace','Captain'].includes(l)?`<span class="pill info plain">${l}</span>`:'<span class="pill plain">Member</span>';
 
 function runnerStats(id,B){
   const J=ORDERS.filter(o=>o.runner===id&&o.deliveredAt&&(ST.showTest||!o.isTest)&&(!B||o.deliveredAt>=B[0]&&o.deliveredAt<=B[1]));

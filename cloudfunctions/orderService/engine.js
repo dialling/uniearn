@@ -251,11 +251,11 @@ function execute(s, actor, account, event, now = Date.now()) {
     if(event.decision==='release'){r.status='confirmed';r.confirmedAt=now;f.event(r,'Review resolved · confirmed',now);}else{const amount=Number(event.deduction||0);check(Number.isFinite(amount)&&amount>=0&&amount<=1000,'Invalid reviewed deduction.');const note=String(event.note||'').trim();check(note.length>=10&&note.length<=500,'Explain the reviewed deduction.');r.status='refunded';r.refundAmount=f.total(r);r.refundedAt=now;r.refundReason=note;const t=s.trips.find(x=>x.id===r.runnerId);if(amount&&t)(s.adjustments||(s.adjustments=[])).push({id:'a'+s.nextId++,runnerAccountId:t.runnerAccountId,requestId:r.id,amount:Math.round(amount*100)/100,reason:r.dispute.reason,note,at:now});f.event(r,'Review resolved · simulated refund',now);}
   } else if(action==='changeTaskDeadline'){
     const r=s.requests.find(x=>x.id===event.id);
-    check(r && r.ownerId===actor && r.category==='task' && ['waiting','taken'].includes(r.status),'当前任务无法更改截止时间');
+    check(r && r.ownerId===actor && r.category==='task' && ['waiting','taken'].includes(r.status),'This task deadline cannot be changed.');
     const dueAt=event.dueAt;
-    check(Number.isSafeInteger(dueAt) && dueAt>now && Number.isFinite(new Date(dueAt).getTime()),'请选择未来的截止时间');
-    r.dueAt=dueAt;
-    r.deadline=f.clock(dueAt);
+    check(Number.isSafeInteger(dueAt) && dueAt>now && Number.isFinite(new Date(dueAt).getTime()),'Choose a future deadline.');
+    r.dueAt=dueAt;r.closesAt=dueAt;
+    r.deadline=f.clock(dueAt);f.event(r,'Deadline moved to '+r.deadline,now);
   } else if(action==='foodLate'){
     const r=ownRequest(s,event.id,actor);check(['waiting','taken'].includes(r.status)&&r.category==='takeout'&&!r.etaMoved&&now<=(r.arrivalAt+600000),'Move arrival once, before the original ETA + 10 minutes.');const minutes=Number(event.minutes),at=Number.isSafeInteger(minutes)&&minutes>0?r.arrivalAt+minutes*60000:f.todayAt(event.time,now);check(Number.isSafeInteger(at)&&at>r.arrivalAt,'Choose a later arrival time.');r.originalArrivalAt=r.arrivalAt;r.arrivalAt=at;r.closesAt=at+1800000;r.etaMoved=true;r.etaChangedAfterAccept=r.status==='taken';f.event(r,'Arrival moved to '+f.clock(at),now);
   } else if(action==='collectCoupon'){rewards.collect(s,actor,event.campaignId,now);
