@@ -1,0 +1,20 @@
+<template name="waitingTicket">
+<view class="flow-card status-card">
+  <view class="status-stub"><image class="status-yuni" src="/assets/yuni-wave.png" mode="aspectFit"/></view>
+  <view class="status-copy">
+    <view class="flow-title">{{request.statusLabel}}</view>
+    <view class="hint" wx:if="{{request.cancellation}}">{{zh?request.cancellation.runner+' 已取消。你的订单已按原赏金重新发布，不额外收费。':request.cancellation.runner+' cancelled. Your order is back on the board at the same offer. No extra charge.'}}</view>
+    <view wx:elif="{{request.category==='task'}}" class="hint">{{zh?'你的任务已出现在接单大厅':'Your task is on the job board.'}}</view>
+    <view wx:else class="hint">{{zh?'你的订单已出现在接单大厅':'Your order is on the job board.'}}</view>
+  </view>
+</view>
+</template>
+<template name="orderStatusNote">
+  <view class="hint" wx:if="{{request.status==='taken' && request.category==='task'}}">{{zh?(request.isRunner?'按任务要求完成后，提交完成说明。':'跑手已接下任务，完成后会提交说明。'):(request.isRunner?'Complete the task and submit a completion note.':'Your runner will submit a note when the task is done.')}}</view>
+  <view class="hint" wx:elif="{{request.status==='taken'}}">{{zh?(request.isRunner?'请核对取件信息，取齐后开始送达。':'跑手正在安排取件，请留意订单消息。'):(request.isRunner?'Check pickup details and collect the items before delivery.':'Your runner is arranging pickup. Watch for order messages.')}}</view>
+  <view class="hint" wx:elif="{{request.status==='collected'}}">{{zh?(request.isRunner?'物品已取到，送达后请提交送达凭证。':'物品已取到，跑手正在为你送达。'):(request.isRunner?'Submit delivery proof after dropping off the items.':'Your runner has collected the items and is delivering them.')}}</view>
+  <view class="hint" wx:elif="{{request.status==='delivered'}}">{{zh?(request.isMine?'请查看完成说明，核实后确认任务完成。':'完成说明已提交，等待发布者确认。'):(request.isMine?'Review the completion note, then confirm the task.':'Completion submitted. Waiting for the customer to confirm.')}}</view>
+  <view class="hint" wx:elif="{{request.status==='confirmed'}}">{{zh?'本单已完成，可在历史订单中查看记录。':'This order is complete. You can find it in your order history.'}}</view>
+  <view class="hint" wx:elif="{{request.status==='disputed'}}">{{zh?'问题已提交，结算暂停，请留意处理结果。':'The issue has been reported. Settlement is paused pending review.'}}</view>
+  <view class="hint" wx:elif="{{request.status==='cancelled'||request.status==='refunded'}}">{{zh?'本单已结束，模拟退款金额为 ¥':'This order is closed. Demo refund: ¥'}}{{request.refundAmount || '0.00'}}{{zh?'，可重新发布订单。':'. You can post another order.'}}</view>
+</template>

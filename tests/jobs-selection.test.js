@@ -12,3 +12,21 @@ assert.equal(p.data.cards.find(c=>c.key==='mine').mine,true);assert.equal(p.data
 for(const method of ['expand','toggleOrder','takeSelected','selectionView'])assert.equal(p[method],undefined,'removed hall grouping method: '+method);
 store.update(s=>{s.publicJobs=s.publicJobs.filter(r=>r.id!=='a');});p.refresh();assert.equal(p.data.cards.length,4);assert.equal(p.data.cards.find(c=>c.key==='b').total,'4.00','removing another order never changes the remaining price');
 console.log('Individual hall cards: same-route orders remain separate, exact order IDs/prices, own-post status, task card and refresh passed.');
+
+const food=(id,minutes,fields={})=>({...base,id,category:'takeout',station:'Takeaway pickup',pickupPoint:'KFC locker',arrivalAt:now+minutes*60000,...fields});
+store.update(s=>{
+ s.requests=[];
+ s.publicJobs=[food('first',0),food('second',6,{reward:5}),food('third',10),food('late',16),food('other-locker',4,{pickupPoint:'South locker'}),food('other-dorm',4,{dorm:'Dorm 3'})];
+});
+p.refresh();
+const group=()=>p.data.cards.find(c=>c.ids.length>1);
+assert.deepEqual(group().ids,['first','second','third']);
+assert.equal(group().spanMinutes,10);
+for(const id of ['first','second'])p.pickGroupOrder({currentTarget:{dataset:{id}}});
+assert.deepEqual(group().selectedIds,['first','second']);
+assert.equal(group().selectedPay,'8.00');
+store.update(s=>{s.publicJobs=s.publicJobs.filter(r=>!['first','second'].includes(r.id));});
+p.refresh();
+assert.ok(p.data.cards.every(c=>!c.selectedIds?.length));
+assert.deepEqual(group().ids,['third','late']);
+console.log('Group hall: precise route, inclusive pickup window, partial selection, reward and refresh passed.');

@@ -147,7 +147,7 @@ exports.main = async (event = {}) => {
     // Private storage remains private. Only photos in this authorized snapshot get URLs.
     const ids = new Set();
     for (const r of response.snapshot.requests) {
-      [r.photo,r.riderPhoto,...(r.riderPhotos||[]),r.noticePhoto,...(r.orderPictures||[]),r.dispute&&r.dispute.photo].forEach(p=>{if(typeof p==='string'&&p.startsWith('cloud://'))ids.add(p);});
+      [r.photo,r.riderPhoto,...(r.riderPhotos||[]),r.noticePhoto,...(r.orderPictures||[]),r.dispute&&r.dispute.photo,...(r.messages||[]).map(m=>m.photo)].forEach(p=>{if(typeof p==='string'&&p.startsWith('cloud://'))ids.add(p);});
     }
     const urls = {};
     try {

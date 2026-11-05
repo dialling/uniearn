@@ -124,6 +124,7 @@ async function act(action, payload = {}) {
 }
 async function upload(path) {
   if (!path || path.startsWith('cloud://')) return path || '';
+  const demo=require('./group-test-session');if(demo.current())return demo.upload(path);
   if (uploads.has(path)) return uploads.get(path);
   const job=uploadJob(async()=>{
     const {cloudPath}=await call({action:'prepareUpload'});
