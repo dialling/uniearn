@@ -1,4 +1,4 @@
-const catalog=require('./catalog');
+const catalog=require('./catalog'),tripRoute=require('./trip-route');
 const campus=require('./campus');
 const demo = [
   {id:'r1',owner:'Nicha',station:'Station A',dorm:'Dorm 7',room:'412',small:2,big:0,codes:['88-2-4417','88-2-4418'],phone:'138 0102 6092',note:'Leave it at the front desk, thanks!',deadline:'12:30',reward:10,status:'waiting',runnerId:null,collected:[],photo:''},
@@ -46,18 +46,21 @@ function createRequest(s, data) {
 }
 function routeStation(r){return catalog.category(r)==='takeout'?(r.pickupPoint||r.station):r.station;}
 function routeStationMatches(r,trip){return routeStation(r)===trip.station;}
-function eligible(s, trip) { return s.requests.filter(r=>r.status==='waiting' && routeStationMatches(r,trip) && r.dorm===trip.dorm && catalog.category(r)===catalog.category(trip) && boxes(r)<=trip.capacity); }
+function eligible(s, trip) { return s.requests.filter(r=>r.status==='waiting' && routeStationMatches(r,trip) && tripRoute.destinationMatches(r,trip) && tripRoute.categoryMatches(r,trip) && boxes(r)<=trip.capacity); }
 function assign(s, trip, ids) {
   if(new Set(ids).size!==ids.length||ids.some(id=>trip.requestIds.includes(id)))throw Error('Duplicate order');
   const selection=ids.map(id=>s.requests.find(r=>r.id===id));
-  if (selection.some(r=>!r || r.status!=='waiting' || !routeStationMatches(r,trip) || r.dorm!==trip.dorm || (trip.destinationKey&&r.destinationKey!==trip.destinationKey) || catalog.category(r)!==catalog.category(trip)||r.campusId!==trip.campusId)) throw Error('Some requests are unavailable for this route');
+  if (selection.some(r=>!r || r.status!=='waiting' || !routeStationMatches(r,trip) || !tripRoute.destinationMatches(r,trip) || (trip.destinationKey&&r.destinationKey!==trip.destinationKey) || !tripRoute.categoryMatches(r,trip)||r.campusId!==trip.campusId)) throw Error('Some requests are unavailable for this route');
+  const actualCategory=trip.category==='other'&&selection[0]?catalog.category(selection[0]):catalog.category(trip);
+  if(selection.some(r=>catalog.category(r)!==actualCategory))throw Error('Choose one pickup category per trip');
   const existing=trip.requestIds.map(id=>s.requests.find(r=>r.id===id));
   const route=existing[0]||selection[0];
   if(route&&selection.concat(existing).some(r=>(r.destinationKey||'')!==(route.destinationKey||'')))throw Error('Choose requests with the same delivery address');
   const totalBoxes=selection.concat(existing).reduce((n,r)=>n+boxes(r),0), reward=selection.concat(existing).reduce((n,r)=>n+r.reward,0);
-  if(catalog.category(trip)==='takeout'){if(totalBoxes>5)throw Error('Up to 5 bags per trip');const ats=selection.concat(existing).map(r=>r.arrivalAt||r.createdAt);if(Math.max(...ats)-Math.min(...ats)>15*60000)throw Error('Food arrival times must be within 15 minutes');}
+  if(actualCategory==='takeout'){if(totalBoxes>5)throw Error('Up to 5 bags per trip');const ats=selection.concat(existing).map(r=>r.arrivalAt||r.createdAt);if(Math.max(...ats)-Math.min(...ats)>15*60000)throw Error('Food arrival times must be within 15 minutes');}
   if (totalBoxes>trip.capacity) throw Error('Too many boxes for this trip');
   if(!trip.destinationKey&&selection[0]&&selection[0].destinationKey){trip.destinationKey=selection[0].destinationKey;trip.destinationType=selection[0].destinationType;}
+  if(trip.category==='other'&&selection.length){trip.routeType='other';trip.category=actualCategory;if(actualCategory==='takeout')trip.capacity=Math.min(trip.capacity,5);}
   selection.forEach(r=>{r.status='taken';r.runnerId=trip.id;r.takenAt=Date.now();});
   trip.requestIds.push(...ids); return trip;
 }

@@ -9,21 +9,21 @@ const call=(who,action,extra={})=>h.call(who,action,{...extra,checkinVersion:1})
  for(let i=0;i<7;i++){
   now=Date.parse('2026-11-27T23:59:00+08:00')+i*D;
   result=await call('customer','sync');assert.equal(result.ok,true,result.error);
-  const p=result.snapshot.progression;assert.equal(p.checkin.streak,i+1);assert.equal(p.checkin.cycleDay,i+1);assert.equal(p.points,i===6?10:0);
+  const p=result.snapshot.progression;assert.equal(p.checkin.streak,i+1);assert.equal(p.checkin.cycleDay,i+1);assert.equal(p.points,(i+1)*2+(i===6?10:0));
   assert.equal(p.notices.filter(n=>n.type==='checkin').length,1,'only the latest daily check-in is kept');
   assert.equal(result.snapshot.rewards.activities.config.tasks.find(t=>t.kind==='weekly_login').points,10,'legacy configuration cannot restore the old 20-point rule');
  }
  assert.equal(result.snapshot.progression.checkin.day,'2026-12-03');
- assert.equal(result.snapshot.progression.notices.find(n=>n.type==='checkin').points,10);
+ assert.equal(result.snapshot.progression.notices.find(n=>n.type==='checkin').points,12);
  await Promise.all([call('customer','sync'),call('customer','sync')]);
- assert.equal(h.state.members[id].loyalty.points,10,'duplicate/concurrent syncs cannot pay twice');
+ assert.equal(h.state.members[id].loyalty.points,24,'duplicate/concurrent syncs cannot pay twice');
  const note=result.snapshot.progression.notices.find(n=>n.type==='checkin');
  await call('customer','ackLoyaltyNotice',{noticeId:note.id});await call('customer','sync');
  assert.equal(h.state.members[id].loyalty.notices.some(n=>n.id===note.id),false,'an acknowledged day does not reappear');
  for(let i=7;i<14;i++){now=Date.parse('2026-11-27T23:59:00+08:00')+i*D;await call('customer','sync');}
- assert.equal(h.state.members[id].loyalty.points,20,'each further block of 7 consecutive days earns 10');
+ assert.equal(h.state.members[id].loyalty.points,48,'each further block of 7 consecutive days earns 10');
  assert.equal(h.state.members[id].loyalty.checkin.streak,14);
- now+=2*D;result=await call('customer','sync');assert.equal(result.snapshot.progression.checkin.streak,1,'a missed day restarts the streak');assert.equal(result.snapshot.progression.points,20);
+ now+=2*D;result=await call('customer','sync');assert.equal(result.snapshot.progression.checkin.streak,1,'a missed day restarts the streak');assert.equal(result.snapshot.progression.points,50);
  const day=result.snapshot.progression.checkin.day;
  now-=D;await call('customer','sync');assert.equal(h.state.members[id].loyalty.checkin.day,day,'clock rollback cannot produce an extra check-in');
  // New account; count the China midnight boundary, independent of host timezone.
