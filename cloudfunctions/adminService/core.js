@@ -58,7 +58,6 @@ function createService({repo, env, now = Date.now, random = () => crypto.randomB
     if (action === 'logout') { await repo.deleteSession(hash(token)); return {ok: true}; }
     if (action === 'snapshot') {
       const data = await repo.snapshot();
-      const state = data.state || {requests: [], trips: [], members: {}};
       // Passwords, mini-program admin sessions and login lockouts never leave the server.
       const accounts = data.accounts.filter(a => a.profile).map(a => ({
         id: a._id, profile: {name: a.profile.name || '', dorm: a.profile.dorm || '', room: a.profile.room || '',
@@ -68,10 +67,9 @@ function createService({repo, env, now = Date.now, random = () => crypto.randomB
           phone: user.role === 'support' ? '' : a.verification.phone || '', phoneVerified: !!a.verification.phoneVerified,
           submittedAt: a.verification.submittedAt || null, checkedAt: a.verification.checkedAt || null,
           reason: a.verification.reason || '', reviewerId: a.verification.reviewerId || ''} : null,
-        updatedAt: a.updatedAt || null, createdAt: a.createdAt || a.updatedAt || null,
-        loyalty: (() => { const l = (state.members || {})[a._id] && (state.members || {})[a._id].loyalty;
-          return {points: Math.max(0, Math.round(Number(l && l.points) || 0)), level: Math.min(5, Math.max(1, Math.round(Number(l && l.level) || 1)))}; })()
+        updatedAt: a.updatedAt || null, createdAt: a.createdAt || a.updatedAt || null
       }));
+      const state = data.state || {requests: [], trips: [], members: {}};
       const requests = [...(state.requests || []), ...(data.archived || [])].map(r => {
         const out = {};
         for (const k of ['id','category','title','station','dorm','reward','serviceFee','discount','couponId','status',

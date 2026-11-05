@@ -77,7 +77,7 @@ function hydrateAdmin(data) {
   }
   function addUser(account) {
     const p = account.profile || {}, v = account.verification || {}, meta = annotations['member:' + account.id] || {};
-    const u = {id: account.id, nick: p.name || account.id.slice(0,8), isTest: !!meta.isTest, loyalty: account.loyalty || {points:0, level:1},
+    const u = {id: account.id, nick: p.name || account.id.slice(0,8), isTest: !!meta.isTest,
       area: BLD[building(p.dorm)].area, bld: building(p.dorm), room: p.room || '', contact: v.realName || p.name || '',
       phone: v.phone || p.phone || '', sid: String(v.studentId || '').replace(/\D/g, ''),
       joined: account.createdAt || account.updatedAt || NOW, lastActive: account.updatedAt || NOW,
@@ -139,34 +139,26 @@ async function refreshAdmin() {
   const result = await adminRequest('snapshot'); adminConnection.user=result.user; hydrateAdmin(result.data); render();
 }
 const suppliedRender = render, suppliedDrawer = renderDrawer;
-const liveMutations=new Set(['approve','approveAny','reject','send','sendResolve','reply','resolve','reopen','uphold','rejectDsp','note','tag','markTest','addMark','rmMark','export']);
+const zhUI=()=>typeof LANG==='undefined'||LANG!=='en';
 function annotateLiveView() {
   if (adminConnection.mode !== 'live') return;
   const view=document.getElementById('view');
-  if (view) {
-    let notice=view.querySelector('.live-notice');
-    if (!notice) {notice=document.createElement('div');notice.className='live-notice';view.prepend(notice);}
-    const zh=typeof LANG==='undefined'||LANG!=='en';
-    const cut=adminConnection.data?.truncated?(zh?' 当前超过 5,000 条的列表已截断，请使用云端导出。':' Lists over 5,000 rows are truncated; export from CloudBase.'):'';
+  if (!view.querySelector('.live-notice')) {
+    const notice=document.createElement('div');notice.className='live-notice';
+    const zh=zhUI();
     notice.textContent=(zh
-      ?'云开发真实数据 · 团队测试账本。已接入：订单/用户查询、跑腿申请审核、客服文字回复、争议结算、违规记录、备注、标签和脱敏导出。会员列表积分来自小程序等级积分。营销开关、地点编辑、群发和支付/提现没有对应接口，按钮已停用，不会改小程序。自动确认统一为送达后 2 小时。不发起真实转账。'
-      :'Live CloudBase data · team test ledger. Connected: orders, members, runner reviews, support replies, disputes, marks, notes, tags and masked export. Member points are the mini program level points. Marketing switches, places, broadcasts and payouts have no mini program API, so those controls are disabled. Every order auto-confirms 2 hours after delivery. No real transfer is sent.')+cut;
+      ?'云开发真实数据 · 团队测试账本。已接入：订单/用户查询、跑腿申请审核、客服文字回复、争议结算、违规记录和后台备注。会员积分、营销配置、地点编辑及支付/提现尚未接入，保持只读。'
+      :'Live CloudBase data · team test ledger. Connected: orders, members, runner reviews, support replies, dispute settlement, marks and admin notes. Membership points, promotions, places and payouts are not connected and stay read-only.')+(adminConnection.data?.truncated?(zh?' 当前超过 5,000 条的列表已截断，请使用云端导出。':' Lists over 5,000 rows are truncated; export from CloudBase.'):'');
+    view.prepend(notice);
   }
   for (const id of ['role','me']) {const el=document.getElementById(id);if(el){el.innerHTML=`<option>${esc(id==='me'?adminConnection.user.username:roleName[adminConnection.user.role])}</option>`;el.disabled=true;}}
-  for (const el of document.querySelectorAll('[id^="cfg"],[id^="mem-"],[id^="goal-"],[id^="pu-"],[id^="pua-"],[id^="lk-"],[id^="bg-"],#feat-tasks,#ops-bal,#qr-file,#s-file')) {el.disabled=true;el.classList.add('live-unwired');el.title=typeof LANG!=='undefined'&&LANG==='en'?'Not connected to the mini program':'此项尚未接入小程序，当前只读';}
-  document.querySelectorAll('[data-act]').forEach(el=>{
-    const action=(el.dataset.act||'').split(':')[0];
-    if(navigationActions.has(action)||liveMutations.has(action))return;
-    el.disabled=true;el.classList.add('live-unwired');el.setAttribute('aria-disabled','true');
-    el.title=typeof LANG!=='undefined'&&LANG==='en'?'Not connected to the mini program':'此项尚未接入小程序';
-  });
+  for (const el of document.querySelectorAll('[id^="cfg"],[id^="mem-"],[id^="goal-"],[id^="pu-"],[id^="pua-"],[id^="lk-"],[id^="bg-"],#feat-tasks,#ops-bal,#qr-file,#s-file')) {el.disabled=true;el.title=zhUI()?'此项尚未接入小程序，当前只读':'Not connected to the mini program; read-only';}
 }
 render = function(){suppliedRender();annotateLiveView();};
 renderDrawer = function(){suppliedDrawer();annotateLiveView();};
 // The supplied prototype invents order chats and automatic identity checks. Replace
 // those surfaces with factual records in connected mode.
 const suppliedChat=chatHTML,suppliedApp=dApp,suppliedSex=sexOf;
-const zhUI=()=>typeof LANG==='undefined'||LANG!=='en';
 chatHTML=function(o){return adminConnection.mode==='live'?'<p class="muted">'+(zhUI()?'订单内聊天和照片暂未开放到网页后台，请在云开发中按权限查询。':'Order chat and photos are not available in this web console.')+'</p>':suppliedChat(o);};
 sexOf=function(u){return adminConnection.mode==='live'?{g:u.sexChosen||'Unknown',src:'chosen'}:suppliedSex(u);};
 const suppliedSexL=sexL;
@@ -209,7 +201,6 @@ document.addEventListener('click',event=>{
   const target=event.target.closest('[data-act]');if(!target||target.disabled)return;
   const [action,...parts]=target.dataset.act.split(':'),arg=parts.join(':');
   if(navigationActions.has(action))return;
-  if(!liveMutations.has(action)){event.preventDefault();event.stopImmediatePropagation();return;}
   event.preventDefault();event.stopImmediatePropagation();
   if(adminConnection.busy)return;
   adminConnection.busy=true;target.disabled=true;
