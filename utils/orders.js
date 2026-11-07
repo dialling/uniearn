@@ -32,7 +32,9 @@ function apply(snapshot) {
     const joined=snapshot.requests.some(r=>r.isRunner&&!previous.status[r.id]);
     const newJobs = snapshot.requests.filter(r => !r.isMine && r.status==='waiting' && !previous.status[r.id]);
     if (changes.length && state.preferences?.orderUpdates!==false && foreground) {
-      if(state.yuniTips===false)tell(state.language==='en'?'Order progress updated · open My orders':'订单进度已更新，请查看我的订单。');
+      const realCancel=changes.some(r=>r.status==='cancelled');
+      const returned=changes.length&&changes.every(r=>r.status==='waiting'&&r.cancellation);
+      if(state.yuniTips===false)tell(state.language==='en'?(realCancel?'Order cancelled':returned?'Order still active · see My orders':'Order progress updated · open My orders'):(realCancel?'订单已取消':returned?'订单仍在进行，请查看我的订单':'订单进度已更新，请查看我的订单。'));
       else changes.forEach(r=>yuniEvents.status(r,snapshot.revision));
     }
     else if(joined&&state.preferences?.orderUpdates!==false)tell('A customer joined your trip');

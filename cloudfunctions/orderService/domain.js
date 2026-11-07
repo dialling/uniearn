@@ -147,6 +147,32 @@ function cancelTrip(s,id) {
 function cancelRequest(s,id) {
   const r=s.requests.find(x=>x.id===id);if(!r||r.status!=='waiting')throw Error('Only an unclaimed request can be cancelled here');r.status='cancelled';r.refundAmount=Math.max(0,Math.round((r.reward+(r.serviceFee===undefined?serviceFee(boxes(r)):r.serviceFee)-Number(r.discount||0))*100)/100);r.cancelledAt=Date.now();
 }
+// Customers may cancel while nobody has accepted, and for 3 minutes after a runner accepts.
+const CUSTOMER_CANCEL_MS=3*60*1000;
+function customerCanCancel(r,now=Date.now()){
+  if(!r)return false;
+  if(r.status==='waiting'&&!r.runnerId)return true;
+  if(r.status!=='taken'||(r.collected&&r.collected.length))return false;
+  const takenAt=Number(r.takenAt);
+  return Number.isFinite(takenAt)&&takenAt>0&&now-takenAt<=CUSTOMER_CANCEL_MS;
+}
+function customerCancel(s,id,now=Date.now()){
+  const r=s.requests.find(x=>x.id===id);
+  if(!r||!customerCanCancel(r,now))throw Error('Cancel window ended');
+  if(r.runnerId){
+    const t=s.trips.find(x=>x.id===r.runnerId);
+    if(t){
+      t.requestIds=(t.requestIds||[]).filter(x=>x!==id);
+      (t.cancelledRequests||(t.cancelledRequests=[])).push(id);
+      if(!t.requestIds.length&&!t.joinUntil)t.cancelled=true;
+      else if(t.requestIds.length&&t.requestIds.every(rid=>{const row=s.requests.find(x=>x.id===rid);return row&&row.status==='collected';}))t.phase='deliver';
+    }
+  }
+  r.status='cancelled';r.runnerId=null;r.collected=[];
+  r.refundAmount=Math.max(0,Math.round((r.reward+(r.serviceFee===undefined?serviceFee(boxes(r)):r.serviceFee)-Number(r.discount||0))*100)/100);
+  r.cancelledAt=now;r.cancelReason='customer';
+  return r;
+}
 const EXPIRE_MS=3600000;
 function sweepExpired(s,now=Date.now()) {
   let n=0;
@@ -162,4 +188,4 @@ function sweepExpired(s,now=Date.now()) {
   return n;
 }
 function initial() { const now=Date.now(),food=[{id:'food1',owner:'Ming Li',station:'North gate',dorm:'Dorm 7',room:'412',small:2,big:0,codes:['',''],phone:'13801026092',note:'Leave at the desk',category:'takeout',reward:8,serviceFee:0,status:'waiting',runnerId:null,collected:[],photo:'',arrivalAt:now+20*60000,closesAt:now+50*60000,deadline:'',soup:true,price:4,createdAt:now},{id:'food2',owner:'Minjun',station:'North gate',dorm:'Dorm 7',room:'208',small:1,big:0,codes:[''],phone:'13801023381',note:'',category:'takeout',reward:4,serviceFee:0,status:'waiting',runnerId:null,collected:[],photo:'',arrivalAt:now,closesAt:now+30*60000,deadline:'',arrived:true,price:4,createdAt:now}];return {nextId:10,requests:JSON.parse(JSON.stringify(demo)).concat(food),trips:[],profile:{name:'',phone:'',dorm:'',room:'',onboarded:false,studentVerified:false,verification:{status:'unverified'},jobsDone:0,paid:0}}; }
-module.exports={sweepExpired,initial,boxes,limit,serviceFee,wholeCents,MAX_PRICE_PER_BOX,createRequest,eligible,assign,startTrip,acceptJob,acceptBoxes,abandonUncollectedTrip,collect,deliver,confirm,cancelTrip,cancelRequest};
+module.exports={sweepExpired,initial,boxes,limit,serviceFee,wholeCents,MAX_PRICE_PER_BOX,createRequest,eligible,assign,startTrip,acceptJob,acceptBoxes,abandonUncollectedTrip,collect,deliver,confirm,cancelTrip,cancelRequest,customerCancel,customerCanCancel,CUSTOMER_CANCEL_MS};

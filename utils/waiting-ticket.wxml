@@ -3,7 +3,7 @@
   <view class="status-stub"><image class="status-yuni" src="/assets/yuni-wave.png" mode="aspectFit"/></view>
   <view class="status-copy">
     <view class="flow-title">{{request.statusLabel}}</view>
-    <view class="hint" wx:if="{{request.cancellation}}">{{zh?request.cancellation.runner+' 已取消。你的订单已按原赏金重新发布，不额外收费。':request.cancellation.runner+' cancelled. Your order is back on the board at the same offer. No extra charge.'}}</view>
+    <view class="hint" wx:if="{{request.cancellation}}">{{zh?request.cancellation.runner+' 已把订单退回大厅。订单仍在进行，并未取消，赏金不变。':request.cancellation.runner+' returned this order. It is still active and back on the board at the same offer — it was not cancelled.'}}</view>
     <view wx:elif="{{request.category==='task'}}" class="hint">{{zh?'你的任务已出现在接单大厅':'Your task is on the job board.'}}</view>
     <view wx:else class="hint">{{zh?'你的订单已出现在接单大厅':'Your order is on the job board.'}}</view>
   </view>

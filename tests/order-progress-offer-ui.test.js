@@ -5,7 +5,7 @@ const wxml=fs.readFileSync('pages/request/index.wxml','utf8');
 const js=fs.readFileSync('pages/request/index.js','utf8');
 assert.ok(wxml.indexOf('order-progress-card')<wxml.indexOf('status-card'),'the shared five-step flow appears at the top of every order detail');
 assert.equal(wxml.includes('class="timeline"'),false,'the old bottom vertical progress block is removed');
-assert.match(js,/offerAmounts:\[1\.88,3\.88,5\.88,8\.88,10,20\]/,'the reference offer amounts are available from the shared view model');
+assert.match(js,/offerAmounts:\[1\.88,3\.88,5\.88,8\.88,13\.88,18\.88\]/,'the reference offer amounts are available from the shared view model');
 assert.match(wxml,/offer-cancel[^>]*bindtap="cancel"/,'free cancellation remains a real bordered button wired to the existing action');
 
 const request={id:'offer',category:'task',status:'waiting',reward:5,history:[]},state={requests:[request]};

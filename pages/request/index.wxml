@@ -38,7 +38,7 @@
 </view>
 </view>
 </view>
-<view wx:if="{{request.isMine && request.status==='waiting'}}" class="flow-card offer-card">
+<view wx:if="{{request.isMine && (request.status==='waiting' || request.status==='taken' || request.status==='collected')}}" class="flow-card offer-card">
 <view class="offer-heading">
 <text class="strong">{{zh?'提高赏金':'Add to your offer'}}</text>
 <text class="offer-current">{{zh?'当前赏金':'Your offer'}} <text>¥{{request.rewardText}}</text></text>
@@ -48,11 +48,19 @@
 <button wx:for="{{offerAmounts}}" wx:key="*this" class="offer-option" hover-class="offer-option-press" data-amount="{{item}}" bindtap="raise">＋¥{{item}}</button>
 <button class="offer-option offer-custom" hover-class="offer-option-press" bindtap="customRaise">{{zh?'自定义':'Custom'}}</button>
 </view>
-<view class="offer-footer">
-<text class="hint" wx:if="{{request.closesAt}}">{{zh?'若 '+request.closeTime+' 前无人接单，将全额退款。':'Full refund if nobody takes it by '+request.closeTime+'.'}}</text>
-<text class="hint" wx:else>{{zh?'无人接单时可免费取消。':'Cancel free before a runner accepts.'}}</text>
-<button class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel">{{zh?'取消 · 免费':'Cancel · free'}}</button>
+<view class="offer-custom-row">
+<input class="offer-custom-input" type="digit" maxlength="8" placeholder="{{zh?'输入想加的金额':'Type the amount to add'}}" value="{{customOffer}}" bindinput="customOfferInput"/>
+<button class="offer-option offer-custom" hover-class="offer-option-press" bindtap="submitCustomOffer" disabled="{{!customOffer}}">{{zh?'加价':'Add'}}</button>
 </view>
+<view class="offer-footer">
+<text class="hint" wx:if="{{request.status==='waiting' && request.closesAt}}">{{zh?'若 '+request.closeTime+' 前无人接单，将全额退款。':'Full refund if nobody takes it by '+request.closeTime+'.'}}</text>
+<text class="hint" wx:elif="{{request.status==='waiting'}}">{{zh?'无人接单时可免费取消。':'Cancel free before a runner accepts.'}}</text>
+<text class="hint" wx:else>{{zh?'接单后仍可加价，金额计入整笔订单。':'You can still add to the offer after a runner accepts. It is added once to the whole order.'}}</text>
+</view>
+</view>
+<view wx:if="{{cancelWindow.phase!=='hidden'}}" class="flow-card cancel-window-card">
+<button class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel" disabled="{{!cancelWindow.canCancel}}">{{cancelWindow.button}}</button>
+<view class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}"><text class="{{cancelWindow.phase==='grace'?'cancel-clock':''}}">{{cancelWindow.tip}}</text></view>
 </view>
 <view wx:if="{{request.isMine && request.category==='takeout' && (request.status==='waiting'||request.status==='taken')}}" class="flow-card customer-arrival-card">
 <view class="strong">{{zh?(request.arrived?'外卖已送达':'外卖提前送达了？'):request.arrived?'Food has arrived':'Food arrived early?'}}</view>
