@@ -6,7 +6,7 @@ const store=require('../../utils/store'),f=require('../../utils/workflow'),copy=
 function runnerRows(s,lang){
  const rows=[],seen=new Set();
  const add=(trip,items)=>{seen.add(trip.id);try{rows.push(card.card(trip,items,lang));}catch(e){console.error('Trip card failed',trip.id,e);rows.push(fallbackRow(trip,items,lang));}};
- for(const t of s.trips){if(t.cancelled)continue;add(t,(t.requestIds||[]).map(id=>s.requests.find(r=>r.id===id)).filter(Boolean));}
+ for(const t of s.trips){const items=(t.requestIds||[]).map(id=>s.requests.find(r=>r.id===id)).filter(Boolean);if(t.cancelled&&!items.some(r=>!['confirmed','cancelled','refunded'].includes(r.status)))continue;add(t,items);}
  for(const r of s.requests){if(!r.isRunner)continue;const id=r.runnerId||('solo:'+r.id);if(seen.has(id))continue;add({id,category:r.category==='task'?'task':(r.category||'parcel'),station:r.station||'',dorm:r.dorm||'',phase:'deliver',capacity:1,requestIds:[r.id],cancelled:false},[r]);}
  return rows;
 }

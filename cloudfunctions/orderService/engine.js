@@ -207,7 +207,7 @@ function execute(s, actor, account, event, now = Date.now()) {
     rejectOwn(s, ids, actor);check(ids.every(id=>s.requests.find(r=>r.id===id).campusId===campusId),'Choose orders from your selected campus.');
     const selected=ids.map(id=>s.requests.find(r=>r.id===id));let t;if(selected[0].category==='task'){check(action==='accept'&&ids.length===1,'Take one task at a time.');const r=selected[0];check(r.status==='waiting'&&r.reward<=d.limit(s.profile),'This task exceeds your runner limit.');t={id:'t'+s.nextId++,category:'task',station:'Task',dorm:r.dorm,capacity:1,phase:'deliver',requestIds:[r.id]};r.status='taken';r.runnerId=t.id;r.takenAt=now;s.trips.unshift(t);}else t=action==='accept'?d.acceptJob(s,event.ids):d.acceptBoxes(s,event.refs);
     t.campusId=campusId;t.universityId='xjtlu';t.runnerAccountId = actor; t.runnerName = contact.name; t.runnerPhone=contact.phone; t.createdAt = now;
-    t.requestIds.forEach(id => f.event(s.requests.find(r => r.id === id), 'Runner accepted', now)); value = { id: t.id };
+    t.requestIds.forEach(id => {const row=s.requests.find(r => r.id === id);if(row)row.runnerName=contact.name;f.event(row, 'Runner accepted', now);}); value = { id: t.id };
   } else if (action === 'startTrip') {
     const cfg = event.data || {};
     if(cfg.selfRequestId){const own=ownRequest(s,cfg.selfRequestId,actor);check(own.status==='waiting'&&own.campusId===campusId&&own.category==='parcel'&&own.station===cfg.station&&own.dorm===cfg.dorm,'Your parcel request changed. Refresh before starting.');d.cancelRequest(s,own.id);own.refundAmount=f.total(own);f.event(own,'Collecting it myself',now);}
@@ -220,11 +220,11 @@ function execute(s, actor, account, event, now = Date.now()) {
     const tripState={...s,requests:s.requests.filter(r=>r.campusId===campusId)};
     const t = f.startTrip(tripState, { category: cfg.category, when: cfg.when, time: cfg.time, duration: cfg.duration, station: cfg.station, dorm: cfg.dorm, capacity: cfg.capacity, ...(Object.prototype.hasOwnProperty.call(cfg,'requestIds')?{requestIds:cfg.requestIds}:{}) }, now);s.nextId=tripState.nextId;
     t.campusId=campusId;t.universityId='xjtlu';t.runnerAccountId = actor; t.runnerName=contact.name; t.runnerPhone=contact.phone; t.createdAt = now;
-    t.requestIds.forEach(id => f.event(s.requests.find(r => r.id === id), 'Runner accepted', now)); value = { id: t.id };
+    t.requestIds.forEach(id => {const row=s.requests.find(r => r.id === id);if(row)row.runnerName=contact.name;f.event(row, 'Runner accepted', now);}); value = { id: t.id };
   } else if (['raise','cancel','confirm','report','riderPhoto','foodArrived'].includes(action)) {
     const r = ownRequest(s, event.id, actor);
     if (action === 'raise') { check((r.raised || 0) + Number(event.amount || 0) <= 100, 'Offer increase limit reached.'); f.raise(s, r.id, event.amount); }
-    if (action === 'cancel') { d.cancelRequest(s, r.id); f.event(r, 'Cancelled · demo refund', now); }
+    if (action === 'cancel') { d.customerCancel(s, r.id, now); f.event(r, 'Cancelled · demo refund', now); }
     if (action === 'confirm') { d.confirm(s, r.id); f.event(r, 'Confirmed', now); }
     if (action === 'report') { check(r.category!=='takeout'||now<=r.deliveredAt+30*60000,'Report takeaway problems within 30 minutes of delivery.'); check(typeof event.note === 'string' && event.note.length <= 500, 'Keep the note under 500 characters.'); f.report(s, r.id, event.reason, photo(event.photo, actor), event.note); }
     if (action === 'foodArrived') { check(r.category==='takeout'&&['waiting','taken'].includes(r.status)&&!r.arrived, 'Only food awaiting pickup can be marked as arrived.'); r.arrived=true; r.arrivalAt=now; f.event(r,'Food is there now',now); }
@@ -271,14 +271,15 @@ function snapshot(s, actor, account, now = Date.now()) {
   const campusId=loggedIn&&account.profile.campusId;
   const inCampus=r=>!!campusId&&r.campusId===campusId;
   const myTrips = new Set(loggedIn ? s.trips.filter(t => t.runnerAccountId === actor).map(t => t.id) : []);
-  const requests = s.requests.filter(r => r.status === 'waiting' && inCampus(r) || loggedIn && (r.ownerId === actor || myTrips.has(r.runnerId))).map(r => {
+  const myTripOrders = new Set(loggedIn ? s.trips.filter(t => t.runnerAccountId === actor).flatMap(t => t.requestIds || []) : []);
+  const requests = s.requests.filter(r => r.status === 'waiting' && inCampus(r) || loggedIn && (r.ownerId === actor || myTrips.has(r.runnerId) || myTripOrders.has(r.id))).map(r => {
     const isMine = loggedIn && r.ownerId === actor, isRunner = myTrips.has(r.runnerId);
     if (isMine || isRunner) {
       const out = clone(r); delete out.splitOriginal; delete out.ownerId;delete out.analytics;delete out.analyticsEvents;delete out.analyticsRunnerId;delete out.analyticsHistoryCapped;
       const rt=s.trips.find(t=>t.id===r.runnerId),thread=rt&&(s.threads||{})[r.id+':'+rt.id];
       out.runnerPhone=rt&&rt.runnerPhone||'';out.runnerStats=rt?(()=>{const st=stats(s,rt.runnerAccountId);return{jobsDone:st.jobsDone};})():{};out.unread=thread?thread.messages.filter(m=>m.sender!==actor&&m.at>(thread.read[actor]||0)).length:0;
       out.messages=thread?thread.messages.map(m=>({id:m.id,text:m.text,...(m.photo?{photo:m.photo}:{}),at:m.at,mine:m.sender===actor})):[];
-      return { ...out, runnerName:(s.trips.find(t=>t.id===r.runnerId)||{}).runnerName||'', ownerId: isMine ? actor : '', isMine, isRunner };
+      return { ...out, runnerName:(s.trips.find(t=>t.id===r.runnerId)||{}).runnerName||r.runnerName||'', ownerId: isMine ? actor : '', isMine, isRunner };
     }
     // Exact delivery addresses stay private until this runner accepts the order.
     const out = {};

@@ -38,7 +38,7 @@ function createTakeaway(s,data,now=Date.now()){
  const r=d.createRequest(s,{...data,deliverBy,category:'takeout',small:Number(data.bags),big:0,codes:[],pricePerBox:Number(data.price),deadline:clock(closeAt),arrivalAt,arrived:!!data.arrived,closesAt:closeAt,soup:!!data.soup,lobbyPickupAllowed:!!data.lobbyPickupAllowed,riderPhoto:data.riderPhoto||''});
  r.createdAt=now;r.baseReward=r.reward;event(r,'Posted',now);return r;
 }
-function raise(s,id,amount){const r=s.requests.find(x=>x.id===id);if(!r||r.status!=='waiting')throw Error('This request is no longer waiting');if(typeof amount!=='number'||!Number.isFinite(amount)||amount<0.01||amount>100.88||Math.abs(Math.round(amount*100)-amount*100)>1e-6)throw Error('Enter ¥0.01–100, up to 2 decimal places');if(Math.round((r.raised||0)*100)+Math.round(amount*100)>10088)throw Error('Offer increase limit reached.');r.reward=Math.round((r.reward+amount)*100)/100;r.raised=(r.raised||0)+amount;event(r,'Offer raised by ¥'+amount);return r;}
+function raise(s,id,amount){const r=s.requests.find(x=>x.id===id);if(!r||!['waiting','taken','collected'].includes(r.status))throw Error('This offer can no longer be increased');if(typeof amount!=='number'||!Number.isFinite(amount)||amount<0.01||amount>100.88||Math.abs(Math.round(amount*100)-amount*100)>1e-6)throw Error('Enter ¥0.01–100, up to 2 decimal places');if(Math.round((r.raised||0)*100)+Math.round(amount*100)>10088)throw Error('Offer increase limit reached.');r.reward=Math.round((r.reward+amount)*100)/100;r.raised=(r.raised||0)+amount;event(r,'Offer raised by ¥'+amount);return r;}
 function cancelReason(r,reason,now=Date.now()){
  if(r.status!=='taken'||r.collected.length)throw Error('Only an uncollected order can be cancelled');
  if(!['missing','quantity','personal','mismatch'].includes(reason))throw Error('Choose a reason');
@@ -52,7 +52,7 @@ function runnerCancel(s,id,reason,now=Date.now()){
  if(!t)throw Error('Trip not found');
  const previousRunner=t.runnerName||s.profile.name||'Runner';
  if(mark)s.profile.marks.push({at:now,requestId:id,reason:'Late cancellation'});
- event(r,'Runner cancelled: '+reason,now);r.cancellation={reason,at:now,runner:previousRunner,mark};r.status='waiting';r.runnerId=null;r.collected=[];delete r.takenAt;delete r.etaChangedAfterAccept;delete r.etaChangedAfterAccept;
+ event(r,'Returned to the board: '+reason,now);r.cancellation={reason,at:now,runner:previousRunner,mark};r.status='waiting';r.runnerId=null;r.collected=[];delete r.takenAt;delete r.etaChangedAfterAccept;if(r.closesAt&&r.closesAt<=now)r.closesAt=now+30*MIN;
  t.requestIds=t.requestIds.filter(x=>x!==id);(t.cancelledRequests||(t.cancelledRequests=[])).push(id);
  if(!t.requestIds.length&&!t.joinUntil)t.cancelled=true;
  else if(t.requestIds.length&&t.requestIds.every(rid=>s.requests.find(x=>x.id===rid).status==='collected'))t.phase='deliver';
