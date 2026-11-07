@@ -19,18 +19,37 @@ function addPoints(s,id,amount,reason,now,firstCompletion=false){
  if(l.level>before){l.notices=(l.notices||[]).concat({id:'lv-'+l.level+'-'+now+'-'+reason,type:'level',level:l.level,at:now}).slice(-10);}
  l.lastReason=reason;return l;
 }
+function takeSlot(l,now,role,cap){
+ const day=dayKey(now);
+ l.awardDays=l.awardDays||{};
+ const keys=Object.keys(l.awardDays).sort();
+ while(keys.length>8)delete l.awardDays[keys.shift()];
+ const row=l.awardDays[day]||(l.awardDays[day]={customer:0,runner:0});
+ if((row[role]||0)>=cap)return false;
+ row[role]=(row[role]||0)+1;
+ return true;
+}
 function completeOrder(s,r,trip,now){
  if(!s.loyaltyStartedAt||!r.confirmedAt||r.confirmedAt<s.loyaltyStartedAt)return;
  r.loyaltyPointsAwarded=r.loyaltyPointsAwarded||{};
+ const fair=activities.fairness(s);
  if(r.ownerId&&!r.loyaltyPointsAwarded.customer){
-  const m=member(s,r.ownerId),l=data(m),first=!l.firstCustomerOrder;
-  addPoints(s,r.ownerId,first?activities.task(s,'customer_order').firstCompletion.points:activities.task(s,'customer_order').points,'customer-order',now,!(l.anyCompleted));
-  l.firstCustomerOrder=true;r.loyaltyPointsAwarded.customer=true;
+  const m=member(s,r.ownerId),l=data(m),live=activities.enabled(s,'customer_order',now);
+  if(live&&!takeSlot(l,now,'customer',fair.customerOrdersPerDay))r.loyaltyPointsAwarded.customer='capped';
+  else{
+   const first=!l.firstCustomerOrder;
+   addPoints(s,r.ownerId,first?activities.task(s,'customer_order').firstCompletion.points:activities.task(s,'customer_order').points,'customer-order',now,!(l.anyCompleted));
+   l.firstCustomerOrder=true;r.loyaltyPointsAwarded.customer=true;
+  }
  }
  if(trip&&trip.runnerAccountId&&!r.loyaltyPointsAwarded.runner){
-  const m=member(s,trip.runnerAccountId),l=data(m),first=!l.firstRunnerOrder;
-  addPoints(s,trip.runnerAccountId,first?activities.task(s,'runner_order').firstCompletion.points:activities.task(s,'runner_order').points,'runner-order',now,!(l.anyCompleted));
-  l.firstRunnerOrder=true;r.loyaltyPointsAwarded.runner=true;
+  const m=member(s,trip.runnerAccountId),l=data(m),live=activities.enabled(s,'runner_order',now);
+  if(live&&!takeSlot(l,now,'runner',fair.runnerOrdersPerDay))r.loyaltyPointsAwarded.runner='capped';
+  else{
+   const first=!l.firstRunnerOrder;
+   addPoints(s,trip.runnerAccountId,first?activities.task(s,'runner_order').firstCompletion.points:activities.task(s,'runner_order').points,'runner-order',now,!(l.anyCompleted));
+   l.firstRunnerOrder=true;r.loyaltyPointsAwarded.runner=true;
+  }
  }
 }
 function profileCompleted(s,id,now){
@@ -42,18 +61,23 @@ function dayKey(now){return new Date(now+CHINA).toISOString().slice(0,10);}
 function dailyLogin(s,id,now){
  const l=data(member(s,id)),today=dayKey(now),c=l.checkin||(l.checkin={day:'',streak:0,totalDays:0});
  if(c.day>today)return false;
+ const fair=activities.fairness(s),live=activities.enabled(s,'weekly_login',now),daily=live?fair.dailyCheckinPoints:0;
  // Credit today's daily reward once, including accounts already checked in before this update.
- if(c.day===today){if(c.dailyPoints===undefined){c.dailyPoints=activities.enabled(s,'weekly_login',now)?2:0;if(c.dailyPoints)addPoints(s,id,c.dailyPoints,'daily-checkin',now);const notice=(l.notices||[]).find(n=>n.type==='checkin'&&n.day===today);if(notice)Object.assign(notice,{dailyPoints:c.dailyPoints,weeklyPoints:c.rewardPoints||0,points:c.dailyPoints+(c.rewardPoints||0)});}return false;}
- const yesterday=dayKey(now-DAY);
- c.streak=c.day===yesterday?(Number(c.streak)||0)+1:1;
+ if(c.day===today){if(c.dailyPoints===undefined){c.dailyPoints=daily;if(c.dailyPoints)addPoints(s,id,c.dailyPoints,'daily-checkin',now);const notice=(l.notices||[]).find(n=>n.type==='checkin'&&n.day===today);if(notice)Object.assign(notice,{dailyPoints:c.dailyPoints,weeklyPoints:c.rewardPoints||0,points:c.dailyPoints+(c.rewardPoints||0)});}return false;}
+ const yesterday=dayKey(now-DAY),before=dayKey(now-2*DAY);
+ let protectedMiss=false;
+ if(c.day===yesterday)c.streak=(Number(c.streak)||0)+1;
+ else if(c.day===before&&fair.checkinGracePerCycle>0&&!c.graceUsed){c.streak=(Number(c.streak)||0)+1;c.graceUsed=true;protectedMiss=true;}
+ else{c.streak=1;c.graceUsed=false;}
  c.day=today;c.at=now;c.totalDays=(Number(c.totalDays)||0)+1;c.cycleDay=(c.streak-1)%7+1;
- c.dailyPoints=activities.enabled(s,'weekly_login',now)?2:0;
+ if(c.cycleDay===7)c.graceUsed=false;
+ c.dailyPoints=daily;
  if(c.dailyPoints)addPoints(s,id,c.dailyPoints,'daily-checkin',now);
- c.rewardPoints=c.cycleDay===7&&activities.enabled(s,'weekly_login',now)?10:0;
+ c.rewardPoints=c.cycleDay===7&&live?Number(activities.task(s,'weekly_login').points)||0:0;
  l.lastLoginDay=today;l.loginStreak=c.streak;
  if(c.rewardPoints)addPoints(s,id,c.rewardPoints,'weekly-login',now);
  // Only today's unacknowledged check-in is relevant; level-up notices retain their queue.
- l.notices=(l.notices||[]).filter(n=>n.type!=='checkin').concat({id:'checkin-'+today,type:'checkin',day:today,streak:c.streak,cycleDay:c.cycleDay,dailyPoints:c.dailyPoints,weeklyPoints:c.rewardPoints,points:c.dailyPoints+c.rewardPoints,at:now}).slice(-10);
+ l.notices=(l.notices||[]).filter(n=>n.type!=='checkin').concat({id:'checkin-'+today,type:'checkin',day:today,streak:c.streak,cycleDay:c.cycleDay,dailyPoints:c.dailyPoints,weeklyPoints:c.rewardPoints,points:c.dailyPoints+c.rewardPoints,protectedMiss,graceUsed:!!c.graceUsed,at:now}).slice(-10);
  return true;
 }
 function invite(s,inviter,invitee,now){

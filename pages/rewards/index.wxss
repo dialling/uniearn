@@ -65,7 +65,30 @@
 
 .news-redesign.page-dark .invite-primary{background:#e7472f;border-color:#d33f2b}
 
-/* Rank is a static preview until launch. */
-.rank-coming-soon{display:block}
-.rank-preview-note{border-top:1rpx solid #78927b;padding-top:17rpx;margin-top:23rpx;font-size:22rpx;line-height:1.5;color:#edf3eb}
-.news-redesign.page-dark .rank-preview-note{border-color:#526b53;color:#c8dac9}
+/* Activity entry: cream surface, campus green, compact rank preview. */
+.activity-entry{background:var(--news-surface);border:1rpx solid var(--news-line);border-radius:22rpx;padding:26rpx 26rpx 8rpx;color:var(--news-ink)}
+.activity-entry-press{opacity:.92}
+.activity-entry-top{display:flex;align-items:center;justify-content:space-between;gap:16rpx}
+.activity-kicker{font-size:20rpx;letter-spacing:1rpx;color:#59725d;line-height:1.4}
+.activity-status{flex:none;font-size:20rpx;line-height:1.4;padding:6rpx 12rpx;border:1rpx solid #e4e1d8;border-radius:999rpx;color:#777a75;background:#f7f6f2}
+.activity-status.open{color:#476f56;border-color:#c9d7cc;background:#f3f7f4}
+.activity-status.scheduled{color:#b25b2e;border-color:#f0d7c8;background:#fbf6f1}
+.activity-entry-title{font-size:34rpx;line-height:1.35;font-weight:750;margin:18rpx 0 8rpx}
+.activity-entry-detail{font-size:26rpx;line-height:1.45;font-weight:650}
+.activity-entry-period{font-size:22rpx;line-height:1.5;color:var(--news-muted);margin-top:6rpx}
+.activity-preview{margin-top:16rpx;border-top:1rpx solid var(--news-line)}
+.activity-preview-row{display:flex;align-items:center;gap:14rpx;padding:14rpx 0}
+.activity-preview-row+.activity-preview-row{border-top:1rpx solid var(--news-line)}
+.activity-preview-rank{width:36rpx;flex:none;font-size:24rpx;font-weight:750;color:#c2410c;font-variant-numeric:tabular-nums}
+.activity-preview-avatar{width:44rpx;height:44rpx;flex:none;border-radius:50%;background:#e7efe8;color:#476f56;font-size:20rpx;font-weight:700;display:flex;align-items:center;justify-content:center}
+.activity-preview-name{flex:1;min-width:0;font-size:24rpx;line-height:1.4}
+.activity-preview-score{flex:none;font-size:26rpx;font-weight:750;font-variant-numeric:tabular-nums}
+.activity-preview-row.mine{margin:0 -26rpx;padding-left:26rpx;padding-right:26rpx;background:rgba(71,111,86,.07)}
+.activity-entry-footer{display:flex;align-items:center;justify-content:space-between;gap:16rpx;border-top:1rpx solid var(--news-line);margin-top:8rpx;padding:16rpx 0 12rpx;color:#476f56;font-size:24rpx;line-height:1.4}
+.activity-entry-footer>text:last-child{font-size:32rpx}
+.news-redesign.page-dark .activity-kicker{color:#b7cbb8}
+.news-redesign.page-dark .activity-status{color:#c5cdc4;border-color:#3c4a3d;background:#242824}
+.news-redesign.page-dark .activity-status.open{color:#d7eadb;background:#314038}
+.news-redesign.page-dark .activity-status.scheduled{color:#f4a06e;background:#3d322b;border-color:#5a4638}
+.news-redesign.page-dark .activity-preview-avatar{background:#314038;color:#d5e6d8}
+.news-redesign.page-dark .activity-entry-footer{color:#98bea0}

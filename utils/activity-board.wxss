@@ -42,6 +42,9 @@
 .top-three .board-rank-number{color:#c2410c;font-size:32rpx;font-weight:800}
 .board-rank-row.mine{background:rgba(71,111,86,.07)}
 .board-student{flex:1;min-width:0}
+.board-student-line{display:flex;align-items:center;gap:14rpx}
+.board-avatar{width:56rpx;height:56rpx;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;background:#e7efe8;color:#476f56;font-size:24rpx;font-weight:700}
+.top-three .board-avatar{background:#f8ebe3;color:#c2410c}
 .board-student-name{font-size:26rpx;font-weight:650;line-height:1.45;overflow-wrap:break-word}
 .board-you{display:inline-block;font-size:18rpx;font-weight:500;padding:1rpx 8rpx;margin-left:10rpx;border-radius:6rpx;background:rgba(71,111,86,.1);color:var(--news-accent);vertical-align:middle}
 .board-rank-reward{font-size:21rpx;line-height:1.5;color:var(--news-muted);margin-top:6rpx}
@@ -58,6 +61,7 @@
 .board-task-points{display:flex;flex-direction:column;align-items:flex-end;gap:3rpx;flex:none;color:var(--news-accent);padding-top:3rpx}
 .board-task-points>text:first-child{font-size:36rpx;font-weight:750;line-height:1.2}
 .board-task-points>text:last-child{font-size:20rpx;line-height:1.5;color:var(--news-muted)}
+.news-redesign .board-task-action{display:inline-flex;align-items:center;justify-content:center;width:auto;min-height:64rpx;margin:16rpx 0 0;padding:12rpx 22rpx;background:#476f56;color:#fff;font-size:23rpx;font-weight:650;line-height:1.4;border-radius:34rpx}
 .board-prize-row{display:flex;align-items:center;gap:22rpx;padding:25rpx 26rpx;border-bottom:1rpx solid var(--news-line)}
 .board-prize-row.first{background:rgba(194,65,12,.04);margin-top:20rpx}
 .board-prize-rank{width:136rpx;flex:none;font-size:28rpx;font-weight:750;color:var(--news-accent);font-variant-numeric:tabular-nums}
@@ -77,5 +81,8 @@
 .news-redesign.page-dark .board-tabs button.selected,.news-redesign.page-dark .board-empty-action,.news-redesign.page-dark .board-you{background:rgba(152,190,160,.13);color:#98bea0}
 .news-redesign.page-dark .board-rank-row.mine{background:rgba(152,190,160,.08)}
 .news-redesign.page-dark .board-personal{background:#292c26;border-color:#4c604e}
+.news-redesign.page-dark .board-avatar{background:#314038;color:#d5e6d8}
+.news-redesign.page-dark .top-three .board-avatar{background:#3d322b;color:#f4a06e}
+.news-redesign.page-dark .board-task-action,.news-redesign.page-dark .board-personal-button{background:#476f56;color:#fff}
 .news-redesign.page-dark .top-three .board-rank-number,.news-redesign.page-dark .board-prize-row.first .board-prize-rank{color:#f4a06e}
 .news-redesign.page-dark .board-prize-row.first{background:rgba(244,160,110,.06)}

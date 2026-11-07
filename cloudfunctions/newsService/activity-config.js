@@ -19,7 +19,20 @@ function validate(input){
  for(const v of [c.title,c.intro,...c.tasks.flatMap(t=>[t.title,t.description]),...c.rewards.map(r=>r.physical).filter(Boolean)])check(v&&['zh','en'].every(k=>typeof v[k]==='string'&&v[k].length<=600),'请填写中英文文案（每项最多 600 字）。');
  return normalizeCheckin(c);
 }
-function normalizeCheckin(config){const rule=defaults.tasks.find(t=>t.kind==='weekly_login');return {...config,tasks:config.tasks.map(t=>{if(t.kind!=='weekly_login')return t;const {weekStartsOn,...rest}=t;return {...rest,points:10,daysRequired:7,repeat:'consecutive',title:rule.title,description:rule.description};})};}
+const FAIRNESS={customerOrdersPerDay:3,runnerOrdersPerDay:8,referralRankingPerRound:5,profileCountsForRanking:false,checkinGracePerCycle:1,dailyCheckinPoints:2};
+function fairnessOf(config){
+ const base=FAIRNESS,raw=config&&config.fairness||{};
+ const int=(value,key,min,max)=>{const n=Number(value);return Number.isInteger(n)&&n>=min&&n<=max?n:base[key];};
+ return {
+  customerOrdersPerDay:int(raw.customerOrdersPerDay,'customerOrdersPerDay',1,10),
+  runnerOrdersPerDay:int(raw.runnerOrdersPerDay,'runnerOrdersPerDay',1,20),
+  referralRankingPerRound:int(raw.referralRankingPerRound,'referralRankingPerRound',0,30),
+  profileCountsForRanking:raw.profileCountsForRanking===true,
+  checkinGracePerCycle:int(raw.checkinGracePerCycle,'checkinGracePerCycle',0,1),
+  dailyCheckinPoints:int(raw.dailyCheckinPoints,'dailyCheckinPoints',0,20)
+ };
+}
+function normalizeCheckin(config){const rule=defaults.tasks.find(t=>t.kind==='weekly_login');return {...config,fairness:fairnessOf(config),tasks:config.tasks.map(t=>{if(t.kind!=='weekly_login')return t;const {weekStartsOn,...rest}=t;return {...rest,points:10,daysRequired:7,repeat:'consecutive',title:rule.title,description:rule.description};})};}
 const configFor=s=>normalizeCheckin(s.activityConfig||defaults);
 const rankingOpen=(c,now)=>['open','scheduled'].includes(c.status)&&c.scoringEnabled&&now>=Date.parse(c.schedule.startsAt)&&now<Date.parse(c.schedule.endsAt);
-module.exports={defaults,clone,validate,configFor,rankingOpen,normalizeCheckin};
+module.exports={defaults,clone,validate,configFor,rankingOpen,normalizeCheckin,fairnessOf,FAIRNESS};

@@ -23,9 +23,10 @@ const call=(who,action,extra={})=>h.call(who,action,{...extra,checkinVersion:1})
  for(let i=7;i<14;i++){now=Date.parse('2026-11-27T23:59:00+08:00')+i*D;await call('customer','sync');}
  assert.equal(h.state.members[id].loyalty.points,48,'each further block of 7 consecutive days earns 10');
  assert.equal(h.state.members[id].loyalty.checkin.streak,14);
- now+=2*D;result=await call('customer','sync');assert.equal(result.snapshot.progression.checkin.streak,1,'a missed day restarts the streak');assert.equal(result.snapshot.progression.points,50);
+ now+=2*D;result=await call('customer','sync');assert.equal(result.snapshot.progression.checkin.streak,15,'one missed day is protected once per cycle');assert.equal(result.snapshot.progression.points,50);assert.equal(result.snapshot.progression.checkin.graceUsed,true);
  const day=result.snapshot.progression.checkin.day;
  now-=D;await call('customer','sync');assert.equal(h.state.members[id].loyalty.checkin.day,day,'clock rollback cannot produce an extra check-in');
+ now=Date.parse(day+'T12:00:00+08:00')+2*D;result=await call('customer','sync');assert.equal(result.snapshot.progression.checkin.streak,1,'a second miss in the same cycle restarts it');assert.equal(result.snapshot.progression.points,52);assert.equal(result.snapshot.progression.checkin.graceUsed,false);
  // New account; count the China midnight boundary, independent of host timezone.
  now=Date.parse('2026-12-31T23:59:59+08:00');result=await call('runner','sync');assert.equal(result.snapshot.progression.checkin.streak,1);
  now+=1000;result=await call('runner','sync');assert.equal(result.snapshot.progression.checkin.day,'2027-01-01');assert.equal(result.snapshot.progression.checkin.streak,2);
@@ -33,5 +34,5 @@ const call=(who,action,extra={})=>h.call(who,action,{...extra,checkinVersion:1})
  h.accounts[h.engine.idFor('other')].profile=null;result=await call('other','sync');assert.equal(result.snapshot.progression,null,'accounts without a profile do not check in');
  const legacy=await h.call('customer','sync');assert.equal(legacy.snapshot.progression.notices.some(n=>n.type==='checkin'),false,'old clients never receive an unknown popup type');
  assert.equal(policy.validate(old).tasks.find(t=>t.kind==='weekly_login').repeat,'consecutive');
- console.log('Daily check-in cloud: rolling 7-day/10-point rewards, missed days, cross-week/month/year/China midnight, concurrency, ack, clock rollback, legacy config and login guards passed.');
+ console.log('Daily check-in cloud: rolling 7-day/10-point rewards, one protected miss, second-miss reset, cross-week/month/year/China midnight, concurrency, ack, clock rollback, legacy config and login guards passed.');
 })().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>{Date.now=originalNow;});
