@@ -8,6 +8,6 @@ assert.equal(display(rows,true,now)[1].collected,true,'Claiming does not remove 
 assert.deepEqual(display([],true,now),[]);assert.deepEqual(display(null,true,now),[]);
 const xml=fs.readFileSync(require('path').join(__dirname,'../pages/rewards/index.wxml'),'utf8');
 const home=xml.slice(xml.indexOf("<block wx:if="),xml.indexOf(" <view wx:if=",xml.indexOf("<block wx:if=")));
-assert(!home.includes('data-tab="tasks"'),'No duplicate tasks row');assert.equal((home.match(/bindtap="openActivity"/g)||[]).length,0,'Rank preview has no activity click');assert(home.includes('rank-coming-soon'));
+assert(!home.includes('data-tab="tasks"'),'No duplicate tasks row');assert.equal((home.match(/bindtap="openActivity"/g)||[]).length,1,'Rank card opens the activity');assert(home.includes('bindtap="openRules"'));assert(!home.includes('rank-coming-soon'));assert(!home.includes('aria-disabled'));
 assert(home.includes('latestOffer.title'));assert(!home.includes('bindtap="openCoupons"'),'Home cannot display the private coupon wallet');
 console.log('News offers: active campaign filtering, latest-first, expired/future/automatic exclusions, language fallback, collected visibility and one activity entry passed.');

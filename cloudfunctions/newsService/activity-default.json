@@ -1,7 +1,7 @@
 {
   "version": 1,
   "id": "campus-points-challenge",
-  "revision": "separate-level-points-ranking-2026-10-25",
+  "revision": "fair-caps-grace-2026-11-07",
   "pointsProgram": {
     "status": "active",
     "balance": "account_level_points",
@@ -9,15 +9,23 @@
     "resetOnRankingEnd": false,
     "startedAt": "2026-10-25T06:35:20Z"
   },
+  "fairness": {
+    "customerOrdersPerDay": 3,
+    "runnerOrdersPerDay": 8,
+    "referralRankingPerRound": 5,
+    "profileCountsForRanking": false,
+    "checkinGracePerCycle": 1,
+    "dailyCheckinPoints": 2
+  },
   "status": "not_open",
   "scoringEnabled": false,
   "title": {
-    "zh": "积分成长与排行榜",
-    "en": "Level Points & Ranking"
+    "zh": "校园活动与排行",
+    "en": "Campus activity and ranking"
   },
   "intro": {
-    "zh": "日常任务积攒积分，成长记录在 Me 等级中。排行榜是独立的限时活动。",
-    "en": "Daily tasks earn points toward your level in Me. Ranking is a separate limited-time event."
+    "zh": "日常任务计入长期等级积分，可在「我的」等级中查看。排行榜只统计活动期内、符合每日上限的新增积分；完善资料的一次性积分不计入排行。活动结束不清空等级积分。",
+    "en": "Daily tasks add lifetime level points, shown with your level in Me. The leaderboard counts only points earned inside the round and within the daily caps. One-time profile points do not count toward rank. Ending a round does not clear level points."
   },
   "schedule": {
     "durationDays": 14,
@@ -91,8 +99,8 @@
         "en": "Check in 7 days in a row"
       },
       "description": {
-        "zh": "每天首次登录自动签到。每连续签到 7 天获得 10 积分，断签后重新累计。",
-        "en": "Your first login each day checks you in. Earn 10 points for every 7 consecutive days; missing a day resets the streak."
+        "zh": "每天首次登录自动签到得 2 积分；每连续签到 7 天额外得 10 积分。每个 7 天周期可保护 1 次漏签，漏签当天不计分；同一周期再漏则从第 1 天重计。已获得的积分不收回。",
+        "en": "Your first login each day earns 2 points. Every 7 check-ins in a row earn 10 extra points. Each cycle protects one missed day, and that day earns nothing. A second miss in the same cycle restarts it at day 1. Points already earned stay."
       },
       "daysRequired": 7,
       "repeat": "consecutive"

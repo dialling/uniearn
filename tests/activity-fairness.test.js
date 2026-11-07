@@ -1,0 +1,73 @@
+const assert=require('node:assert/strict');
+const loyalty=require('../cloudfunctions/orderService/loyalty');
+const activities=require('../cloudfunctions/orderService/activities');
+const rewards=require('../cloudfunctions/orderService/rewards');
+const orderPolicy=require('../cloudfunctions/orderService/activity-config');
+const newsPolicy=require('../cloudfunctions/newsService/activity-config');
+const {fairnessOf}=require('../utils/activity-fairness');
+const {display,withProgress}=require('../utils/activity-display');
+const now=Date.parse('2030-03-02T12:00:00+08:00'),DAY=86400000;
+function opened(){
+ const config=orderPolicy.clone(orderPolicy.defaults);
+ config.status='open';config.scoringEnabled=true;
+ config.schedule.startsAt=new Date(now-DAY).toISOString();
+ config.schedule.endsAt=new Date(now+13*DAY).toISOString();
+ return {activityConfig:config,members:{},requests:[],trips:[],loyaltyStartedAt:1};
+}
+assert.deepEqual(orderPolicy.FAIRNESS,newsPolicy.FAIRNESS);
+assert.deepEqual(fairnessOf(require('../utils/news-activity')),orderPolicy.fairnessOf(orderPolicy.defaults));
+assert.deepEqual(orderPolicy.fairnessOf({fairness:{customerOrdersPerDay:99,profileCountsForRanking:'yes'}}).customerOrdersPerDay,3,'out-of-range caps fall back');
+assert.equal(orderPolicy.fairnessOf({}).profileCountsForRanking,false);
+
+const state=opened();
+loyalty.profileCompleted(state,'solo',now);
+assert.equal(state.members.solo.loyalty.points,20);
+assert.equal(state.members.solo.loyalty.rankings,undefined,'profile points stay on the level and off the board');
+const posted=Array.from({length:4},(_,i)=>({id:'c'+i,ownerId:'poster',confirmedAt:now,status:'confirmed'}));
+for(const order of posted)loyalty.completeOrder(state,order,null,now);
+assert.equal(state.members.poster.loyalty.points,40,'first completion 20 plus two regular orders');
+assert.equal(state.members.poster.loyalty.awardDays['2030-03-02'].customer,3);
+assert.equal(posted[3].loyaltyPointsAwarded.customer,'capped');
+const jobs=Array.from({length:9},(_,i)=>({id:'job'+i,confirmedAt:now,status:'confirmed'}));
+for(const job of jobs)loyalty.completeOrder(state,job,{runnerAccountId:'runner'},now);
+assert.equal(state.members.runner.loyalty.points,125,'first runner total 20 plus seven regular jobs');
+assert.equal(state.members.runner.loyalty.rankings[state.activityConfig.id].points,125);
+assert.equal(state.members.runner.loyalty.awardDays['2030-03-02'].runner,8);
+loyalty.completeOrder(state,jobs[0],{runnerAccountId:'runner'},now);
+assert.equal(state.members.runner.loyalty.points,125,'repeating a counted job does not pay again');
+
+const host='host-account-1';
+state.members[host]={marks:[]};
+for(let i=0;i<6;i++)rewards.invite(state,'friend-account-'+i,host.slice(0,12),now);
+assert.equal(state.members[host].loyalty.points,60,'every link still pays level points');
+assert.equal(state.members[host].loyalty.rankings[state.activityConfig.id].points,50,'ranking stops after five classmates');
+assert.equal(state.members[host].loyalty.rankings[state.activityConfig.id].referralCount,5);
+assert.equal(state.members['friend-account-5'].loyalty.rankings[state.activityConfig.id].points,10,'the invitee still scores when the inviter is capped');
+const board=activities.view(state,host,now);
+assert.equal(board.taskProgress.referralRankingUsed,5);
+assert.equal(board.taskProgress.profile,false);
+assert.equal(board.myRank>0,true);
+assert.ok(board.leaderboard.every((row,index)=>index===0||row.points<board.leaderboard[index-1].points||row.points===board.leaderboard[index-1].points));
+
+const gap={activityConfig:orderPolicy.clone(orderPolicy.defaults),members:{}};
+loyalty.dailyLogin(gap,'gap',now);
+loyalty.dailyLogin(gap,'gap',now+3*DAY);
+assert.equal(gap.members.gap.loyalty.checkin.streak,1,'two missed days still reset the cycle');
+assert.equal(gap.members.gap.loyalty.points,4);
+loyalty.dailyLogin(gap,'grace',now);
+loyalty.dailyLogin(gap,'grace',now+2*DAY);
+assert.equal(gap.members.grace.loyalty.checkin.streak,2);
+assert.equal(gap.members.grace.loyalty.checkin.graceUsed,true);
+loyalty.dailyLogin(gap,'grace',now+4*DAY);
+assert.equal(gap.members.grace.loyalty.checkin.streak,1,'the second miss in a cycle restarts it');
+
+const shown=display(orderPolicy.defaults,true);
+assert.match(shown.activityTasks.find(t=>t.kind==='customer_order').limitLabel,/3/);
+assert.match(shown.activityTasks.find(t=>t.kind==='runner_order').limitLabel,/8/);
+assert.match(shown.activityTasks.find(t=>t.kind==='profile').limitLabel,/不计入本期排行/);
+assert.equal(display(orderPolicy.defaults,false).activityTasks.find(t=>t.kind==='profile').limitLabel.includes('level only'),true);
+const tasks=withProgress(shown.activityTasks,board.taskProgress,orderPolicy.defaults,false);
+assert.equal(tasks.find(t=>t.kind==='customer_order').action,'post');
+assert.equal(tasks.find(t=>t.kind==='profile').action,'profile');
+assert.match(tasks.find(t=>t.kind==='referral').progressLabel,/5\/5/);
+console.log('Activity fairness: daily order caps, profile excluded from rank, referral rank cap, check-in grace and bilingual limit labels passed.');

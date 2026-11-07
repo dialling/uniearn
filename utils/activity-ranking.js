@@ -1,4 +1,5 @@
 const fallback=require('./news-activity');
+const {fairnessOf}=require('./activity-fairness');
 const CHINA=28800000;
 const tr=(value,zh)=>value&&value[zh?'zh':'en']||value&&value.en||value&&value.zh||'';
 const finiteDate=value=>value?Date.parse(value):NaN;
@@ -11,7 +12,7 @@ function timing(config,zh,now=Date.now()){
  if(target!==null){const seconds=Math.max(0,Math.floor((target-now)/1000)),days=Math.floor(seconds/86400),pad=n=>String(n).padStart(2,'0');clock=days+(zh?'天 ':'d ')+pad(Math.floor(seconds/3600)%24)+':'+pad(Math.floor(seconds/60)%60)+':'+pad(seconds%60);}
  return {
   rankingPhase:phase,
-  rankingShortStatus:zh?({not_open:'暂未开放',scheduled:'即将开始',open:'进行中',ended:'已结束'}[phase]):({not_open:'Coming soon',scheduled:'Upcoming',open:'Live',ended:'Ended'}[phase]),
+  rankingShortStatus:zh?({not_open:'暂未开放',scheduled:'即将开始',open:'进行中',ended:'已结束'}[phase]):({not_open:'Not open',scheduled:'Upcoming',open:'Live',ended:'Ended'}[phase]),
   rankingPeriod:Number.isFinite(start)&&Number.isFinite(end)?stamp(start,zh)+' – '+stamp(end,zh)+(zh?'（北京时间）':' (Beijing time)'):(zh?'本期 · '+(s.durationDays||14)+' 天挑战':'This round · '+(s.durationDays||14)+' days'),
   rankingTimingLabel:zh?(phase==='open'?'本期剩余时间':phase==='scheduled'?'距离开始':'活动周期'):(phase==='open'?'Time remaining':phase==='scheduled'?'Starts in':'Round duration'),
   rankingClock:clock
@@ -32,7 +33,7 @@ function view(config,snapshot,progression,registered,zh,updatedAt,now=Date.now()
  const matches=!!snapshot&&snapshot.config?.id===c.id&&snapshot.config?.schedule?.startsAt===c.schedule?.startsAt&&snapshot.config?.schedule?.endsAt===c.schedule?.endsAt;
  const visible=['open','ended'].includes(clock.rankingPhase),ready=matches&&Array.isArray(snapshot.leaderboard);
  const rewardFor=rank=>rewards.find(r=>rank>=r.rankFrom&&rank<=r.rankTo);
- const rows=visible&&ready?snapshot.leaderboard.filter(r=>Number.isInteger(r.rank)&&r.rank>0&&r.points>0).map(r=>({...r,mine:registered&&!!r.mine,reward:rewardFor(r.rank)?.prize||''})):[];
+ const rows=visible&&ready?snapshot.leaderboard.filter(r=>Number.isInteger(r.rank)&&r.rank>0&&r.points>0).map(r=>{const alias=String(r.name||'').trim(),token=alias.split(/\s+/).filter(Boolean).pop()||alias||'?';return {...r,mine:registered&&!!r.mine,reward:rewardFor(r.rank)?.prize||'',initial:token.slice(0,1).toUpperCase()};}):[];
  const myRank=registered&&visible&&ready&&Number.isInteger(snapshot.myRank)&&snapshot.myRank>0?snapshot.myRank:null;
  const points=registered?Number(snapshot?.points??progression?.points)||0:0,myPoints=registered&&visible&&ready?Number(snapshot.rankingPoints)||0:0;
  const personalTitle=!registered?(zh?'登录查看名次':'Log in to see your rank'):myRank?(zh?'第 '+myRank+' 名':'Rank '+myRank):clock.rankingPhase==='not_open'||clock.rankingPhase==='scheduled'?(zh?'尚未开榜':'Not started'):(zh?'暂未上榜':'Not ranked');
@@ -46,7 +47,15 @@ function view(config,snapshot,progression,registered,zh,updatedAt,now=Date.now()
   rankingMyRank:myRank,rankingMyPoints:myPoints,rankingLevelPoints:points,rankingPersonalTitle:personalTitle,rankingPersonalHint:hint,
   rankingEmptyTitle:emptyTitle,rankingEmptyText:emptyText,
   rankingUpdated:visible&&ready&&updatedAt?(zh?'更新于 ':'Updated ')+new Date(updatedAt+CHINA).toISOString().slice(11,16):'',
-  rankingRuleText:zh?'按活动期间新增积分排名，长期积分不清零。同分时，先达到当前积分的同学优先。每月最多一期，起止时间以本期展示为准。':'Only points earned during this round count. Lifetime points stay intact. Ties go to whoever reached the score first. At most one round per month; see this round’s dates.'
+  rankingRuleText:ruleText(c,zh)
  };
 }
-module.exports={timing,view};
+function ruleText(config,zh){
+ const f=fairnessOf(config);
+ const grace=f.checkinGracePerCycle>0?(zh?`签到每个 7 天周期可保护 ${f.checkinGracePerCycle} 次漏签，漏签当天不计分；同一周期再漏则从第 1 天重计。`:`Check-in protects ${f.checkinGracePerCycle} missed day in each 7-day cycle. That day earns nothing. Another miss restarts the cycle. `):(zh?'漏签后连续天数从第 1 天重计。':'A missed day restarts the streak. ');
+ const profile=f.profileCountsForRanking?(zh?'完善资料的积分在活动期内也计入排行。':'Profile points also count toward rank during a round. '):(zh?'完善资料的一次性积分只计入等级，不计入排行。':'One-time profile points count toward your level only, not rank. ');
+ return zh
+  ?`排行只计算本期活动时间内的新增积分。长期等级积分继续保留，活动结束不清零。${profile}发布订单每日最多计入 ${f.customerOrdersPerDay} 单，接单每日最多计入 ${f.runnerOrdersPerDay} 单；邀请人每期最多 ${f.referralRankingPerRound} 位新同学计入排行，超出部分仍计入等级积分。同分时，先达到该分数的同学优先，仍相同则按账号标识排序。每月最多一期。${grace}已获得的积分不收回。`
+  :`Only points earned during this round count. Lifetime level points stay after the round ends. ${profile}Up to ${f.customerOrdersPerDay} posted orders and ${f.runnerOrdersPerDay} runner jobs count per day. An inviter can add at most ${f.referralRankingPerRound} classmates to the ranking each round; further invites still earn level points. Ties go to whoever reached the score first, then by account id. At most one round per month. ${grace}Points already earned stay.`;
+}
+module.exports={timing,view,ruleText};
