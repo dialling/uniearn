@@ -86,7 +86,7 @@ function input(data, actor) {
     if(out.destinationType==='place'){check(!!out.deliveryAddress,'Describe exactly where to deliver.');out.dorm=/library|图书馆/i.test(out.deliveryAddress)?'Library':/classroom|教室/i.test(out.deliveryAddress)?'Classroom':/sports|体育/i.test(out.deliveryAddress)?'Sports centre':'Campus meeting point';out.destinationKey=crypto.createHash('sha256').update(out.deliveryAddress.toLowerCase().replace(/\s+/g,' ').trim()).digest('hex');out.room='';out.dropNote='Meet at the stated location';}
   }
   if(data.deliverAt!==undefined){check(Number.isSafeInteger(data.deliverAt),'Invalid delivery time');out.deliverAt=data.deliverAt;}
-  out.arrived = data.arrived === true; out.soup = data.soup === true; out.lobbyPickupAllowed = data.category === 'takeout' && data.lobbyPickupAllowed === true; out.fragile = data.category === 'parcel' && data.fragile === true; out.night = data.category === 'takeout' && data.night === true;
+  out.arrived = data.arrived === true; out.soup = data.soup === true; out.lobbyPickupAllowed = data.category === 'parcel' && out.destinationType !== 'place' && data.lobbyPickupAllowed === true; out.fragile = data.category === 'parcel' && data.fragile === true; out.night = data.category === 'takeout' && data.night === true;
   for (const key of ['bags','price','tip']) out[key] = Number(data[key] || 0);
   if (out.category === 'takeout') {
     check(data.purchaseStatus===undefined||['ordered','needs_purchase'].includes(data.purchaseStatus),'Choose a valid food order status.');
