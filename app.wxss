@@ -57,3 +57,5 @@ button{white-space:normal;word-break:normal;overflow-wrap:break-word;line-height
 .page-dark .pg-help{color:#a9a69c}
 
 .page-dark .pill.selected,.page-dark .pill.sel{background:#6fd0a8!important;border-color:#6fd0a8!important;color:#16181c!important}
+
+.contact-person{display:flex;align-items:center;gap:20rpx;flex:1;min-width:0}.contact-person-copy{min-width:0;overflow-wrap:break-word}.contact-person .hint{margin:0}.contact-person .value{margin:0}

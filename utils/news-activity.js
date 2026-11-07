@@ -91,8 +91,8 @@ module.exports = {
         "en": "Check in 7 days in a row"
       },
       "description": {
-        "zh": "每天首次登录自动签到。每连续签到 7 天获得 10 积分，断签后重新累计。",
-        "en": "Your first login each day checks you in. Earn 10 points for every 7 consecutive days; missing a day resets the streak."
+        "zh": "每天首次登录自动签到获得 2 积分；每连续签到 7 天额外获得 10 积分，断签后重新累计。",
+        "en": "Your first login each day earns 2 points. Earn 10 extra points for every 7 consecutive days; missing a day resets the streak."
       },
       "daysRequired": 7,
       "repeat": "consecutive"

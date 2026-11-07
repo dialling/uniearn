@@ -16,6 +16,7 @@ const make=()=>({data:structuredClone(def.data),visible:true,setData(v){Object.a
  p.videoEnded();assert.equal(p.data.videoSrc,'');assert.equal(p.data.videoDone,true,'the final still replaces the ended video');
  p.close();await Promise.resolve();assert.equal(bus.pending(),false);assert.equal(acks.at(-1)[0],'ackLoyaltyNotice');
  p=make();p.check();assert.equal(p.data.open,false,'even an offline acknowledgement cannot replay today locally');
+ account('daily',2);store.update(s=>Object.assign(s.progression.notices[0],{streak:2,cycleDay:2,dailyPoints:2,weeklyPoints:0}));p=make();p.check();assert.equal(p.data.points,2);assert.equal(loaded.at(-1),'checkin');assert.equal(p.data.rewardTitle,p.data.ui.dailyReward);p.close();await Promise.resolve();
  account('b',10);p=make();p.check();assert.equal(p.data.points,10);assert.equal(p.data.cycleDay,7);assert.equal(loaded.at(-1),'checkin-week');failVideo(Error('bad clip'));await Promise.resolve();assert.equal(p.data.videoFailed,true,'clip failure retains a closable success state');p.close();await Promise.resolve();
  account('c');store.update(s=>s.yuniTips=false);const count=loaded.length;p=make();p.check();assert.equal(p.data.open,true);assert.equal(p.data.motionEnabled,false);assert.equal(loaded.length,count,'motion-off shows a static success without loading video');p.close();await Promise.resolve();
  account('d');p=make();p.watch();p.check();store.update(s=>s.profile.loggedOut=true);assert.equal(p.data.open,false,'logout closes the popup without acking another identity');p.unwatch();

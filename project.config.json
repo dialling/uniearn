@@ -102,24 +102,24 @@
         "type": "folder"
       },
       {
-        "value": "assets/profile-ranks/avatar-1.png",
-        "type": "file"
+        "type": "file",
+        "value": "assets/profile-ranks/avatar-1.png"
       },
       {
-        "value": "assets/profile-ranks/avatar-2.png",
-        "type": "file"
+        "type": "file",
+        "value": "assets/profile-ranks/avatar-2.png"
       },
       {
-        "value": "assets/profile-ranks/avatar-3.png",
-        "type": "file"
+        "type": "file",
+        "value": "assets/profile-ranks/avatar-3.png"
       },
       {
-        "value": "assets/profile-ranks/avatar-4.png",
-        "type": "file"
+        "type": "file",
+        "value": "assets/profile-ranks/avatar-4.png"
       },
       {
-        "value": "assets/profile-ranks/avatar-5.png",
-        "type": "file"
+        "type": "file",
+        "value": "assets/profile-ranks/avatar-5.png"
       },
       {
         "value": "assets/yuni-bag.svg",

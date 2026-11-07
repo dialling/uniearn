@@ -1,4 +1,4 @@
-const catalog=require('./catalog');
+const catalog=require('./catalog'),tripRoute=require('./trip-route');
 const campus=require('./campus');
 const demo = [
   {id:'r1',owner:'Nicha',station:'Station A',dorm:'Dorm 7',room:'412',small:2,big:0,codes:['88-2-4417','88-2-4418'],phone:'138 0102 6092',note:'Leave it at the front desk, thanks!',deadline:'12:30',reward:10,status:'waiting',runnerId:null,collected:[],photo:''},
@@ -46,18 +46,21 @@ function createRequest(s, data) {
 }
 function routeStation(r){return catalog.category(r)==='takeout'?(r.pickupPoint||r.station):r.station;}
 function routeStationMatches(r,trip){return routeStation(r)===trip.station;}
-function eligible(s, trip) { return s.requests.filter(r=>r.status==='waiting' && routeStationMatches(r,trip) && r.dorm===trip.dorm && catalog.category(r)===catalog.category(trip) && boxes(r)<=trip.capacity); }
+function eligible(s, trip) { return s.requests.filter(r=>r.status==='waiting' && routeStationMatches(r,trip) && tripRoute.destinationMatches(r,trip) && tripRoute.categoryMatches(r,trip) && boxes(r)<=trip.capacity); }
 function assign(s, trip, ids) {
   if(new Set(ids).size!==ids.length||ids.some(id=>trip.requestIds.includes(id)))throw Error('Duplicate order');
   const selection=ids.map(id=>s.requests.find(r=>r.id===id));
-  if (selection.some(r=>!r || r.status!=='waiting' || !routeStationMatches(r,trip) || r.dorm!==trip.dorm || (trip.destinationKey&&r.destinationKey!==trip.destinationKey) || catalog.category(r)!==catalog.category(trip)||r.campusId!==trip.campusId)) throw Error('Some requests are unavailable for this route');
+  if (selection.some(r=>!r || r.status!=='waiting' || !routeStationMatches(r,trip) || !tripRoute.destinationMatches(r,trip) || (trip.destinationKey&&r.destinationKey!==trip.destinationKey) || !tripRoute.categoryMatches(r,trip)||r.campusId!==trip.campusId)) throw Error('Some requests are unavailable for this route');
+  const actualCategory=trip.category==='other'&&selection[0]?catalog.category(selection[0]):catalog.category(trip);
+  if(selection.some(r=>catalog.category(r)!==actualCategory))throw Error('Choose one pickup category per trip');
   const existing=trip.requestIds.map(id=>s.requests.find(r=>r.id===id));
   const route=existing[0]||selection[0];
   if(route&&selection.concat(existing).some(r=>(r.destinationKey||'')!==(route.destinationKey||'')))throw Error('Choose requests with the same delivery address');
   const totalBoxes=selection.concat(existing).reduce((n,r)=>n+boxes(r),0), reward=selection.concat(existing).reduce((n,r)=>n+r.reward,0);
-  if(catalog.category(trip)==='takeout'){if(totalBoxes>5)throw Error('Up to 5 bags per trip');const ats=selection.concat(existing).map(r=>r.arrivalAt||r.createdAt);if(Math.max(...ats)-Math.min(...ats)>15*60000)throw Error('Food arrival times must be within 15 minutes');}
+  if(actualCategory==='takeout'){if(totalBoxes>5)throw Error('Up to 5 bags per trip');const ats=selection.concat(existing).map(r=>r.arrivalAt||r.createdAt);if(Math.max(...ats)-Math.min(...ats)>15*60000)throw Error('Food arrival times must be within 15 minutes');}
   if (totalBoxes>trip.capacity) throw Error('Too many boxes for this trip');
   if(!trip.destinationKey&&selection[0]&&selection[0].destinationKey){trip.destinationKey=selection[0].destinationKey;trip.destinationType=selection[0].destinationType;}
+  if(trip.category==='other'&&selection.length){trip.routeType='other';trip.category=actualCategory;if(actualCategory==='takeout')trip.capacity=Math.min(trip.capacity,5);}
   selection.forEach(r=>{r.status='taken';r.runnerId=trip.id;r.takenAt=Date.now();});
   trip.requestIds.push(...ids); return trip;
 }
@@ -144,6 +147,31 @@ function cancelTrip(s,id) {
 function cancelRequest(s,id) {
   const r=s.requests.find(x=>x.id===id);if(!r||r.status!=='waiting')throw Error('Only an unclaimed request can be cancelled here');r.status='cancelled';r.refundAmount=Math.max(0,Math.round((r.reward+(r.serviceFee===undefined?serviceFee(boxes(r)):r.serviceFee)-Number(r.discount||0))*100)/100);r.cancelledAt=Date.now();
 }
+const CUSTOMER_CANCEL_MS=3*60*1000;
+function customerCanCancel(r,now=Date.now()){
+  if(!r)return false;
+  if(r.status==='waiting'&&!r.runnerId)return true;
+  if(r.status!=='taken'||(r.collected&&r.collected.length))return false;
+  const takenAt=Number(r.takenAt);
+  return Number.isFinite(takenAt)&&takenAt>0&&now-takenAt<=CUSTOMER_CANCEL_MS;
+}
+function customerCancel(s,id,now=Date.now()){
+  const r=s.requests.find(x=>x.id===id);
+  if(!r||!customerCanCancel(r,now))throw Error('Cancel window ended');
+  if(r.runnerId){
+    const t=s.trips.find(x=>x.id===r.runnerId);
+    if(t){
+      t.requestIds=(t.requestIds||[]).filter(x=>x!==id);
+      (t.cancelledRequests||(t.cancelledRequests=[])).push(id);
+      if(!t.requestIds.length&&!t.joinUntil)t.cancelled=true;
+      else if(t.requestIds.length&&t.requestIds.every(rid=>{const row=s.requests.find(x=>x.id===rid);return row&&row.status==='collected';}))t.phase='deliver';
+    }
+  }
+  r.status='cancelled';r.runnerId=null;r.collected=[];
+  r.refundAmount=Math.max(0,Math.round((r.reward+(r.serviceFee===undefined?serviceFee(boxes(r)):r.serviceFee)-Number(r.discount||0))*100)/100);
+  r.cancelledAt=now;r.cancelReason='customer';
+  return r;
+}
 const EXPIRE_MS=3600000;
 function sweepExpired(s,now=Date.now()) {
   let n=0;
@@ -159,4 +187,4 @@ function sweepExpired(s,now=Date.now()) {
   return n;
 }
 function initial() { const now=Date.now(),food=[{id:'food1',owner:'Ming Li',station:'North gate',dorm:'Dorm 7',room:'412',small:2,big:0,codes:['',''],phone:'13801026092',note:'Leave at the desk',category:'takeout',reward:8,serviceFee:0,status:'waiting',runnerId:null,collected:[],photo:'',arrivalAt:now+20*60000,closesAt:now+50*60000,deadline:'',soup:true,price:4,createdAt:now},{id:'food2',owner:'Minjun',station:'North gate',dorm:'Dorm 7',room:'208',small:1,big:0,codes:[''],phone:'13801023381',note:'',category:'takeout',reward:4,serviceFee:0,status:'waiting',runnerId:null,collected:[],photo:'',arrivalAt:now,closesAt:now+30*60000,deadline:'',arrived:true,price:4,createdAt:now}];return {nextId:10,requests:JSON.parse(JSON.stringify(demo)).concat(food),trips:[],profile:{name:'',phone:'',dorm:'',room:'',onboarded:false,studentVerified:false,verification:{status:'unverified'},jobsDone:0,paid:0}}; }
-module.exports={sweepExpired,initial,boxes,limit,serviceFee,wholeCents,MAX_PRICE_PER_BOX,createRequest,eligible,assign,startTrip,acceptJob,acceptBoxes,abandonUncollectedTrip,collect,deliver,confirm,cancelTrip,cancelRequest};
+module.exports={sweepExpired,initial,boxes,limit,serviceFee,wholeCents,MAX_PRICE_PER_BOX,createRequest,eligible,assign,startTrip,acceptJob,acceptBoxes,abandonUncollectedTrip,collect,deliver,confirm,cancelTrip,cancelRequest,customerCancel,customerCanCancel,CUSTOMER_CANCEL_MS};

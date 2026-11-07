@@ -1,4 +1,3 @@
-@import "../../utils/public-order.wxss";
 @import "../../utils/dorm-gender.wxss";
 @import "../../utils/flow.wxss";
 .filter-chip-track{display:inline-flex;align-items:center;gap:12rpx;white-space:nowrap;padding:2rpx 6rpx 2rpx 0}
@@ -76,16 +75,12 @@
 .job-card>.hint{margin:10rpx 0;font-size:22rpx;line-height:1.5}
 .jobs-page .job-card .green-note{margin:12rpx 0;padding:9rpx 14rpx;font-size:22rpx;border-radius:10rpx}
 .job-footer{display:flex;align-items:center;justify-content:space-between;gap:24rpx;margin-top:20rpx;padding-top:18rpx;border-top:1rpx solid #edf0e9}
-.job-deadline-label{font-size:21rpx;color:#8a9088}
-.job-deadline-value{font-size:24rpx;font-weight:650;font-variant-numeric:tabular-nums;color:#394438}
-/* 接单截止贴在信息行右沿，接单按钮独占最后一行 */
-.job-deadline-mini{display:flex;flex:none;align-items:baseline;gap:8rpx;margin-left:auto;padding-left:16rpx;line-height:1.4;text-align:right;white-space:nowrap}
-.job-deadline-row{display:flex;justify-content:flex-end;margin:12rpx 0 0}
+.job-action-context{display:flex;flex:1;min-width:0;flex-direction:column;gap:3rpx;line-height:1.4}
+.job-deadline-label{font-size:20rpx;color:#8a9088}
+.job-deadline-value{font-size:27rpx;font-weight:650;font-variant-numeric:tabular-nums;color:#394438}
 .jobs-page .job-card .btn{margin:0;min-height:74rpx;padding:17rpx 20rpx;border-radius:17rpx;font-size:25rpx;line-height:1.5;box-sizing:border-box}
 .jobs-page .job-card .btn.job-take-button{display:flex;align-items:center;justify-content:space-between;gap:26rpx;flex:none;width:212rpx;min-width:0;margin:0;padding:15rpx 24rpx;background:#0b7a55;color:#fff;font-size:27rpx;font-weight:650;line-height:1.5;min-height:74rpx;border-radius:17rpx;transition:var(--ue-transition,transform .15s,opacity .15s)}
 .job-take-arrow{font-size:33rpx;font-weight:400;line-height:1}
-.job-footer-take{display:block}
-.jobs-page .job-card .job-footer-take .job-take-button{justify-content:center;gap:14rpx;width:100%;padding-left:0;padding-right:0}
 .job-take-press{transform:scale(.97);opacity:.88}
 .job-footer.own-footer,.job-footer.taken-footer,.job-footer.done-footer{display:block}
 .job-footer.own-footer>.hint,.job-footer.taken-footer>.hint{margin:0 0 12rpx;font-size:21rpx;line-height:1.5}
@@ -116,6 +111,24 @@
 .page-dark.jobs-page .filter-trigger{background:rgba(237,235,228,.065);border-color:rgba(237,235,228,.14);box-shadow:inset 0 1rpx 0 rgba(255,255,255,.07)}
 .page-dark.jobs-page .filter-trigger.open{background:rgba(111,208,168,.14);border-color:rgba(111,208,168,.34)}
 
-/* Lobby delivery explicitly welcomes runners of any gender. */
-.jobs-page .job-card .job-badges .badge.lobby-eligible{background:#e7f3ed;color:#0b7a55;font-weight:650}
-.page-dark.jobs-page .job-card .job-badges .badge.lobby-eligible{background:#203b30;color:#6fd0a8}
+.flow-card.group-ticket{padding:0;overflow:hidden}
+.group-head{margin:14rpx 14rpx 4rpx;padding:16rpx 20rpx 20rpx;background:#f0f6ee;border:2rpx dashed #a1bda8;border-radius:28rpx}
+.group-label,.group-fold{color:#186244;font-size:24rpx;font-weight:700}
+.group-fold{display:flex;align-items:center;gap:10rpx;flex:none;padding:8rpx 14rpx;border-radius:99rpx;background:#e0edde;font-size:22rpx}
+.group-chevron{width:10rpx;height:10rpx;border-right:2rpx solid currentColor;border-bottom:2rpx solid currentColor;transform:rotate(225deg) translate(-1rpx,-1rpx)}
+.group-chevron.folded{transform:rotate(45deg) translate(-1rpx,-1rpx)}
+.group-route,.group-foot,.group-order{display:flex;align-items:center;gap:16rpx}
+.group-route{justify-content:space-between;margin:12rpx 0;font-size:30rpx;font-weight:750}
+.group-route>view{min-width:0}
+.group-route>view>text{color:#526759;font-size:21rpx;font-weight:500}
+.group-items,.group-foot{padding:0 26rpx}
+.group-order{min-height:88rpx;border-bottom:1rpx solid #dde5df;font-size:25rpx}
+.group-check{flex:none;width:34rpx;height:34rpx;border:2rpx solid #99ada0;border-radius:8rpx;text-align:center;line-height:30rpx}
+.group-check.on{background:#196345;color:white;border-color:#196345}
+.group-fee{margin-left:auto;white-space:nowrap;font-weight:750}
+.group-foot{justify-content:space-between;padding-top:16rpx;padding-bottom:16rpx}
+.group-foot>view{flex:1;min-width:0}
+.group-foot button.group-take{flex:0 0 auto;width:auto;min-width:0;max-width:52%;margin:0;padding:14rpx 24rpx;font-size:26rpx}
+.page-dark .group-fold{background:#324a39}
+.page-dark .group-head{background:#263a2c;border-color:#567361}
+.page-dark .group-label,.page-dark .group-fold,.page-dark .group-route>view>text{color:#a5d7b9}

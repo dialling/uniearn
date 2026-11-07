@@ -46,6 +46,7 @@
   },
   "style": "v2",
   "usingComponents": {
+    "contact-avatar": "/components/contact-avatar/index",
     "app-nav": "/components/nav/index",
     "yuni-tip": "/components/yuni/index",
     "yuni-assistant": "/components/yuni-assistant/index",
@@ -59,6 +60,27 @@
     {
       "root": "pages/posted",
       "name": "yuni",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "stickers/sticker-pack-1",
+      "name": "sticker-pack-1",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "stickers/sticker-pack-2",
+      "name": "sticker-pack-2",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "stickers/sticker-pack-3",
+      "name": "sticker-pack-3",
       "pages": [
         "index"
       ]

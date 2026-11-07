@@ -1,5 +1,6 @@
 'use strict';
 const store=require('../../utils/store'),levelData=require('../../utils/yuni-level');
+const activityDisplay=require('../../utils/activity-display');
 const THEMES=['star','helper','pro','ace','captain'];
 const MASCOTS=['star','helper','pro','ace','captain'];
 const ACTIONS_ZH=['展开地图，准备出发','挥旗回应，一起同行','放眼远方，发现方向','乘风破浪，勇往直前','稳稳掌舵，带领同行'];
@@ -10,6 +11,10 @@ const ARC_RELEASE_MS=420;    // ease-out duration after the finger lifts
 const ARC_STEP_RATIO=.14;    // drag distance per level, relative to orbit width
 const ARC_MOMENTUM_MS=170;   // how far the latest velocity projects on release
 const ARC_MAX_MOMENTUM=1.35; // maximum extra levels contributed by inertia
+function checkinView(state,language,now=Date.now()){
+ const en=language==='en',day=require('../../utils/china-time').dayKey,record=(state.progression||{}).checkin||{},signedIn=!!state.profile.accountId&&!state.profile.loggedOut,today=day(now),yesterday=day(now-86400000),checked=signedIn&&record.day===today,ongoing=signedIn&&(checked||record.day===yesterday),streak=ongoing?Math.max(0,Number(record.streak)||0):0,cycleDay=checked?Math.max(1,Math.min(7,Number(record.cycleDay)||(streak-1)%7+1)):ongoing?(streak%7):0;
+ return {checked,streak,total:signedIn?Math.max(0,Number(record.totalDays)||0):0,status:!signedIn?(en?'Sign in to check in':'登录后自动签到'):checked?(en?'Checked in today'+(record.dailyPoints?' · +2 pts':''):'今日已签到'+(record.dailyPoints?' · +2 积分':'')):(en?'Syncing today’s check-in':'正在同步今日签到'),hint:!signedIn?(en?'Your first sign-in each day checks you in automatically.':'每天首次登录，自动完成签到。'):checked&&Number(record.dailyPoints)>0?(en?'Daily +2 points added'+(record.rewardPoints?' · Streak bonus +'+record.rewardPoints:''):'今日签到 +2 积分已到账'+(record.rewardPoints?' · 连签额外 +'+record.rewardPoints+' 积分':'')):checked&&Number(record.rewardPoints)>0?(en?'7-day reward: +'+record.rewardPoints+' points added':'连续 7 天奖励 +'+record.rewardPoints+' 积分已到账'):(en?'Earn 2 points daily + 10 extra for every 7-day streak. A missed day resets the streak.':'每日签到得 2 积分，连续 7 天额外得 10 积分，断签后重新累计。'),days:Array.from({length:7},(_,i)=>({day:i+1,done:i<cycleDay,today:checked&&i+1===cycleDay}))};
+}
 function rows(language){
  const en=language==='en';
  const icons=['/assets/news-trophy.svg','/assets/shield-outline.svg','/assets/news-ticket.svg','/assets/news-growth.svg'];
@@ -37,14 +42,17 @@ function rows(language){
  }));
 }
 Page({
- data:{...require('../../utils/motion').data(),language:'zh',levels:rows('zh'),current:0,currentItem:rows('zh')[0],currentLevel:1,points:0,arcMoveMs:ARC_MOVE_MS,arcReleaseMs:ARC_RELEASE_MS,gestureActive:false,dragX:0,dragY:0,mascotJumping:false},
+ data:{...require('../../utils/motion').data(),language:'zh',pointTasks:[],pointsStatus:'',pointsSyncError:false,levels:rows('zh'),current:0,currentItem:rows('zh')[0],currentLevel:1,points:0,arcMoveMs:ARC_MOVE_MS,arcReleaseMs:ARC_RELEASE_MS,gestureActive:false,dragX:0,dragY:0,mascotJumping:false},
  onLoad(){this.localize(true);},
  onReady(){wx.createSelectorQuery().in(this).select('.level-orbit').boundingClientRect(rect=>{this.orbitRect=rect;}).exec();},
- onShow(){this.localize(false);require('../../utils/page-title').apply(this);},
+ onShow(){this.localize(false);require('../../utils/orders').bind(this,'refreshCheckin');require('../../utils/page-title').apply(this);this.stopPointsSync();this.stopPoints=require('../../utils/activity-sync').subscribe(config=>{this.pointsConfig=activityDisplay.latest(this.pointsConfig,config);this.updatePointTasks();this.setData({pointsSyncError:false});},()=>this.setData({pointsSyncError:true}));},
+ stopPointsSync(){if(this.stopPoints){this.stopPoints();this.stopPoints=null;}},
+ refreshCheckin(){const state=store.get(),view=levelData.view(state.progression||{});this.setData({checkin:checkinView(state,this.data.language),currentLevel:view.level,points:view.points});},
+ updatePointTasks(){const cached=(store.get().rewards||{}).activities;this.pointsConfig=activityDisplay.latest(this.pointsConfig,cached&&cached.config);const view=activityDisplay.display(this.pointsConfig,this.data.language==='zh');this.setData({pointTasks:view.activityTasks,pointsStatus:view.activityStatusLabel});},
  localize(first){
   const state=store.get(),language=state.language==='en'?'en':'zh',view=levelData.view(state.progression||{}),current=first?Math.max(0,view.level-1):this.data.current;
   const levels=rows(language);
-  this.setData({language,levels,current,currentItem:levels[current],currentLevel:view.level,points:view.points});
+  this.setData({checkin:checkinView(state,language),language,levels,current,currentItem:levels[current],currentLevel:view.level,points:view.points});this.updatePointTasks();
  },
  onMotionChange(enabled){this.stopMascotJump();this.stopArcMotion();this.setData({gestureActive:false,dragX:0,dragY:0,arcMoveMs:enabled?ARC_MOVE_MS:0,arcReleaseMs:enabled?ARC_RELEASE_MS:0});},
  stopMascotJump(){
@@ -93,6 +101,6 @@ Page({
   this.setCurrent(target,true);this.stopArcMotion();
   this.setData({gestureActive:false,dragX:0,dragY:0});
  },
- onHide(){this.stopMascotJump();},
- onUnload(){this.stopMascotJump();this.stopArcMotion();}
+ onHide(){require('../../utils/orders').unbind(this);this.stopPointsSync();this.stopMascotJump();},
+ onUnload(){require('../../utils/orders').unbind(this);this.stopPointsSync();this.stopMascotJump();this.stopArcMotion();}
 });

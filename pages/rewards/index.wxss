@@ -83,3 +83,8 @@
 .simple-ranking{background:#718f78;border-color:#718f78}
 .simple-ranking .simple-ranking-footer{border-color:#93ab98}
 .news-redesign.page-dark .simple-ranking{background:#3d5443;border-color:#4f6553}
+
+/* Rank is a static preview until launch. */
+.rank-coming-soon{display:block}
+.rank-preview-note{border-top:1rpx solid #78927b;padding-top:17rpx;margin-top:23rpx;font-size:22rpx;line-height:1.5;color:#edf3eb}
+.news-redesign.page-dark .rank-preview-note{border-color:#526b53;color:#c8dac9}

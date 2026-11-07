@@ -9,7 +9,7 @@
    <video wx:if="{{motionEnabled&&videoSrc&&!videoFailed&&!videoDone}}" class="checkin-video" src="{{videoSrc}}" autoplay muted="{{true}}" loop="{{false}}" controls="{{false}}" show-center-play-btn="{{false}}" show-play-btn="{{false}}" show-fullscreen-btn="{{false}}" show-progress="{{false}}" show-mute-btn="{{false}}" enable-progress-gesture="{{false}}" object-fit="contain" bindended="videoEnded" binderror="videoError"/>
   </view>
   <view class="checkin-days"><view wx:for="{{days}}" wx:key="day" class="checkin-day {{item.done?'done':''}} {{item.today?'today':''}}"><text>{{item.done?'✓':item.day}}</text><text class="checkin-day-label">{{ui.day}} {{item.day}} {{ui.dayUnit}}</text></view></view>
-  <view class="checkin-result"><view class="checkin-result-copy"><view class="checkin-result-title">{{points?ui.reward:ui.today}}</view><view class="checkin-result-sub">{{hint}}</view></view><text wx:if="{{points}}" class="checkin-points">+{{points}}</text></view>
+  <view class="checkin-result"><view class="checkin-result-copy"><view class="checkin-result-title">{{points?rewardTitle:ui.today}}</view><view class="checkin-result-sub">{{hint}}</view></view><text wx:if="{{points}}" class="checkin-points">+{{points}}</text></view>
   <view class="checkin-rule">{{ui.goal}}</view>
   <button class="checkin-cta" bindtap="close">{{points?ui.collect:ui.continue}} <text class="checkin-cta-arrow">›</text></button>
  </view>
