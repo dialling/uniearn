@@ -2,56 +2,56 @@
   {
     "file": "yuni-adventure-ace.png",
     "dimensions": [
-      604,
-      604
+      256,
+      256
     ],
-    "originalBytes": 376469,
-    "runtimeBytes": 42707,
-    "originalSha256": "d0fe61b8df3544a67516b7e66508841b2fbf991782d08ef13316caced5162f3d",
-    "runtimeSha256": "7e5492cb986c45fb4afe323ceafe4ffa68c9aa2db645944a0851288b26bd8368"
+    "originalBytes": 81477,
+    "runtimeBytes": 12814,
+    "originalSha256": "12e0a4806a600f8ce4711d497dcd7e57e742ac8a14db836d37395404315987c2",
+    "runtimeSha256": "c53b81b644df4ba5712b658081a6e3e04b8c39d25a5e9b27eb53a36b9b9c622d"
   },
   {
     "file": "yuni-adventure-captain.png",
     "dimensions": [
-      604,
-      604
+      256,
+      256
     ],
-    "originalBytes": 315520,
-    "runtimeBytes": 42965,
-    "originalSha256": "c73f7551f67bc4d0434312cf0c73f1906be930e8927f5e05b4799716b4770566",
-    "runtimeSha256": "ba8a86726ab3161b9db9958369c9b1a1831dc359d56c57a77749ca11859b54dc"
+    "originalBytes": 65424,
+    "runtimeBytes": 12296,
+    "originalSha256": "4fe3142175a5708cd874861895c4745e4670f7e180dd2320eae64cd869e3ead8",
+    "runtimeSha256": "120962677ccda0ce58dcd1d5c1c3b8b12fcf01fc1bf5249b8eae17319965cee3"
   },
   {
     "file": "yuni-adventure-helper.png",
     "dimensions": [
-      574,
-      574
+      256,
+      256
     ],
-    "originalBytes": 255963,
-    "runtimeBytes": 32224,
-    "originalSha256": "4f9b7b6deb5d176d46976e9b3565aa6d7a256370a8965a01e8d7e07a83610874",
-    "runtimeSha256": "8abe45e29d79b814cc909ae48274cf8ee3a7bed090dc2b3a84e57464f36283f8"
+    "originalBytes": 60278,
+    "runtimeBytes": 10227,
+    "originalSha256": "1a70f188ca76ba58a3bdf045c184d920d0dbd1d81fb266e42588fe6c6f9ad866",
+    "runtimeSha256": "8a9be75f511842884696674d6cf87841967bd3b635bb8c448c14d56430e1e928"
   },
   {
     "file": "yuni-adventure-pro.png",
     "dimensions": [
-      574,
-      574
+      256,
+      256
     ],
-    "originalBytes": 255580,
-    "runtimeBytes": 31640,
-    "originalSha256": "94c1e576730ad4db24624d594aa110854e42c6e3e5c075ee8763dd1691b8c0b8",
-    "runtimeSha256": "a2abe3e11861dcb74e450b6fbce9ae3d02a8cd674a698f8b0ad7d1858e9d6cd7"
+    "originalBytes": 60104,
+    "runtimeBytes": 10454,
+    "originalSha256": "2111e397ec74f1b5ee62bb41c7da580ee00ea9680ca9f4cf72b3dccfd5048ecf",
+    "runtimeSha256": "a286118db8935a65cc2bec6d9702b04cd7c741f149537b97775b63e68be80328"
   },
   {
     "file": "yuni-adventure-star.png",
     "dimensions": [
-      564,
-      564
+      256,
+      256
     ],
-    "originalBytes": 252289,
-    "runtimeBytes": 30851,
-    "originalSha256": "71db3a77693e1c4881008fac52245b7d2c5e29092099f86723a96d6250357e44",
-    "runtimeSha256": "9c50b912567b2ba9a4f805c7468e981c89db1c9286da7a92227f8593dbdd51c3"
+    "originalBytes": 60066,
+    "runtimeBytes": 10402,
+    "originalSha256": "e688689bb380ce8cd742853d1fd8b69c9d2a1be5ca18a83847876320d5ddbe20",
+    "runtimeSha256": "7fe2efcad0c114cd17c3dd73ce39fdb551c4a0e5947efcc44d8ab24b9486514f"
   }
 ]

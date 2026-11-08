@@ -197,6 +197,11 @@ function execute(s, actor, account, event, now = Date.now()) {
       check(t && !t.cancelled && t.phase === 'collect' && t.joinUntil > now, 'This trip is closed.');
       check(t.runnerAccountId !== actor, 'You cannot join your own trip.');check(t.campusId===campusId,'This trip belongs to a different campus.');
       check(!r.arrivalAt || r.arrivalAt <= t.departAt, 'Your food arrives after this runner leaves.');
+      if(r.category==='task'){
+        check(t.category==='other'||t.category==='task'&&t.routeType==='other','Tasks can only join an Other route.');
+        // Route and availability come from the shared trip, never client-supplied task fields.
+        Object.assign(r,{station:t.station,pickupAddress:t.pickupAddress||'',waypoint:t.waypoint||'',dorm:t.dorm,destinationType:t.destinationType||'dorm',deliveryAddress:t.deliveryAddress||'',destinationKey:t.destinationKey||'',dueAt:0,closesAt:0,deadline:''});
+      }
       // Joining consumes the RUNNER limit, not the customer's limit.
       const previous = s.profile; s.profile = { ...stats(s, t.runnerAccountId) };
       d.assign(s, t, [r.id]); s.profile = previous; f.event(r, 'Runner accepted', now);
@@ -206,20 +211,20 @@ function execute(s, actor, account, event, now = Date.now()) {
     const ids = action === 'accept' ? event.ids : (Array.isArray(event.refs) ? event.refs.map(x => x && x.requestId) : []);
     rejectOwn(s, ids, actor);check(ids.every(id=>s.requests.find(r=>r.id===id).campusId===campusId),'Choose orders from your selected campus.');
     const selected=ids.map(id=>s.requests.find(r=>r.id===id));let t;if(selected[0].category==='task'){check(action==='accept'&&ids.length===1,'Take one task at a time.');const r=selected[0];check(r.status==='waiting'&&r.reward<=d.limit(s.profile),'This task exceeds your runner limit.');t={id:'t'+s.nextId++,category:'task',station:'Task',dorm:r.dorm,capacity:1,phase:'deliver',requestIds:[r.id]};r.status='taken';r.runnerId=t.id;r.takenAt=now;s.trips.unshift(t);}else t=action==='accept'?d.acceptJob(s,event.ids):d.acceptBoxes(s,event.refs);
-    t.campusId=campusId;t.universityId='xjtlu';t.runnerAccountId = actor; t.runnerName = contact.name; t.runnerPhone=contact.phone; t.createdAt = now;
+    t.campusId=campusId;t.universityId='xjtlu';t.runnerAccountId = actor; t.runnerName = contact.name; t.runnerPhone=contact.phone; t.runnerAvatar=account.profile.avatarUrl||''; t.createdAt = now;
     t.requestIds.forEach(id => {const row=s.requests.find(r => r.id === id);if(row)row.runnerName=contact.name;f.event(row, 'Runner accepted', now);}); value = { id: t.id };
   } else if (action === 'startTrip') {
     const cfg = event.data || {};
     if(cfg.selfRequestId){const own=ownRequest(s,cfg.selfRequestId,actor);check(own.status==='waiting'&&own.campusId===campusId&&own.category==='parcel'&&own.station===cfg.station&&own.dorm===cfg.dorm,'Your parcel request changed. Refresh before starting.');d.cancelRequest(s,own.id);own.refundAmount=f.total(own);f.event(own,'Collecting it myself',now);}
-    check(['takeout','parcel'].includes(cfg.category) && ['now','later'].includes(cfg.when), 'Invalid trip.');
+    check(['takeout','parcel','other'].includes(cfg.category) && ['now','later'].includes(cfg.when), 'Invalid trip.');
     check(typeof cfg.station === 'string' && cfg.station.length <= (cfg.category === 'takeout' ? 200 : 100) && typeof cfg.dorm === 'string' && cfg.dorm.length <= 100, 'Invalid route.');
     if(Object.prototype.hasOwnProperty.call(cfg,'requestIds')){
       check(Array.isArray(cfg.requestIds)&&cfg.requestIds.length<=12,'Select up to 12 orders.');
       if(cfg.requestIds.length)rejectOwn(s,cfg.requestIds,actor);
     }
     const tripState={...s,requests:s.requests.filter(r=>r.campusId===campusId)};
-    const t = f.startTrip(tripState, { category: cfg.category, when: cfg.when, time: cfg.time, duration: cfg.duration, station: cfg.station, dorm: cfg.dorm, capacity: cfg.capacity, ...(Object.prototype.hasOwnProperty.call(cfg,'requestIds')?{requestIds:cfg.requestIds}:{}) }, now);s.nextId=tripState.nextId;
-    t.campusId=campusId;t.universityId='xjtlu';t.runnerAccountId = actor; t.runnerName=contact.name; t.runnerPhone=contact.phone; t.createdAt = now;
+    const t = f.startTrip(tripState, { category: cfg.category, when: cfg.when, time: cfg.time, duration: cfg.duration, station: cfg.station, pickupAddress:cfg.pickupAddress,waypoint:cfg.waypoint,destinationType:cfg.destinationType,deliveryAddress:cfg.deliveryAddress,dorm: cfg.dorm, capacity: cfg.capacity, ...(Object.prototype.hasOwnProperty.call(cfg,'requestIds')?{requestIds:cfg.requestIds}:{}) }, now);s.nextId=tripState.nextId;
+    t.campusId=campusId;t.universityId='xjtlu';t.runnerAccountId = actor; t.runnerName=contact.name; t.runnerPhone=contact.phone; t.runnerAvatar=account.profile.avatarUrl||''; t.createdAt = now;
     t.requestIds.forEach(id => {const row=s.requests.find(r => r.id === id);if(row)row.runnerName=contact.name;f.event(row, 'Runner accepted', now);}); value = { id: t.id };
   } else if (['raise','cancel','confirm','report','riderPhoto','foodArrived'].includes(action)) {
     const r = ownRequest(s, event.id, actor);
@@ -231,7 +236,7 @@ function execute(s, actor, account, event, now = Date.now()) {
     if (action === 'riderPhoto') { check(['waiting','taken'].includes(r.status), 'Pickup has already started.'); const replacing=event.replace===true,incoming=Array.isArray(event.photos)?event.photos:(event.photo?[event.photo]:[]),existing=Array.isArray(r.riderPhotos)?r.riderPhotos.slice():(r.riderPhoto?[r.riderPhoto]:[]);check(incoming.length<=(replacing?3:3-existing.length),'Up to three rider photos.');check(replacing||incoming.length>0,'Add at least one rider photo.');r.riderPhotos=(replacing?incoming:existing.concat(incoming)).map(p=>photo(p,actor,true));r.riderPhoto=r.riderPhotos[0]||'';r.arrived=true;value={riderPhotos:r.riderPhotos.slice()}; }
   } else if (['pickup','deliver','runnerCancel','taskDone','sealBroken'].includes(action)) {
     const r = runnerRequest(s, event.id, actor);
-    if(action==='taskDone'){check(r.category==='task'&&r.status==='taken','This task cannot be completed now.');const note=String(event.note||'').trim();check(note.length>=3&&note.length<=500,'Add a short completion note.');r.status='delivered';r.photo=photo(event.photo,actor);r.completionNote=note;r.deliveredAt=now;ownTrip(s,r.runnerId,actor).phase='done';f.event(r,'Completion submitted',now);rewards.recordBonus(s,actor,r,now);}
+    if(action==='taskDone'){check(r.category==='task'&&r.status==='taken','This task cannot be completed now.');const note=String(event.note||'').trim();check(note.length>=3&&note.length<=500,'Add a short completion note.');r.status='delivered';r.photo=photo(event.photo,actor);r.completionNote=note;r.deliveredAt=now;const taskTrip=ownTrip(s,r.runnerId,actor);taskTrip.phase=taskTrip.requestIds.every(id=>['delivered','confirmed','disputed'].includes(s.requests.find(x=>x.id===id).status))?'done':'collect';if(taskTrip.phase==='done')taskTrip.joinUntil=now;f.event(r,'Completion submitted',now);rewards.recordBonus(s,actor,r,now);}
     if(action==='sealBroken'){check(r.category==='takeout'&&r.status==='taken','Report a seal before pickup.');r.sealReportedAt=now;f.event(r,'Seal already broken at pickup',now);}
     if (action === 'pickup') {
       check(r.category!=='task','Use the task completion photo and note.');
@@ -249,6 +254,13 @@ function execute(s, actor, account, event, now = Date.now()) {
   } else if(action==='resolveDispute'){
     check(account._reviewer===true,'Reviewer access required.');const r=s.requests.find(x=>x.id===event.id);check(r&&r.status==='disputed','Order is not under review.');check(['release','refund'].includes(event.decision),'Choose release or refund.');
     if(event.decision==='release'){r.status='confirmed';r.confirmedAt=now;f.event(r,'Review resolved · confirmed',now);}else{const amount=Number(event.deduction||0);check(Number.isFinite(amount)&&amount>=0&&amount<=1000,'Invalid reviewed deduction.');const note=String(event.note||'').trim();check(note.length>=10&&note.length<=500,'Explain the reviewed deduction.');r.status='refunded';r.refundAmount=f.total(r);r.refundedAt=now;r.refundReason=note;const t=s.trips.find(x=>x.id===r.runnerId);if(amount&&t)(s.adjustments||(s.adjustments=[])).push({id:'a'+s.nextId++,runnerAccountId:t.runnerAccountId,requestId:r.id,amount:Math.round(amount*100)/100,reason:r.dispute.reason,note,at:now});f.event(r,'Review resolved · simulated refund',now);}
+  } else if(action==='changeTaskDeadline'){
+    const r=s.requests.find(x=>x.id===event.id);
+    check(r && r.ownerId===actor && r.category==='task' && ['waiting','taken'].includes(r.status),'当前任务无法更改截止时间');
+    const dueAt=event.dueAt;
+    check(Number.isSafeInteger(dueAt) && dueAt>now && Number.isFinite(new Date(dueAt).getTime()),'请选择未来的截止时间');
+    r.dueAt=dueAt;
+    r.deadline=f.clock(dueAt);
   } else if(action==='foodLate'){
     const r=ownRequest(s,event.id,actor);check(['waiting','taken'].includes(r.status)&&r.category==='takeout'&&!r.etaMoved&&now<=(r.arrivalAt+600000),'Move arrival once, before the original ETA + 10 minutes.');const minutes=Number(event.minutes),at=Number.isSafeInteger(minutes)&&minutes>0?r.arrivalAt+minutes*60000:f.todayAt(event.time,now);check(Number.isSafeInteger(at)&&at>r.arrivalAt,'Choose a later arrival time.');r.originalArrivalAt=r.arrivalAt;r.arrivalAt=at;r.closesAt=at+1800000;r.etaMoved=true;r.etaChangedAfterAccept=r.status==='taken';f.event(r,'Arrival moved to '+f.clock(at),now);
   } else if(action==='collectCoupon'){rewards.collect(s,actor,event.campaignId,now);
@@ -279,7 +291,7 @@ function snapshot(s, actor, account, now = Date.now()) {
       const rt=s.trips.find(t=>t.id===r.runnerId),thread=rt&&(s.threads||{})[r.id+':'+rt.id];
       out.runnerPhone=rt&&rt.runnerPhone||'';out.runnerStats=rt?(()=>{const st=stats(s,rt.runnerAccountId);return{jobsDone:st.jobsDone};})():{};out.unread=thread?thread.messages.filter(m=>m.sender!==actor&&m.at>(thread.read[actor]||0)).length:0;
       out.messages=thread?thread.messages.map(m=>({id:m.id,text:m.text,...(m.photo?{photo:m.photo}:{}),at:m.at,mine:m.sender===actor})):[];
-      return { ...out, runnerName:(s.trips.find(t=>t.id===r.runnerId)||{}).runnerName||r.runnerName||'', ownerId: isMine ? actor : '', isMine, isRunner };
+      return { ...out, runnerName:rt&&rt.runnerName||r.runnerName||'', runnerAvatar:rt&&rt.runnerAvatar||'', ownerId: isMine ? actor : '', isMine, isRunner };
     }
     // Exact delivery addresses stay private until this runner accepts the order.
     const out = {};
@@ -293,7 +305,7 @@ function snapshot(s, actor, account, now = Date.now()) {
   });
   const trips = s.trips.filter(t => myTrips.has(t.id)).map(t => ({...clone(t), isRunner:true}));
   const publicTrips = s.trips.filter(t => inCampus(t) && t.joinUntil && !t.cancelled && t.phase === 'collect' && t.joinUntil > now).map(t => ({
-    id:t.id,campusId:t.campusId,universityId:t.universityId,category:t.category,destinationKey:t.destinationKey||'',destinationType:t.destinationType||'dorm', station:t.station, dorm:t.dorm, capacity:t.capacity, runnerName:t.runnerName,
+    id:t.id,campusId:t.campusId,universityId:t.universityId,category:t.category,destinationKey:t.destinationKey||'',destinationType:t.destinationType||'dorm', station:t.station,pickupAddress:t.pickupAddress||'',waypoint:t.waypoint||'',deliveryAddress:t.deliveryAddress||'',routeType:t.routeType||'',dorm:t.dorm,capacity:t.capacity, runnerName:t.runnerName,
     runnerJobs:stats(s,t.runnerAccountId).jobsDone, departAt:t.departAt, joinUntil:t.joinUntil, phase:t.phase,
     cancelled:false, remaining:t.capacity-t.requestIds.reduce((n,id)=>n+d.boxes(s.requests.find(r=>r.id===id)),0)
   }));

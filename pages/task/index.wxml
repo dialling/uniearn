@@ -1,7 +1,7 @@
 <import src="../../utils/waiting-ticket.wxml"/>
 <view style="{{motionStyle}}">
-<lang-switch/>
-<view class="flow-page {{darkClass}}" wx:if="{{request}}">
+<lang-switch></lang-switch>
+<view class="flow-page task-page {{zh?'task-cn':''}} {{darkClass}}" wx:if="{{request}}">
 <view class="flow-card order-progress-card">
   <view class="order-progress-label">{{ui.progress}}</view>
   <view class="order-progress-track">

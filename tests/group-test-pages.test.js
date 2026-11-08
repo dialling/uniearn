@@ -5,7 +5,7 @@ let definition,route;
 global.Page=page=>{definition=page;};
 global.wx={
   getStorageSync(){},setStorageSync(){},getSystemInfoSync:()=>({platform:'devtools'}),
-  navigateTo:({url})=>{route=url;},showToast(){},
+  navigateTo:({url})=>{route=url;},showToast(){},showModal:({success})=>success({confirm:true}),
   async request({data,success}){
     const result=data.token?await db.call(data.role,data.event.action,data.event):{token:'test-session'};
     success({statusCode:200,data:result});

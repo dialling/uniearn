@@ -1,6 +1,7 @@
+<import src="../../utils/contact-identity.wxml"/>
 <import src="../../utils/waiting-ticket.wxml"/>
 <view style="{{motionStyle}}">
-<lang-switch/>
+<lang-switch></lang-switch>
 <view class="flow-page {{darkClass}}" wx:if="{{request}}">
 <view class="flow-title">{{zh?(request.isMine?'我的订单':'订单详情'):request.isMine?'My request':'Order details'}}</view>
 <view class="flow-sub">{{request.sizeLabel}} · {{request.boxes}} {{request.unitLabel}} · {{request.destinationDisplay}}</view>
@@ -61,31 +62,6 @@
 <view wx:if="{{cancelWindow.phase!=='hidden'}}" class="flow-card cancel-window-card">
 <button class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel" disabled="{{!cancelWindow.canCancel}}">{{cancelWindow.button}}</button>
 <view class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}"><text class="{{cancelWindow.phase==='grace'?'cancel-clock':''}}">{{cancelWindow.tip}}</text></view>
-</view>
-<view wx:if="{{request.isMine && request.category==='takeout' && (request.status==='waiting'||request.status==='taken')}}" class="flow-card customer-arrival-card">
-<view class="strong">{{zh?(request.arrived?'外卖已送达':'外卖提前送达了？'):request.arrived?'Food has arrived':'Food arrived early?'}}</view>
-<view class="hint">{{zh?(request.arrived?'已由你确认送达取件点，跑手可以据此安排取餐。':'外卖已放到取件点时，更新状态，方便跑手安排取餐。也可以与跑手交流。'):request.arrived?'You confirmed that the food is at the pickup point. Your runner can plan pickup.':'Once your food is at the pickup point, update its status so your runner can plan pickup. You can also message your runner.'}}</view>
-<button class="btn outline customer-status-button" hover-class="customer-status-button-press" disabled="{{request.arrived}}" bindtap="foodArrived">{{zh?'外卖已送达取件点':'Food is at the pickup point'}}</button>
-</view>
-<view wx:if="{{request.isMine && request.category==='takeout' && !request.arrived && (request.status==='waiting'||request.status==='taken')}}" class="flow-card customer-late-card">
-<view class="strong">{{zh?'外卖晚到了？':'Food running late?'}}</view>
-<view class="hint">{{zh?'如果外卖晚到，可以修改一次预计送达时间。':'If your food arrives later, move the ETA once.'}}</view>
-<button class="btn outline customer-status-button" hover-class="customer-status-button-press" disabled="{{!request.canMoveEta}}" bindtap="openLateOptions">{{zh?(request.etaMoved?'已更新送达时间':'我的外卖晚到了'):request.etaMoved?'Arrival time updated':'My food is late'}}</button>
-<view wx:if="{{lateOptionsOpen && request.canMoveEta}}" class="late-options-panel">
-<view class="late-options-title">{{zh?'预计晚到多久？':'How late will it be?'}}</view>
-<view class="late-options-grid">
-<button wx:for="{{latePresets}}" wx:key="*this" class="late-option" hover-class="late-option-press" data-minutes="{{item}}" bindtap="chooseLatePreset">+{{item}}</button>
-<button class="late-option late-option-other {{lateCustomOpen?'selected':''}}" hover-class="late-option-press" bindtap="chooseLateOther">＋</button>
-</view>
-<view wx:if="{{lateCustomOpen}}" class="late-custom-row">
-<view class="late-custom-field">
-<input always-embed type="number" value="{{lateMinutes}}" bindinput="inputLateMinutes" placeholder="{{zh?'输入分钟数':'Minutes'}}"/>
-<text>{{zh?'分钟':'min'}}</text>
-</view>
-<button class="late-custom-confirm" hover-class="late-option-press" disabled="{{!lateMinutes}}" bindtap="confirmLateCustom">{{zh?'确认':'Confirm'}}</button>
-</view>
-<view class="hint late-options-hint">{{zh?'可自行填写预计晚到时长，且只能修改一次。':'Choose any delay in minutes. You can change it once.'}}</view>
-</view>
 </view>
 <view wx:if="{{request.isMine && request.category==='takeout' && (request.status==='waiting'||request.status==='taken')}}" class="flow-card rider-photo-card">
 <view wx:if="{{!request.riderPhotos.length}}" class="rider-photo-action rider-photo-empty" bindtap="riderPhoto" hover-class="rider-photo-press">
