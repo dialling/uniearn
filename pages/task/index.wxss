@@ -35,7 +35,7 @@
 .state-title{font-size:30rpx;font-weight:700}.state-yuni{position:absolute;right:20rpx;bottom:15rpx;width:82rpx;height:92rpx}
 .task-contact,.contact-tools,.task-circle{display:flex;align-items:center}.task-contact{gap:12rpx}
 .contact-tools{flex:none;gap:14rpx}.task-circle{width:72rpx;height:72rpx;justify-content:center;border:1rpx solid #dedbd2;border-radius:50%;position:relative}
-.task-circle image{width:30rpx;height:30rpx}.circle-press{background:#e7f2eb}.task-unread{position:absolute;top:-6rpx;right:-4rpx;background:#087751;color:white;border-radius:25rpx;padding:0 8rpx;font-size:19rpx}
+.task-circle image{width:30rpx;height:30rpx}.circle-press{background:#e7f2eb}
 .task-deadline .hint{margin:0 0 8rpx}.task-status-tag{margin-left:10rpx;padding:4rpx 12rpx;background:#efeee9;color:#514f48;border-radius:8rpx;font-size:22rpx}
 .task-note{margin:18rpx 0;padding:18rpx;border-radius:16rpx;background:#f2f5fc;color:#34486a;white-space:pre-wrap}
 
@@ -60,7 +60,7 @@
 .task-contact-actions{display:flex;gap:14rpx}
 button.task-icon{position:relative;display:flex;align-items:center;justify-content:center;width:70rpx;height:70rpx;min-height:0;margin:0;padding:0;border-radius:50%;background:#f0efea}
 .task-icon image{width:28rpx;height:28rpx}
-.task-unread{position:absolute;top:-5rpx;right:-7rpx;min-width:30rpx;padding:2rpx 7rpx;border-radius:99rpx;background:#c2410c;color:#fff;font-size:19rpx;line-height:1.4;text-align:center}
+
 .task-info-block{background:#f6f5f1;padding:22rpx 24rpx;margin:14rpx 0;border-radius:22rpx}
 .task-info-label{font-size:22rpx;color:#77746b;margin-bottom:10rpx}
 .task-title{font-size:30rpx;font-weight:700;line-height:1.5}

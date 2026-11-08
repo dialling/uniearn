@@ -20,7 +20,7 @@
 </view>
 <template wx:if="{{request.status==='waiting'}}" is="waitingTicket" data="{{request,zh}}"/>
 <view wx:else class="flow-card status-card">
-<view class="status-stub"><image class="status-yuni" src="/assets/yuni-wave.png" mode="aspectFit"/></view>
+
 <view class="status-copy">
 <view class="flow-title status-{{request.status}}">{{request.status==='taken'?runner+(zh?' 已接单':' took your request'):request.statusLabel}}</view>
 <view class="hint" wx:if="{{request.status==='delivered'}}">{{zh?runner+' 已于 '+request.deliveredTime+' 送达：'+request.deliveryLocationLabel+'。':runner+' left it '+request.deliveryLocationLabel+' at '+request.deliveredTime+'.'}}</view>
@@ -32,7 +32,7 @@
 <view class="contact-actions">
 <view class="contact-button" bindtap="chat">
 <image src="/assets/message.svg"/>
-<text wx:if="{{request.unread}}" class="unread">{{request.unread}}</text>
+<view wx:if="{{request.unread}}" class="chat-dot"/>
 </view>
 <view class="contact-button" bindtap="phone">
 <image src="/assets/phone.svg"/>
