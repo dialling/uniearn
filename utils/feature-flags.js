@@ -1,3 +1,3 @@
-// 外卖/夜市的「可接受送至宿舍一楼大厅」保留代码但关闭；未经用户明确要求不得打开 lobbyDelivery。
-// 快递代取按用户要求开放这个选项（parcelLobbyDelivery）。
-module.exports={lobbyDelivery:false,parcelLobbyDelivery:true};
+// 保留供未来启用；当前小程序不提供宿舍一楼大厅交付功能。
+// 仅在用户明确要求重新上线后打开，同时核对发布页和大厅展示。
+module.exports={lobbyDelivery:false,parcelLobbyDelivery:false};

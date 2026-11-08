@@ -13,7 +13,6 @@
 </view>
 <view class="flow-title">{{request.isMine?ui.myTask:ui.yourTask}}</view>
 <view wx:if="{{request.dueAt}}" class="flow-sub">{{ui.doneBy}}{{request.due}}</view>
-<yuni-tip tip-key="task-track" pose="work" text="{{ui.tip}}"/>
 <template wx:if="{{request.status==='waiting'}}" is="waitingTicket" data="{{request,zh}}"/>
 <view wx:else class="flow-card status-card">
 <view class="status-stub"><image class="status-yuni" src="/assets/yuni-wave.png" mode="aspectFit"/></view>
