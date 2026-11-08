@@ -45,8 +45,7 @@
 .deadline-change::after{border:0}.task-cn .deadline-press{background:#cfddfc}
 .task-deadline .deadline-fields,.task-deadline .deadline-actions{margin-top:18rpx}
 .deadline-actions{justify-content:flex-end}
-.task-deadline .deadline-note{margin:14rpx 0 0;line-height:1.5}
-word-break:break-word}
+.task-deadline .deadline-note{margin:14rpx 0 0;line-height:1.5;word-break:break-word}
 .task-detail-card{padding:26rpx}
 .task-card-head{display:flex;justify-content:space-between;gap:20rpx;margin-bottom:18rpx}
 .task-heading{flex:1;min-width:0;overflow-wrap:break-word;padding-top:8rpx}
