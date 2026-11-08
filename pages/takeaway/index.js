@@ -28,8 +28,7 @@ Page({
   const config=lockers.options(this.data,this.data.zh?'zh':'en');
   let choice=this.data.lockerChoice,custom=this.data.lockerCustomText;
   const scope=lockers.memoryScope();if(this._lockerGroup!==config.group||this._lockerAccount!==scope){const saved=lockers.recall(this.data);choice=saved?saved.choice:'';custom=saved?saved.custom:'';this._lockerGroup=config.group;this._lockerAccount=scope;}
-  if(config.manual)choice='other';
-  const index=config.items.findIndex(x=>x.id===choice),isCustom=config.manual||choice==='other';
+  const index=config.items.findIndex(x=>x.id===choice),isCustom=choice==='other';
   const point=isCustom?String(custom||'').trim():index>=0?config.items[index].value:'';
   this.setData({lockerChoice:choice,lockerCustomText:custom,lockerOptions:config.items,lockerIndex:Math.max(0,index),lockerChosen:index>=0,lockerCustom:isCustom,lockerManual:config.manual,pickupPoint:point,lockerReady:!!point&&point.length<=200});
  },

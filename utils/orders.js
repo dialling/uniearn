@@ -60,7 +60,22 @@ async function call(data) {
     const error = Error(result && result.error || 'Cloud order service returned no result.');
     error.business = !!result; throw error;
   }
-  if(expectedGeneration===generation){apply(result.snapshot);if(foreground&&store.get().preferences?.orderUpdates!==false&&['create','accept','acceptBoxes'].includes(data.action)){const requests=(result.snapshot||{}).requests||[];requests.filter(r=>data.action==='create'?r.isMine&&r.id===result.value?.id:r.isRunner&&r.runnerId===result.value?.id).forEach(r=>yuniEvents.status(r,result.snapshot.revision));}} return result.value || {};
+  if(expectedGeneration===generation){
+    // The server has confirmed success. Rendering errors must never replay a mutation.
+    try { apply(result.snapshot); }
+    catch(error){
+      console.error('Order snapshot refresh failed after confirmed success',error);
+      if(data.action==='sync') { error.business=true; throw error; }
+      try { tell(store.get().language==='en'?'Saved. Reopen your orders to refresh.':'操作已成功，请重新打开订单查看。'); } catch(_) {}
+    }
+    try {
+      if(foreground&&store.get().preferences?.orderUpdates!==false&&['create','accept','acceptBoxes'].includes(data.action)){
+        const requests=(result.snapshot||{}).requests||[];
+        requests.filter(r=>data.action==='create'?r.isMine&&r.id===result.value?.id:r.isRunner&&r.runnerId===result.value?.id).forEach(r=>yuniEvents.status(r,result.snapshot.revision));
+      }
+    } catch(error){console.error('Order notification failed after confirmed success',error);}
+  }
+  return result.value || {};
 }
 function sync() {
   if (syncing) return syncing;
@@ -115,11 +130,17 @@ async function act(action, payload = {}) {
         try { value=await call(pending.data); break; }
         catch (e) {
           if (e.business) { store.update(x=>{delete x.pendingOrderOperation;}); throw e; }
-          if (attempt===1) throw Error('Network interrupted. Retry this action; its operation ID is saved to prevent duplicates.');
+          if (attempt===1 || !cloudErrors.retryable(e)) {
+            console.error('Order action failed',e);
+            const error=Error(cloudErrors.actionMessage(e,store.get().language));
+            error.cause=e;
+            throw error;
+          }
+          await new Promise(resolve=>setTimeout(resolve,800));
         }
       }
       store.update(x=>{delete x.pendingOrderOperation;});
-      if (recovering && pending.signature!==signature) throw Error('The previous action was recovered. Check your orders, then submit this change again.');
+      if (recovering && pending.signature!==signature) throw Error(store.get().language==='en'?'The previous action was recovered. Check your orders, then submit this change again.':'上一次操作已恢复，请查看订单后再提交本次操作。');
       track('action_result',{action,result:'ok',duration:Date.now()-started});return value;
     });
   } catch(e){track('action_result',{action,result:e.business?'business':'network',duration:Date.now()-started});throw e;}finally { mutating=false; }

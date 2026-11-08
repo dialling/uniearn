@@ -59,19 +59,15 @@
 <button wx:for="{{offerAmounts}}" wx:key="*this" class="offer-option" hover-class="offer-option-press" data-amount="{{item}}" bindtap="raise">＋¥{{item}}</button>
 <button class="offer-option offer-custom" hover-class="offer-option-press" bindtap="customRaise">{{zh?'自定义':'Custom'}}</button>
 </view>
-<view class="offer-custom-row">
-<input class="offer-custom-input" type="digit" maxlength="8" placeholder="{{zh?'输入想加的金额':'Type the amount to add'}}" value="{{customOffer}}" bindinput="customOfferInput"/>
-<button class="offer-option offer-custom" hover-class="offer-option-press" bindtap="submitCustomOffer" disabled="{{!customOffer}}">{{zh?'加价':'Add'}}</button>
-</view>
 <view class="offer-footer">
+<view class="offer-footer-copy">
 <text class="hint" wx:if="{{request.status!=='waiting'}}">{{zh?'接单后仍可加价，金额计入整笔任务。':'You can still add to the offer after a runner accepts.'}}</text>
 <text class="hint" wx:elif="{{request.closesAt}}">{{zh?'若 '+request.closeTime+' 前无人接单，将全额退款。':'Full refund if nobody takes it by '+request.closeTime+'.'}}</text>
 <text class="hint" wx:else>{{zh?'无人接单时可免费取消。':'Cancel free before a runner accepts.'}}</text>
+<view wx:if="{{cancelWindow.phase!=='hidden'}}" class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}">{{cancelWindow.tip}}</view>
 </view>
+<button wx:if="{{cancelWindow.canCancel}}" class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel">{{cancelWindow.button}}</button>
 </view>
-<view wx:if="{{cancelWindow.phase!=='hidden'}}" class="flow-card cancel-window-card">
-<button class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel" disabled="{{!cancelWindow.canCancel}}">{{cancelWindow.button}}</button>
-<view class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}"><text class="{{cancelWindow.phase==='grace'?'cancel-clock':''}}">{{cancelWindow.tip}}</text></view>
 </view>
 <view wx:if="{{request.photo||request.completionNote}}" class="flow-card">
 <image wx:if="{{request.photo}}" class="proof" src="{{request.photo}}" mode="aspectFill" data-photo="{{request.photo}}" bindtap="preview"/>
