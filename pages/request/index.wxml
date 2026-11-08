@@ -146,7 +146,7 @@
 <view wx:if="{{request.category==='parcel' && request.isMine}}" wx:for="{{request.parcelItems}}" wx:key="index" class="hint">{{zh?'包裹 ':'Parcel '}}{{index+1}} · {{item.pickupPoint||request.station}} · {{item.code}}</view>
 <view class="row hint">
 <text>{{zh?'路线':'Route'}}</text>
-<text>{{request.station}} → {{request.destinationDisplay}}</text>
+<text>{{request.pickupDisplay||request.station}} → {{request.destinationDisplay}}</text>
 </view>
 <view class="row hint" wx:if="{{request.category==='takeout'}}">
 <text>{{zh?'外卖送达':'Food arrives'}}</text>
@@ -189,7 +189,7 @@
 </view>
 <view class="yuni-foot">
 <view class="yuni-foot-main">
-<view class="yuni-route">{{successUI.labels[request.station]||request.station}} → {{successUI.labels[request.dorm]||request.dorm}}</view>
+<view class="yuni-route">{{request.pickupDisplay||successUI.labels[request.station]||request.station}} → {{successUI.labels[request.dorm]||request.dorm}}</view>
 <view class="yuni-meta">{{request.night?successUI.typeNight:request.category==='takeout'?successUI.typeTakeout:successUI.typeParcel}} · {{request.boxes}}{{request.category==='takeout'?successUI.bagUnit:successUI.parcelUnit}} · ¥{{request.total}}</view>
 </view>
 <view class="yuni-pill">{{successUI.pending}}</view>

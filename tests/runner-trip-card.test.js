@@ -5,7 +5,7 @@ const now=Date.now(),trip={id:'trip',category:'takeout',station:'North gate',dor
 const first={id:'a',category:'takeout',status:'taken',station:'North gate',dorm:'D02',room:'1111',dormGender:'male',pickupPoint:'文缘夜市门口外卖柜',note:'请勿敲门',dropNote:'At my door',reward:3,small:1,arrived:true,arrivalAt:now,closesAt:now+60000,soup:true};
 let result=card(trip,[first],'zh',now);
 assert.equal(result.items[0].destination,'文缘 D02 1111室');
-assert.equal(result.items[0].origin,'北门');
+assert.equal(result.items[0].origin,'文缘夜市门口外卖柜','the route starts at the locker the customer chose');
 assert.equal(result.items[0].gender,'男寝');
 assert.equal(result.items[0].pickup,first.pickupPoint);
 assert.equal(result.items[0].note,'请勿敲门');
@@ -33,7 +33,7 @@ result=card(trip,[place],'en',now);
 assert.equal(result.items[0].destination,'Library front desk');
 assert.equal(result.items[0].gender,'');
 assert.match(result.items[0].timing,/^Arrives /);
-assert.equal(result.items[0].origin,'North gate');
+assert.equal(result.items[0].origin,'Locker at the Wenyuan night market entrance');
 const night={...first,night:true,shop:'南门夜市摊位',pickupPoint:'',purchaseStatus:'needs_purchase'};
 result=card(trip,[night],'zh',now);
 assert.equal(result.type,'夜市代买');
