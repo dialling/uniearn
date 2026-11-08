@@ -69,8 +69,8 @@
 .jobs-page .job-card .amount{display:flex;align-items:baseline;flex:none;gap:3rpx;font-family:inherit;font-variant-numeric:tabular-nums;font-size:48rpx;font-weight:750;letter-spacing:-1rpx;line-height:1.05;color:#c2410c;white-space:nowrap}
 .job-card .job-currency{font-size:27rpx;font-weight:650;letter-spacing:0}
 .jobs-page .job-card .route{display:flex;align-items:baseline;gap:13rpx;margin:22rpx 0 0;font-size:31rpx;font-weight:750;line-height:1.45}
-.job-route-origin{flex:0 1 auto;max-width:44%;min-width:0;color:#7b817a;font-size:24rpx;font-weight:500;overflow-wrap:anywhere}
-.job-route-arrow{flex:none;color:#a0a79f;font-size:24rpx;font-weight:400}
+.job-route-origin{flex:0 1 auto;max-width:56%;min-width:0;color:#16181c;font-size:31rpx;font-weight:750;overflow-wrap:anywhere}
+.job-route-arrow{flex:none;color:#16181c;font-size:31rpx;font-weight:750}
 .job-route-destination{flex:1;min-width:0;overflow-wrap:anywhere;color:#16181c}
 .job-task-title{min-width:0;overflow-wrap:anywhere}
 .job-card .job-timing{margin:13rpx 0 17rpx;padding:0;background:transparent;border-radius:0;gap:12rpx;flex-wrap:wrap;font-size:22rpx;font-weight:550;line-height:1.5;color:#0b7a55}
@@ -104,7 +104,8 @@
 .page-dark.jobs-page .job-card{border-color:#3a4338;background:#242522}
 .page-dark.jobs-page .job-card .job-price{color:#f4a06e}
 .page-dark.jobs-page .job-card .job-route-destination,.page-dark.jobs-page .job-card .hall-locker-value{color:#edebe4}
-.page-dark.jobs-page .job-card .job-route-origin,.page-dark.jobs-page .job-card .hall-location-label,.page-dark.jobs-page .job-card .job-note-label,.page-dark.jobs-page .job-card .job-deadline-label{color:#aaaF9f}
+.page-dark.jobs-page .job-card .hall-location-label,.page-dark.jobs-page .job-card .job-note-label,.page-dark.jobs-page .job-card .job-deadline-label{color:#aaaF9f}
+.page-dark.jobs-page .job-card .job-route-origin,.page-dark.jobs-page .job-card .job-route-arrow{color:#edebe4}
 .page-dark.jobs-page .job-card .job-timing,.page-dark.jobs-page .job-card .job-badges .state-badge.done-badge,.page-dark.jobs-page .job-card .job-badges .state-badge.own-badge{color:#6fd0a8}
 .page-dark.jobs-page .job-card .order-note{background:transparent;color:#b7c0b3}
 .page-dark.jobs-page .job-card .job-deadline-value{color:#e0e8dc}
