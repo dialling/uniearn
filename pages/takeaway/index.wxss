@@ -1,3 +1,4 @@
+@import "../../utils/photo-upload.wxss";
 @import "../../utils/post-form.wxss";
 @import "../../utils/fee-control.wxss";
 .purchase-cancel-note{margin-top:20rpx}

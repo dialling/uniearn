@@ -14,7 +14,8 @@
 <block wx:for="{{cards}}" wx:key="key"><view wx:if="{{tab==='done' && item.showDate}}" class="date-heading row"><text>{{item.dateLabel}}</text><text class="hint">{{item.dateCount}} {{zh?'个任务':item.dateCount===1?'job':'jobs'}}</text></view>
 <view wx:if="{{item.ids.length>1}}" id="{{index===0?'first-job':'job-'+item.key}}" class="flow-card group-ticket">
   <view class="group-head">
-    <view class="row"><text class="group-label">GROUP · {{item.type}} · {{item.requests}} {{zh?'单':'orders'}}</text><view class="group-fold" role="button" aria-expanded="{{!item.folded}}" data-key="{{item.key}}" bindtap="flipGroup">{{item.folded?(zh?'展开':'Expand'):(zh?'收起':'Collapse')}}<view class="group-chevron {{item.folded?'folded':''}}"/></view></view>
+    <view class="group-title-row"><text class="group-label">GROUP · {{item.type}} · {{item.requests}} {{zh?'单':'orders'}}</text><view class="group-total"><text class="group-total-label">{{zh?'合计赏金':'Total reward'}}</text><text class="group-total-amount"><text class="group-total-currency">¥</text>{{item.total}}</text></view></view>
+    <view class="group-fold-row"><view class="group-fold" role="button" aria-expanded="{{!item.folded}}" data-key="{{item.key}}" bindtap="flipGroup">{{item.folded?(zh?'展开':'Expand'):(zh?'收起':'Collapse')}}<view class="group-chevron {{item.folded?'folded':''}}"/></view></view>
     <view class="group-route"><view><text>{{zh?'取货点':'Pickup'}}</text><view>{{item.pickupPointDisplay||item.originLabel}}</view></view><text>→</text><view><text>{{zh?'送达楼栋':'Drop-off'}}</text><view>{{item.destinationLabel}}</view></view></view>
     <view class="hint">{{zh?'可取货':'Pickup'}} {{item.pickupRange}} · {{item.spanMinutes}} {{zh?'分钟内':'min apart'}}</view>
   </view>

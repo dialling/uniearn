@@ -1,3 +1,4 @@
+@import "../../utils/photo-upload.wxss";
 @import "../../utils/deadline-fields.wxss";
 @import "../../utils/contact-identity.wxss";
 @import "../../utils/flow.wxss";
@@ -80,3 +81,8 @@ button.task-icon{position:relative;display:flex;align-items:center;justify-conte
 .task-secondary-actions button.task-small-action{flex:0 1 auto;width:auto;min-width:0;max-width:100%;margin:0;padding:12rpx 20rpx;border:1rpx solid #c9dcd1;border-radius:99rpx;background:#f3f8f4;color:#24694e;font-size:23rpx;line-height:1.5}
 .page-dark .task-secondary-actions{border-color:#414b44}
 .page-dark .task-secondary-actions button.task-small-action{background:#263b2e;border-color:#526b5b;color:#a6d8b8}
+
+/* Keep the unread badge outside the native round button's clipping area. */
+.task-message-action{position:relative;flex:none;width:70rpx;height:70rpx;overflow:visible}
+.task-message-action .task-unread-badge{position:absolute;z-index:2;top:-6rpx;right:-7rpx;display:flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:32rpx;height:32rpx;padding:0 7rpx;border:3rpx solid #fff;border-radius:20rpx;background:#c9433c;color:#fff;font-size:19rpx;font-weight:650;line-height:1;white-space:nowrap;pointer-events:none}
+.page-dark .task-message-action .task-unread-badge{border-color:#242522;background:#cf5048;color:#fff}

@@ -1,0 +1,21 @@
+.upload-card{--upload-color:#31584f;--upload-soft:#edf6f1;--upload-border:#a7cbbb;position:relative;margin:18rpx 0;padding:24rpx;border:2rpx dashed var(--upload-border);border-radius:26rpx;background:#fff;box-sizing:border-box}
+.upload-card.upload-blue{--upload-color:#315ca6;--upload-soft:#edf2fc;--upload-border:#a8bfe7}
+.upload-card.upload-orange{--upload-color:#b94424;--upload-soft:#fff1e6;--upload-border:#efb18e}
+.upload-head{display:flex;align-items:center;gap:22rpx;min-height:110rpx}
+.upload-icon{flex:none;display:flex;align-items:center;justify-content:center;width:104rpx;height:104rpx;border-radius:24rpx;background:var(--upload-soft)}
+.upload-icon image{width:48rpx;height:48rpx}
+.upload-copy{flex:1;min-width:0;padding-right:36rpx}
+.upload-title{font-size:27rpx;font-weight:650;line-height:1.4;color:#252a25}
+.upload-hint{margin-top:8rpx;font-size:22rpx;line-height:1.5;color:#77786f}
+.upload-count{position:absolute;right:16rpx;top:14rpx;padding:3rpx 10rpx;border-radius:18rpx;color:var(--upload-color);background:var(--upload-soft);font-size:20rpx;font-weight:650}
+.upload-gallery{display:flex;flex-wrap:wrap;gap:14rpx;margin-top:20rpx}
+.upload-tile{position:relative;flex:none;width:112rpx;height:112rpx;border-radius:22rpx;background:var(--upload-soft)}
+.upload-image{display:block;width:100%;height:100%;border-radius:22rpx}
+.upload-remove{position:absolute;z-index:2;top:-8rpx;right:-8rpx;display:flex;align-items:center;justify-content:center;width:40rpx;height:40rpx;border:3rpx solid #fff;border-radius:50%;background:#384139;color:#fff;font-size:26rpx;line-height:1;box-sizing:border-box}
+.upload-more{display:flex;align-items:center;justify-content:center;border:2rpx dashed var(--upload-border);box-sizing:border-box;color:var(--upload-color);font-size:42rpx}
+.upload-card-press{opacity:.75}
+.upload-card[aria-disabled="true"]{opacity:.6}
+.page-dark .upload-card{background:#242522;--upload-color:#a4d6b9;--upload-soft:#283e31;--upload-border:#577a64}
+.page-dark .upload-card.upload-blue{--upload-color:#b8cdf5;--upload-soft:#29374f;--upload-border:#617da7}
+.page-dark .upload-card.upload-orange{--upload-color:#f4bb9c;--upload-soft:#433127;--upload-border:#a4795c}
+.page-dark .upload-title{color:#edece4}.page-dark .upload-hint{color:#b6b7ae}.page-dark .upload-remove{border-color:#242522}

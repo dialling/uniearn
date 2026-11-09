@@ -35,3 +35,25 @@
 .requests-page .progress-strip>view{border-top:0;padding-top:0}.requests-page .progress-strip>view::before{height:7rpx}.requests-page .progress-strip .complete{color:#0b7a55}
 
 .requests-page{padding:0 0 185rpx}.orders-header{background:transparent;padding:28rpx 33rpx 22rpx}.orders-header .flow-title{margin:0 0 13rpx}.orders-header .flow-sub{margin:0 0 25rpx;font-size:23rpx}.orders-header .service-tabs{margin:0}.orders-content{padding:0 33rpx}.orders-content .orders-empty{padding:43rpx 33rpx;margin:25rpx 0 20rpx}.orders-empty>image{width:135rpx;height:170rpx}.orders-empty .hint{font-size:24rpx;line-height:1.65;margin:22rpx 0 8rpx}.orders-content .post-entry{padding:24rpx 26rpx;gap:17rpx;min-height:99rpx;border-radius:25rpx;margin:19rpx 0}.post-entry .badge{margin:0;flex:none;font-size:19rpx;padding:6rpx 14rpx}.post-entry>.strong{flex:1;min-width:0;font-size:26rpx;line-height:1.4}.post-entry .entry-price{flex:none;color:#6b6860;font-size:22rpx;white-space:nowrap}.post-entry.takeaway-entry{border:2rpx solid #0b7a55}.runner-empty-icon{width:90rpx;height:90rpx;border-radius:50%;background:#e7f3ed;display:flex;align-items:center;justify-content:center;margin:4rpx auto 24rpx}.runner-empty-icon image{width:40rpx;height:40rpx}.orders-content .runner-empty{padding:43rpx 33rpx}.runner-empty .find-job{display:inline-flex;align-items:center;justify-content:center;width:190rpx;min-width:190rpx;max-width:190rpx;min-height:85rpx;height:85rpx;line-height:1;padding:0;margin:23rpx auto 3rpx;border-radius:23rpx;font-size:27rpx}
+
+/* Disputes need a distinct warning treatment, not normal delivery progress. */
+.order-tone-disputed{--order-card-bg:#fff0f2;--order-card-border:#e9a8b3;--order-accent:#a52c48;--order-track:#f1d2d9}
+.requests-page .order-card.order-tone-disputed{border-left:6rpx solid var(--order-accent)}
+.order-issue-notice{display:flex;align-items:center;gap:18rpx;margin:20rpx 0;padding:18rpx 20rpx;background:rgba(165,44,72,.065);border-radius:16rpx;color:var(--order-accent)}
+.order-issue-copy{flex:1;min-width:0}
+.order-issue-title{display:block;font-size:24rpx;font-weight:700;line-height:1.5}
+.order-issue-description{display:block;margin-top:5rpx;font-size:21rpx;line-height:1.5}
+.order-issue-link{flex:none;font-size:22rpx;font-weight:600}
+.page-dark .order-tone-disputed{--order-card-bg:#3b252d;--order-card-border:#82505f;--order-accent:#ffb0c1;--order-track:#623b47}
+.page-dark .order-issue-notice{background:rgba(255,176,193,.08)}
+
+.order-history-card>view:first-child{padding-right:14rpx}
+.order-history-card>view:first-child>.strong{white-space:normal;overflow-wrap:break-word;line-height:1.5}
+
+.order-message-notice{margin-top:20rpx;padding-top:18rpx;border-top:1rpx solid #c8dcd1;color:#246347}
+.order-message-summary{padding:4rpx 0 10rpx}
+.order-message-heading{display:flex;align-items:center;gap:12rpx;font-size:24rpx;font-weight:650}
+.order-message-count{display:inline-flex;justify-content:center;align-items:center;min-width:32rpx;height:32rpx;padding:0 7rpx;box-sizing:border-box;border-radius:20rpx;background:#bc3f37;color:#fff;font-size:20rpx}
+.order-message-preview{margin-top:8rpx;font-size:24rpx;line-height:1.55;color:#505e55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-all;white-space:pre-wrap}
+.page-dark .order-message-notice{border-color:#476353;color:#ade0bd}
+.page-dark .order-message-preview{color:#c2d2c5}

@@ -26,7 +26,7 @@
   <view class="task-person"><view class="task-avatar" aria-hidden="true">{{request.contactInitial}}</view><view class="task-heading"><view class="strong">{{request.contactName}}</view><view class="hint">{{request.dueAt?request.due:(zh?'无截止时间':'No deadline')}}</view></view></view>
   <view class="task-contact-area"><text class="task-type">{{ui.badge}}</text>
     <view wx:if="{{request.runnerId}}" class="task-contact-actions">
-      <button class="task-icon" bindtap="chat" aria-label="{{ui.messages}}"><image src="/assets/message.svg"/><view wx:if="{{request.unread}}" class="chat-dot"/></button>
+      <view class="task-message-action"><button class="task-icon" bindtap="chat" aria-label="{{ui.messages+(request.unread>0?(zh?'，未读 ':', unread ')+request.unread:'')}}"><image src="/assets/message.svg"/></button><text wx:if="{{request.unread>0}}" class="task-unread-badge">{{request.unread>99?'99+':request.unread}}</text></view>
       <button wx:if="{{request.isMine?request.runnerPhone:request.phone}}" class="task-icon" bindtap="phone" aria-label="{{ui.call}}"><image src="/assets/phone.svg"/></button>
     </view>
   </view>
@@ -36,8 +36,7 @@
 <view wx:if="{{request.isRunner && request.status==='taken'}}" class="task-completion">
 <view class="strong">{{ui.whenDone}}</view>
 <view class="hint">{{ui.sendHint}}</view>
-<view class="dash" bindtap="handlePhoto">{{photo?ui.retake:ui.takePhoto}}</view>
-<image wx:if="{{photo}}" class="proof" src="{{photo}}" mode="aspectFill"/>
+<view class="upload-card upload-blue"><view class="upload-head" bindtap="handlePhoto" hover-class="upload-card-press" role="button"><view class="upload-icon"><image src="/assets/photo-blue.svg" mode="aspectFit"/></view><view class="upload-copy"><view class="upload-title">{{zh?'完成照片（选填）':'Completion photo (optional)'}}</view><view class="upload-hint">{{zh?'拍照或从相册选择，展示任务完成情况。':'Take or select a photo showing the completed task.'}}</view></view></view><text class="upload-count">{{(photo?1:0)}}/1</text><view wx:if="{{(photo?1:0)>0}}" class="upload-gallery"><view class="upload-tile"><image class="upload-image" src="{{photo}}" mode="aspectFill" data-photo="{{photo}}" bindtap="preview"/><view class="upload-remove" catchtap="removePhoto" role="button" aria-label="{{zh?'删除照片':'Remove photo'}}">×</view></view></view></view>
 <textarea class="field" data-field="note" bindinput="field" maxlength="500" value="{{note}}" placeholder="{{ui.notePlaceholder}}"/>
 <button class="btn task-primary" loading="{{sending}}" disabled="{{!validNote||sending}}" bindtap="done">{{ui.sendBoth}}</button>
 <view class="task-secondary-actions">
@@ -77,12 +76,8 @@
 <view wx:if="{{request.isMine && request.status==='delivered'}}" class="flow-card">
 <button class="btn" bindtap="confirm">{{ui.confirmPre}}{{request.rewardText}}</button>
 <button class="btn light" bindtap="issue">{{ui.wrong}}</button>
-<view class="hint">{{ui.autoHint}}</view>
 <block wx:if="{{reporting}}">
-<view class="pills">
-<view wx:for="{{reasons}}" wx:key="*this" class="pill {{reason===item?'selected':''}}" data-value="{{item}}" bindtap="handleReason">{{ui.labels[item]||item}}</view>
-</view>
-<view class="dash" bindtap="chooseIssuePhoto">{{issuePhoto?ui.photoAdded:ui.evidence}}</view>
+<view class="upload-card upload-blue"><view class="upload-head" bindtap="chooseIssuePhoto" hover-class="upload-card-press" role="button"><view class="upload-icon"><image src="/assets/photo-blue.svg" mode="aspectFit"/></view><view class="upload-copy"><view class="upload-title">{{zh?'问题凭证':'Issue evidence'}}</view><view class="upload-hint">{{zh?'拍照或从相册选择，帮助说明遇到的问题。':'Take or select a photo to explain the issue.'}}</view></view></view><text class="upload-count">{{(issuePhoto?1:0)}}/1</text><view wx:if="{{(issuePhoto?1:0)>0}}" class="upload-gallery"><view class="upload-tile"><image class="upload-image" src="{{issuePhoto}}" mode="aspectFill" data-photo="{{issuePhoto}}" bindtap="preview"/><view class="upload-remove" catchtap="removeIssuePhoto" role="button" aria-label="{{zh?'删除照片':'Remove photo'}}">×</view></view></view></view>
 <textarea class="field" value="{{issueNote}}" data-field="issueNote" bindinput="field" placeholder="{{ui.whatWrong}}"/>
 <button class="btn" disabled="{{!reason}}" bindtap="report">{{ui.sendUniearn}}</button>
 </block>

@@ -80,6 +80,8 @@
 <text class="rider-photo-count">0/3</text>
 </view>
 <view wx:else class="rider-photo-action rider-photo-filled">
+<view class="upload-head" data-mode="append" bindtap="riderPhoto" role="button">
+<view class="rider-photo-media"><image class="rider-photo-placeholder" src="/assets/photo-orange.svg" mode="aspectFit"/></view>
 <view class="rider-photo-copy">
 <view class="strong rider-photo-title">
 <block wx:if="{{zh}}">
@@ -92,6 +94,7 @@
 </block>
 </view>
 <view class="rider-photo-help">{{zh?'用于告诉跑手外卖袋放置的位置。':'It shows your runner where the bag is.'}}</view>
+</view>
 </view>
 <text class="rider-photo-count">{{request.riderPhotos.length}}/3</text>
 <view class="rider-photo-gallery">
@@ -125,7 +128,7 @@
 <block wx:else>
 <view class="strong">{{zh?'遇到了什么问题？':'What went wrong?'}}</view>
 <view wx:for="{{reasons}}" wx:key="*this" class="pill" style="margin-top:14rpx" data-value="{{item}}" bindtap="chooseReason">{{reason===item?'◉':'○'}} {{reasonLabels[index]||item}}</view>
-<view class="dash" bindtap="addIssuePhoto">{{zh?(issuePhoto?'✓ 已添加照片 · 更换':'添加照片（洒漏时必填）'):issuePhoto?'✓ Photo added · replace':'Add a photo (needed for spilled food)'}}</view>
+<view class="upload-card upload-green"><view class="upload-head" bindtap="addIssuePhoto" hover-class="upload-card-press" role="button"><view class="upload-icon"><image src="/assets/photo-green.svg" mode="aspectFit"/></view><view class="upload-copy"><view class="upload-title">{{zh?'问题凭证':'Issue evidence'}}</view><view class="upload-hint">{{zh?'拍照或相册上传；洒漏问题需提供照片。':'Camera or album; a photo is required for spills.'}}</view></view></view><text class="upload-count">{{(issuePhoto?1:0)}}/1</text><view wx:if="{{(issuePhoto?1:0)>0}}" class="upload-gallery"><view class="upload-tile"><image class="upload-image" src="{{issuePhoto}}" mode="aspectFill" data-photo="{{issuePhoto}}" bindtap="previewIssue"/><view class="upload-remove" catchtap="removeIssuePhoto" role="button" aria-label="{{zh?'删除照片':'Remove photo'}}">×</view></view></view></view>
 <textarea class="field" placeholder="{{zh?'描述一下问题':'Describe the issue'}}" value="{{issueNote}}" bindinput="note" maxlength="500"/>
 <view class="action-row">
 <button class="btn outline" bindtap="backIssue">{{zh?'返回':'Back'}}</button>

@@ -8,7 +8,7 @@ const store=require('../utils/store'),orders=require('../utils/orders');
 function page(name,options={}){delete require.cache[require.resolve('../pages/'+name+'/index')];require('../pages/'+name+'/index');const p={...definition,data:structuredClone(definition.data),setData:value=>Object.assign(p.data,value)};p.onLoad(options);return p;}
 (async()=>{
  store.reset();const accountId=h.engine.idFor('customer');store.update(s=>{s.language='zh';s.profile={...s.profile,...h.accounts[accountId].profile,accountId,onboarded:true};});await orders.sync();
- const p=page('takeaway');p.setData({firstRoute:false,note:'请放门口'});p.customLocker({detail:{value:'取餐点'}});
+ const p=page('takeaway');p.setData({firstRoute:false,note:'请放门口'});p.pickLocker({detail:{value:p.data.lockerOptions.findIndex(x=>x.id==='other')}});p.customLocker({detail:{value:'取餐点'}});
  const pending=p.photo();assert.equal(p.data.photoBusy,true);assert.deepEqual(chooseOptions.sourceType,['album','camera']);assert.equal(chooseOptions.count,3);
  await p.post();assert.equal(h.state.requests.length,0,'posting waits for photo selection');
  chooseOptions.success({tempFiles:[{tempFilePath:'wxfile://first.jpg'},{tempFilePath:'wxfile://second.jpg'}]});await pending;assert.equal(p.data.photoBusy,false);assert.deepEqual(p.data.orderPictures,['wxfile://first.jpg','wxfile://second.jpg']);

@@ -6,7 +6,7 @@ store.update(s=>{s.language='zh';s.profile={...s.profile,accountId:'customer'};s
 require('../pages/requests/index');const page={...definition,data:structuredClone(definition.data),setData(x){Object.assign(this.data,x);}};page.refresh();
 const find=id=>page.data.active.concat(page.data.past).find(r=>r.id===id);
 assert.equal(find('waiting').cardTone,'order-tone-waiting');
-for(const status of ['taken','collected','disputed'])assert.equal(find(status).cardTone,'order-tone-running');
+for(const status of ['taken','collected'])assert.equal(find(status).cardTone,'order-tone-running');
 for(const status of ['delivered','confirmed'])assert.equal(find(status).cardTone,'order-tone-completed');
 for(const status of ['cancelled','refunded'])assert.equal(find(status).cardTone,'order-tone-neutral');
 page.filter({currentTarget:{dataset:{value:'completed'}}});assert.deepEqual(page.data.past.map(r=>r.id),['confirmed']);assert.equal(page.data.past[0].cardTone,'order-tone-completed');
@@ -20,3 +20,5 @@ for(const [status,label] of [['confirmed','完成时间'],['cancelled','取消�
 store.update(s=>{s.requests.find(r=>r.id==='refunded').refundedAt=null;});page.refresh();assert.equal(find('refunded').historyTime,'下单时间 2026/10/31 23:05','legacy orders fall back to an explicitly labelled creation time');
 store.update(s=>{s.requests.find(r=>r.id==='refunded').createdAt=null;s.language='en';});page.refresh();assert.equal(find('refunded').historyTime,'Time not recorded');assert.equal(find('confirmed').historyTime,'Completed 2026/11/1 00:05');
 console.log('History timestamps: completed/cancelled/refunded events, China date boundary, labelled legacy fallback, missing dates and English passed');
+
+assert.equal(find('disputed').cardTone,'order-tone-disputed','disputed orders have a distinct warning colour');
