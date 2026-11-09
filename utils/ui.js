@@ -18,13 +18,12 @@ async function photo(source=['album']){
   const path=await images.compress(await images.chooseImage(source));
   // Old copies are cleared in the background: awaiting the file list blocked the tap for seconds.
   cleanSaved().catch(()=>{});
-  // If saving fails (for example the quota is full) the temporary path still works for this session.
-  return new Promise(resolve=>wx.saveFile({tempFilePath:path,success:r=>resolve(r.savedFilePath),fail:()=>resolve(path)}));
+  return path; // Temporary paths remain usable throughout this mini-program session.
 }
 function preview(path){if(path)wx.previewImage({urls:[path],current:path});}
 async function photos(source=['album'],count=3){
  const paths=await images.compressAll(await images.chooseImages(source,count));
  cleanSaved().catch(()=>{});
- return Promise.all(paths.map(path=>new Promise(resolve=>wx.saveFile({tempFilePath:path,success:r=>resolve(r.savedFilePath),fail:()=>resolve(path)}))));
+ return paths;
 }
 module.exports={toast,confirm,photo,photos,preview,cleanSaved};

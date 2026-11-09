@@ -31,14 +31,14 @@
     </view>
   </view>
 </view>
-<view class="task-info-block"><view class="task-info-label">{{zh?'任务内容':'Task details'}}</view><view class="task-title">{{request.title}}</view></view>
+<view class="task-info-block"><view class="task-info-label">{{zh?'任务内容':'Task details'}} · {{request.taskMode==='online'?(zh?'线上完成':'Online'):(zh?'线下完成':'In person')}}</view><view class="task-title">{{request.title}}</view></view>
 <view wx:if="{{request.pictures.length}}" class="task-info-block"><view class="task-info-label">{{zh?'参考图片':'Reference photos'}}</view><image wx:for="{{request.pictures}}" wx:key="*this" class="thumb" src="{{item}}" mode="aspectFill" data-photo="{{item}}" bindtap="preview"/></view>
 <view wx:if="{{request.isRunner && request.status==='taken'}}" class="task-completion">
 <view class="strong">{{ui.whenDone}}</view>
 <view class="hint">{{ui.sendHint}}</view>
-<view class="upload-card upload-blue"><view class="upload-head" bindtap="handlePhoto" hover-class="upload-card-press" role="button"><view class="upload-icon"><image src="/assets/photo-blue.svg" mode="aspectFit"/></view><view class="upload-copy"><view class="upload-title">{{zh?'完成照片（选填）':'Completion photo (optional)'}}</view><view class="upload-hint">{{zh?'拍照或从相册选择，展示任务完成情况。':'Take or select a photo showing the completed task.'}}</view></view></view><text class="upload-count">{{(photo?1:0)}}/1</text><view wx:if="{{(photo?1:0)>0}}" class="upload-gallery"><view class="upload-tile"><image class="upload-image" src="{{photo}}" mode="aspectFill" data-photo="{{photo}}" bindtap="preview"/><view class="upload-remove" catchtap="removePhoto" role="button" aria-label="{{zh?'删除照片':'Remove photo'}}">×</view></view></view></view>
+<view class="upload-card upload-blue" aria-disabled="{{photoBusy||sending}}"><view class="upload-head" bindtap="handlePhoto" role="button"><view class="upload-icon"><image src="/assets/photo-blue.svg" mode="aspectFit"/></view><view class="upload-copy"><view class="upload-title">{{zh?'完成照片（选填）':'Completion photos (optional)'}}</view><view class="upload-hint">{{zh?'拍照或相册上传，最多 3 张。':'Camera or album. Up to 3 photos.'}}</view></view></view><text class="upload-count">{{photos.length}}/3</text><view wx:if="{{photos.length}}" class="upload-gallery"><view wx:for="{{photos}}" wx:key="*this" class="upload-tile"><image class="upload-image" src="{{item}}" mode="aspectFill" data-index="{{index}}" bindtap="previewCompletion"/><view class="upload-remove" data-index="{{index}}" catchtap="removePhoto" role="button" aria-label="{{zh?'删除照片':'Remove photo'}}">×</view></view><view wx:if="{{photos.length<3}}" class="upload-tile upload-more" bindtap="handlePhoto" role="button">＋</view></view></view>
 <textarea class="field" data-field="note" bindinput="field" maxlength="500" value="{{note}}" placeholder="{{ui.notePlaceholder}}"/>
-<button class="btn task-primary" loading="{{sending}}" disabled="{{!validNote||sending}}" bindtap="done">{{ui.sendBoth}}</button>
+<button class="btn task-primary" loading="{{sending}}" disabled="{{photoBusy||sending}}" bindtap="done">{{ui.sendBoth}}</button>
 <view class="task-secondary-actions">
 <button class="task-small-action" bindtap="giveBack">{{ui.giveBack}}</button>
 <button class="task-small-action" data-reason="mismatch" bindtap="giveBack">{{ui.mismatch}}</button>
@@ -68,10 +68,10 @@
 <button wx:if="{{cancelWindow.canCancel}}" class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel">{{cancelWindow.button}}</button>
 </view>
 </view>
-<view wx:if="{{request.photo||request.completionNote}}" class="flow-card">
-<image wx:if="{{request.photo}}" class="proof" src="{{request.photo}}" mode="aspectFill" data-photo="{{request.photo}}" bindtap="preview"/>
+<view wx:if="{{request.completionPhotos.length||request.completionNote}}" class="flow-card">
+<view class="upload-gallery"><view wx:for="{{request.completionPhotos}}" wx:key="*this" class="upload-tile"><image class="upload-image" src="{{item}}" mode="aspectFill" data-saved="{{true}}" data-index="{{index}}" bindtap="previewCompletion"/></view></view>
 <view class="hint">{{zh?'完成说明 · ':'Completion · '}}{{request.deliveredTime}}</view>
-<view class="value">“{{request.completionNote}}”</view>
+<view wx:if="{{request.completionNote}}" class="value">“{{request.completionNote}}”</view>
 </view>
 <view wx:if="{{request.isMine && request.status==='delivered'}}" class="flow-card">
 <button class="btn" bindtap="confirm">{{ui.confirmPre}}{{request.rewardText}}</button>

@@ -1,0 +1,23 @@
+const assert=require('node:assert/strict');
+let definition,modal,selection,preview;
+global.Page=value=>definition=value;
+global.wx={getStorageSync:()=>null,setStorageSync(){},showModal:options=>modal=options,showToast(){},previewImage:options=>preview=options};
+const ui=require('../utils/ui'),orders=require('../utils/orders');
+require('../pages/task/index');
+const p={...definition,data:structuredClone(definition.data),setData(value){Object.assign(this.data,value);}};
+p.onLoad({id:'task-test'});
+const sent=[];orders.act=async(action,args)=>sent.push({action,...args});orders.upload=async path=>'uploaded:'+path;
+ui.photos=async(source,count)=>{selection={source,count};return ['a','b','c'].slice(0,count);};
+(async()=>{
+ let pending=p.done();await p.done();assert.equal(sent.length,0);modal.success({confirm:false});await pending;assert.equal(sent.length,0);assert.equal(p.data.sending,false);
+ pending=p.done();modal.success({confirm:true});await pending;assert.deepEqual(sent[0],{action:'taskDone',id:'task-test',photos:[],note:''});
+ await p.handlePhoto();assert.equal(selection.count,3);assert.equal(p.data.photos.length,3);
+ p.removePhoto({currentTarget:{dataset:{index:1}}});assert.deepEqual(p.data.photos,['a','c']);
+ await p.handlePhoto();assert.equal(selection.count,1);assert.equal(p.data.photos.length,3);
+ p.previewCompletion({currentTarget:{dataset:{index:1}}});assert.equal(preview.current,'c');assert.equal(preview.urls.length,3);
+ p.field({currentTarget:{dataset:{field:'note'}},detail:{value:'好'}});
+ pending=p.done();await p.done();p.removePhoto({currentTarget:{dataset:{index:0}}});assert.equal(p.data.photos.length,3);modal.success({confirm:true});await pending;
+ assert.equal(sent.length,2);assert.equal(sent[1].photos.length,3);assert.equal(sent[1].note,'好');
+ orders.act=async()=>{throw Error('offline');};pending=p.done();modal.success({confirm:true});await pending;assert.equal(p.data.sending,false);assert.equal(p.data.photos.length,3);
+ console.log('Task completion: confirmation/cancellation, duplicate taps, optional evidence, three-photo selection, deletion, preview and retry passed.');
+})().catch(error=>{console.error(error);process.exitCode=1;});
