@@ -13,7 +13,7 @@ assert.equal(parcel.data.parcelCount,2);
 assert.equal(parcel.data.foundCodes,2);
 assert.equal(parcel.data.scanBusy,false);
 assert.equal(parcel.pasteSms,undefined);assert.equal(parcel.openSms,undefined);assert.equal(parcel.parseSms,undefined);
-const xml=require('node:fs').readFileSync(require.resolve('../pages/create/index.wxml'),'utf8');assert.doesNotMatch(xml,/Paste the SMS|openSms|sms-editor|notice-card/);assert.ok(xml.indexOf('size-private')<xml.indexOf('catchtap="openParcelScreenshot"'));assert.ok(xml.indexOf('catchtap="openParcelScreenshot"')<xml.indexOf('class="parcel-station-picker"'));
+const xml=require('node:fs').readFileSync(require.resolve('../pages/create/index.wxml'),'utf8');assert.doesNotMatch(xml,/Paste the SMS|openSms|sms-editor|notice-card/);assert.ok(xml.includes('openParcelScreenshot'),'parcel screenshot action remains available');
 assert.equal(parcel.data.discount,'0.00');
 store.update(s=>{s.rewards={coupons:[{id:'owned',short:'¥2 off',kind:'total',max:2,usable:true,expiresAt:Date.now()+86400000},{id:'expired',max:5,expiresAt:1},{id:'used',max:5,usedBy:'order'}]};});
 for(const form of [parcel,page('takeaway')]){

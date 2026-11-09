@@ -1,16 +1,24 @@
 <view wx:if="{{open}}" class="checkin-mask" catchtouchmove="noop" bindtap="noop">
  <view class="checkin-card" catchtap="noop" style="{{motionEnabled?'':'--ue-animation:none;--ue-transition:none;'}}">
   <button class="checkin-close" bindtap="close" aria-label="{{ui.close}}">×</button>
-  <view class="checkin-eyebrow">✦ CHECK IN</view>
-  <view class="checkin-title">{{ui.title}}</view>
-  <view class="checkin-sub">{{ui.streak}} <text class="checkin-streak-value">{{streak}}</text> {{ui.days}}</view>
-  <view class="checkin-stage" style="height:{{stageHeight}}rpx">
-   <image wx:if="{{!videoSrc||videoFailed||videoDone||!motionEnabled}}" class="checkin-still" src="{{posterSrc}}" mode="aspectFit"/>
-   <video wx:if="{{motionEnabled&&videoSrc&&!videoFailed&&!videoDone}}" class="checkin-video" src="{{videoSrc}}" autoplay muted="{{true}}" loop="{{false}}" controls="{{false}}" show-center-play-btn="{{false}}" show-play-btn="{{false}}" show-fullscreen-btn="{{false}}" show-progress="{{false}}" show-mute-btn="{{false}}" enable-progress-gesture="{{false}}" object-fit="contain" bindended="videoEnded" binderror="videoError"/>
+  <view class="checkin-eyebrow">✦ DAILY CHECK IN</view>
+  <view class="checkin-heading"><text class="checkin-title">{{ui.title}}</text><text class="checkin-streak">{{streakText}}</text></view>
+  <view class="checkin-sub">{{ui.subtitle}}</view>
+  <view class="checkin-stage {{motionEnabled?phase:''}}">
+   <view class="checkin-platform"/>
+   <view class="checkin-yuni" aria-label="{{speech}}" role="img">
+    <view wx:for="{{[0,1,2]}}" wx:key="*this" class="checkin-pose {{pose===item?'visible':''}}"><image src="/assets/yuni-feed/yuni.png" class="checkin-sprite" style="left:{{item * -100}}%" mode="scaleToFill"/></view>
+   </view>
+   <view class="checkin-speech">{{speech}}</view>
+   <view class="checkin-bucket"><view class="bucket-handle"/><image class="bucket-snack" src="/assets/yuni-feed/fish.png"/><view class="bucket-body"/><text class="bucket-label">{{ui.bucket}}</text></view>
+   <image wx:if="{{phase==='flying'&&motionEnabled}}" class="checkin-flying-fish" src="/assets/yuni-feed/fish.png"/>
+   <view wx:if="{{floating&&motionEnabled}}" class="checkin-float {{floatKey}}">{{floating}}</view>
   </view>
-  <view class="checkin-days"><view wx:for="{{days}}" wx:key="day" class="checkin-day {{item.done?'done':''}} {{item.today?'today':''}}"><text>{{item.done?'✓':item.day}}</text><text class="checkin-day-label">{{ui.day}} {{item.day}} {{ui.dayUnit}}</text></view></view>
+  <button class="checkin-feed {{fed?'fed':''}}" bindtap="feed" disabled="{{feeding||fed}}"><image class="feed-icon" wx:if="{{!fed}}" src="/assets/yuni-feed/fish.png"/><text wx:else>✓</text><text>{{feedLabel}}</text></button>
+  <view class="checkin-days"><view wx:for="{{days}}" wx:key="day" class="checkin-day {{item.done?'done':''}} {{item.today?'today':''}} {{item.day===7?'bonus-day':''}}"><view class="checkin-tile"><image class="tile-icon" src="{{item.done?(item.today?'/assets/yuni-feed/bones-white.png':'/assets/yuni-feed/bones.png'):(item.today?'/assets/yuni-feed/fish.png':'/assets/yuni-feed/fish-grey.png')}}"/><text wx:if="{{item.day===7}}" class="checkin-bonus">+10</text></view><text class="checkin-day-label">{{item.label}}</text></view></view>
+  <view class="checkin-week-foot"><text>{{weekCount}}</text><text>{{weekBonus}}</text></view>
   <view class="checkin-result"><view class="checkin-result-copy"><view class="checkin-result-title">{{points?rewardTitle:ui.today}}</view><view class="checkin-result-sub">{{hint}}</view></view><text wx:if="{{points}}" class="checkin-points">+{{points}}</text></view>
-  <view class="checkin-rule">{{ui.goal}}</view>
-  <button class="checkin-cta" bindtap="close">{{points?ui.collect:ui.continue}} <text class="checkin-cta-arrow">›</text></button>
+  <view class="checkin-rule">{{ui.goal}}</view><view class="checkin-cash">{{ui.cash}}</view>
+  <button wx:if="{{fed}}" class="checkin-cta {{collected&&points?'collected':''}}" bindtap="collectReward" disabled="{{collected&&points>0}}">{{points?(collected?ui.collected:ui.collect):ui.continue}}{{collected&&points?'':' ›'}}</button>
  </view>
 </view>

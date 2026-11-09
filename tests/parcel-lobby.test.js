@@ -8,7 +8,7 @@ function load(name){const file=require.resolve('../pages/'+name+'/index.js');del
 const oneParcel=p=>p.setData({pickupPoint:'Parcel station',codes:['1-2-3456'],sizeOptions:p.data.sizeOptions.map((size,i)=>({...size,count:i===0?1:0}))});
 (async()=>{
  assert.equal(features.lobbyDelivery,false,'takeaway and night market keep lobby delivery off');
- assert.equal(features.parcelLobbyDelivery,true,'parcel pickup offers lobby delivery');
+ assert.equal(features.parcelLobbyDelivery,false,'lobby delivery remains disabled by default');features.parcelLobbyDelivery=true; // Exercise retained opt-in code without enabling the shipped feature.
  const h=harness(),owner=h.engine.idFor('customer');
  store.reset();store.update(s=>{s.profile={...s.profile,...h.accounts[owner].profile,accountId:owner,onboarded:true};});
  routes.save({destinationType:'dorm',dorm:'D01',room:'101',owner:'customer',phone:'13801026092',default:true});

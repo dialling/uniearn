@@ -10,6 +10,7 @@ function view(r,language='zh'){
  const count=task?1:d.boxes(r),unit=task?(zh?'个任务':'task'):food?(zh?'袋':count===1?'bag':'bags'):(zh?'件':count===1?'parcel':'parcels');
  const fields=[],add=(label,value)=>{if(value!==undefined&&value!==null&&String(value).trim())fields.push({label,value:String(value)});};
  add(zh?'任务类型':'Type',type);add(zh?'数量':'Quantity',count?count+' '+unit:(zh?'未填写':'Not set'));
+ if(task)add(zh?'帮助方式':'Help type',r.taskMode==='online'?(zh?'线上帮助':'Online help'):(zh?'线下帮助':'Offline help'));
  if(!task){add(zh?'取件点':'Pickup point',pickup||(zh?'未填写':'Not set'));add(zh?'送达地点':'Destination',destination);if(loc.showDorm)add(zh?'宿舍类型':'Dorm type',loc.gender||(zh?'未填写':'Not set'));}
  if(food&&r.night){add(zh?'店铺':'Shop',r.shop);add(zh?'下单状态':'Food order',r.purchaseStatus==='needs_purchase'?(zh?'未下单 · 需跑手垫付':'Not ordered · runner pays upfront'):(zh?'已下单':'Already ordered'));}
  if(food&&!r.night)add(zh?'外卖到达状态':'Food arrival',r.arrived?(zh?'外卖已到':'Food is at the pickup point'):r.arrivalAt?(zh?'预计 ':'Expected ')+china.dateTime(r.arrivalAt):(zh?'暂未到达':'Not yet arrived'));

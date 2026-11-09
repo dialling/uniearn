@@ -17,3 +17,5 @@
 .seal-report-row{gap:20rpx;margin:16rpx 0}.seal-report-description{flex:1;min-width:0}.seal-report-action,.seal-report-recorded{flex-shrink:0;white-space:nowrap}
 
 .pickup-contact-info{margin:18rpx 0;padding:22rpx;border:1rpx solid #c6dfd3;border-radius:22rpx;background:#f0f8f4;word-break:break-all}.pickup-contact-info .value{font-size:28rpx}.page-dark .pickup-contact-info{background:#26382f;border-color:#466353}
+
+.missing-parcel-link{color:#c46524}.page-dark .missing-parcel-link{color:#f4aa70}
