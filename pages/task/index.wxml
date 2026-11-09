@@ -1,4 +1,5 @@
 <import src="../../utils/waiting-ticket.wxml"/>
+<import src="../../utils/customer-cancel-sheet.wxml"/>
 <view style="{{motionStyle}}">
 <lang-switch></lang-switch>
 <view class="flow-page task-page {{zh?'task-cn':''}} {{darkClass}}" wx:if="{{request}}">
@@ -62,6 +63,10 @@
 <button wx:if="{{cancelWindow.canCancel}}" class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel">{{cancelWindow.button}}</button>
 </view>
 </view>
+<view wx:if="{{request.isMine && request.status!=='waiting' && cancelWindow.phase!=='hidden'}}" class="flow-card offer-card">
+<view class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}">{{cancelWindow.tip}}</view>
+<button wx:if="{{cancelWindow.canCancel}}" class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel">{{cancelWindow.button}}</button>
+</view>
 <view wx:if="{{request.photo||request.completionNote}}" class="flow-card">
 <image wx:if="{{request.photo}}" class="proof" src="{{request.photo}}" mode="aspectFill" data-photo="{{request.photo}}" bindtap="preview"/>
 <view class="hint">{{zh?'完成说明 · ':'Completion · '}}{{request.deliveredTime}}</view>
@@ -87,9 +92,11 @@
 <text>¥{{request.total}}</text>
 </view>
 <view wx:if="{{request.status==='refunded'||request.status==='cancelled'}}" class="hint">{{ui.refund}}{{request.refundAmount}}</view>
+<view wx:if="{{request.cancelReasonLabel}}" class="hint">{{zh?'取消原因：':'Cancel reason: '}}{{request.cancelReasonLabel}}<text wx:if="{{request.cancelNote}}"> · “{{request.cancelNote}}”</text></view>
 </view>
 <button class="btn light" bindtap="help">{{ui.help}}</button>
 </view>
 <view wx:else class="empty">{{ui.unavailable}}</view>
 <yuni-assistant topic=""/>
+<template is="customerCancelSheet" data="{{zh,cancelOpen,cancelOptions,cancelReason,cancelNote,cancelling,cancelReady,motionEnabled}}"/>
 </view>

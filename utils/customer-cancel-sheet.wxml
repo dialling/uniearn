@@ -1,0 +1,20 @@
+<template name="customerCancelSheet">
+<block wx:if="{{cancelOpen}}">
+<view class="sheet-shade" bindtap="backCancel"/>
+<view class="flow-sheet cancel-sheet">
+<view class="strong">{{zh?'为什么取消？':'Why are you cancelling?'}}</view>
+<view class="hint">{{zh?'请选择一个原因。':'Choose one reason.'}}</view>
+<view wx:for="{{cancelOptions}}" wx:key="value" class="soft" data-value="{{item.value}}" bindtap="chooseCancelReason">
+<view>{{cancelReason===item.value?'◉':'○'}} {{item.label}}</view>
+</view>
+<block wx:if="{{cancelReason==='Other'}}">
+<view class="hint">{{zh?'需要写一句说明。':'A short note is required.'}}</view>
+<textarea class="field" maxlength="200" value="{{cancelNote}}" bindinput="cancelNoteInput" placeholder="{{zh?'写一句说明':'Add a short note'}}"/>
+</block>
+<view class="action-row">
+<button class="btn outline" bindtap="backCancel" disabled="{{cancelling}}">{{zh?'返回':'Back'}}</button>
+<button class="btn" disabled="{{!cancelReady || cancelling}}" loading="{{motionEnabled && cancelling}}" bindtap="submitCancel">{{zh?'确认原因':'Confirm reason'}}</button>
+</view>
+</view>
+</block>
+</template>

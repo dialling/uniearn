@@ -68,4 +68,56 @@ function sync(page, order, zh) {
   return cancel;
 }
 
-module.exports = {WINDOW_MS, clock, runnerLabel, view, arm, stop, sync};
+const reasons = require('./customer-cancel-reasons');
+
+function openSheet(page) {
+  const order = page.data && page.data.request;
+  const window = page.data && page.data.cancelWindow;
+  if (!order || !window || !window.canCancel || page.data.cancelling) return;
+  page.setData({
+    cancelOpen: true,
+    cancelReason: '',
+    cancelNote: '',
+    cancelReady: false,
+    cancelOptions: reasons.options(order, !!page.data.zh)
+  });
+}
+
+function choose(page, event) {
+  const cancelReason = event.currentTarget.dataset.value;
+  page.setData({
+    cancelReason,
+    cancelReady: reasons.ready(page.data.request, cancelReason, page.data.cancelNote)
+  });
+}
+
+function note(page, event) {
+  const cancelNote = event.detail.value;
+  page.setData({
+    cancelNote,
+    cancelReady: reasons.ready(page.data.request, page.data.cancelReason, cancelNote)
+  });
+}
+
+function close(page, force) {
+  if (!force && page.data && page.data.cancelling) return;
+  page.setData({cancelOpen: false, cancelReason: '', cancelNote: '', cancelReady: false, cancelOptions: []});
+}
+
+function payload(page) {
+  const picked = reasons.check(page.data.request, page.data.cancelReason, page.data.cancelNote);
+  return {reason: picked.reason, ...(picked.note ? {note: picked.note} : {})};
+}
+
+function syncOpen(page) {
+  if (!page.data || !page.data.cancelOpen) return;
+  const order = page.data.request;
+  const window = page.data.cancelWindow || {};
+  if (!order || !window.canCancel) { close(page, true); return; }
+  page.setData({
+    cancelOptions: reasons.options(order, !!page.data.zh),
+    cancelReady: reasons.ready(order, page.data.cancelReason, page.data.cancelNote)
+  });
+}
+
+module.exports = {WINDOW_MS, clock, runnerLabel, view, arm, stop, sync, openSheet, choose, note, close, payload, syncOpen};
