@@ -78,35 +78,45 @@ function openSheet(page) {
     cancelOpen: true,
     cancelReason: '',
     cancelNote: '',
+    cancelNoteOpen: false,
     cancelReady: false,
     cancelOptions: reasons.options(order, !!page.data.zh)
   });
 }
 
 function choose(page, event) {
-  const cancelReason = event.currentTarget.dataset.value;
-  page.setData({
-    cancelReason,
-    cancelReady: reasons.ready(page.data.request, cancelReason, page.data.cancelNote)
-  });
+  const value = event && event.currentTarget && event.currentTarget.dataset.value;
+  const item = reasons.REASONS.find(row => row.key === value);
+  if (!item || (page.data && page.data.cancelling)) return;
+  if (item.note) {
+    page.setData({
+      cancelReason: value,
+      cancelNoteOpen: true,
+      cancelReady: reasons.ready(value, page.data.cancelNote)
+    });
+    return;
+  }
+  page.setData({cancelReason: value, cancelNote: '', cancelNoteOpen: false, cancelReady: true});
+  return {submit: true, reason: value};
 }
 
 function note(page, event) {
   const cancelNote = event.detail.value;
   page.setData({
     cancelNote,
-    cancelReady: reasons.ready(page.data.request, page.data.cancelReason, cancelNote)
+    cancelReady: reasons.ready(page.data.cancelReason, cancelNote)
   });
 }
 
 function close(page, force) {
   if (!force && page.data && page.data.cancelling) return;
-  page.setData({cancelOpen: false, cancelReason: '', cancelNote: '', cancelReady: false, cancelOptions: []});
+  page.setData({cancelOpen: false, cancelReason: '', cancelNote: '', cancelNoteOpen: false, cancelReady: false, cancelOptions: []});
 }
 
-function payload(page) {
-  const picked = reasons.check(page.data.request, page.data.cancelReason, page.data.cancelNote);
-  return {reason: picked.reason, ...(picked.note ? {note: picked.note} : {})};
+function payload(page, override) {
+  const direct = override && override.submit && override.reason;
+  const picked = reasons.check(direct ? override.reason : page.data.cancelReason, direct ? '' : page.data.cancelNote);
+  return {reason: picked.key, ...(picked.note ? {note: picked.note} : {})};
 }
 
 function syncOpen(page) {
@@ -116,7 +126,8 @@ function syncOpen(page) {
   if (!order || !window.canCancel) { close(page, true); return; }
   page.setData({
     cancelOptions: reasons.options(order, !!page.data.zh),
-    cancelReady: reasons.ready(order, page.data.cancelReason, page.data.cancelNote)
+    cancelNoteOpen: reasons.isOther(page.data.cancelReason),
+    cancelReady: reasons.ready(page.data.cancelReason, page.data.cancelNote)
   });
 }
 

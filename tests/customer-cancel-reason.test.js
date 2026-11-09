@@ -12,57 +12,40 @@ assert.equal(
   fs.readFileSync(require.resolve('../cloudfunctions/orderService/customer-cancel-reasons.js'), 'utf8'),
   'client and orderService share one reason catalog'
 );
-assert.deepEqual(reasons.POSTED.map(row => row.key), cloudReasons.POSTED.map(row => row.key));
-assert.deepEqual(reasons.TAKEN.map(row => row.key), [
-  'Collected it myself',
-  'Runner too slow to pick up',
-  'Other'
-]);
-assert.deepEqual(reasons.POSTED.map(row => row.key), [
-  'No one took the order',
-  'Collected it myself',
-  'Changed my mind',
-  'Wrong details in the order',
-  'Other'
-]);
-for (const row of reasons.POSTED.concat(reasons.TAKEN)) {
-  assert.doesNotMatch(row.key, /[\u4e00-\u9fff]/, row.key);
-  assert.match(row.zh, /[\u4e00-\u9fff]/);
-}
-assert.equal(reasons.POSTED.find(row => row.note).key, 'Other');
-assert.equal(reasons.TAKEN.filter(row => row.note).length, 1);
-
-const waiting = {status: 'waiting', runnerId: null};
-const taken = {status: 'taken', runnerId: 't', takenAt: 1};
-assert.deepEqual(reasons.options(waiting, false).map(row => row.label), reasons.POSTED.map(row => row.key));
-assert.deepEqual(reasons.options(waiting, true).map(row => row.label), reasons.POSTED.map(row => row.zh));
-assert.equal(reasons.options(taken, false).some(row => row.value === 'No one took the order'), false);
-assert.equal(reasons.options(waiting, false).some(row => row.value === 'Runner too slow to pick up'), false);
+assert.deepEqual(reasons.REASONS.map(row => row.key), cloudReasons.REASONS.map(row => row.key));
+assert.deepEqual(reasons.REASONS.map(row => row.key), ['测试', '信息填错', '没人接单', '其他']);
+assert.deepEqual(reasons.options({status: 'waiting'}, false).map(row => row.label), ['Test', 'Wrong details', 'No one took the order', 'Other']);
+assert.deepEqual(reasons.options({status: 'taken'}, true).map(row => row.label), ['测试', '信息填错', '没人接单', '其他']);
+assert.deepEqual(reasons.options({status: 'waiting'}, false).map(row => row.value), reasons.options({status: 'collected'}, false).map(row => row.value));
+for (const label of reasons.options({}, false).map(row => row.label)) assert.doesNotMatch(label, /[\u4e00-\u9fff]/);
 assert.equal(reasons.label('expired', false), '');
-assert.equal(reasons.label('Collected it myself', true), '我自己取了');
+assert.equal(reasons.label('测试', false), 'Test');
+assert.equal(reasons.label('其他：late class', false), 'Other: late class');
+assert.equal(reasons.label('其他：晚了', true), '其他：晚了');
 
 function fresh(status, extra) {
   return {requests: [{id: '1', status, runnerId: status === 'waiting' ? null : 't', takenAt: 10, reward: 4, serviceFee: 0, discount: 0, collected: [], ...extra}], trips: status === 'waiting' ? [] : [{id: 't', requestIds: ['1'], joinUntil: 0}]};
 }
 for (const api of [domain, cloudDomain]) {
   assert.throws(() => api.customerCancel(fresh('waiting'), '1', 20), /Choose a cancel reason/);
-  assert.throws(() => api.customerCancel(fresh('waiting'), '1', 20, 'Runner too slow to pick up'), /Choose a cancel reason/);
-  assert.throws(() => api.customerCancel(fresh('taken'), '1', 20, 'Changed my mind'), /Choose a cancel reason/);
-  assert.throws(() => api.customerCancel(fresh('waiting'), '1', 20, 'Other', '   '), /short note/);
-  assert.throws(() => api.customerCancel(fresh('waiting'), '1', 20, 'Other', 'x'.repeat(201)), /200/);
-  const noted = fresh('waiting');
-  api.customerCancel(noted, '1', 20, 'Other', '  Posted twice  ');
-  assert.equal(noted.requests[0].cancelReason, 'Other');
-  assert.equal(noted.requests[0].cancelNote, 'Posted twice');
+  assert.throws(() => api.customerCancel(fresh('waiting'), '1', 20, 'Changed my mind'), /Choose a cancel reason/);
+  assert.throws(() => api.customerCancel(fresh('waiting'), '1', 20, '其他', 'x'.repeat(201)), /200/);
+  const optional = fresh('waiting');
+  api.customerCancel(optional, '1', 20, '其他', '   ');
+  assert.equal(optional.requests[0].cancel_reason, '其他');
+  assert.equal(optional.requests[0].cancelNote, undefined);
+  const noted = fresh('taken');
+  api.customerCancel(noted, '1', 20, '其他', '  Posted twice  ');
+  assert.equal(noted.requests[0].cancel_reason, '其他：Posted twice');
+  assert.equal(noted.requests[0].cancelReason, '其他：Posted twice');
   assert.equal(noted.requests[0].cancelledBy, 'student');
+  assert.equal(noted.trips[0].requestIds.includes('1'), false);
   const plain = fresh('taken');
-  api.customerCancel(plain, '1', 20, 'Runner too slow to pick up', 'ignored');
+  api.customerCancel(plain, '1', 20, '没人接单', 'ignored');
   assert.equal(plain.requests[0].status, 'cancelled');
-  assert.equal(plain.requests[0].cancelReason, 'Runner too slow to pick up');
-  assert.equal(plain.requests[0].cancelNote, undefined);
-  assert.equal(plain.trips[0].requestIds.includes('1'), false);
+  assert.equal(plain.requests[0].cancel_reason, '没人接单');
   const late = fresh('taken');
-  assert.throws(() => api.customerCancel(late, '1', 20 + 180000, 'Runner too slow to pick up'), /Cancel window ended/);
+  assert.throws(() => api.customerCancel(late, '1', 20 + 180000, '测试'), /Cancel window ended/);
 }
 
 const owner = engine.idFor('cancel-reason-owner');
@@ -74,34 +57,41 @@ function act(state, who, action, payload) {
 const state = engine.initial();
 const posted = act(state, 'owner', 'create', {data: {category: 'parcel', owner: 'Student', phone: '13800000000', station: 'North gate', dorm: 'D01', room: '101', parcelItems: [{size: 'small', code: 'A1'}]}}).id;
 assert.throws(() => act(state, 'owner', 'cancel', {id: posted}), /Choose a cancel reason/);
-assert.throws(() => act(state, 'owner', 'cancel', {id: posted, reason: 'Other'}), /short note/);
-assert.throws(() => act(state, 'owner', 'cancel', {id: posted, reason: 'Other', note: 12}), /Invalid cancel note/);
-act(state, 'owner', 'cancel', {id: posted, reason: 'Wrong details in the order'});
+assert.throws(() => act(state, 'owner', 'cancel', {id: posted, reason: 'Collected it myself'}), /Choose a cancel reason/);
+assert.throws(() => act(state, 'owner', 'cancel', {id: posted, reason: '其他', note: 12}), /Invalid cancel note/);
+act(state, 'owner', 'cancel', {id: posted, reason: '信息填错'});
 const saved = state.requests.find(row => row.id === posted);
 assert.equal(saved.status, 'cancelled');
-assert.equal(saved.cancelReason, 'Wrong details in the order');
+assert.equal(saved.cancel_reason, '信息填错');
 assert.equal(saved.cancelledBy, 'student');
-assert.equal(workflow.view(saved, 'zh').cancelReasonLabel, '信息填错了');
-assert.equal(workflow.view(saved, 'en').cancelReasonLabel, 'Wrong details in the order');
+assert.equal(workflow.view(saved, 'zh').cancelReasonLabel, '信息填错');
+assert.equal(workflow.view(saved, 'en').cancelReasonLabel, 'Wrong details');
 const snap = engine.snapshot(state, owner, person, Date.now());
-assert.equal(snap.requests.find(row => row.id === posted).cancelReason, 'Wrong details in the order');
+assert.equal(snap.requests.find(row => row.id === posted).cancel_reason, '信息填错');
 
 const accepted = act(state, 'owner', 'create', {data: {category: 'takeout', owner: 'Student', phone: '13800000000', station: 'North gate', dorm: 'D01', room: '101', bags: 1, price: 4, arrived: true}}).id;
 act(state, 'runner', 'accept', {ids: [accepted]});
-assert.throws(() => act(state, 'owner', 'cancel', {id: accepted, reason: 'No one took the order'}), /Choose a cancel reason/);
-act(state, 'owner', 'cancel', {id: accepted, reason: 'Other', note: 'Runner has not moved'});
-const after = state.requests.find(row => row.id === accepted);
-assert.equal(after.cancelReason, 'Other');
-assert.equal(after.cancelNote, 'Runner has not moved');
-assert.equal(engine.snapshot(state, owner, person, Date.now()).requests.find(row => row.id === accepted).cancelNote, 'Runner has not moved');
+act(state, 'owner', 'cancel', {id: accepted, reason: '没人接单'});
+const takenReason = state.requests.find(row => row.id === accepted);
+assert.equal(takenReason.cancel_reason, '没人接单', 'the same four reasons apply after acceptance');
+const acceptedAgain = act(state, 'owner', 'create', {data: {category: 'takeout', owner: 'Student', phone: '13800000000', station: 'North gate', dorm: 'D01', room: '102', bags: 1, price: 4, arrived: true}}).id;
+act(state, 'runner', 'accept', {ids: [acceptedAgain]});
+act(state, 'owner', 'cancel', {id: acceptedAgain, reason: '其他', note: '  Runner has not moved  '});
+const after = state.requests.find(row => row.id === acceptedAgain);
+assert.equal(after.cancel_reason, '其他：Runner has not moved');
+assert.equal(after.cancelNote, undefined);
+assert.equal(workflow.view(after, 'en').cancelReasonLabel, 'Other: Runner has not moved');
+assert.equal(engine.snapshot(state, owner, person, Date.now()).requests.find(row => row.id === acceptedAgain).cancel_reason, '其他：Runner has not moved');
 
 const admin = fs.readFileSync(require.resolve('../cloudfunctions/adminService/core.js'), 'utf8');
-assert.match(admin, /'cancelReason','cancelNote'/);
+assert.match(admin, /'cancel_reason','cancelReason'/);
 const connection = fs.readFileSync(require.resolve('../admin-web/dist/connection.js'), 'utf8');
 assert.match(connection, /cancelNote:r\.cancelNote/);
 
 const sheet = fs.readFileSync('utils/customer-cancel-sheet.wxml', 'utf8');
-assert.match(sheet, /disabled="\{\{!cancelReady \|\| cancelling\}\}"/);
+assert.match(sheet, /cancelNoteOpen/);
+assert.match(sheet, /optional/i);
+assert.doesNotMatch(sheet, /short note is required/i);
 assert.match(sheet, /bindtap="submitCancel"/);
 assert.doesNotMatch(sheet.replace(/\{\{zh\?'[^']*':'([^']*)'\}\}/g, '$1'), /[\u4e00-\u9fff]/);
 for (const page of ['request', 'task']) {
@@ -141,20 +131,29 @@ page.cancel();
 assert.equal(page.data.cancelOpen, true);
 assert.equal(page.data.cancelReady, false);
 assert.equal(calls.length, 0, 'opening the sheet does not cancel');
-assert.deepEqual(page.data.cancelOptions.map(row => row.label), reasons.POSTED.map(row => row.key));
+assert.deepEqual(page.data.cancelOptions.map(row => row.label), ['Test', 'Wrong details', 'No one took the order', 'Other']);
 page.submitCancel();
 assert.equal(calls.length, 0, 'confirm stays blocked until a reason is chosen');
-page.chooseCancelReason({currentTarget: {dataset: {value: 'Other'}}});
-assert.equal(page.data.cancelReady, false);
-page.cancelNoteInput({detail: {value: '   '}});
-assert.equal(page.data.cancelReady, false);
-page.cancelNoteInput({detail: {value: 'Wrong room'}});
-assert.equal(page.data.cancelReady, true);
 (async () => {
-  await page.submitCancel();
-  assert.equal(calls[0].action, 'cancel');
-  assert.deepEqual(calls[0].payload, {id: 'o1', reason: 'Other', note: 'Wrong room'});
+  await page.chooseCancelReason({currentTarget: {dataset: {value: '测试'}}});
+  assert.equal(calls.length, 1, 'a listed reason other than 其他 submits immediately');
+  assert.deepEqual(calls[0].payload, {id: 'o1', reason: '测试'});
   assert.equal(page.data.cancelOpen, false);
+
+  page.cancel();
+  page.chooseCancelReason({currentTarget: {dataset: {value: '其他'}}});
+  assert.equal(page.data.cancelNoteOpen, true);
+  assert.equal(page.data.cancelReady, true, '其他 can be sent with no note');
+  assert.equal(calls.length, 1);
+  page.cancelNoteInput({detail: {value: '   '}});
+  await page.submitCancel();
+  assert.deepEqual(calls[1].payload, {id: 'o1', reason: '其他'});
+
+  page.cancel();
+  page.chooseCancelReason({currentTarget: {dataset: {value: '其他'}}});
+  page.cancelNoteInput({detail: {value: '  Wrong room  '}});
+  await page.submitCancel();
+  assert.deepEqual(calls[2].payload, {id: 'o1', reason: '其他', note: 'Wrong room'});
 
   store.update(s => {
     s.language = 'zh';
@@ -167,10 +166,8 @@ assert.equal(page.data.cancelReady, true);
   assert.equal(page.data.cancelWindow.phase, 'grace');
   assert.equal(page.data.zh, true);
   page.cancel();
-  assert.deepEqual(page.data.cancelOptions.map(row => row.value), reasons.TAKEN.map(row => row.key));
-  assert.deepEqual(page.data.cancelOptions.map(row => row.label), reasons.TAKEN.map(row => row.zh));
-  page.chooseCancelReason({currentTarget: {dataset: {value: 'No one took the order'}}});
-  assert.equal(page.data.cancelReady, false, 'a posted-only reason cannot confirm after acceptance');
+  assert.deepEqual(page.data.cancelOptions.map(row => row.value), ['测试', '信息填错', '没人接单', '其他']);
+  assert.deepEqual(page.data.cancelOptions.map(row => row.label), ['测试', '信息填错', '没人接单', '其他']);
   require('../utils/customer-cancel').stop(page);
-  console.log('Customer cancel requires an XP reason, blocks an empty choice, and keeps the note only for Other.');
+  console.log('Publisher cancel uses XP’s four reasons, submits them immediately, and keeps the 其他 note optional.');
 })().catch(error => { console.error(error); process.exitCode = 1; });

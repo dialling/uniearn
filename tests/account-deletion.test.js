@@ -84,7 +84,7 @@ const base = { category: 'takeout', owner: 'Customer', phone: '13801026092', sta
   assert.equal(h.accounts[id('stranger')], undefined, 'account deleted after closing the orders');
 
   /* ---------- 5. runner deletion blanks the runner identity but keeps the customer's order ---------- */
-  await ok('runner', 'cancel', { id: third, reason: 'Changed my mind' });
+  await ok('runner', 'cancel', { id: third, reason: '测试' });
   await h.call('other', 'sync');
   const runnerDeleted = (await ok('runner', 'deleteAccount', { confirm: 'DELETE' })).value;
   assert.ok(runnerDeleted.counts.trips >= 1, 'trips run by the account are anonymised');

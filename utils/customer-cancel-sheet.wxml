@@ -7,14 +7,15 @@
 <view wx:for="{{cancelOptions}}" wx:key="value" class="soft" data-value="{{item.value}}" bindtap="chooseCancelReason">
 <view>{{cancelReason===item.value?'◉':'○'}} {{item.label}}</view>
 </view>
-<block wx:if="{{cancelReason==='Other'}}">
-<view class="hint">{{zh?'需要写一句说明。':'A short note is required.'}}</view>
-<textarea class="field" maxlength="200" value="{{cancelNote}}" bindinput="cancelNoteInput" placeholder="{{zh?'写一句说明':'Add a short note'}}"/>
-</block>
+<block wx:if="{{cancelNoteOpen}}">
+<view class="hint">{{zh?'补充说明（选填）':'A short note is optional.'}}</view>
+<textarea class="field" maxlength="200" value="{{cancelNote}}" bindinput="cancelNoteInput" placeholder="{{zh?'补充说明（选填）':'Optional note'}}"/>
 <view class="action-row">
 <button class="btn outline" bindtap="backCancel" disabled="{{cancelling}}">{{zh?'返回':'Back'}}</button>
-<button class="btn" disabled="{{!cancelReady || cancelling}}" loading="{{motionEnabled && cancelling}}" bindtap="submitCancel">{{zh?'确认原因':'Confirm reason'}}</button>
+<button class="btn" disabled="{{cancelling}}" loading="{{motionEnabled && cancelling}}" bindtap="submitCancel">{{zh?'确认取消':'Confirm cancel'}}</button>
 </view>
+</block>
+<button wx:else class="btn outline" bindtap="backCancel" disabled="{{cancelling}}">{{zh?'返回':'Back'}}</button>
 </view>
 </block>
 </template>

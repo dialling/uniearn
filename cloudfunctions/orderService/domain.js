@@ -159,7 +159,7 @@ function customerCanCancel(r,now=Date.now()){
 function customerCancel(s,id,now=Date.now(),reason,note){
   const r=s.requests.find(x=>x.id===id);
   if(!r||!customerCanCancel(r,now))throw Error('Cancel window ended');
-  const picked=require('./customer-cancel-reasons').check(r,reason,note);
+  const picked=require('./customer-cancel-reasons').check(reason,note);
   if(r.runnerId){
     const t=s.trips.find(x=>x.id===r.runnerId);
     if(t){
@@ -171,8 +171,8 @@ function customerCancel(s,id,now=Date.now(),reason,note){
   }
   r.status='cancelled';r.runnerId=null;r.collected=[];
   r.refundAmount=Math.max(0,Math.round((r.reward+(r.serviceFee===undefined?serviceFee(boxes(r)):r.serviceFee)-Number(r.discount||0))*100)/100);
-  r.cancelledAt=now;r.cancelReason=picked.reason;r.cancelledBy='student';
-  if(picked.note)r.cancelNote=picked.note;else delete r.cancelNote;
+  r.cancelledAt=now;r.cancel_reason=picked.stored;r.cancelReason=picked.stored;r.cancelledBy='student';
+  delete r.cancelNote;
   return r;
 }
 const EXPIRE_MS=3600000;

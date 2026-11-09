@@ -74,7 +74,7 @@ function createService({repo, env, now = Date.now, random = () => crypto.randomB
         const out = {};
         for (const k of ['id','category','title','station','dorm','reward','serviceFee','discount','couponId','status',
           'ownerId','runnerId','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','cancelledAt',
-          'autoConfirmed','cancelReason','cancelNote','refundedAt','refundAmount','refundReason','isTest','rating','arrivalAt',
+          'autoConfirmed','cancel_reason','cancelReason','cancelNote','refundedAt','refundAmount','refundReason','isTest','rating','arrivalAt',
           'dueAt','small','big','night','runnerBonus','cancelledBy','dispute']) if (r[k] !== undefined) out[k] = clone(r[k]);
         return out;
       });

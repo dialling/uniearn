@@ -181,13 +181,13 @@
 </view>
 <view wx:if="{{request.cancelReasonLabel}}" class="flow-card">
 <view class="strong">{{zh?'取消原因':'Cancel reason'}}</view>
-<view class="hint">{{request.cancelReasonLabel}}<text wx:if="{{request.cancelNote}}"> · “{{request.cancelNote}}”</text></view>
+<view class="hint">{{request.cancelReasonLabel}}</view>
 </view>
 <button wx:if="{{request.isMine && (request.status==='confirmed'||request.status==='cancelled'||request.status==='refunded')}}" class="btn outline" bindtap="repeat">{{zh?'再来一单':'Post again'}}</button>
 </view>
 <view wx:else class="empty">{{zh?'订单暂不可用，请检查网络和账号。':'Request unavailable. Check your connection and account.'}}</view>
 <yuni-assistant topic=""/>
-<template is="customerCancelSheet" data="{{zh,cancelOpen,cancelOptions,cancelReason,cancelNote,cancelling,cancelReady,motionEnabled}}"/>
+<template is="customerCancelSheet" data="{{zh,cancelOpen,cancelOptions,cancelReason,cancelNote,cancelNoteOpen,cancelling,cancelReady,motionEnabled}}"/>
 <view wx:if="{{celebrate&&request}}" class="yuni-mask" bindtap="closeCelebrate" catchtouchmove="noop">
 <view class="yuni-pop" catchtap="noop">
 <view class="yuni-badge">{{request.night?successUI.typeNight:request.category==='takeout'?successUI.typeTakeout:successUI.typeParcel}}</view>
