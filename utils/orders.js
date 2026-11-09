@@ -23,6 +23,7 @@ function apply(snapshot) {
   if (!snapshot) return;
   const state = store.get();
   if (state.cloudRevision > snapshot.revision && state.profile.accountId === snapshot.accountId) return;
+  try{yuniEvents.reconcile(snapshot);}catch(e){console.warn('Order notification cleanup failed',e);}
   if(!previous && state.cloudRevision>=0 && state.profile.accountId===snapshot.accountId)previous={accountId:snapshot.accountId,unread:pairMap(state.requests,r=>r.unread||0),tripIds:(state.publicTrips||[]).map(t=>t.id),status:pairMap(state.requests,r=>r.status)};
   if (previous && previous.accountId === snapshot.accountId) {
     const prefs=state.preferences||{},newMessage=snapshot.requests.some(r=>r.unread>(previous.unread?.[r.id]||0)),newRoute=(snapshot.publicTrips||[]).some(t=>!previous.tripIds?.includes(t.id)&&snapshot.requests.some(r=>r.isMine&&r.status==='waiting'&&r.station===t.station&&r.dorm===t.dorm));
@@ -35,7 +36,7 @@ function apply(snapshot) {
       const realCancel=changes.some(r=>r.status==='cancelled');
       const returned=changes.length&&changes.every(r=>r.status==='waiting'&&r.cancellation);
       if(state.yuniTips===false)tell(state.language==='en'?(realCancel?'Order cancelled':returned?'Order still active · see My orders':'Order progress updated · open My orders'):(realCancel?'订单已取消':returned?'订单仍在进行，请查看我的订单':'订单进度已更新，请查看我的订单。'));
-      else changes.forEach(r=>yuniEvents.status(r,snapshot.revision));
+      else changes.forEach(r=>{try{yuniEvents.status(r,snapshot.revision);}catch(e){console.warn('Order notification failed',e);}});
     }
     else if(joined&&state.preferences?.orderUpdates!==false)tell('A customer joined your trip');
     else if (state.profile.studentVerified && newJobs.length && state.preferences?.newJobs!==false) tell('New pickup jobs available');

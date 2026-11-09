@@ -64,7 +64,7 @@
 .jobs-page .job-card .job-badges .badge{margin:0;padding:5rpx 11rpx;border-radius:9rpx;font-size:20rpx;font-weight:550;line-height:1.45}
 .jobs-page .job-card .job-badges .state-badge{background:transparent!important;color:#777d76;padding-left:0;padding-right:3rpx;font-weight:500}
 .jobs-page .job-card .job-badges .state-badge.done-badge,.jobs-page .job-card .job-badges .state-badge.own-badge{color:#0b7a55;font-weight:650}
-.jobs-page .job-card .badge.takeout{color:#0b7a55;background:#eaf4ee}
+.jobs-page .job-card .badge.takeout,.jobs-page .job-card .badge.parcel{color:#0b7a55;background:#eaf4ee}
 .jobs-page .job-card .badge.orange{background:#fff2e9;color:#b45321}
 .jobs-page .job-card .amount{display:flex;align-items:baseline;flex:none;gap:3rpx;font-family:inherit;font-variant-numeric:tabular-nums;font-size:48rpx;font-weight:750;letter-spacing:-1rpx;line-height:1.05;color:#c2410c;white-space:nowrap}
 .job-card .job-currency{font-size:27rpx;font-weight:650;letter-spacing:0}
@@ -161,3 +161,7 @@
 .group-fold-row{display:flex;justify-content:flex-end;margin-top:10rpx}
 .page-dark .group-total-label{color:#b5bbaf}
 .page-dark .group-total-amount{color:#f4a06e}
+.jobs-page .job-card .job-badges .task-mode-badge{font-size:18rpx;padding:4rpx 9rpx;font-weight:600}.jobs-page .task-mode-online{background:#e8f4ee;color:#27734e}.jobs-page .task-mode-offline{background:#f0eee8;color:#685f4e}.page-dark.jobs-page .task-mode-online{background:#243c30;color:#91d3ac}.page-dark.jobs-page .task-mode-offline{background:#39362f;color:#d8ceba}
+/* Give long locker names the full route width. */
+
+.tracked-orders{margin:18rpx 0 24rpx;padding:10rpx 24rpx 4rpx;background:#f7fbf7;border:1rpx solid #dbe8dc;border-radius:24rpx}.tracked-orders-heading{display:flex;justify-content:space-between;align-items:center;gap:12rpx;color:#41664b;font-size:24rpx;font-weight:700}.tracked-orders-heading button{min-height:44px;margin:0;padding:12rpx 0 12rpx 18rpx;background:none;color:#41664b;font-size:21rpx;line-height:1.5;font-weight:600}.tracked-orders-heading button::after{border:0}.tracked-order-row{display:flex;align-items:center;gap:18rpx;min-height:44px;padding:18rpx 0;border-top:1rpx solid #e4ece2}.tracked-order-copy{flex:1;min-width:0}.tracked-order-title{font-size:25rpx;line-height:1.5;font-weight:650;color:#263a2d;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tracked-order-status{font-size:21rpx;color:#497557;margin-top:4rpx}.tracked-order-chevron{font-size:32rpx;color:#7c987d}.page-dark .tracked-orders{background:#24352c;border-color:#3d5141}.page-dark .tracked-order-row{border-color:#3d5141}.page-dark .tracked-order-title{color:#e1ebe2}.page-dark .tracked-order-status,.page-dark .tracked-orders-heading,.page-dark .tracked-orders-heading button{color:#a2cead}

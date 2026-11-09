@@ -6,11 +6,13 @@ const task=act(customer,account,'create',{data:{category:'task',title,price:5,ow
 act(runner,runnerAccount,'accept',{ids:[id]});assert.equal(engine.snapshot(state,runner,runnerAccount,now).requests[0].title,title);act(runner,runnerAccount,'taskDone',{id,photo:'cloud://test/order-photos/'+runner+'/'+'a'.repeat(32)+'.jpg',note:'Returned at the library front desk.'});act(customer,account,'confirm',{id});assert.equal(state.requests[0].status,'confirmed');assert.equal(engine.snapshot(state,runner,runnerAccount,now).stats.paid,5);assert.ok(!('onTime' in engine.snapshot(state,runner,runnerAccount,now).stats));
 const textOnly=act(customer,account,'create',{data:{category:'task',title:'Text only completion test',price:3}}).id;
 act(runner,runnerAccount,'accept',{ids:[textOnly]});
-assert.throws(()=>act(runner,runnerAccount,'taskDone',{id:textOnly,note:'  '}),/note/);
-act(runner,runnerAccount,'taskDone',{id:textOnly,note:'已完成任务'});
+assert.throws(()=>act(runner,runnerAccount,'taskDone',{id:textOnly,note:'  '}),/photo/i);
+const proof='cloud://test/order-photos/'+runner+'/'+'b'.repeat(32)+'.jpg';
+assert.throws(()=>act(runner,runnerAccount,'taskDone',{id:textOnly,photo:'cloud://test/order-photos/'+customer+'/'+'b'.repeat(32)+'.jpg'}),/photo/i);
+act(runner,runnerAccount,'taskDone',{id:textOnly,photo:proof,note:''});
 const delivered=engine.snapshot(state,customer,account,now).requests.find(r=>r.id===textOnly);
-assert.equal(delivered.photo,'');
-assert.equal(delivered.completionNote,'已完成任务');
+assert.equal(delivered.photo,proof);
+assert.equal(delivered.completionNote,'','a photo can be submitted without a note');
 assert.equal(delivered.status,'delivered');
 act(customer,account,'confirm',{id:textOnly});
 assert.equal(state.requests.find(r=>r.id===textOnly).status,'confirmed');

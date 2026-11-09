@@ -28,3 +28,5 @@
 .pg-add-press{transform:scale(.96);background:#e8eefc}
 .page-dark .pg-add-square{background:#1d2433;border-color:#33406b;color:#9db4ff}
 .page-dark .pg-add-press{background:#233050}
+
+.task-help-selector{margin:0 0 22rpx}.task-help-label{font-size:23rpx;color:#5d6070;margin:0 0 12rpx;font-weight:650}.task-help-modes{display:flex;gap:14rpx}.task-help-mode{display:flex;align-items:center;justify-content:center;flex:1;min-width:0;min-height:44px;margin:0;padding:18rpx 12rpx;border:2rpx solid #dddfea;border-radius:16rpx;background:#f8f8fc;color:#52566a;font-size:26rpx;line-height:1.4;font-weight:650;box-sizing:border-box}.task-help-mode::after{border:0}.task-help-mode.selected{border-color:#4050ce;background:#eef0ff;color:#3042bd}.task-help-hint{margin-top:12rpx;font-size:22rpx}.page-dark .task-help-label{color:#bac2d6}.page-dark .task-help-mode{background:#252a36;border-color:#454d61;color:#d2d7e3}.page-dark .task-help-mode.selected{background:#303c62;border-color:#a7b7ff;color:#e2e8ff}

@@ -33,7 +33,7 @@ Page({
   this.setData({lockerChoice:choice,lockerCustomText:custom,lockerOptions:config.items,lockerIndex:Math.max(0,index),lockerChosen:index>=0,lockerCustom:isCustom,lockerManual:config.manual,pickupPoint:point,lockerReady:!!point&&point.length<=200});
  },
  pickLocker(e){if(this.data.routeLocked)return;const option=this.data.lockerOptions[Number(e.detail.value)];if(!option)return;this.setData({lockerChoice:option.id});this.syncLockers();this.rememberLocker();},
- customLocker(e){if(this.data.routeLocked)return;this.setData({lockerCustomText:e.detail.value});this.syncLockers();this.rememberLocker();},
+ customLocker(e){if(this.data.routeLocked)return;this.syncLockers();this.setData({lockerChoice:'other',lockerCustomText:e.detail.value});this.syncLockers();this.rememberLocker();},
  rememberLocker(){if(this.data.routeLocked)return;if(!this.data.night&&this.data.lockerReady)lockers.remember(this.data,this.data.lockerChoice,this.data.lockerCustomText);},
  restoreLocker(value){this.syncLockers();if(!value)return;const config=lockers.options(this.data),match=config.items.find(x=>x.value===value);if(match)this.setData({lockerChoice:match.id});else if(config.manual||config.items.some(x=>x.id==='other'))this.setData({lockerChoice:'other',lockerCustomText:value});this.syncLockers();},
  draft(){return savedRoutes.normalize({...this.data,id:this.data.routeId,name:this.data.routeName,station:this.data.station||'Takeaway pickup'});},

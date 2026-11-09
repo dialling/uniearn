@@ -1,31 +1,51 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 global.wx={getStorageSync:()=>null,setStorageSync(){}};let def;
 global.Component=x=>def=x;
-const acks=[];let finishVideo,failVideo;
-const ordersPath=require.resolve('../utils/orders');require.cache[ordersPath]={id:ordersPath,filename:ordersPath,loaded:true,exports:{act:(action,args)=>{acks.push([action,args]);return Promise.reject(Error('offline'));}}};
-const videoPath=require.resolve('../utils/yuni-video');let loaded=[];require.cache[videoPath]={id:videoPath,filename:videoPath,loaded:true,exports:{prepare:kind=>{loaded.push(kind);return new Promise((resolve,reject)=>{finishVideo=resolve;failVideo=reject;});}}};
+const calls=[];const ordersPath=require.resolve('../utils/orders');require.cache[ordersPath]={id:ordersPath,filename:ordersPath,loaded:true,exports:{act:(action,args)=>{calls.push([action,args]);return Promise.reject(Error('offline'));}}};
+const realSetTimeout=global.setTimeout,realClearTimeout=global.clearTimeout;
+let clock=0,nextId=0;const timers=new Map();
+global.setTimeout=(fn,ms)=>{const id=++nextId;timers.set(id,{at:clock+ms,fn});return id;};global.clearTimeout=id=>timers.delete(id);
+function advance(ms){const until=clock+ms;while(true){const due=[...timers].filter(([,t])=>t.at<=until).sort((a,b)=>a[1].at-b[1].at)[0];if(!due)break;clock=due[1].at;timers.delete(due[0]);due[1].fn();}clock=until;}
 const store=require('../utils/store'),bus=require('../utils/checkin'),china=require('../utils/china-time');
 const today=china.dayKey(Date.now());
-function account(id='a',points=0){store.reset();store.update(s=>{s.profile={...s.profile,onboarded:true,campusId:'sip',accountId:id};s.serverTime=Date.now();s.progressionAccountId=id;s.progression={points:10,notices:[{id:'checkin-'+today,type:'checkin',day:today,streak:points?7:3,cycleDay:points?7:3,points}]};});}
+function account(id='a',day=3,daily=2,weekly=0){store.reset();store.update(s=>{s.profile={...s.profile,onboarded:true,campusId:'sip',accountId:id};s.serverTime=Date.now();s.progressionAccountId=id;s.progression={points:62,notices:[{id:'checkin-'+today,type:'checkin',day:today,streak:day,cycleDay:day,dailyPoints:daily,weeklyPoints:weekly,points:daily+weekly}]};});}
 require('../components/daily-checkin/index');
 const make=()=>({data:structuredClone(def.data),visible:true,setData(v){Object.assign(this.data,v)},...def.methods});
-(async()=>{
- account();let p=make();p.check();assert.equal(p.data.open,true);assert.equal(p.data.streak,3);assert.equal(p.data.points,0);assert.match(p.data.hint,/4 天/);assert.equal(loaded.at(-1),'checkin');assert.equal(bus.pending(),true);
- const other=make();other.check();assert.equal(other.data.open,false,'multiple page hosts cannot show duplicate popups');
- finishVideo('wxfile://daily.mp4');await Promise.resolve();assert.equal(p.data.videoSrc,'wxfile://daily.mp4');
- p.videoEnded();assert.equal(p.data.videoSrc,'');assert.equal(p.data.videoDone,true,'the final still replaces the ended video');
- p.close();await Promise.resolve();assert.equal(bus.pending(),false);assert.equal(acks.at(-1)[0],'ackLoyaltyNotice');
- p=make();p.check();assert.equal(p.data.open,false,'even an offline acknowledgement cannot replay today locally');
- account('daily',2);store.update(s=>Object.assign(s.progression.notices[0],{streak:2,cycleDay:2,dailyPoints:2,weeklyPoints:0}));p=make();p.check();assert.equal(p.data.points,2);assert.equal(loaded.at(-1),'checkin');assert.equal(p.data.rewardTitle,p.data.ui.dailyReward);p.close();await Promise.resolve();
- account('b',10);p=make();p.check();assert.equal(p.data.points,10);assert.equal(p.data.cycleDay,7);assert.equal(loaded.at(-1),'checkin-week');failVideo(Error('bad clip'));await Promise.resolve();assert.equal(p.data.videoFailed,true,'clip failure retains a closable success state');p.close();await Promise.resolve();
- account('c');store.update(s=>s.yuniTips=false);const count=loaded.length;p=make();p.check();assert.equal(p.data.open,true);assert.equal(p.data.motionEnabled,false);assert.equal(loaded.length,count,'motion-off shows a static success without loading video');p.close();await Promise.resolve();
- account('d');p=make();p.watch();p.check();store.update(s=>s.profile.loggedOut=true);assert.equal(p.data.open,false,'logout closes the popup without acking another identity');p.unwatch();
- account('e');p=make();p.check();const late=finishVideo;p.visible=false;p.hide();late('wxfile://late.mp4');await Promise.resolve();assert.equal(p.data.videoSrc,'','a hidden page cannot restart video');
- account('f');store.update(s=>s.progressionAccountId='old-account');p=make();p.check();assert.equal(p.data.open,false,'stale progression from another account cannot open');
- account('g');store.update(s=>s.serverTime=Date.now()-86400000);p.check();assert.equal(p.data.open,false,'a stale server snapshot cannot announce a new check-in');
- const xml=fs.readFileSync(path.join(__dirname,'../components/daily-checkin/index.wxml'),'utf8');assert.ok(xml.includes('muted="{{true}}"'));assert.ok(xml.includes('loop="{{false}}"'));assert.ok(xml.includes('binderror="videoError"'));assert.ok(xml.includes('bindtap="close"'));
- assert.match(fs.readFileSync(path.join(__dirname,'../components/lang-switch/index.wxml'),'utf8'),/<daily-checkin(?:\s[^>]*)?\/>/,'all page hooks mount check-in');
- const types=buffer=>{function boxes(start,end){const out=[];for(let p=start;p+8<=end;){let size=buffer.readUInt32BE(p);if(size<8||p+size>end)break;out.push({type:buffer.toString('ascii',p+4,p+8),start:p+8,end:p+size});p+=size;}return out;}const moov=boxes(0,buffer.length).find(x=>x.type==='moov');return boxes(moov.start,moov.end).filter(x=>x.type==='trak').map(t=>{const mdia=boxes(t.start,t.end).find(x=>x.type==='mdia'),hdlr=boxes(mdia.start,mdia.end).find(x=>x.type==='hdlr');return buffer.toString('ascii',hdlr.start+8,hdlr.start+12);});};
- for(const name of ['yuni-checkin','yuni-checkin-week']){const clip=fs.readFileSync(path.join(__dirname,'../pages/posted/yuni/'+name+'.mp4'));assert.deepEqual(types(clip),['vide'],'shipped clips physically contain no audio track');assert.ok(clip.length<300000);}
- console.log('Daily check-in popup: one display per day/account, cross-page coordination, real streak/points, weekly clip, offline ack, static/failure/ended fallbacks, lifecycle/account guards and silent MP4 tracks passed.');
-})().catch(e=>{console.error(e);process.exitCode=1});
+try{
+ account();let p=make();p.check();assert.equal(p.data.open,true);assert.equal(p.data.phase,'waiting');assert.match(p.data.feedLabel,/\+2/);assert.equal(bus.pending(),true);
+ const other=make();other.check();assert.equal(other.data.open,false,'page hosts cannot duplicate today’s popup');
+ const before=store.get().progression.points,callCount=calls.length;p.feed();p.feed();assert.equal(p.data.phase,'flying');assert.equal(p.data.feeding,true);
+ advance(740);assert.equal(p.data.pose,1);assert.equal(p.data.phase,'chewing');advance(1100);assert.equal(p.data.pose,2);advance(560);
+ assert.equal(p.data.fed,true);assert.equal(p.data.feeding,false);assert.equal(p.data.days.filter(x=>x.done).length,3);p.feed();advance(5000);
+ assert.equal(store.get().progression.points,before,'Feed never credits points already awarded by server login');assert.equal(calls.length,callCount,'Feed never sends a second check-in or reward request');
+ p.close();assert.equal(bus.pending(),false);assert.equal(calls.at(-1)[0],'ackLoyaltyNotice');
+ p=make();p.check();assert.equal(p.data.open,false,'offline acknowledgement does not replay today');
+ account('weekly',7,2,10);p=make();p.check();assert.match(p.data.feedLabel,/\+2.*10/);assert.equal(p.data.points,12);p.feed();advance(2020);assert.match(p.data.floating,/\+2/);advance(700);assert.match(p.data.floating,/\+10/);advance(480);assert.equal(p.data.fed,true);assert.equal(p.data.days.filter(x=>x.done).length,7);p.close();
+ account('no-motion');store.update(s=>s.yuniTips=false);p=make();p.check();p.feed();assert.equal(p.data.fed,true);assert.equal(p.data.pose,2);assert.equal(p.data.floating,'');p.close();
+ account('cancel');p=make();p.check();p.feed();advance(100);p.visible=false;p.hide();const snapshot=JSON.stringify(p.data);advance(10000);assert.equal(JSON.stringify(p.data),snapshot,'hidden component cancels all queued animation work');
+ account('motion-change');p=make();p.watch();p.check();p.feed();store.update(s=>s.yuniTips=false);assert.equal(p.data.fed,true,'disabling motion during feeding finishes safely');p.close();p.unwatch();
+ account('language');p=make();p.watch();p.check();store.update(s=>s.language='en');assert.equal(p.data.ui.title,'Feed Yuni');assert.match(p.data.feedLabel,/pts/);p.feed();advance(2400);assert.match(p.data.feedLabel,/Fed today/);p.close();p.unwatch();
+ account('logout');p=make();p.watch();p.check();p.feed();const logoutCalls=calls.length;store.update(s=>s.profile.loggedOut=true);assert.equal(p.data.open,false);assert.equal(calls.length,logoutCalls,'logout never acknowledges another identity');p.unwatch();advance(10000);
+ account('stale-account');store.update(s=>s.progressionAccountId='old');p=make();p.check();assert.equal(p.data.open,false);
+ account('stale-day');store.update(s=>s.serverTime=Date.now()-86400000);p=make();p.check();assert.equal(p.data.open,false);
+ account('no-reward',1,0,0);p=make();p.check();assert.doesNotMatch(p.data.feedLabel,/\+/);p.feed();advance(2400);assert.equal(p.data.floating,'');p.close();
+ account('journey-unfed',4);store.update(s=>{s.progression.checkin={day:today,streak:4,cycleDay:4,dailyPoints:2,rewardPoints:0,totalDays:4};s.checkinSeen={'journey-unfed':today};});
+ p=make();p.check();assert.equal(p.data.open,false);assert.equal(p.openFromJourney(),true,'level journey can reopen a seen daily notice');assert.equal(p.data.phase,'waiting');
+ const competing=make();assert.equal(competing.openFromJourney(),false,'manual entry shares the automatic popup lock');
+ const manualCalls=calls.length,manualPoints=store.get().progression.points;p.feed();advance(3040);assert.equal(p.data.fed,true);p.close();assert.equal(calls.length,manualCalls,'manual entry does not acknowledge or credit the reward again');assert.equal(store.get().progression.points,manualPoints);
+ p=make();assert.equal(p.openFromJourney(),true);assert.equal(p.data.fed,true,'feeding presentation is shared across entry points');p.feed();assert.equal(p.data.feeding,false);p.close();
+ store.update(s=>s.progression.notices=[]);p=make();assert.equal(p.openFromJourney(),true,'acknowledged notices can be reconstructed from the current server check-in record');assert.equal(p.data.fed,true);p.close();
+ account('journey-other',4);store.update(s=>{s.progression.checkin={day:today,streak:4,cycleDay:4,dailyPoints:2,rewardPoints:0};s.checkinSeen={'journey-other':today};});p=make();assert.equal(p.openFromJourney(),true);assert.equal(p.data.fed,false,'another account cannot inherit the fed marker');p.close();
+ account('journey-stale');store.update(s=>{s.progression.checkin={day:china.dayKey(Date.now()-86400000),streak:4,cycleDay:4};s.progression.notices=[];});p=make();assert.equal(p.openFromJourney(),false,'manual entry cannot fabricate today’s check-in from an old record');
+ account('collect-once',3);store.update(s=>s.progression.checkin={day:today,streak:3,cycleDay:3,dailyPoints:2,rewardPoints:0});p=make();p.check();p.collectReward();assert.equal(p.data.collected,false,'cannot collect before feeding finishes');p.feed();advance(2400);
+ const collectPoints=store.get().progression.points,collectCalls=calls.length;p.collectReward();assert.equal(p.data.collected,true);assert.equal(p.data.open,true,'keep the black collected state visible');assert.equal(calls.length,collectCalls+1);p.collectReward();p.close();assert.equal(calls.length,collectCalls+1,'double taps and closing cannot acknowledge twice');assert.equal(store.get().progression.points,collectPoints,'collection does not add login points again');
+ p=make();assert.equal(p.openFromJourney(),true);assert.equal(p.data.collected,true,'reopening retains the account/day collected state');p.collectReward();assert.equal(calls.length,collectCalls+1);p.close();
+ assert.equal(bus.wasCollected({key:'collect-once:'+china.dayKey(Date.now()+86400000)}),false,'next day has its own collection state');
+ account('collect-other',3);p=make();p.check();assert.equal(p.data.collected,false,'another account cannot inherit collected state');p.close();
+ const root=path.join(__dirname,'..'),xml=fs.readFileSync(path.join(root,'components/daily-checkin/index.wxml'),'utf8');
+ assert.match(xml,/bindtap="collectReward"/);assert.match(xml,/disabled="\{\{collected&&points>0\}\}"/);assert.match(fs.readFileSync(path.join(root,'components/daily-checkin/index.wxss'),'utf8'),/\.checkin-cta\.collected\[disabled\]\{background:#222;color:#fff/);
+ assert.match(xml,/disabled="\{\{feeding\|\|fed\}\}"/);assert.match(xml,/bindtap="feed"/);assert.match(xml,/aria-label="\{\{ui.close\}\}"/);assert.ok(!xml.includes('<video'),'one sprite scene stays visible without switching to a native video surface');
+ for(const asset of ['yuni','fish','fish-grey','bones','bones-white'])assert.ok(fs.statSync(path.join(root,'assets/yuni-feed/'+asset+'.png')).size>0);
+ assert.match(fs.readFileSync(path.join(root,'components/lang-switch/index.wxml'),'utf8'),/<daily-checkin(?:\s[^>]*)?\/>/);
+ console.log('Daily check-in Feed Yuni: daily/weekly rewards, no duplicate points/API, repeat taps, reduced motion, live language/motion changes, hidden/logout cancellation, stale account/time and offline acknowledgement passed.');
+}finally{global.setTimeout=realSetTimeout;global.clearTimeout=realClearTimeout;}
