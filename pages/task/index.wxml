@@ -1,4 +1,5 @@
 <import src="../../utils/waiting-ticket.wxml"/>
+<import src="../../utils/customer-cancel-sheet.wxml"/>
 <view style="{{motionStyle}}">
 <lang-switch></lang-switch>
 <view class="flow-page task-page {{zh?'task-cn':''}} {{darkClass}}" wx:if="{{request}}">
@@ -103,9 +104,11 @@
 <text>¥{{request.total}}</text>
 </view>
 <view wx:if="{{request.status==='refunded'||request.status==='cancelled'}}" class="hint">{{ui.refund}}{{request.refundAmount}}</view>
+<view wx:if="{{request.cancelReasonLabel}}" class="hint">{{zh?'取消原因：':'Cancel reason: '}}{{request.cancelReasonLabel}}</view>
 </view>
 <button class="btn light" bindtap="help">{{ui.help}}</button>
 </view>
 <view wx:else class="empty">{{ui.unavailable}}</view>
 <yuni-assistant topic=""/>
+<template is="customerCancelSheet" data="{{zh,cancelOpen,cancelOptions,cancelReason,cancelNote,cancelNoteOpen,cancelling,cancelReady,motionEnabled}}"/>
 </view>

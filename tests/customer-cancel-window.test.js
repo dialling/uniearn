@@ -58,7 +58,7 @@ const night={...food,night:true,shop:'East gate stall'};
   async function create(data){const r=await h.call('customer','create',{data});assert.equal(r.ok,true,r.error);return r.value.id;}
   async function accept(id){const r=await h.call('runner','accept',{ids:[id]});assert.equal(r.ok,true,r.error);return r;}
   const waiting=await create(food);
-  assert.equal((await h.call('customer','cancel',{id:waiting})).ok,true);
+  assert.equal((await h.call('customer','cancel',{id:waiting,reason:'没人接单'})).ok,true);
   assert.equal(h.state.requests.find(r=>r.id===waiting).status,'cancelled');
 
   for(const sample of [task,parcel,night]){
@@ -70,11 +70,12 @@ const night={...food,night:true,shop:'East gate stall'};
     const raised=await h.call('customer','raise',{id,amount:1.25});
     assert.equal(raised.ok,true,raised.error);
     assert.equal(h.state.requests.find(r=>r.id===id).reward,Math.round((row.reward+1.25)*100)/100);
-    const early=await h.call('customer','cancel',{id});
+    const early=await h.call('customer','cancel',{id,reason:'信息填错'});
     assert.equal(early.ok,true,sample.category+' '+early.error);
     const saved=h.state.requests.find(r=>r.id===id);
     assert.equal(saved.status,'cancelled');
-    assert.equal(saved.cancelReason,'customer');
+    assert.equal(saved.cancel_reason,'信息填错');
+    assert.equal(saved.cancelReason,'信息填错');
     assert.ok(!h.state.trips.some(t=>(t.requestIds||[]).includes(id)),'a real cancel leaves the runner trip');
   }
 
@@ -89,7 +90,7 @@ const night={...food,night:true,shop:'East gate stall'};
   const picked=await create(food);
   await accept(picked);
   h.edit(s=>{const r=s.requests.find(x=>x.id===picked);r.collected=['bag'];r.takenAt=Date.now();});
-  assert.equal((await h.call('customer','cancel',{id:picked})).ok,false);
+  assert.equal((await h.call('customer','cancel',{id:picked,reason:'测试'})).ok,false);
   assert.equal(h.state.requests.find(r=>r.id===picked).status,'taken');
 
   const ghost=await create(parcel);
