@@ -242,3 +242,10 @@
 .page-dark .type-chip{background:linear-gradient(90deg,#0e8a60 0%,#1cb37e 100%);color:#04120b}
 .page-dark .state-pill.open,.page-dark .state-pill.fresh,.page-dark .state-pill.taken{background:linear-gradient(90deg,#0e8a60 0%,#1cb37e 100%);color:#04120b}
 .page-dark .state-pill.done{background:linear-gradient(90deg,#e9efea 0%,#c9d6cc 100%);color:#202522}
+
+/* 标题美化：荧光笔底 + 渐变字 + 描边星 */
+.hall-title-wrap::before{left:-16rpx;right:-16rpx;top:34%;bottom:26%;height:auto;background:linear-gradient(90deg,#dcf3e6 0%,#eefaf3 100%);border-radius:14rpx;transform:rotate(-1.6deg);box-shadow:0 6rpx 18rpx rgba(11,122,85,.08)}
+.hall-title-wrap::after{left:-6rpx;right:-2rpx;bottom:-20rpx;border-bottom-width:5rpx;border-bottom-color:rgba(11,122,85,.45)}
+.jobs-header .flow-title{font-size:52rpx;font-weight:900;letter-spacing:3rpx;background:linear-gradient(100deg,#0a5f43 0%,#0b7a55 45%,#1bb27d 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
+.page-dark .jobs-header .flow-title{background:linear-gradient(100deg,#c9ecd8 0%,#8fe0b8 60%,#4fce97 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.page-dark .hall-title-wrap::before{background:linear-gradient(90deg,rgba(27,178,125,.28),rgba(27,178,125,.06))}
