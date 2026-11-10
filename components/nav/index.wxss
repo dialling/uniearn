@@ -101,3 +101,7 @@
 .create-sheet .sheet-name{font-size:27rpx;line-height:1.4}
 .create-sheet .sheet-description{font-size:21rpx;line-height:1.4;margin-top:7rpx}
 @media(max-height:650px){.create-sheet .sheet-choice{padding:16rpx 18rpx;gap:18rpx}}
+
+.nav-orders-icon{position:relative;width:44rpx;height:49rpx;flex:none;overflow:visible}
+.nav-unread-dot{position:absolute;top:-2rpx;right:-5rpx;width:14rpx;height:14rpx;border:3rpx solid #fff;border-radius:50%;background:#e5484d;box-sizing:content-box}
+.nav-dark .nav-unread-dot{border-color:#242522}

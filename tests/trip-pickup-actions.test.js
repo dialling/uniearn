@@ -20,8 +20,9 @@ async function accept(ids){const r=await h.call('runner','accept',{ids});assert.
  const a=await create(),b=await create(),multi=await accept([a,b]);
  await multi.collectAndDeliver(tap(a));assert.equal(multi.data.trip.phase,'collect');
  assert.equal(multi.data.requests.find(r=>r.id===b).status,'taken','one order cannot mark another as picked up');
- assert.equal(multi.data.allCollected,false);assert.match(notices.at(-1),/其余订单/);
+ assert.equal(multi.data.allCollected,false);assert.deepEqual(multi.data.collectingIds,{});
  await multi.collectAndDeliver(tap(b));assert.equal(multi.data.trip.phase,'deliver');
+ const x=await create(),y=await create(),concurrent=await accept([x,y]);const first=concurrent.collectAndDeliver(tap(x));assert.equal(concurrent.data.collectingIds[x],true);assert.equal(!!concurrent.data.collectingIds[y],false);const second=concurrent.collectAndDeliver(tap(y));assert.equal(concurrent.data.collectingIds[y],true);await Promise.all([first,second]);assert.equal(concurrent.data.requests.every(r=>r.status==='collected'),true);assert.deepEqual(concurrent.data.collectingIds,{});
  // An older server may leave a fully collected trip in collect phase.
  h.edit(s=>s.trips.find(t=>t.id===multi.id).phase='collect');await orders.sync();actions=[];
  await multi.collectAndDeliver(tap(a));assert.deepEqual(actions,['leave'],'retry does not repeat successful pickup');
