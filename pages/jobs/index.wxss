@@ -189,3 +189,47 @@
 .page-dark .state-pill.taken{background:#33503f;color:#d4f0df}
 .page-dark .state-pill.done{background:#e7f3ed;color:#202522}
 .page-dark .state-pill.own{background:#333a34;color:#c9d3cb}
+
+/* 参考稿风格：头像 + 大胶囊 + 赏金行 */
+.job-avatar{width:64rpx;height:64rpx;border-radius:50%;background:#eef6f0;flex:none}
+.job-card-header{align-items:flex-start}
+.state-pill{font-size:24rpx;font-weight:800;line-height:1.4;padding:10rpx 26rpx;border-radius:999rpx;background:#c9f06a;color:#23310f}
+.state-pill.open{background:#c9f06a;color:#23310f}
+.state-pill.taken{background:#a6e86a;color:#1d2a12}
+.state-pill.done{background:#1f2420;color:#ffffff}
+.state-pill.own{background:#e6ece7;color:#4d5c52}
+.state-pill.fresh{background:#c9f06a;color:#23310f}
+.job-reward{display:flex;align-items:center;gap:12rpx;margin:14rpx 0 4rpx}
+.reward-tag{width:44rpx;height:44rpx;border-radius:12rpx;background:#fde8e4;color:#c0392b;font-size:24rpx;font-weight:800;display:flex;align-items:center;justify-content:center}
+.reward-amount{color:#e03131;font-size:38rpx;font-weight:800}
+.page-dark .state-pill{background:#c9f06a;color:#23310f}
+.page-dark .state-pill.taken{background:#a6e86a;color:#1d2a12}
+.page-dark .state-pill.done{background:#f2f5f2;color:#202522}
+.page-dark .state-pill.own{background:#333a34;color:#c9d3cb}
+.page-dark .job-reward .reward-tag{background:#3a2523;color:#ff9b8f}
+.page-dark .reward-amount{color:#ff8b80}
+
+/* 头部：类型胶囊 + 截止时间 */
+.job-head-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:6rpx}
+.type-chip{align-self:flex-start;background:#c9f06a;color:#23310f;font-size:22rpx;font-weight:800;padding:4rpx 16rpx;border-radius:999rpx;line-height:1.5}
+.head-deadline{color:#8a9488;font-size:21rpx}
+.job-badges{gap:8rpx;flex-wrap:wrap}
+/* 路线框：灰底 + 起/送标签 */
+.job-route-box{display:flex;align-items:center;flex-wrap:wrap;gap:10rpx;background:#f4f6f3;border-radius:16rpx;padding:16rpx 18rpx;margin-top:6rpx}
+.route-tag{width:36rpx;height:36rpx;border-radius:8rpx;font-size:19rpx;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
+.route-tag.from{background:#2f3430;color:#fff}
+.route-tag.to{background:#3fae6a;color:#fff}
+.page-dark .type-chip{background:#c9f06a;color:#23310f}
+.page-dark .head-deadline{color:#a9b3a7}
+.page-dark .job-route-box{background:#2b332d}
+
+/* 标题再放大 + 手绘弧线，贴近参考稿 */
+.jobs-header .flow-title{font-size:48rpx;font-weight:800;letter-spacing:1rpx;color:#14251b}
+.hall-title-wrap::after{content:"";position:absolute;left:-10rpx;right:-6rpx;bottom:-16rpx;height:26rpx;border-bottom:4rpx solid rgba(11,122,85,.32);border-radius:50%;transform:rotate(-2deg)}
+.hall-spark.s1{font-size:28rpx;opacity:.7}
+.hall-spark.s2{font-size:18rpx;opacity:.5}
+/* 卡片头部整条淡黄绿底，参考稿的票根头 */
+.job-card-header{margin:-26rpx -26rpx 16rpx;padding:18rpx 22rpx;border-radius:26rpx 26rpx 0 0;background:#f7fbe9}
+.page-dark .jobs-header .flow-title{color:#edf1ed}
+.page-dark .hall-title-wrap::after{border-bottom-color:rgba(143,201,174,.4)}
+.page-dark .job-card-header{background:#2b3327}
