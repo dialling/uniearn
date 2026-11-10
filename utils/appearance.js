@@ -8,13 +8,11 @@ function isDark(){return store.get().meAppearance==='dark';}
 function apply(page){
   if(page&&page.setData)page.setData({darkClass:isDark()?'page-dark':''});
   if(typeof wx==='undefined')return;
-  const dark=isDark(),c=dark?DARK:LIGHT;
-  const customBar=!dark&&page&&page.data&&page.data.navBarColor;
-  const chrome=customBar?{...c,bar:customBar}:c;
-  const paint=()=>{if(wx.setNavigationBarColor)wx.setNavigationBarColor({frontColor:chrome.front,backgroundColor:chrome.bar,animation:{duration:0}});};
+  const c=isDark()?DARK:LIGHT;
+  const paint=()=>{if(wx.setNavigationBarColor)wx.setNavigationBarColor({frontColor:c.front,backgroundColor:c.bar,animation:{duration:0}});};
   paint();
   // Page window config is applied after onLoad, so repaint once it has settled.
   if(typeof setTimeout==='function')setTimeout(paint,0);
-  if(wx.setBackgroundColor)wx.setBackgroundColor({backgroundColorTop:chrome.window,backgroundColorBottom:chrome.window});
+  if(wx.setBackgroundColor)wx.setBackgroundColor({backgroundColorTop:c.window,backgroundColorBottom:c.window});
 }
 module.exports={isDark,apply};
