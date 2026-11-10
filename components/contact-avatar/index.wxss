@@ -1,2 +1,0 @@
-:host{display:block;flex:none}
-.avatar{display:flex;align-items:center;justify-content:center;width:80rpx;height:80rpx;border-radius:50%;background:#e7f3ed;color:#0b7a55;font-size:34rpx;font-weight:700;line-height:1}

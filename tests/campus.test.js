@@ -3,9 +3,9 @@ assert.equal(c.buildings().length,31,'4 areas x 31 buildings');
 assert.equal(r.dorms.length,31,'route picker uses the real building list');
 assert.equal(r.dorms[0],'D01');
 assert.equal(c.areaOfBuilding('A05').zh,'文星');
-assert.equal(c.buildingLabel('D01','zh'),'D01');
-assert.equal(c.buildingLabel('D01','en'),'D01');
-assert.equal(c.buildingLabel('A05','zh'),'A05');
+assert.equal(c.buildingLabel('D01','zh'),'文缘 D01');
+assert.equal(c.buildingLabel('D01','en'),'Wenyuan D01');
+assert.equal(c.buildingLabel('A05','zh'),'文星 A05');
 assert.equal(c.maxFloorOf('A05'),20,'A05 has 20 floors');
 assert.equal(c.maxFloorOf('D01'),23,'Wenyuan blocks have 23 floors');
 assert.equal(c.maxFloorOf('A01'),6,'Wenxing blocks default to 6 floors');
@@ -54,13 +54,13 @@ assert.equal(staleParcel.status,'waiting','parcels are never auto-cancelled');
 assert.equal(fresh.status,'waiting');
 assert.equal(d.sweepExpired(s3),0,'sweeping twice is a no-op');
 
-// night market orders: adjustable offer, one order, shop name required
+// night market orders: fixed ¥4, shop name required
 const s4=d.initial();s4.requests=[];
 const takeBase={category:'takeout',station:'North gate',dorm:'D01',room:'101',phone:'13800000000',small:1,codes:[''],pricePerBox:3,owner:'A',deadline:'18:00'};
 assert.throws(()=>d.createRequest(s4,{...takeBase,night:true}),/shop|stall/i,'night orders need a shop name');
-const night=d.createRequest(s4,{...takeBase,night:true,shop:'Wang',small:3,pricePerBox:9});
-assert.equal(night.reward,9,'night orders use the selected offer once regardless of bags');
-assert.equal(night.pricePerBox,9);
+const night=d.createRequest(s4,{...takeBase,night:true,shop:'Wang',bags:3,price:9});
+assert.equal(night.reward,4,'night orders are ¥4 regardless of bags/price');
+assert.equal(night.pricePerBox,4);
 assert.equal(night.shop,'Wang');
 assert.equal(d.createRequest(s4,{...takeBase}).reward,3,'normal takeout keeps its own price');
 
@@ -72,5 +72,4 @@ assert.equal(rl.tier(5).zh,'白银');
 assert.equal(rl.tier(20).zh,'黄金');
 assert.equal(rl.tier(50).zh,'铂金');
 assert.equal(rl.tier(100).zh,'钻石');assert.equal(rl.tier(100).next,null);
-for(const [jobs,progress] of [[0,0],[4,80],[5,0],[10,100/3],[20,0],[25,100/6],[50,0],[75,50],[100,100]])assert.ok(Math.abs(rl.level({jobsDone:jobs}).progress-progress)<1e-9,'progress uses the current display tier for '+jobs+' jobs');
 console.log('Campus data: 31 real buildings, floors, lift rule and bilingual pickup points passed.');

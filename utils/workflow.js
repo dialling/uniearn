@@ -1,27 +1,12 @@
-const d=require('./domain'),c=require('./catalog'),route=require('./trip-route');
+const d=require('./domain'),c=require('./catalog');
 const HOUR=3600000,MIN=60000;
 function clock(ts){if(!ts)return '—';const t=new Date(ts+8*HOUR);return String(t.getUTCHours()).padStart(2,'0')+':'+String(t.getUTCMinutes()).padStart(2,'0');}
 function todayAt(value,now=Date.now()){const parts=String(value).split(':').map(Number);if(parts.length!==2||parts[0]<0||parts[0]>23||parts[1]<0||parts[1]>59||parts.some(x=>!Number.isInteger(x)))throw Error('Choose a valid time');const date=new Date(now+8*HOUR).toISOString().slice(0,10);return Date.parse(date+'T'+String(parts[0]).padStart(2,'0')+':'+String(parts[1]).padStart(2,'0')+':00+08:00');}
 function fee(r){return Number(r.serviceFee===undefined?d.serviceFee(d.boxes(r)):r.serviceFee);}
 function total(r){return Math.max(0,Math.round((r.reward+fee(r)-Number(r.discount||0))*100)/100);}
-function hours(){return 2;}
+function hours(r){return c.category(r)==='task'?24:c.category(r)==='takeout'?1:48;}
 function event(r,label,at=Date.now()){(r.history||(r.history=[])).push({label,at});}
-function migrate(s){
- s.installationId=s.installationId||('local-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));
- s.routes=s.routes||[];
- if(!s.deliveryAddressesUnified){
-  const owner=s.profile.accountId||'',routes=s.routes.map(x=>({...x,accountId:x.accountId||owner}));
-  for(const address of s.parcelRoutes||[]){
-   const x={...address,accountId:address.accountId||owner};
-   const same=routes.find(r=>r.accountId===x.accountId&&r.destinationType===x.destinationType&&r.dorm===x.dorm&&r.room===x.room&&r.deliveryAddress===x.deliveryAddress&&r.owner===x.owner&&r.phone===x.phone);
-   if(same){if(!same.deliveryNote)same.deliveryNote=x.deliveryNote||'';continue;}
-   routes.push({...x,default:false});
-  }
-  for(const accountId of new Set(routes.map(x=>x.accountId))){const own=routes.filter(x=>x.accountId===accountId);const preferred=own.find(x=>x.default)||own[0];own.forEach(x=>x.default=x===preferred);}
-  s.routes=routes;delete s.parcelRoutes;s.deliveryAddressesUnified=true;
- }
- s.profile.marks=s.profile.marks||[];s.agreements=s.agreements||{};return s;
-}
+function migrate(s){s.installationId=s.installationId||('local-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));s.routes=s.routes||[];s.profile.marks=s.profile.marks||[];s.agreements=s.agreements||{};return s;}
 function expire(s,now=Date.now()){
  let changed=false;
  for(const r of s.requests){
@@ -34,14 +19,14 @@ function createTakeaway(s,data,now=Date.now()){
  const arrivalAt=data.arrived?now:todayAt(data.arrivalTime,now);
  if(!data.arrived&&arrivalAt<now)throw Error('Choose an arrival time later today');
  if(!String(data.owner||'').trim())throw Error('Add the name on your order');
- const closeAt=arrivalAt+30*MIN;let deliverBy='';if(data.arrived&&data.deliverBy){let at=data.deliverAt===undefined?todayAt(data.deliverBy,now):Number(data.deliverAt);if(data.deliverAt===undefined&&at<now-60000)at+=24*3600000;if(!Number.isSafeInteger(at)||at<=now||at>now+65*60000)throw Error('Choose a future delivery time within 1 hour');deliverBy=clock(at);}
- const r=d.createRequest(s,{...data,deliverBy,category:'takeout',small:Number(data.bags),big:0,codes:[],pricePerBox:Number(data.price),deadline:clock(closeAt),arrivalAt,arrived:!!data.arrived,closesAt:closeAt,soup:!!data.soup,lobbyPickupAllowed:!!data.lobbyPickupAllowed,riderPhoto:data.riderPhoto||''});
+ const r=d.createRequest(s,{...data,category:'takeout',small:Number(data.bags),big:0,codes:[],pricePerBox:Number(data.price),deadline:clock(arrivalAt+30*MIN),arrivalAt,arrived:!!data.arrived,closesAt:arrivalAt+30*MIN,soup:!!data.soup,riderPhoto:data.riderPhoto||''});
  r.createdAt=now;r.baseReward=r.reward;event(r,'Posted',now);return r;
 }
-function raise(s,id,amount){const r=s.requests.find(x=>x.id===id);if(!r||r.status!=='waiting')throw Error('This offer can no longer be increased');if(typeof amount!=='number'||!Number.isFinite(amount)||amount<0.01||amount>100.88||Math.abs(Math.round(amount*100)-amount*100)>1e-6)throw Error('Enter ¥0.01–100, up to 2 decimal places');if(Math.round((r.raised||0)*100)+Math.round(amount*100)>10088)throw Error('Offer increase limit reached.');r.reward=Math.round((r.reward+amount)*100)/100;r.raised=(r.raised||0)+amount;event(r,'Offer raised by ¥'+amount);return r;}
+function raise(s,id,amount){const r=s.requests.find(x=>x.id===id);if(!r||r.status!=='waiting')throw Error('This request is no longer waiting');if(![188,266,555,666,888].includes(Math.round(amount*100)))throw Error('Choose ¥1.88, ¥2.66, ¥5.55, ¥6.66 or ¥8.88');r.reward=Math.round((r.reward+amount)*100)/100;r.raised=(r.raised||0)+amount;event(r,'Offer raised by ¥'+amount);return r;}
 function cancelReason(r,reason,now=Date.now()){
  if(r.status!=='taken'||r.collected.length)throw Error('Only an uncollected order can be cancelled');
  if(!['missing','quantity','personal','mismatch'].includes(reason))throw Error('Choose a reason');
+ if(c.category(r)==='takeout'&&reason==='missing'&&now<(r.arrivalAt||0)+10*MIN)throw Error('Wait until '+clock((r.arrivalAt||0)+10*MIN)+' before reporting missing food');
  if(c.category(r)==='task')return reason!=='mismatch';
  if(r.etaChangedAfterAccept&&reason==='personal')return false;
  if(r.etaChangedAfterAccept&&reason==='personal')return false;
@@ -52,7 +37,7 @@ function runnerCancel(s,id,reason,now=Date.now()){
  if(!t)throw Error('Trip not found');
  const previousRunner=t.runnerName||s.profile.name||'Runner';
  if(mark)s.profile.marks.push({at:now,requestId:id,reason:'Late cancellation'});
- event(r,'Returned to the board: '+reason,now);r.cancellation={reason,at:now,runner:previousRunner,mark};r.status='waiting';r.runnerId=null;r.collected=[];delete r.takenAt;delete r.etaChangedAfterAccept;if(r.closesAt&&r.closesAt<=now)r.closesAt=now+30*MIN;
+ event(r,'Runner cancelled: '+reason,now);r.cancellation={reason,at:now,runner:previousRunner,mark};r.status='waiting';r.runnerId=null;r.collected=[];delete r.takenAt;delete r.etaChangedAfterAccept;delete r.etaChangedAfterAccept;
  t.requestIds=t.requestIds.filter(x=>x!==id);(t.cancelledRequests||(t.cancelledRequests=[])).push(id);
  if(!t.requestIds.length&&!t.joinUntil)t.cancelled=true;
  else if(t.requestIds.length&&t.requestIds.every(rid=>s.requests.find(x=>x.id===rid).status==='collected'))t.phase='deliver';
@@ -62,37 +47,19 @@ function pickup(s,id){const r=s.requests.find(x=>x.id===id);if(!r||r.status!=='t
 function deliver(s,id,photo,location){d.deliver(s,id,photo);const r=s.requests.find(x=>x.id===id);r.deliveryLocation=location||'';event(r,'Delivered · photo');}
 function report(s,id,reason,photo,note){const r=s.requests.find(x=>x.id===id);if(!r||r.status!=='delivered')throw Error('Only a delivered order can be reported');if(!['Not received','Wrong bag','Spilled or damaged','Something else'].includes(reason))throw Error('Choose a reason');if(reason==='Spilled or damaged'&&!photo)throw Error('Add a photo of the damage');if(reason==='Something else'&&!String(note||'').trim())throw Error('Describe the issue');r.status='disputed';r.dispute={reason,photo:photo||'',note:note||'',at:Date.now()};event(r,'Issue reported · settlement paused');}
 function candidates(s,t,now=Date.now()){
- return s.requests.filter(r=>{const pickup=c.category(r)==='takeout'?(r.pickupPoint||r.station):r.station;return r.status==='waiting'&&r.campusId===t.campusId&&pickup===t.station&&route.destinationMatches(r,t)&&route.categoryMatches(r,t)&&(!r.closesAt||r.closesAt>now)&&(!r.closesAt||r.closesAt>t.departAt)&&(!r.arrivalAt||r.arrivalAt<=t.departAt);});
+ return s.requests.filter(r=>r.status==='waiting'&&r.campusId===t.campusId&&r.station===t.station&&r.dorm===t.dorm&&c.category(r)===c.category(t)&&(!r.closesAt||r.closesAt>now)&&(!r.closesAt||r.closesAt>t.departAt)&&(!r.arrivalAt||r.arrivalAt<=t.departAt));
 }
 function plan(s,cfg,now=Date.now()){
- if(!['takeout','parcel','other'].includes(cfg.category||'takeout'))throw Error('Choose a pickup category');
- const station=String(cfg.station||'').trim(),destinationType=cfg.destinationType==='place'?'place':cfg.destinationType==='dorm'?'dorm':undefined,deliveryAddress=String(cfg.deliveryAddress||'').trim(),pickupAddress=String(cfg.pickupAddress||'').trim(),waypoint=String(cfg.waypoint||'').trim();
- if(!station||station.length>200||pickupAddress.length>200||waypoint.length>200)throw Error('Add a pickup location under 200 characters');
- if(destinationType==='place'&&(!deliveryAddress||deliveryAddress.length>500))throw Error('Add a delivery address under 500 characters');
- const dorm=destinationType==='place'?route.placeDorm(deliveryAddress):String(cfg.dorm||'').trim();
  const capacity=Number(cfg.capacity);if(!Number.isInteger(capacity)||capacity<1||capacity>(cfg.category==='takeout'?5:12))throw Error('Choose a capacity between 1 and 12');
- if(!station||!dorm||dorm.length>100)throw Error('Choose a pickup point and destination');
- const later=cfg.when==='later',duration=cfg.duration===undefined||cfg.duration===null||cfg.duration===''?10:Number(cfg.duration);if(!later&&(!Number.isInteger(duration)||duration<1||duration>30))throw Error('Choose a duration between 1 and 30 minutes');
+ if(!cfg.station||!cfg.dorm)throw Error('Choose a pickup point and destination');
+ const later=cfg.when==='later',duration=Number(cfg.duration||10);if(![5,10,15].includes(duration))throw Error('Choose 5, 10 or 15 minutes');
  const departAt=later?todayAt(cfg.time,now):now+duration*MIN;
  if(later&&departAt<=now+10*MIN)throw Error('Choose a departure more than 10 minutes from now');
- return {campusId:s.profile.campusId,universityId:s.profile.universityId,category:cfg.category||'takeout',station,pickupAddress,waypoint,dorm,destinationType,deliveryAddress:destinationType==='place'?deliveryAddress:'',capacity,departAt,depart:clock(departAt),joinUntil:later?departAt-10*MIN:departAt,remindAt:later?departAt-15*MIN:0,phase:'collect',requestIds:[],cancelled:false,runnerName:s.profile.name||'You',runnerJobs:s.profile.jobsDone||0};
-}
-function matchingTripOrders(s,cfg,now=Date.now()){
- const t=plan(s,cfg,now);
- return candidates(s,t,now).sort((a,b)=>(a.arrivalAt||0)-(b.arrivalAt||0));
+ return {campusId:s.profile.campusId,universityId:s.profile.universityId,category:cfg.category||'takeout',station:cfg.station,dorm:cfg.dorm,capacity,departAt,depart:clock(departAt),joinUntil:later?departAt-10*MIN:departAt,remindAt:later?departAt-15*MIN:0,phase:'collect',requestIds:[],cancelled:false,runnerName:s.profile.name||'You',runnerJobs:s.profile.jobsDone||0};
 }
 function previewTrip(s,cfg,now=Date.now()){
  const t=plan(s,cfg,now),ids=[];let boxes=0,reward=0;
- if(Object.prototype.hasOwnProperty.call(cfg,'requestIds')){
-  if(!Array.isArray(cfg.requestIds)||cfg.requestIds.length>12||cfg.requestIds.some(id=>typeof id!=='string')||new Set(cfg.requestIds).size!==cfg.requestIds.length)throw Error('Choose up to 12 different orders');
-  const available=new Map(candidates(s,t,now).map(r=>[r.id,r]));
-  const selected=cfg.requestIds.map(id=>available.get(id));
-  if(selected.some(r=>!r))throw Error('A selected order changed. Refresh and choose again.');
-  // Validate on copies: preview must never accept or change the real orders.
-  d.assign({...s,requests:selected.map(r=>({...r}))},{...t,requestIds:[]},cfg.requestIds);
-  return {trip:t,ids:cfg.requestIds.slice(),boxes:selected.reduce((n,r)=>n+d.boxes(r),0),reward:selected.reduce((n,r)=>n+r.reward,0)};
- }
- for(const r of candidates(s,t,now).sort((a,b)=>(a.arrivalAt||0)-(b.arrivalAt||0))){if(boxes+d.boxes(r)<=t.capacity&&(c.category(r)!=='takeout'||boxes+d.boxes(r)<=5)&&reward+r.reward<=d.limit(s.profile)){const first=ids.length&&s.requests.find(x=>x.id===ids[0]);if(first&&(r.destinationKey||'')!==(first.destinationKey||''))continue;if(t.category==='other'&&first&&c.category(r)!==c.category(first))continue;if((t.category==='takeout'||first&&c.category(first)==='takeout')&&first&&Math.abs(r.arrivalAt-first.arrivalAt)>15*MIN)continue;ids.push(r.id);boxes+=d.boxes(r);reward+=r.reward;}}
+ for(const r of candidates(s,t,now).sort((a,b)=>(a.arrivalAt||0)-(b.arrivalAt||0))){if(boxes+d.boxes(r)<=t.capacity&&reward+r.reward<=d.limit(s.profile)){const first=ids.length&&s.requests.find(x=>x.id===ids[0]);if(t.category==='takeout'&&first&&Math.abs(r.arrivalAt-first.arrivalAt)>15*MIN)continue;ids.push(r.id);boxes+=d.boxes(r);reward+=r.reward;}}
  return {trip:t,ids,boxes,reward};
 }
 function startTrip(s,cfg,now=Date.now()){const p=previewTrip(s,cfg,now),t={...p.trip,id:'t'+s.nextId++};d.assign(s,t,p.ids);s.trips.unshift(t);return t;}
@@ -105,6 +72,6 @@ function join(s,tripId,make,now=Date.now()){
 function owned(s,r){return r.isMine===true&&r.ownerId===s.profile.accountId;}
 function status(r){return {waiting:r.cancellation?'Finding another runner':'Waiting for a runner',taken:'Runner accepted',collected:'On the way',delivered:'Delivered · please check',confirmed:'Confirmed',cancelled:r.cancelReason==='expired'?'No runner in 1 hour · cancelled':'Cancelled · demo refund',refunded:'No runner · demo refund',disputed:'Issue reported · under review'}[r.status]||r.status;}
 // Pass language 'zh' for Chinese labels; without it the labels stay in English.
-function view(r,language){const out=baseView(r),lang=language==='zh'?'zh':'en';out.cancelReasonLabel=require('./customer-cancel-reasons').label(r.cancel_reason||r.cancelReason,lang==='zh');out.pickupDisplay=require('./route-label').pickup({...r,category:c.category(r)},lang);if(c.category(r)==='takeout')out.pickupPointDisplay=require('./takeaway-lockers').label(r.pickupPoint,language==='zh'?'zh':'en');if(c.category(r)==='takeout'&&r.night&&r.purchaseStatus==='needs_purchase')out.arrivalLabel=(language==='zh'?'期待送达 ':'Expected delivery ')+(r.deliverBy||clock(r.closesAt));if(language!=='zh')return out;const t=require('./order-copy').translate;return {...out,destinationDisplay:r.destinationType==='place'?r.deliveryAddress:r.dorm+' · '+r.room+' 室',statusLabel:t(out.statusLabel,language),arrivalLabel:t(out.arrivalLabel,language),sizeLabel:t(out.sizeLabel,language),history:out.history.map(e=>({...e,label:t(e.label,language)}))};}
-function baseView(r){const urls=require('./orders'),riderPhotos=(Array.isArray(r.riderPhotos)?r.riderPhotos:(r.riderPhoto?[r.riderPhoto]:[])).map(path=>urls.photoURL(path));return {...r,destinationDisplay:r.destinationType==='place'?r.deliveryAddress:r.dorm+' · Room '+r.room,photo:urls.photoURL(r.photo),completionPhotos:(Array.isArray(r.completionPhotos)?r.completionPhotos:(r.photo?[r.photo]:[])).map(path=>urls.photoURL(path)),riderPhoto:riderPhotos[0]||'',riderPhotos,orderPictures:(r.orderPictures||[]).map(path=>urls.photoURL(path)),noticePhoto:urls.photoURL(r.noticePhoto),category:c.category(r),unit:c.category(r)==='task'?'task':c.category(r)==='takeout'?'bags':'boxes',boxes:d.boxes(r),fee:fee(r).toFixed(2),total:total(r).toFixed(2),rewardText:r.reward.toFixed(2),earnedText:(r.reward+Number(r.runnerBonus||0)).toFixed(2),statusLabel:status(r),arrivalLabel:r.arrived?(r.deliverBy?'Food is there · door by '+r.deliverBy:'Food is there now'):'Arrives '+clock(r.arrivalAt),closeTime:clock(r.closesAt),phoneLast4:(r.phone||'').replace(/\s/g,'').slice(-4),autoHours:hours(r),autoTime:r.deliveredAt?clock(r.deliveredAt+hours(r)*HOUR):'',sizeLabel:c.category(r)==='task'?'Task':c.label(r),deliveredTime:clock(r.deliveredAt),history:(r.history||[]).map(e=>({...e,time:clock(e.at)}))};}
-module.exports={clock,todayAt,fee,total,hours,event,migrate,expire,createTakeaway,raise,cancelReason,runnerCancel,pickup,deliver,report,matchingTripOrders,previewTrip,startTrip,join,owned,status,view};
+function view(r,language){const out=baseView(r);if(language!=='zh')return out;const t=require('./order-copy').translate;return {...out,destinationDisplay:r.destinationType==='place'?r.deliveryAddress:r.dorm+' · '+r.room+' 室',statusLabel:t(out.statusLabel,language),arrivalLabel:t(out.arrivalLabel,language),sizeLabel:t(out.sizeLabel,language),history:out.history.map(e=>({...e,label:t(e.label,language)}))};}
+function baseView(r){const urls=require('./orders');return {...r,destinationDisplay:r.destinationType==='place'?r.deliveryAddress:r.dorm+' · Room '+r.room,photo:urls.photoURL(r.photo),riderPhoto:urls.photoURL(r.riderPhoto),noticePhoto:urls.photoURL(r.noticePhoto),category:c.category(r),unit:c.category(r)==='task'?'task':c.category(r)==='takeout'?'bags':'boxes',boxes:d.boxes(r),fee:fee(r).toFixed(2),total:total(r).toFixed(2),rewardText:r.reward.toFixed(2),earnedText:(r.reward+Number(r.runnerBonus||0)).toFixed(2),statusLabel:status(r),arrivalLabel:r.arrived?'Food is there now':'Arrives '+clock(r.arrivalAt),closeTime:clock(r.closesAt),phoneLast4:(r.phone||'').replace(/\s/g,'').slice(-4),autoHours:hours(r),autoTime:r.deliveredAt?clock(r.deliveredAt+hours(r)*HOUR):'',sizeLabel:c.category(r)==='task'?'Task':c.label(r),deliveredTime:clock(r.deliveredAt),history:(r.history||[]).map(e=>({...e,time:clock(e.at)}))};}
+module.exports={clock,todayAt,fee,total,hours,event,migrate,expire,createTakeaway,raise,cancelReason,runnerCancel,pickup,deliver,report,previewTrip,startTrip,join,owned,status,view};

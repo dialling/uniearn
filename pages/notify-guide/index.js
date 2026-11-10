@@ -17,7 +17,7 @@ const STEPS={
   ]
 };
 Page({
-  data:{...require('../../utils/motion').data(),zh:true,steps:STEPS.zh},
+  data:{zh:true,steps:STEPS.zh},
   onShow(){this.localize();},
   localize(){const zh=store.get().language!=='en';this.setData({zh,steps:STEPS[zh?'zh':'en']});},
   openSettings(){try{if(wx.openSetting)wx.openSetting({});}catch(e){console.error(e);}}

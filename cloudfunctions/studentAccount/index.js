@@ -1,40 +1,14 @@
 const cloud=require('wx-server-sdk');
 cloud.init({env:cloud.DYNAMIC_CURRENT_ENV});
 const db=cloud.database(), _=db.command, collection='uniearn_accounts';
-const {createHandler,idFor,publicAccount}=require('./handler');
-const missing=e=>/not exist|not found|does not exist/i.test(e.message||'')||e.errCode===-502005||e.code===-502005;
-const activeStudent=(a,sid)=>a&&a.verification&&a.verification.studentId===sid&&['pending','verified'].includes(a.verification.status);
-async function readAccount(tx,id){try{return (await tx.collection(collection).doc(id).get()).data;}catch(e){if(missing(e))return null;throw e;}}
-async function studentReservation(tx,id,studentId){
- const ref=tx.collection(collection).doc('student-'+idFor(studentId));
- let lock;try{lock=(await ref.get()).data;}catch(e){if(!missing(e))throw e;}
- if(lock&&lock.ownerId!==id&&activeStudent(await readAccount(tx,lock.ownerId),studentId))return null;
- return ref;
-}
+const {createHandler}=require('./handler');
+const missing=e=>/not exist|not found|does not exist/i.test(e.message||'');
 const repo={
   async logout(id){return db.runTransaction(async tx=>{
-    const ref=tx.collection(collection).doc(id);let a;try{a=(await ref.get()).data;}catch(e){if(!missing(e))throw e;a={};}
+    const ref=tx.collection(collection).doc(id),a=(await ref.get()).data;
     await ref.update({data:{loggedOut:true,authRevision:(a.authRevision||0)+1}});
   });},
-  async submitApplication(id,expected,verification,updatedAt){return db.runTransaction(async tx=>{
-    const a=await readAccount(tx,id);
-    if(!a||a.loggedOut||!a.profile||!a.runnerRulesAcceptedAt||(a.authRevision||0)!==(expected.authRevision||0)||a.profile.name!==expected.profile.name||a.verification?.status==='verified')return 'APPLICATION_CHANGED';
-    const lock=await studentReservation(tx,id,verification.studentId);
-    if(!lock)return 'STUDENT_ID_USED';
-    await lock.set({data:{ownerId:id}});
-    await tx.collection(collection).doc(id).update({data:{verification:_.set(verification),updatedAt}});
-    return '';
-  });},
-  async review(id,expected,verification){return db.runTransaction(async tx=>{
-    const ref=tx.collection(collection).doc(id),a=await readAccount(tx,id),v=a&&a.verification;
-    if(!v||v.status!=='pending'||v.submittedAt!==expected.submittedAt||v.studentId!==expected.studentId)return false;
-    if(verification.status==='verified'){
-      const lock=await studentReservation(tx,id,verification.studentId);
-      if(!lock)return false;
-      await lock.set({data:{ownerId:id}});
-    }
-    await ref.update({data:{verification:_.set(verification)}});return true;
-  });},
+  async review(id,expected,verification){return db.runTransaction(async tx=>{const ref=tx.collection(collection).doc(id),a=(await ref.get()).data,v=a.verification;if(!v||v.status!=='pending'||v.submittedAt!==expected.submittedAt||v.studentId!==expected.studentId)return false;await ref.update({data:{verification:_.set(verification)}});return true;});},
   async get(id){const r=await db.collection(collection).where({_id:id}).limit(1).get();return r.data[0]||null;},
   async patch(id,patch){await db.runTransaction(async tx=>{const ref=tx.collection(collection).doc(id);let old;try{old=(await ref.get()).data;}catch(e){if(!missing(e))throw e;}const data={...(old||{}),...patch};delete data._id;await ref.set({data});});},
   async findStudent(studentId){const r=await db.collection(collection).where({'verification.studentId':studentId,'verification.status':_.in(['pending','verified'])}).limit(20).get();return r.data.map(a=>a._id);},
@@ -49,4 +23,4 @@ const repo={
 };
 const accountHandler=createHandler({getOpenId:()=>cloud.getWXContext().OPENID,repo,env:process.env});
 
-exports.main=async event=>{if(event?.action==='wechatLogin'){try{const openid=cloud.getWXContext().OPENID;if(!openid||!event.code)throw Error('Use the phone authorization button in WeChat.');const id=idFor(openid),a=await repo.get(id)||{};const res=await cloud.openapi.phonenumber.getPhoneNumber({code:event.code});const phone=res.phoneInfo?.purePhoneNumber;if(!/^1\d{10}$/.test(phone||''))throw Error('A mainland mobile number is needed for campus deliveries.');const rawName=String(a.profile?.name||event.name||'').trim();const profile={...(a.profile||{}),name:(rawName||'Student').slice(0,60),phone,wechatPhone:phone};await repo.patch(id,{profile,loggedOut:false,authRevision:(a.authRevision||0)+1,updatedAt:Date.now()});return {ok:true,account:publicAccount({...a,profile,loggedOut:false},id)};}catch(e){return {ok:false,error:e.message||'WeChat phone authorization is unavailable. Use manual registration.'};}}return accountHandler(event);};
+exports.main=async event=>{if(event?.action==='wechatLogin'){try{const openid=cloud.getWXContext().OPENID;if(!openid||!event.code)throw Error('Use the phone authorization button in WeChat.');const id=require('./handler').idFor(openid),a=await repo.get(id)||{};const res=await cloud.openapi.phonenumber.getPhoneNumber({code:event.code});const phone=res.phoneInfo?.purePhoneNumber;if(!/^1\d{10}$/.test(phone||''))throw Error('A mainland mobile number is needed for campus deliveries.');const profile={...(a.profile||{}),name:String(a.profile?.name||event.name||'Student').slice(0,60),phone,wechatPhone:phone};await repo.patch(id,{profile,loggedOut:false,authRevision:(a.authRevision||0)+1,updatedAt:Date.now()});return {ok:true,account:require('./handler').publicAccount({...a,profile,loggedOut:false},id)};}catch(e){return {ok:false,error:e.message||'WeChat phone authorization is unavailable. Use manual registration.'};}}return accountHandler(event);};

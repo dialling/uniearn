@@ -5,7 +5,7 @@ module.exports={
       {
         "n": "1",
         "title": "Pay through Uniearn",
-        "text": "This team test records a simulated payment. Confirmed orders settle in the test ledger. All orders become pending after delivery and credit on confirmation, or automatically 2 hours after delivery. No real WeChat Pay charge or transfer is connected."
+        "text": "This team test records a simulated payment. Confirmed orders settle in the test ledger. Automatic confirmation: takeaway 1 hour, parcels 48 hours, tasks 24 hours. No real WeChat Pay charge or transfer is connected."
       },
       {
         "n": "2",
@@ -30,7 +30,7 @@ module.exports={
     ]
   },
   "runners": {
-    "intro": "What every runner agrees to at sign-up. Breaking one adds a mark. A mark expires after 2 weeks and costs no money, but 3 active marks put you back to New, and 5 pause you from taking jobs for 7 days. Levels: New, Trusted after 10 finished jobs, Top after 40 finished jobs with no active marks. Order value is not restricted by runner level. Up to 5 bags per trip.",
+    "intro": "What every runner agrees to at sign-up. Breaking one adds a mark. A mark expires after 2 weeks and costs no money, but 3 active marks put you back to New, and 5 pause you from taking jobs for 7 days. Levels: New (up to ¥10 a trip), Trusted after 10 finished jobs (up to ¥25), Top after 40 jobs at 95% on time with no active marks (no limit). Up to 5 bags per trip.",
     "rules": [
       {
         "n": "1",
@@ -54,8 +54,13 @@ module.exports={
       },
       {
         "n": "5",
+        "title": "Deliver within 15 minutes of pickup",
+        "text": "Late deliveries count against your on-time record."
+      },
+      {
+        "n": "6",
         "title": "Cancel early, or with a reason",
-        "text": "Cancelling less than 15 minutes before the food arrives adds a mark. No mark for reporting missing food or mismatched bags. Missing food can be reported without waiting."
+        "text": "Cancelling less than 15 minutes before the food arrives adds a mark. No mark if the food isn’t there 10 minutes after it was due, or the bags don’t match."
       }
     ]
   },
@@ -65,12 +70,12 @@ module.exports={
       {
         "n": "1",
         "title": "What we keep",
-        "text": "Your account name, phone, orders, and student verification result if you run jobs. Runner applicants can verify their phone with WeChat phone verification; the number comes from WeChat and is only used for UniEarn. Typed numbers are checked by an admin. Saved route shortcuts are kept on this device."
+        "text": "Your account name, phone, orders, and student verification result if you run jobs. Saved route shortcuts are kept on this device."
       },
       {
         "n": "2",
         "title": "Who sees your room and phone",
-        "text": "The hall shows the dorm area and building but hides the room number. The room, contact details, codes and photos are visible only to the customer and the assigned runner after acceptance. This version uses direct phone calls, so participants can see the real phone number. Private-number calling is not connected."
+        "text": "Only the assigned customer and runner can see contact details, room, codes and photos. This version uses direct phone calls, so participants can see the real phone number. Private-number calling is not connected."
       },
       {
         "n": "3",
@@ -80,7 +85,7 @@ module.exports={
       {
         "n": "4",
         "title": "The public job hall",
-        "text": "Shows pickup information, dorm gender, takeaway locker, dorm area, building, prices and times. Room numbers, names, phone numbers and pickup codes stay private until a runner accepts the order."
+        "text": "Shows routes, prices and times only. Never names, rooms or phone numbers."
       }
     ]
   }

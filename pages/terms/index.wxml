@@ -1,5 +1,4 @@
-<view style="{{motionStyle}}"><status-bar/>
-<lang-switch></lang-switch>
+<lang-switch/>
 <view class="flow-page terms-page {{darkClass}}">
  <view class="terms-tabs"><text wx:for="{{tabs}}" wx:key="id" class="terms-tab {{index===tab?'on':''}}" data-i="{{index}}" bindtap="choose">{{item.label}}</text></view>
  <view class="flow-card terms-doc">
@@ -11,6 +10,4 @@
   </block>
  </view>
  <view class="hint terms-foot">{{updated}}</view>
-</view>
-
 </view>

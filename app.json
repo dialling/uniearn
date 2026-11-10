@@ -1,5 +1,4 @@
 {
-  "entryPagePath": "pages/jobs/index",
   "pages": [
     "pages/welcome/index",
     "pages/campus/index",
@@ -7,9 +6,7 @@
     "pages/requests/index",
     "pages/create/index",
     "pages/earnings/index",
-    "pages/wallet/index",
     "pages/profile/index",
-    "pages/levels/index",
     "pages/request/index",
     "pages/trip/index",
     "pages/join/index",
@@ -19,22 +16,16 @@
     "pages/takeaway/index",
     "pages/trip-start/index",
     "pages/rewards/index",
+    "pages/posted/index",
     "pages/chat/index",
-    "pages/support-chat/index",
     "pages/info/index",
     "pages/task/index",
-    "pages/task-post/index",
     "pages/public-job/index",
     "pages/routes/index",
     "pages/guide/index",
     "pages/help/index",
     "pages/route-edit/index",
     "pages/address/index",
-    "pages/address-add/index",
-    "pages/address-edit/index",
-    "pages/coupons/index",
-    "pages/coupon-pick/index",
-    "pages/invite/index",
     "pages/admin/index",
     "pages/notify-guide/index",
     "pages/terms/index"
@@ -43,62 +34,13 @@
     "navigationBarTitleText": "UniEarn",
     "navigationBarBackgroundColor": "#ffffff",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#eeede8",
-    "navigationStyle": "custom"
+    "backgroundColor": "#eeede8"
   },
   "style": "v2",
   "usingComponents": {
-    "contact-avatar": "/components/contact-avatar/index",
     "app-nav": "/components/nav/index",
     "yuni-tip": "/components/yuni/index",
     "yuni-assistant": "/components/yuni-assistant/index",
-    "lang-switch": "/components/lang-switch/index",
-    "level-up": "/components/level-up/index",
-    "daily-checkin": "/components/daily-checkin/index"
-  },
-  "lazyCodeLoading": "requiredComponents",
-  "subpackages": [
-    {
-      "root": "pages/posted",
-      "name": "yuni",
-      "pages": [
-        "index"
-      ]
-    },
-    {
-      "root": "stickers/sticker-pack-1",
-      "name": "sticker-pack-1",
-      "pages": [
-        "index"
-      ]
-    },
-    {
-      "root": "stickers/sticker-pack-2",
-      "name": "sticker-pack-2",
-      "pages": [
-        "index"
-      ]
-    },
-    {
-      "root": "stickers/sticker-pack-3",
-      "name": "sticker-pack-3",
-      "pages": [
-        "index"
-      ]
-    }
-  ],
-  "preloadRule": {
-    "pages/takeaway/index": {
-      "network": "all",
-      "packages": [
-        "yuni"
-      ]
-    },
-    "pages/create/index": {
-      "network": "all",
-      "packages": [
-        "yuni"
-      ]
-    }
+    "lang-switch": "/components/lang-switch/index"
   }
 }

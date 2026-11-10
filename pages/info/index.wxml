@@ -1,5 +1,4 @@
-<view style="{{motionStyle}}"><status-bar/>
-<lang-switch></lang-switch>
+<lang-switch/>
 <view class="rules-page {{darkClass}}">
  <view class="rules-header">
   <view class="flow-title">{{labels.title}}</view>
@@ -20,9 +19,7 @@
     </view>
    </view>
   </view>
-  <view wx:if="{{tab==='privacy'}}" class="hint terms-link" bindtap="fullTerms">{{labels.fullTerms}} ›</view><button wx:if="{{tab==='privacy'}}" class="delete-button" loading="{{deleting}}" disabled="{{deleting}}" bindtap="deletion">{{labels.deletion}}</button><view wx:if="{{tab==='privacy'}}" class="hint order-close-link" bindtap="closeOrders">{{zh?'关闭我所有进行中的订单':'Close all my open orders'}}</view>
+  <view wx:if="{{tab==='privacy'}}" class="hint terms-link" bindtap="fullTerms">{{labels.fullTerms}} ›</view><button wx:if="{{tab==='privacy'}}" class="delete-button" bindtap="deletion">{{labels.deletion}}</button>
  </view>
 </view>
 <yuni-assistant/>
-
-</view>

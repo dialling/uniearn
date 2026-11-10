@@ -1,6 +1,0 @@
-<template name="contactIdentity">
-  <view class="contact-identity">
-    <view class="contact-avatar"><text>{{initial}}</text><image wx:if="{{avatar}}" src="{{avatar}}" mode="aspectFill"/></view>
-    <view class="contact-copy"><view class="contact-name">{{name}}</view><view class="hint">{{detail}}</view></view>
-  </view>
-</template>

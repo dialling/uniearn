@@ -11,7 +11,7 @@ const MAP={
   requests:['我的订单','My orders'],
   request:['订单详情','Order details'],
   posted:['已发布','Posted'],
-  'public-job':['订单公开详情','Public order details'],
+  'public-job':['任务详情','Job details'],
   create:['发布代取','Post a pick-up'],
   takeaway:['发布外卖代取','Post a pick-up'],
   'task-post':['发布任务','Post a task'],
@@ -23,19 +23,11 @@ const MAP={
   'student-check':['跑手申请','Runner application'],
   admin:['管理后台','Admin'],
   earnings:['收益','Earnings'],
-  wallet:['我的钱包','My wallet'],
-  levels:['等级成长','Level journey'],
   rewards:['动态','News'],
   routes:['常用路线','Saved routes'],
   'route-edit':['路线详情','Route details'],
-  'address':['我的常用地址','My addresses'],
-  'address-add':['新增常用地址','New address'],
-  'address-edit':['编辑常用地址','Edit address'],
-  'coupon-pick':['选择优惠券','Choose a coupon'],
-  coupons:['优惠券','Coupons'],
-  invite:['邀请同学','Invite a classmate'],
+  'address':['常用配送地址','Saved addresses'],
   chat:['聊天','Chat'],
-  'support-chat':['联系客服','Support chat'],
   info:['平台规则','Platform rules'],
   help:['帮助与支持','Help & support'],
   'notify-guide':['微信通知设置','WeChat notifications'],
@@ -74,17 +66,4 @@ function relocalize(page){
   return false;
 }
 function toggle(page){require('./onboarding').toggle();apply(page);relocalize(page);}
-// Component attachment may still see the previous page in getCurrentPages().
-// Page lifecycle hooks have the actual destination instance and run again once ready.
-function install(){
- if(typeof Page!=='function'||Page._uniearnPageTitle)return;
- const original=Page,wrapped=function(options){
-  const show=options.onShow,ready=options.onReady;
-  const paint=page=>{const top=current();if(!top||top===page||routeOf(top)===routeOf(page))apply(page);};
-  options.onShow=function(...args){const result=show&&show.apply(this,args);paint(this);return result;};
-  options.onReady=function(...args){const result=ready&&ready.apply(this,args);require('./nav').pageReady(this);paint(this);return result;};
-  return original(options);
- };
- wrapped._uniearnPageTitle=true;wrapped._uniearnAnalytics=original._uniearnAnalytics;wrapped._uniearnMotion=original._uniearnMotion;Page=wrapped;
-}
-module.exports={MAP,lang,titleOf,apply,relocalize,toggle,current,install};
+module.exports={MAP,lang,titleOf,apply,relocalize,toggle,current};

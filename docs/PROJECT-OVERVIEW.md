@@ -84,7 +84,7 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 | `public-job` | — | orders, workflow | 公开任务/行程详情 |
 | `create` | Post a pick-up | saved-routes, pickup-point, rewards, orders, domain, ocr, catalog, account, image-input, workflow | 发布代取（快递） |
 | `takeaway` | Post a pick-up | rewards, saved-routes, account, orders, workflow, ui | 发布外卖代取 |
-| `task-post` | Something else | store, orders, ui, workflow | 发布其他校园任务（发布面板第三个选项框） |
+| `task-post` | — | store, orders, ui, workflow | 发布其他校园任务 |
 | `task` | — | orders, workflow, ui | 任务详情与完成 |
 | `trip-start` | Start a trip | orders, workflow, ui, account | 开一条行程（站点/楼栋/容量/出发时间） |
 | `trip` | Pick up & deliver | orders, domain, workflow, ui, runner-level | 取件与送达主流程 |
@@ -130,7 +130,7 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
   - pending 超过 20 小时（`STALE_OPERATION_MS`）视为过期：丢弃并重新同步，提示用户核对订单，不再永久锁死
 - `upload(path)`：先 `prepareUpload` 拿路径再上传；同一路径的并发上传会合并成一次。
 - `bind(page, method)` / `unbind`：页面订阅刷新；快照应用后统一 `page.refresh()`。
-- `apply(snapshot)`：`revision` 落后于本地则丢弃；比对前后状态后按 `preferences` 触发「云宝」事件或 toast（新消息 `orderUpdates`、订单状态变化、新行程 `nearbyTrip`、新任务 `newJobs`）。（考试模式已于界面改版中移除。）
+- `apply(snapshot)`：`revision` 落后于本地则丢弃；比对前后状态后按 `preferences` 触发「云宝」事件或 toast（新消息 `orderUpdates`、订单状态变化、新行程 `nearbyTrip`、新任务 `newJobs`），并遵守考试周免打扰（`examUntil`）。
 - `photoURL(path)`：把 `cloud://` 换成快照里的临时链接；`invalidate()` 在登录态变化时清空事件、代数、上传缓存。
 
 ### 与服务端共享的模块（容易踩坑）
@@ -167,8 +167,6 @@ XJTLU 校园内的「顺路帮拿」平台：同学发布 **代取快递 / 代�
 | 楼层加价 | 文星宿舍区 3 楼及以上每单 +¥1；A05 有电梯免收；文缘/文萃/文荟不加价。金额在 `domain.createRequest` 里按「宿舍区 + 楼层（缺省时从房间号解析，如 1201 → 12 楼）+ 楼栋」计算，下单页预览与云端保持一致 |
 | 地址表单 | 「常用路线」编辑页按 mini program 1 补齐：宿舍区（文缘/文星/文萃/文荟）→ 楼栋（按区过滤）→ 楼层（按楼栋 1–23 层）→ 房间号；保存 `area/building/floor/room`，列表显示「文星 A05 12楼 1201」。`locker` 字段保留以兼容老数据，mini program 1 已把输入框去掉，这里同样不再收集 |
 | 校园数据 | `campus.js`：4 个宿舍区（文缘/文星/文萃/文荟）、31 栋楼（D01–D06、A01–A05、C01–C10、B01–B10）、楼层（文缘/文萃/文荟 23 层，文星 A05 20 层、其余 6 层）、9 个真实取件点，全部中英双语；来源 mini program 1（xjtlu-run-no-run） |
-| 配色 | 默认绿色：主色 `#41775b`、页面 `#f7f7f4`、深色模式 `#202522`。Costa 深红版（`#8b1e2b` + 奶油底 + 深色近黑棕）完整保存在分支 `theme/new-year-red`，新年时切过去即可 |
-| 配色 | Costa 深红 + 深棕：主色 `#8b1e2b`、奶油底 `#f6efe4`、暖边框 `#e7d9cb`、深棕导航 `#4a3527`（图标用 `assets/nav/` 里的米色版本）；深色模式为近黑棕底 `#191411` / 卡片 `#241d18`；成功状态仍保留绿色 `#3f7a52`，不与品牌红混淆 |
 | 外观 | `appearance.js`：读取 `meAppearance`，设置原生导航栏、窗口背景，并给当前页根节点加 `.page-dark`；26 个页面在 `app.wxss` 里有统一深色覆盖（浅底→深底、深字→浅字），底部导航同步换色；「我的」页切换后立即生效 |
 | 共享样式 | `flow.wxss`、`final.wxss`、`v8.wxss`、`post-form.wxss` |
 
@@ -399,8 +397,7 @@ waiting ──accept──► taken ──pickup──► collected ──delive
 | `TENCENT_SECRET_ID` / `TENCENT_SECRET_KEY` | 腾讯云 OCR 密钥（缺失时 OCR 直接报未配置） |
 | `TENCENT_OCR_REGION` | OCR 区域，默认 `ap-shanghai` |
 | `REVIEWER_OPENIDS` | 逗号分隔的审核人 `openid`，拥有 `resolveDispute` 与管理后台权限 |
-| `ADMIN_ACCOUNTS` | studentAccount 的多个管理员账号，格式 `账号:密码;账号2:密码2`（密码至少 8 位，不能含 `;`） |
-| `ADMIN_USERNAME` / `ADMIN_PASSWORD` | 旧的单个管理员账号，仍然可用；两者都未配置时管理员登录不可用 |
+| `ADMIN_USERNAME` / `ADMIN_PASSWORD` | studentAccount 的管理员账号密码（密码至少 8 位），未配置时管理员登录不可用 |
 
 ### 步骤
 

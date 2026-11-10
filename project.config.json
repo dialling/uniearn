@@ -8,7 +8,7 @@
     "es6": true,
     "enhance": true,
     "postcss": true,
-    "minified": true,
+    "minified": false,
     "compileWorklet": false,
     "uglifyFileName": false,
     "uploadWithSourceMap": true,
@@ -30,43 +30,11 @@
   "packOptions": {
     "ignore": [
       {
-        "value": "admin-web",
-        "type": "folder"
-      },
-      {
         "value": "tests",
         "type": "folder"
       },
       {
-        "value": "design",
-        "type": "folder"
-      },
-      {
-        "value": "motion-source",
-        "type": "folder"
-      },
-      {
         "value": "scripts",
-        "type": "folder"
-      },
-      {
-        "value": "uniearn-github-latest",
-        "type": "folder"
-      },
-      {
-        "value": "uniearn-github-main-latest",
-        "type": "folder"
-      },
-      {
-        "value": "uniearn-main-b5afddd",
-        "type": "folder"
-      },
-      {
-        "value": "UniEarn-GitHub-Changes",
-        "type": "folder"
-      },
-      {
-        "value": "uniearn-upload",
         "type": "folder"
       },
       {
@@ -76,114 +44,6 @@
       {
         "value": ".txt",
         "type": "suffix"
-      },
-      {
-        "value": "UniEarn-GitHub-Changes",
-        "type": "folder"
-      },
-      {
-        "value": "uniearn-upload",
-        "type": "folder"
-      },
-      {
-        "value": "docs",
-        "type": "folder"
-      },
-      {
-        "value": "cloudfunctions",
-        "type": "folder"
-      },
-      {
-        "value": ".git",
-        "type": "folder"
-      },
-      {
-        "value": ".workbuddy-ai",
-        "type": "folder"
-      },
-      {
-        "value": "outputs",
-        "type": "folder"
-      },
-      {
-        "type": "file",
-        "value": "assets/profile-ranks/avatar-1.png"
-      },
-      {
-        "type": "file",
-        "value": "assets/profile-ranks/avatar-2.png"
-      },
-      {
-        "type": "file",
-        "value": "assets/profile-ranks/avatar-3.png"
-      },
-      {
-        "type": "file",
-        "value": "assets/profile-ranks/avatar-4.png"
-      },
-      {
-        "type": "file",
-        "value": "assets/profile-ranks/avatar-5.png"
-      },
-      {
-        "value": "assets/yuni-bag.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-deliver.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-earn.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-go.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-happy.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-hello.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-look.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-oops.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-party.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-phone.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-sleep.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-think.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-wave.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-work.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-worried.svg",
-        "type": "file"
       }
     ],
     "include": []

@@ -9,12 +9,12 @@ const appearance=require('../utils/appearance');
 assert.equal(appearance.isDark(),false);
 appearance.apply();
 assert.deepEqual(calls.at(-2),['nav','#000000','#ffffff'],'light nav bar is white with black text');
-assert.deepEqual(calls.at(-1),['bg','#eeede8','#eeede8'],'light window background');
+assert.deepEqual(calls.at(-1),['bg','#f7f7f4','#f7f7f4'],'light window background');
 store.update(s=>{s.meAppearance='dark';});
 assert.equal(appearance.isDark(),true);
 appearance.apply();
-assert.deepEqual(calls.at(-2),['nav','#ffffff','#1b1c1a'],'dark nav bar is dark with white text');
-assert.deepEqual(calls.at(-1),['bg','#1b1c1a','#1b1c1a'],'dark window background');
+assert.deepEqual(calls.at(-2),['nav','#ffffff','#202522'],'dark nav bar is dark with white text');
+assert.deepEqual(calls.at(-1),['bg','#202522','#202522'],'dark window background');
 let def;global.Component=d=>{def=d;};
 require('../components/nav/index.js');
 const inst={data:{...def.data},setData(v){Object.assign(this.data,v);},...def.methods};
@@ -27,7 +27,7 @@ assert.equal(inst.data.dark,false,'bottom nav returns to light');
 // every page root carries the dark class binding (profile keeps its own me-dark)
 for(const dir of fs.readdirSync("pages")){
   const xml=fs.readFileSync("pages/"+dir+"/index.wxml","utf8");
-  if(dir==="profile"||dir==="invite")continue; // invite is always dark, so it skips the theme class
+  if(dir==="profile")continue;
   assert.ok(xml.includes("{{darkClass}}"),"page root missing dark class: "+dir);
 }
 // apply(page) toggles the root class together with the nav colours
