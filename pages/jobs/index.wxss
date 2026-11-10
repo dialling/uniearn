@@ -273,8 +273,11 @@ page{--hall-ink:#123024;--hall-ink-soft:#1aa273;--hall-rule:rgba(11,122,85,.35)}
 /* 星球星环：后半环在字下、前半环压字上，右缘一颗小星 */
 .hall-title-wrap{position:relative;display:inline-block;padding:26rpx 0;overflow:visible}
 .hall-ring{position:absolute;left:50%;top:50%;width:calc(100% + 150rpx);height:calc((100% + 150rpx) * 0.441);margin-left:calc((100% + 150rpx) / -2);transform:translateY(-50%);pointer-events:none}
-.ring-back{z-index:0;opacity:.75}
-.ring-front{z-index:3}
-.hall-mark{position:relative;z-index:2}
 .page-dark .ring-back{opacity:.45}
 .page-dark .ring-front{opacity:.9}
+
+/* 去掉胶囊底，只留环线：文字直接落在页面米色上 */
+.jobs-header .hall-mark{background:none;box-shadow:none;padding:0 6rpx;color:#0b5f43;text-shadow:none}
+.page-dark .jobs-header .hall-mark{background:none;box-shadow:none;color:#cfeee0}
+.hall-title-wrap{padding:30rpx 0}
+.hall-ring{width:calc(100% + 170rpx);height:calc((100% + 170rpx) * 0.441);margin-left:calc((100% + 170rpx) / -2)}

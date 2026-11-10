@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 150" fill="none"><defs><clipPath id="c"><rect x="0" y="75" width="340" height="80"/></clipPath></defs>
-  <g transform="rotate(-16 170 75)" opacity="1.0" clip-path="url(#c)">
-    <ellipse cx="170" cy="75" rx="152" ry="42" stroke="#1FA06F" stroke-width="10" opacity=".8"/>
-    <ellipse cx="170" cy="75" rx="152" ry="42" stroke="#A8EBCF" stroke-width="2.6" opacity=".95"/>
-  </g><path d="M322.1 6.1 l4.6 10.8 10.8 4.6-10.8 4.6-4.6 10.8-4.6-10.8-10.8-4.6 10.8-4.6z" fill="#D9A12B"/>
-</svg>
