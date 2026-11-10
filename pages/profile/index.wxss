@@ -182,3 +182,14 @@
 @media(max-width:350px){.header-avatar{width:128rpx;height:128rpx}.rank-badge{width:82rpx;height:82rpx}.journey-level{font-size:25rpx}.journey-points-number{font-size:36rpx}}
 
 .header-edit-mark{margin-left:10rpx;font-size:23rpx;font-weight:400;opacity:.7}.username-mask{position:fixed;inset:0;z-index:1200;background:rgba(20,35,27,.45);display:flex;align-items:center;justify-content:center;padding:40rpx;box-sizing:border-box}.username-editor{width:100%;max-width:650rpx;padding:36rpx;border-radius:28rpx;background:#fffdf8;box-sizing:border-box;color:#26382e}.username-title{font-size:36rpx;font-weight:750}.username-hint{font-size:24rpx;line-height:1.6;color:#68766b;margin:12rpx 0 22rpx}.username-input{height:96rpx;min-height:44px;box-sizing:border-box;padding:18rpx 22rpx;background:#f0f4ee;border:2rpx solid #d1dfd1;border-radius:16rpx;font-size:30rpx}.username-error{color:#a34032;font-size:23rpx;margin-top:12rpx;line-height:1.5}.username-actions{display:flex;gap:16rpx;margin-top:28rpx}.username-actions button{flex:1;min-height:44px;margin:0;padding:18rpx 20rpx;border-radius:16rpx;font-size:27rpx;line-height:1.5}.username-actions button::after{border:0}.username-cancel{background:#edf1e9;color:#4f6254}.username-save{background:#41775b;color:#fff}.username-save[disabled]{background:#cad7ca;color:#617466}
+
+/* 我的订单快捷入口 */
+.order-shortcuts{margin:0 0 18rpx;padding:26rpx 18rpx 18rpx}
+.shortcuts-head{display:flex;align-items:center;justify-content:space-between;padding:0 10rpx 12rpx}
+.shortcut-grid{display:flex;justify-content:space-between}
+.shortcut{flex:1;display:flex;flex-direction:column;align-items:center;gap:10rpx;font-size:22rpx;color:#202126;padding:8rpx 0}
+.shortcut-icon{width:48rpx;height:48rpx;opacity:.85}
+.me-dark .shortcut{color:#edf1ed}
+/* 我的服务 */
+.service-list .settings-icon{width:44rpx;height:44rpx}
+.service-list .menu-copy{font-size:30rpx}
