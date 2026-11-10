@@ -165,3 +165,27 @@
 /* Give long locker names the full route width. */
 
 .tracked-orders{margin:18rpx 0 24rpx;padding:10rpx 24rpx 4rpx;background:#f7fbf7;border:1rpx solid #dbe8dc;border-radius:24rpx}.tracked-orders-heading{display:flex;justify-content:space-between;align-items:center;gap:12rpx;color:#41664b;font-size:24rpx;font-weight:700}.tracked-orders-heading button{min-height:44px;margin:0;padding:12rpx 0 12rpx 18rpx;background:none;color:#41664b;font-size:21rpx;line-height:1.5;font-weight:600}.tracked-orders-heading button::after{border:0}.tracked-order-row{display:flex;align-items:center;gap:18rpx;min-height:44px;padding:18rpx 0;border-top:1rpx solid #e4ece2}.tracked-order-copy{flex:1;min-width:0}.tracked-order-title{font-size:25rpx;line-height:1.5;font-weight:650;color:#263a2d;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tracked-order-status{font-size:21rpx;color:#497557;margin-top:4rpx}.tracked-order-chevron{font-size:32rpx;color:#7c987d}.page-dark .tracked-orders{background:#24352c;border-color:#3d5141}.page-dark .tracked-order-row{border-color:#3d5141}.page-dark .tracked-order-title{color:#e1ebe2}.page-dark .tracked-order-status,.page-dark .tracked-orders-heading,.page-dark .tracked-orders-heading button{color:#a2cead}
+
+/* 大厅标题：星光环绕 */
+.hall-title-wrap{position:relative;display:inline-block;padding:0 8rpx}
+.hall-title-wrap::before{content:"";position:absolute;left:-30rpx;right:-30rpx;top:-20rpx;bottom:-16rpx;background:radial-gradient(closest-side,rgba(11,122,85,.18),rgba(11,122,85,0) 72%);border-radius:50%;z-index:-1}
+.hall-spark{position:absolute;color:#0b7a55;opacity:.55;line-height:1}
+.hall-spark.s1{top:-18rpx;right:-14rpx;font-size:24rpx}
+.hall-spark.s2{bottom:-12rpx;left:-18rpx;font-size:16rpx;opacity:.4}
+.hall-spark.s3{top:4rpx;left:-30rpx;font-size:13rpx;opacity:.32}
+/* 卡片状态胶囊 */
+.job-head-side{display:flex;flex-direction:column;align-items:flex-end;gap:8rpx;flex:none}
+.state-pill{font-size:21rpx;font-weight:700;line-height:1.5;padding:6rpx 18rpx;border-radius:24rpx;background:#e7f3ed;color:#0b7a55;white-space:nowrap}
+.state-pill.taken{background:#d8efe1;color:#08603f}
+.state-pill.done{background:#202522;color:#fff}
+.state-pill.own{background:#eef1ec;color:#56685b}
+.state-pill.fresh{background:#e7f3ed;color:#0b7a55}
+/* 卡片头部浅色带，让栏目框更像票根 */
+.job-card-header{margin:-8rpx -8rpx 14rpx;padding:12rpx;border-radius:20rpx;background:linear-gradient(90deg,#f3f9f4,#ffffff)}
+.page-dark .hall-spark{color:#8fc9ae;opacity:.5}
+.page-dark .hall-title-wrap::before{background:radial-gradient(closest-side,rgba(143,201,174,.18),rgba(143,201,174,0) 72%)}
+.page-dark .job-card-header{background:linear-gradient(90deg,#2b332d,#242522)}
+.page-dark .state-pill{background:#2f3a33;color:#bfe3cc}
+.page-dark .state-pill.taken{background:#33503f;color:#d4f0df}
+.page-dark .state-pill.done{background:#e7f3ed;color:#202522}
+.page-dark .state-pill.own{background:#333a34;color:#c9d3cb}
