@@ -1,5 +1,5 @@
 {
-  
+  "entryPagePath": "pages/jobs/index",
   "pages": [
     "pages/welcome/index",
     "pages/campus/index",
