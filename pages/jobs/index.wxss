@@ -280,4 +280,4 @@ page{--hall-ink:#123024;--hall-ink-soft:#1aa273;--hall-rule:rgba(11,122,85,.35)}
 .jobs-header .hall-mark{background:none;box-shadow:none;padding:0 6rpx;color:#0b5f43;text-shadow:none}
 .page-dark .jobs-header .hall-mark{background:none;box-shadow:none;color:#cfeee0}
 .hall-title-wrap{padding:30rpx 0}
-.hall-ring{width:calc(100% + 170rpx);height:calc((100% + 170rpx) * 0.441);margin-left:calc((100% + 170rpx) / -2)}
+.hall-ring{width:calc(100% + 105rpx);height:calc((100% + 105rpx) * 0.441);margin-left:calc((100% + 105rpx) / -2)}
