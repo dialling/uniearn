@@ -1,5 +1,6 @@
 <import src="../../utils/contact-identity.wxml"/>
 <import src="../../utils/waiting-ticket.wxml"/>
+<import src="../../utils/customer-cancel-sheet.wxml"/>
 <view style="{{motionStyle}}">
 <lang-switch></lang-switch>
 <view class="flow-page {{darkClass}}" wx:if="{{request}}">
@@ -58,6 +59,10 @@
 </view>
 <button wx:if="{{cancelWindow.canCancel}}" class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel">{{cancelWindow.button}}</button>
 </view>
+</view>
+<view wx:if="{{request.isMine && request.status!=='waiting' && cancelWindow.phase!=='hidden'}}" class="flow-card offer-card">
+<view class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}">{{cancelWindow.tip}}</view>
+<button wx:if="{{cancelWindow.canCancel}}" class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel">{{cancelWindow.button}}</button>
 </view>
 <view wx:if="{{request.isMine && request.category==='takeout' && (request.status==='waiting'||request.status==='taken')}}" class="flow-card rider-photo-card">
 <view wx:if="{{!request.riderPhotos.length}}" class="rider-photo-action rider-photo-empty" bindtap="riderPhoto" hover-class="rider-photo-press">
@@ -174,10 +179,15 @@
 </view>
 <view class="hint">{{request.note}}</view>
 </view>
+<view wx:if="{{request.cancelReasonLabel}}" class="flow-card">
+<view class="strong">{{zh?'取消原因':'Cancel reason'}}</view>
+<view class="hint">{{request.cancelReasonLabel}}</view>
+</view>
 <button wx:if="{{request.isMine && (request.status==='confirmed'||request.status==='cancelled'||request.status==='refunded')}}" class="btn outline" bindtap="repeat">{{zh?'再来一单':'Post again'}}</button>
 </view>
 <view wx:else class="empty">{{zh?'订单暂不可用，请检查网络和账号。':'Request unavailable. Check your connection and account.'}}</view>
 <yuni-assistant topic=""/>
+<template is="customerCancelSheet" data="{{zh,cancelOpen,cancelOptions,cancelReason,cancelNote,cancelNoteOpen,cancelling,cancelReady,motionEnabled}}"/>
 <view wx:if="{{celebrate&&request}}" class="yuni-mask" bindtap="closeCelebrate" catchtouchmove="noop">
 <view class="yuni-pop" catchtap="noop">
 <view class="yuni-badge">{{request.night?successUI.typeNight:request.category==='takeout'?successUI.typeTakeout:successUI.typeParcel}}</view>

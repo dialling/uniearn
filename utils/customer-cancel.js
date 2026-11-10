@@ -68,4 +68,67 @@ function sync(page, order, zh) {
   return cancel;
 }
 
-module.exports = {WINDOW_MS, clock, runnerLabel, view, arm, stop, sync};
+const reasons = require('./customer-cancel-reasons');
+
+function openSheet(page) {
+  const order = page.data && page.data.request;
+  const window = page.data && page.data.cancelWindow;
+  if (!order || !window || !window.canCancel || page.data.cancelling) return;
+  page.setData({
+    cancelOpen: true,
+    cancelReason: '',
+    cancelNote: '',
+    cancelNoteOpen: false,
+    cancelReady: false,
+    cancelOptions: reasons.options(order, !!page.data.zh)
+  });
+}
+
+function choose(page, event) {
+  const value = event && event.currentTarget && event.currentTarget.dataset.value;
+  const item = reasons.REASONS.find(row => row.key === value);
+  if (!item || (page.data && page.data.cancelling)) return;
+  if (item.note) {
+    page.setData({
+      cancelReason: value,
+      cancelNoteOpen: true,
+      cancelReady: reasons.ready(value, page.data.cancelNote)
+    });
+    return;
+  }
+  page.setData({cancelReason: value, cancelNote: '', cancelNoteOpen: false, cancelReady: true});
+  return {submit: true, reason: value};
+}
+
+function note(page, event) {
+  const cancelNote = event.detail.value;
+  page.setData({
+    cancelNote,
+    cancelReady: reasons.ready(page.data.cancelReason, cancelNote)
+  });
+}
+
+function close(page, force) {
+  if (!force && page.data && page.data.cancelling) return;
+  page.setData({cancelOpen: false, cancelReason: '', cancelNote: '', cancelNoteOpen: false, cancelReady: false, cancelOptions: []});
+}
+
+function payload(page, override) {
+  const direct = override && override.submit && override.reason;
+  const picked = reasons.check(direct ? override.reason : page.data.cancelReason, direct ? '' : page.data.cancelNote);
+  return {reason: picked.key, ...(picked.note ? {note: picked.note} : {})};
+}
+
+function syncOpen(page) {
+  if (!page.data || !page.data.cancelOpen) return;
+  const order = page.data.request;
+  const window = page.data.cancelWindow || {};
+  if (!order || !window.canCancel) { close(page, true); return; }
+  page.setData({
+    cancelOptions: reasons.options(order, !!page.data.zh),
+    cancelNoteOpen: reasons.isOther(page.data.cancelReason),
+    cancelReady: reasons.ready(page.data.cancelReason, page.data.cancelNote)
+  });
+}
+
+module.exports = {WINDOW_MS, clock, runnerLabel, view, arm, stop, sync, openSheet, choose, note, close, payload, syncOpen};
