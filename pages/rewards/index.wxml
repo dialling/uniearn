@@ -1,4 +1,4 @@
-<view style="{{motionStyle}}">
+<view style="{{motionStyle}}"><status-bar/>
 <lang-switch></lang-switch>
 <view class="v8-page rewards-page news-redesign {{darkClass}}">
  <view wx:if="{{screen==='home'}}" class="reference-header"><view class="news-heading"><view><view class="news-title">{{zh?'动态':'News'}}</view></view></view></view>

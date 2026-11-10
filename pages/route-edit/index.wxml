@@ -1,4 +1,4 @@
-<view style="{{motionStyle}}">
+<view style="{{motionStyle}}"><status-bar/>
 <lang-switch></lang-switch>
 <view class="post-page route-editor {{darkClass}}">
  <view class="editor-heading"><view class="editor-title">{{title}}</view><view class="hint">{{subtitle}}</view></view>

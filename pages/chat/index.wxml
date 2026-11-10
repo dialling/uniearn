@@ -1,5 +1,5 @@
 <import src="../../utils/contact-identity.wxml"/>
-<view style="{{motionStyle}}">
+<view style="{{motionStyle}}"><status-bar/>
 <lang-switch></lang-switch>
 <view class="v8-page chat-page {{darkClass}} {{menuOpen?(stickerOpen?'stickers-open':'menu-open'):''}}" wx:if="{{request}}">
 <view class="chat-policy">{{zh?'订单聊天 · 送达 24 小时后关闭':'Order chat · closes 24 hours after delivery'}}</view>

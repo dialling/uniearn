@@ -1,1 +1,1 @@
-{"navigationBarTitleText":"Read pickup SMS"}
+{"navigationBarTitleText": "Read pickup SMS", "usingComponents": {"status-bar": "/components/status-bar/index"}}

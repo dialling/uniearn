@@ -1,1 +1,1 @@
-{"navigationBarTitleText":"Notifications"}
+{"navigationBarTitleText": "Notifications", "usingComponents": {"status-bar": "/components/status-bar/index"}}

@@ -1,4 +1,4 @@
-<view style="{{motionStyle}}">
+<view style="{{motionStyle}}"><status-bar/>
 <lang-switch></lang-switch>
 <view class="sms-page {{darkClass}}">
  <view class="heading">{{heading}}</view>

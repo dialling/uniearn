@@ -43,7 +43,8 @@
     "navigationBarTitleText": "UniEarn",
     "navigationBarBackgroundColor": "#ffffff",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#eeede8"
+    "backgroundColor": "#eeede8",
+    "navigationStyle": "custom"
   },
   "style": "v2",
   "usingComponents": {
@@ -55,7 +56,6 @@
     "level-up": "/components/level-up/index",
     "daily-checkin": "/components/daily-checkin/index"
   },
-  
   "lazyCodeLoading": "requiredComponents",
   "subpackages": [
     {

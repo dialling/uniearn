@@ -1,6 +1,6 @@
 <import src="../../utils/waiting-ticket.wxml"/>
 <import src="../../utils/customer-cancel-sheet.wxml"/>
-<view style="{{motionStyle}}">
+<view style="{{motionStyle}}"><status-bar/>
 <lang-switch></lang-switch>
 <view class="flow-page task-page {{zh?'task-cn':''}} {{darkClass}}" wx:if="{{request}}">
 <view class="flow-title">{{request.isMine?ui.myTask:ui.yourTask}}</view>

@@ -1,4 +1,4 @@
-<view style="{{motionStyle}}">
+<view style="{{motionStyle}}"><status-bar/>
 <lang-switch></lang-switch>
 <view class="post-page create-page {{darkClass}}">
  <view wx:if="{{mode==='choose'}}">

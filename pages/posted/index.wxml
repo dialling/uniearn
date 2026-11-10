@@ -1,4 +1,4 @@
-<view style="{{motionStyle}}">
+<view style="{{motionStyle}}"><status-bar/>
 <view class="{{darkClass}}"/>
 
 </view>

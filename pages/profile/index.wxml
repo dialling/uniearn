@@ -1,4 +1,4 @@
-<view style="{{motionStyle}}">
+<view style="{{motionStyle}}"><status-bar/>
 <lang-switch></lang-switch>
 <view class="page navpage me-page {{appearance==='dark'?'me-dark':''}}">
 <view wx:if="{{loading}}" class="muted">{{language==='zh'?'正在加载账户…':'Loading your account…'}}</view><view wx:if="{{error}}" class="notice-error">{{error}}</view>

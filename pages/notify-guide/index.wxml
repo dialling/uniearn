@@ -1,4 +1,4 @@
-<view style="{{motionStyle}}">
+<view style="{{motionStyle}}"><status-bar/>
 <lang-switch></lang-switch>
 <view class="flow-page notify-page {{darkClass}}">
  <view class="flow-title">{{zh?'微信通知设置':'WeChat notifications'}}</view>

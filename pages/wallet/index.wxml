@@ -1,4 +1,4 @@
-<view style="{{motionStyle}}">
+<view style="{{motionStyle}}"><status-bar/>
 <lang-switch></lang-switch>
 <view class="wallet-page {{darkClass}}">
  <view class="wallet-header"><text class="wallet-title">{{ui.title}}</text><text class="test-label">{{ui.test}}</text></view>
