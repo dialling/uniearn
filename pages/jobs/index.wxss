@@ -260,7 +260,6 @@ page{--hall-ink:#123024;--hall-ink-soft:#1aa273;--hall-rule:rgba(11,122,85,.35)}
 /* 字标胶囊：渐变底 + 白字 + 内描边 + 右上角小星 */
 .hall-title-wrap{position:relative;display:inline-block;padding:4rpx 0}
 .hall-mark{display:inline-flex;align-items:center;padding:10rpx 30rpx;border-radius:999rpx;background:linear-gradient(100deg,#0b7a55 0%,#18ad79 100%);color:#fff;font-size:44rpx;font-weight:800;letter-spacing:3rpx;line-height:1.18;box-shadow:0 10rpx 24rpx rgba(11,122,85,.28),inset 0 0 0 3rpx rgba(255,255,255,.22);position:relative}
-.hall-title-wrap::after{content:"✦";position:absolute;right:-14rpx;top:-18rpx;font-size:26rpx;line-height:1;color:#f0b429;text-shadow:0 2rpx 6rpx rgba(0,0,0,.12)}
 .page-dark .hall-mark{background:linear-gradient(100deg,#12956a 0%,#2fd39b 100%);color:#04120b;box-shadow:0 10rpx 24rpx rgba(0,0,0,.35),inset 0 0 0 3rpx rgba(255,255,255,.18)}
 
 /* 覆盖 .jobs-header .flow-title 的字色，保证胶囊内是白字 */
@@ -270,4 +269,12 @@ page{--hall-ink:#123024;--hall-ink-soft:#1aa273;--hall-rule:rgba(11,122,85,.35)}
 /* 胶囊配色改为浅薄荷，和奶油底、白卡片同一明度带 */
 .jobs-header .hall-mark{background:linear-gradient(100deg,#e9f7f0 0%,#d3eddf 100%);color:#0b5f43;box-shadow:0 6rpx 16rpx rgba(11,122,85,.10),inset 0 0 0 2rpx rgba(11,122,85,.10);text-shadow:none}
 .page-dark .jobs-header .hall-mark{background:linear-gradient(100deg,#1e3a2e 0%,#26503e 100%);color:#cfeee0;box-shadow:0 6rpx 16rpx rgba(0,0,0,.3),inset 0 0 0 2rpx rgba(207,238,224,.12)}
-.hall-title-wrap::after{color:#d9a12b}
+
+/* 星球星环：后半环在字下、前半环压字上，右缘一颗小星 */
+.hall-title-wrap{position:relative;display:inline-block;padding:26rpx 0;overflow:visible}
+.hall-ring{position:absolute;left:50%;top:50%;width:calc(100% + 150rpx);height:calc((100% + 150rpx) * 0.441);margin-left:calc((100% + 150rpx) / -2);transform:translateY(-50%);pointer-events:none}
+.ring-back{z-index:0;opacity:.75}
+.ring-front{z-index:3}
+.hall-mark{position:relative;z-index:2}
+.page-dark .ring-back{opacity:.45}
+.page-dark .ring-front{opacity:.9}
