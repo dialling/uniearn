@@ -279,11 +279,11 @@ page{--hall-ink:#123024;--hall-ink-soft:#1aa273;--hall-rule:rgba(11,122,85,.35)}
 /* 去掉胶囊底，只留环线：文字直接落在页面米色上 */
 .jobs-header .hall-mark{background:none;box-shadow:none;padding:0 6rpx;color:#0b5f43;text-shadow:none}
 .page-dark .jobs-header .hall-mark{background:none;box-shadow:none;color:#cfeee0}
-.hall-title-wrap{padding:30rpx 0}
+.hall-title-wrap{padding:18rpx 0}
 .hall-ring{width:calc(100% + 170rpx);height:calc((100% + 170rpx) * 0.441);margin-left:calc((100% + 170rpx) / -2)}
 
 /* 顶部：深绿到页面底色渐变，顶栏同色，标题落在渐变末端 */
 .jobs-page{position:relative}
-.jobs-page::before{content:"";position:absolute;left:0;right:0;top:0;height:230rpx;background:linear-gradient(180deg,#0b7a55 0%,#eeede8 100%);pointer-events:none;z-index:0}
-.jobs-header{position:relative;z-index:1;padding-top:240rpx}
+.jobs-page::before{content:"";position:absolute;left:0;right:0;top:0;height:140rpx;background:linear-gradient(180deg,#0b7a55 0%,#eeede8 100%);pointer-events:none;z-index:0}
+.jobs-header{position:relative;z-index:1;padding-top:150rpx}
 .page-dark .jobs-page::before{background:linear-gradient(180deg,#0e8a60 0%,#202522 100%)}
