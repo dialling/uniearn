@@ -17,7 +17,7 @@ const title=require('../utils/page-title');title.install();const installed=Page;
 let shown=0,ready=0;Page({onShow(){shown++;},onReady(){ready++;}});const hooks=definition;
 const jobs={route:'pages/jobs/index',options:{}},requests={route:'pages/requests/index',options:{}};
 stack=[requests];const before=titles.length;hooks.onShow.call(jobs);assert.equal(shown,1);assert.equal(titles.length,before,'destination onShow cannot write into the old page title');
-stack=[jobs];hooks.onReady.call(jobs);assert.equal(ready,1);assert.equal(titles.at(-1),'接单大厅');hooks.onReady.call(requests);assert.equal(titles.at(-1),'接单大厅','late old lifecycle cannot replace the current title');
+stack=[requests];hooks.onReady.call(requests);assert.equal(ready,1);assert.equal(titles.at(-1),'我的订单');hooks.onReady.call(jobs);assert.equal(titles.at(-1),'我的订单','late old lifecycle cannot replace the current title');
 stack=[requests];hooks.onShow.call(requests);assert.equal(titles.at(-1),'我的订单');
 let component;global.Component=o=>component=o;require('../components/lang-switch/index');const count=titles.length;component.lifetimes.attached.call({});assert.equal(titles.length,count,'component attachment never retitles a possibly stale global page');
 const css=fs.readFileSync(require.resolve('../components/daily-checkin/index.wxss'),'utf8');assert.doesNotMatch(css,/(?:^|[\s>+~])(?:view|text|button|image|video)(?=[\s.#[:>+~{])/m,'isolated check-in styles use classes instead of forbidden element selectors');

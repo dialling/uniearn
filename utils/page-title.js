@@ -6,7 +6,7 @@ const MAP={
   welcome:['欢迎','Welcome'],
   campus:['选择校区','Choose campus'],
   guide:['新手引导','Guide'],
-  jobs:['接单大厅','Jobs'],
+  jobs:['',''],
   job:['选择快递','Choose parcels'],
   requests:['我的订单','My orders'],
   request:['订单详情','Order details'],
