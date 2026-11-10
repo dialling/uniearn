@@ -233,3 +233,12 @@
 .page-dark .jobs-header .flow-title{color:#edf1ed}
 .page-dark .hall-title-wrap::after{border-bottom-color:rgba(143,201,174,.4)}
 .page-dark .job-card-header{background:#2b3327}
+
+/* 类型胶囊与状态胶囊：改用主题绿，并加从左到右渐变 */
+.type-chip{background:linear-gradient(90deg,#0b7a55 0%,#16a273 100%);color:#fff;border:none}
+.state-pill.open,.state-pill.fresh,.state-pill.taken{background:linear-gradient(90deg,#0b7a55 0%,#16a273 100%);color:#fff}
+.state-pill.own{background:linear-gradient(90deg,#4a6b58 0%,#6f917c 100%);color:#fff}
+.state-pill.done{background:linear-gradient(90deg,#1b211d 0%,#39423b 100%);color:#fff}
+.page-dark .type-chip{background:linear-gradient(90deg,#0e8a60 0%,#1cb37e 100%);color:#04120b}
+.page-dark .state-pill.open,.page-dark .state-pill.fresh,.page-dark .state-pill.taken{background:linear-gradient(90deg,#0e8a60 0%,#1cb37e 100%);color:#04120b}
+.page-dark .state-pill.done{background:linear-gradient(90deg,#e9efea 0%,#c9d6cc 100%);color:#202522}
