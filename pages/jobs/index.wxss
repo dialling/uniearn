@@ -168,7 +168,6 @@
 
 /* 大厅标题：星光环绕 */
 .hall-title-wrap{position:relative;display:inline-block;padding:0 8rpx}
-.hall-title-wrap::before{content:"";position:absolute;left:-30rpx;right:-30rpx;top:-20rpx;bottom:-16rpx;background:radial-gradient(closest-side,rgba(11,122,85,.18),rgba(11,122,85,0) 72%);border-radius:50%;z-index:-1}
 .hall-spark{position:absolute;color:#0b7a55;opacity:.55;line-height:1}
 .hall-spark.s1{top:-18rpx;right:-14rpx;font-size:24rpx}
 .hall-spark.s2{bottom:-12rpx;left:-18rpx;font-size:16rpx;opacity:.4}
@@ -183,7 +182,6 @@
 /* 卡片头部浅色带，让栏目框更像票根 */
 .job-card-header{margin:-8rpx -8rpx 14rpx;padding:12rpx;border-radius:20rpx;background:linear-gradient(90deg,#f3f9f4,#ffffff)}
 .page-dark .hall-spark{color:#8fc9ae;opacity:.5}
-.page-dark .hall-title-wrap::before{background:radial-gradient(closest-side,rgba(143,201,174,.18),rgba(143,201,174,0) 72%)}
 .page-dark .job-card-header{background:linear-gradient(90deg,#2b332d,#242522)}
 .page-dark .state-pill{background:#2f3a33;color:#bfe3cc}
 .page-dark .state-pill.taken{background:#33503f;color:#d4f0df}
@@ -225,13 +223,11 @@
 
 /* 标题再放大 + 手绘弧线，贴近参考稿 */
 .jobs-header .flow-title{font-size:48rpx;font-weight:800;letter-spacing:1rpx;color:#14251b}
-.hall-title-wrap::after{content:"";position:absolute;left:-10rpx;right:-6rpx;bottom:-16rpx;height:26rpx;border-bottom:4rpx solid rgba(11,122,85,.32);border-radius:50%;transform:rotate(-2deg)}
 .hall-spark.s1{font-size:28rpx;opacity:.7}
 .hall-spark.s2{font-size:18rpx;opacity:.5}
 /* 卡片头部整条淡黄绿底，参考稿的票根头 */
 .job-card-header{margin:-26rpx -26rpx 16rpx;padding:18rpx 22rpx;border-radius:26rpx 26rpx 0 0;background:#f7fbe9}
 .page-dark .jobs-header .flow-title{color:#edf1ed}
-.page-dark .hall-title-wrap::after{border-bottom-color:rgba(143,201,174,.4)}
 .page-dark .job-card-header{background:#2b3327}
 
 /* 类型胶囊与状态胶囊：改用主题绿，并加从左到右渐变 */
@@ -244,17 +240,21 @@
 .page-dark .state-pill.done{background:linear-gradient(90deg,#e9efea 0%,#c9d6cc 100%);color:#202522}
 
 .hall-title-wrap{position:relative;display:inline-block;padding:0}
-.hall-title-wrap::before,.hall-title-wrap::after{display:none}
 .hall-spark{display:none}
 .jobs-header .flow-title{position:relative;z-index:1;font-size:48rpx;font-weight:900;letter-spacing:2rpx;line-height:1.15;color:#14251b;text-shadow:0 4rpx 12rpx rgba(11,122,85,.12)}
 .page-dark .jobs-header .flow-title{color:#edf1ed;text-shadow:0 4rpx 14rpx rgba(0,0,0,.35)}
 .page-dark 
 /* 栏目主标题：左侧渐变小竖条 + 柔光 */
 .hall-title-accent{width:12rpx;height:52rpx;border-radius:8rpx;background:linear-gradient(180deg,#16a273 0%,#0b7a55 100%);box-shadow:0 4rpx 12rpx rgba(11,122,85,.28);flex:none}
-.hall-title-wrap::before{content:"";position:absolute;left:20rpx;right:-30rpx;top:-10rpx;bottom:-10rpx;background:linear-gradient(90deg,rgba(22,162,115,.12),rgba(22,162,115,0));border-radius:24rpx;z-index:0}
 .page-dark .hall-title-accent{background:linear-gradient(180deg,#2ecf96 0%,#16a273 100%)}
 
 /* 主标题：左侧渐变小竖条（伪元素，避免额外节点） */
-.hall-title-wrap .flow-title{padding-left:26rpx}
-.hall-title-wrap .flow-title::before{content:"";position:absolute;left:0;top:10%;bottom:10%;width:12rpx;border-radius:8rpx;background:linear-gradient(180deg,#16a273 0%,#0b7a55 100%);box-shadow:0 4rpx 12rpx rgba(11,122,85,.28)}
-.page-dark .hall-title-wrap .flow-title::before{background:linear-gradient(180deg,#2ecf96 0%,#16a273 100%)}
+
+/* Hallmark · 标题印记：双色字 + 渐隐细线，无多余装饰 */
+page{--hall-ink:#123024;--hall-ink-soft:#1aa273;--hall-rule:rgba(11,122,85,.35)}
+.hall-mark{display:flex;align-items:baseline;flex-wrap:nowrap;font-size:54rpx;font-weight:800;line-height:1.1;letter-spacing:0;color:var(--hall-ink);text-shadow:none}
+.hall-mark-a{color:var(--hall-ink)}
+.hall-mark-b{color:var(--hall-ink-soft);margin-left:2rpx}
+.hall-title-wrap{position:relative;padding-bottom:10rpx}
+.hall-title-wrap::after{content:"";position:absolute;left:2rpx;right:auto;bottom:0;width:64%;height:3rpx;border-radius:2rpx;background:linear-gradient(90deg,var(--hall-rule),rgba(11,122,85,0))}
+.page-dark{--hall-ink:#eaf3ee;--hall-ink-soft:#3ecf99;--hall-rule:rgba(62,207,153,.4)}
