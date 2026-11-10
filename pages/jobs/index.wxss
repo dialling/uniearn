@@ -255,6 +255,14 @@ page{--hall-ink:#123024;--hall-ink-soft:#1aa273;--hall-rule:rgba(11,122,85,.35)}
 .hall-mark{display:flex;align-items:baseline;flex-wrap:nowrap;font-size:54rpx;font-weight:800;line-height:1.1;letter-spacing:0;color:var(--hall-ink);text-shadow:none}
 .hall-mark-a{color:var(--hall-ink)}
 .hall-mark-b{color:var(--hall-ink-soft);margin-left:2rpx}
-.hall-title-wrap{position:relative;padding-bottom:10rpx}
-.hall-title-wrap::after{content:"";position:absolute;left:2rpx;right:auto;bottom:0;width:64%;height:3rpx;border-radius:2rpx;background:linear-gradient(90deg,var(--hall-rule),rgba(11,122,85,0))}
 .page-dark{--hall-ink:#eaf3ee;--hall-ink-soft:#3ecf99;--hall-rule:rgba(62,207,153,.4)}
+
+/* 字标胶囊：渐变底 + 白字 + 内描边 + 右上角小星 */
+.hall-title-wrap{position:relative;display:inline-block;padding:4rpx 0}
+.hall-mark{display:inline-flex;align-items:center;padding:10rpx 30rpx;border-radius:999rpx;background:linear-gradient(100deg,#0b7a55 0%,#18ad79 100%);color:#fff;font-size:44rpx;font-weight:800;letter-spacing:3rpx;line-height:1.18;box-shadow:0 10rpx 24rpx rgba(11,122,85,.28),inset 0 0 0 3rpx rgba(255,255,255,.22);position:relative}
+.hall-title-wrap::after{content:"✦";position:absolute;right:-14rpx;top:-18rpx;font-size:26rpx;line-height:1;color:#f0b429;text-shadow:0 2rpx 6rpx rgba(0,0,0,.12)}
+.page-dark .hall-mark{background:linear-gradient(100deg,#12956a 0%,#2fd39b 100%);color:#04120b;box-shadow:0 10rpx 24rpx rgba(0,0,0,.35),inset 0 0 0 3rpx rgba(255,255,255,.18)}
+
+/* 覆盖 .jobs-header .flow-title 的字色，保证胶囊内是白字 */
+.jobs-header .hall-mark{color:#fff;text-shadow:0 2rpx 4rpx rgba(4,40,26,.25)}
+.page-dark .jobs-header .hall-mark{color:#04120b;text-shadow:none}
