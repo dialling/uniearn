@@ -37,5 +37,17 @@ async function accept(ids){const r=await h.call('runner','accept',{ids});assert.
  assert.equal(retry.data.collectingId,'');assert.equal(retry.data.requests[0].status,'taken');
  orders.act=original;await retry.collectAndDeliver(tap(d));assert.equal(retry.data.trip.phase,'deliver');
  actions=[];await retry.collectAndDeliver(tap('not-in-trip'));assert.deepEqual(actions,[],'stale or unrelated card cannot mutate an order');
- console.log('Trip pickup actions: one-step food pickup/delivery, multi-order guards, retries, duplicate taps and cancellation flow passed');
+ const parcel={category:'parcel',station:'North gate',dorm:'D01',room:'1111',owner:'Customer',phone:'13801026092',parcelItems:[{size:'small',code:'5555'}]};
+ const one=await create({...parcel}),parcelPage=await accept([one]),tapBox=(id,index)=>({currentTarget:{dataset:{id,index}}});
+ await parcelPage.collect(tapBox(one,0));
+ assert.equal(parcelPage.data.trip.phase,'deliver','last parcel pickup goes to delivery without a bottom button');
+ assert.equal(parcelPage.data.requests[0].status,'collected');
+ const twoItems={...parcel,parcelItems:[{size:'small',code:'A-1'},{size:'small',code:'A-2'}]};
+ const two=await create(twoItems),boxes=await accept([two]);
+ await boxes.collect(tapBox(two,0));assert.equal(boxes.data.trip.phase,'collect','first box stays in collect');
+ await boxes.collect(tapBox(two,1));assert.equal(boxes.data.trip.phase,'deliver','taking the last box proceeds to delivery');
+ const xml=require('fs').readFileSync(require.resolve('../pages/trip/index.wxml'),'utf8');
+ assert.doesNotMatch(xml,/去送达 →|Go deliver →/);
+ assert.doesNotMatch(xml,/bindtap="leave"/);
+ console.log('Trip pickup actions: one-step food pickup/delivery, multi-order guards, retries, duplicate taps, cancellation and parcel auto-deliver passed');
 })().catch(e=>{console.error(e);process.exitCode=1;});

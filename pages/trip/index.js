@@ -12,7 +12,21 @@ Page({data:{...require('../../utils/motion').data(),trip:null,requests:[],reward
   if(!this.failedPickupPhotos)this.failedPickupPhotos=new Set();
   this.failedPickupPhotos.add(photo);this.refresh();
  },
- async collect(e){try{await orders.act('pickup',{id:e.currentTarget.dataset.id,...(e.currentTarget.dataset.index!==undefined?{index:Number(e.currentTarget.dataset.index)}:{})});this.refresh();}catch(e){ui.toast(e);}},
+ async collect(e){
+  if(this.data.collectingId||this.data.cancelBusy)return;
+  const id=e.currentTarget.dataset.id,index=e.currentTarget.dataset.index,state=store.get(),trip=state.trips.find(t=>t.id===this.id),request=state.requests.find(r=>r.id===id);
+  if(!trip||trip.cancelled||!trip.requestIds.includes(id)||!request||!['taken','collected'].includes(request.status))return this.refresh();
+  this.setData({collectingId:id});
+  try{
+    await orders.act('pickup',{id,...(index!==undefined?{index:Number(index)}:{})});
+    const current=store.get(),updated=current.trips.find(t=>t.id===this.id);
+    if(updated&&!updated.cancelled&&updated.phase==='collect'){
+      const remaining=updated.requestIds.filter(key=>current.requests.find(r=>r.id===key)?.status!=='collected');
+      if(!remaining.length)await orders.act('leave',{id:this.id});
+    }
+  }catch(error){ui.toast(error);}
+  finally{this.setData({collectingId:''});this.refresh();}
+ },
  async collectAndDeliver(e){
   if(this.data.collectingId||this.data.cancelBusy)return;
   const id=e.currentTarget.dataset.id,state=store.get(),trip=state.trips.find(t=>t.id===this.id),request=state.requests.find(r=>r.id===id);
