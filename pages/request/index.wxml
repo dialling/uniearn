@@ -1,31 +1,24 @@
+<import src="../../utils/customer-cancel-sheet.wxml"/>
 <import src="../../utils/contact-identity.wxml"/>
 <import src="../../utils/waiting-ticket.wxml"/>
 <view style="{{motionStyle}}">
 <lang-switch></lang-switch>
-<view class="flow-page {{darkClass}}" wx:if="{{request}}">
+<view class="flow-page journey-page {{darkClass}}" wx:if="{{request}}">
 <view class="flow-title">{{zh?(request.isMine?'我的订单':'订单详情'):request.isMine?'My request':'Order details'}}</view>
 <view class="flow-sub">{{request.sizeLabel}} · {{request.boxes}} {{request.unitLabel}} · {{request.destinationDisplay}}</view>
-<view class="flow-card order-progress-card">
-<view class="order-progress-track">
-<view wx:for="{{steps}}" wx:key="name" class="order-progress-step {{item.done?'done':''}} {{item.current?'current':''}}">
-<view class="order-progress-dot"/>
-<view class="order-progress-name">{{item.name}}</view>
-<view wx:if="{{item.current && item.time}}" class="order-progress-time">{{item.time}}</view>
+<view class="journey-ticket">
+ <view class="journey-ticket-band"><text class="journey-brand">UniEarn</text><text class="journey-band-divider">|</text><text class="journey-band-title">{{zh?'订单旅程':'Order journey'}}</text><image class="journey-anchor" src="/assets/journey-anchor.svg" mode="aspectFit"/></view>
+ <view class="journey-ticket-body">
+  <view class="journey-hero"><image class="journey-mascot" src="{{journey.mascot}}" mode="aspectFit"/><view class="journey-status"><view class="journey-status-title">{{journey.title}}</view><view class="journey-status-note">{{journey.note}}</view></view></view>
+  <view class="journey-progress" aria-label="{{zh?'订单进度':'Order progress'}}"><view wx:for="{{steps}}" wx:key="name" class="journey-step {{item.done?'done':''}} {{item.current?'current':''}}"><view class="journey-step-dot">{{item.done||item.current?'✓':''}}</view><view class="journey-step-name">{{item.name}}</view><view class="journey-step-time">{{item.current?item.time:''}}</view></view></view>
+  <view class="journey-route-section"><view class="journey-route"><view class="journey-route-point"><image class="journey-pin" src="/assets/journey-location.svg" mode="aspectFit"/><text aria-label="{{request.pickupDisplay||request.pickupPointDisplay||request.station}}">{{journey.pickupShort}}</text></view><text class="journey-route-arrow">→</text><view class="journey-route-point journey-destination"><image class="journey-pin" src="/assets/journey-location.svg" mode="aspectFit"/><text>{{request.destinationType==='place'?request.deliveryAddress:request.dorm}}</text></view></view><view class="journey-times"><view><text>{{zh?'发布：':'Posted: '}}</text><text>{{journey.posted}}</text></view><view wx:if="{{request.closesAt}}"><text>{{zh?'截止：':'Deadline: '}}</text><text>{{request.closeTime}}</text></view></view></view>
+  <view wx:if="{{request.isMine && (request.status==='waiting'||cancelWindow.phase!=='hidden')}}" class="journey-ticket-footer"><view class="journey-cancel-copy"><view wx:if="{{request.status==='waiting' && request.closesAt}}" class="journey-refund-note"><text class="journey-bullet">•</text><text>{{zh?'若 '+request.closeTime+' 前无人接单，将全额退款。':'Auto-refund if not taken by '+request.closeTime+'.'}}</text></view><view wx:if="{{request.status!=='waiting' && cancelWindow.phase!=='hidden'}}" class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}"><text class="journey-bullet">•</text><text>{{cancelWindow.tip}}</text></view></view><button wx:if="{{cancelWindow.canCancel}}" class="offer-cancel journey-cancel" hover-class="journey-cancel-press" disabled="{{cancelling}}" loading="{{cancelling}}" bindtap="cancel">{{cancelWindow.button}}</button></view>
+ </view>
 </view>
-</view>
-</view>
+
 <view wx:if="{{request.category==='takeout' && request.night}}" class="flow-card">
 <view class="strong">{{zh?'订单状态':'Order status'}}</view>
 <view class="hint">{{request.purchaseStatus==='needs_purchase'?(zh?'未下单（需跑手垫付）':'Not ordered · runner pays upfront'):(zh?'已下单':'Already ordered')}}</view>
-</view>
-<template wx:if="{{request.status==='waiting'}}" is="waitingTicket" data="{{request,zh}}"/>
-<view wx:else class="flow-card status-card">
-
-<view class="status-copy">
-<view class="flow-title status-{{request.status}}">{{request.status==='taken'?runner+(zh?' 已接单':' took your request'):request.statusLabel}}</view>
-<view class="hint" wx:if="{{request.status==='delivered'}}">{{zh?runner+' 已于 '+request.deliveredTime+' 送达：'+request.deliveryLocationLabel+'。':runner+' left it '+request.deliveryLocationLabel+' at '+request.deliveredTime+'.'}}</view>
-<template wx:else is="orderStatusNote" data="{{request,zh}}"/>
-</view>
 </view>
 <view wx:if="{{request.runnerId}}" class="flow-card row">
 <view class="contact-person"><contact-avatar name="{{runner}}"/><view class="contact-person-copy value">{{runner}}</view></view>
@@ -39,61 +32,41 @@
 </view>
 </view>
 </view>
-<view wx:if="{{request.isMine && request.status==='waiting'}}" class="flow-card offer-card">
-<view class="offer-heading">
-<text class="strong">{{zh?'提高赏金':'Add to your offer'}}</text>
-<text class="offer-current">{{zh?'当前赏金':'Your offer'}} <text>¥{{request.rewardText}}</text></text>
-</view>
-<view class="hint offer-hint">{{zh?'提高赏金，更容易被跑手接单。加价只对整笔订单计算一次。':'Higher offers get taken sooner. Added once to the whole order.'}}</view>
-<view class="offer-options">
-<button wx:for="{{offerAmounts}}" wx:key="*this" class="offer-option" hover-class="offer-option-press" data-amount="{{item}}" bindtap="raise">＋¥{{item}}</button>
-<button class="offer-option offer-custom" hover-class="offer-option-press" bindtap="customRaise">{{zh?'自定义':'Custom'}}</button>
-</view>
-<view class="offer-footer">
-<view class="offer-footer-copy">
-<text class="hint" wx:if="{{request.status==='waiting' && request.closesAt}}">{{zh?'若 '+request.closeTime+' 前无人接单，将全额退款。':'Full refund if nobody takes it by '+request.closeTime+'.'}}</text>
-<text class="hint" wx:elif="{{request.status==='waiting'}}">{{zh?'无人接单时可免费取消。':'Cancel free before a runner accepts.'}}</text>
-
-<view wx:if="{{cancelWindow.phase!=='hidden'}}" class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}">{{cancelWindow.tip}}</view>
-</view>
-<button wx:if="{{cancelWindow.canCancel}}" class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel">{{cancelWindow.button}}</button>
-</view>
-</view>
 <view wx:if="{{request.isMine && request.category==='takeout' && (request.status==='waiting'||request.status==='taken')}}" class="flow-card rider-photo-card">
 <view wx:if="{{!request.riderPhotos.length}}" class="rider-photo-action rider-photo-empty" bindtap="riderPhoto" hover-class="rider-photo-press">
 <view class="rider-photo-media">
-<image class="rider-photo-placeholder" src="/assets/photo-orange.svg" mode="aspectFit"/>
+<image class="rider-photo-placeholder" src="/assets/photo-green.svg" mode="aspectFit"/>
 </view>
 <view class="rider-photo-copy">
 <view class="strong rider-photo-title">
 <block wx:if="{{zh}}">
 <text class="rider-photo-title-line">外卖已送达？</text>
-<text class="rider-photo-title-line">添加骑手照片（选填）</text>
+<text class="rider-photo-title-line">添加取件照片</text>
 </block>
 <block wx:else>
 <text class="rider-photo-title-line">Food arrived?</text>
-<text class="rider-photo-title-line">Add the rider’s photo (optional)</text>
+<text class="rider-photo-title-line">Add pickup photos</text>
 </block>
 </view>
-<view class="rider-photo-help">{{zh?'用于告诉跑手外卖袋放置的位置。':'It shows your runner where the bag is.'}}</view>
+<view class="rider-photo-help">{{zh?'选填 · 告诉跑手外卖放在哪里':'Optional · Show where the bag is'}}</view>
 </view>
-<text class="rider-photo-count">0/3</text>
+<button class="journey-upload" catchtap="riderPhoto" disabled="{{photoBusy}}" loading="{{photoBusy}}"><text>＋</text><text>{{zh?'上传':'Upload'}}</text></button>
 </view>
 <view wx:else class="rider-photo-action rider-photo-filled">
 <view class="upload-head" data-mode="append" bindtap="riderPhoto" role="button">
-<view class="rider-photo-media"><image class="rider-photo-placeholder" src="/assets/photo-orange.svg" mode="aspectFit"/></view>
+<view class="rider-photo-media"><image class="rider-photo-placeholder" src="/assets/photo-green.svg" mode="aspectFit"/></view>
 <view class="rider-photo-copy">
 <view class="strong rider-photo-title">
 <block wx:if="{{zh}}">
 <text class="rider-photo-title-line">外卖已送达？</text>
-<text class="rider-photo-title-line">添加骑手照片（选填）</text>
+<text class="rider-photo-title-line">添加取件照片</text>
 </block>
 <block wx:else>
 <text class="rider-photo-title-line">Food arrived?</text>
-<text class="rider-photo-title-line">Add the rider’s photo (optional)</text>
+<text class="rider-photo-title-line">Add pickup photos</text>
 </block>
 </view>
-<view class="rider-photo-help">{{zh?'用于告诉跑手外卖袋放置的位置。':'It shows your runner where the bag is.'}}</view>
+<view class="rider-photo-help">{{zh?'选填 · 告诉跑手外卖放在哪里':'Optional · Show where the bag is'}}</view>
 </view>
 </view>
 <text class="rider-photo-count">{{request.riderPhotos.length}}/3</text>
@@ -140,40 +113,18 @@
 <view class="strong">{{request.disputeReason}}</view>
 <view class="hint">{{request.dispute.note}}</view>
 </view>
-<view class="flow-card">
-<view class="strong">{{zh?'详情':'Details'}}</view>
-<view wx:if="{{request.category==='takeout' && !request.night && request.pickupPoint}}" class="row hint">
-<text>{{zh?'外卖柜':'Takeaway locker'}}</text>
-<text>{{request.pickupPointDisplay}}</text>
+<view class="flow-card journey-details">
+ <view class="journey-details-title">{{zh?'订单详情':'Order details'}}</view>
+ <view class="journey-detail-row"><view class="journey-detail-label"><text class="journey-detail-icon">▣</text><text>{{zh?'取件点':'Pickup'}}</text></view><text class="journey-detail-value">{{request.pickupDisplay||request.pickupPointDisplay||request.station}}</text></view>
+ <view class="journey-detail-row"><view class="journey-detail-label"><text class="journey-detail-icon">⌖</text><text>{{zh?'送达地点':'Deliver to'}}</text></view><text class="journey-detail-value">{{request.destinationDisplay}}</text></view>
+ <view wx:if="{{request.category==='takeout'}}" class="journey-detail-row"><view class="journey-detail-label"><text class="journey-detail-icon">♧</text><text>{{zh?'外卖到达':'Food arrival'}}</text></view><text class="journey-detail-value">{{request.arrivalLabel}}</text></view>
+ <view wx:if="{{request.category==='parcel' && request.isMine}}" wx:for="{{request.parcelItems}}" wx:key="index" class="journey-parcel-detail">{{zh?'包裹 ':'Parcel '}}{{index+1}} · {{item.pickupPoint||request.station}} · {{item.code}}</view>
+ <view class="journey-detail-row journey-price-row"><view class="journey-detail-label"><text class="journey-detail-icon">◉</text><text>{{zh?'赏金':'Price'}}</text></view><text class="journey-price">¥{{request.rewardText}}</text></view>
+ <view wx:if="{{request.discount}}" class="journey-detail-row"><text>{{zh?'优惠券':'Coupon'}}</text><text>−¥{{request.discount}}</text></view>
+ <view wx:if="{{request.discount || request.fee!=='0.00'}}" class="journey-detail-row journey-net-total"><text>{{zh?'模拟合计':'Demo total'}}</text><text>¥{{request.total}}</text></view>
+ <view wx:if="{{request.note}}" class="journey-order-note">{{request.note}}</view>
 </view>
-<view wx:if="{{request.category==='parcel' && request.isMine}}" wx:for="{{request.parcelItems}}" wx:key="index" class="hint">{{zh?'包裹 ':'Parcel '}}{{index+1}} · {{item.pickupPoint||request.station}} · {{item.code}}</view>
-<view class="row hint">
-<text>{{zh?'路线':'Route'}}</text>
-<text>{{request.pickupDisplay||request.station}} → {{request.destinationDisplay}}</text>
-</view>
-<view class="row hint" wx:if="{{request.category==='takeout'}}">
-<text>{{zh?'外卖送达':'Food arrives'}}</text>
-<text>{{request.arrivalLabel}}</text>
-</view>
-<view wx:if="{{request.closesAt}}" class="row hint">
-<text>{{zh?'无人接单关闭时间':'Closes if no one takes it'}}</text>
-<text>{{request.closeTime}}</text>
-</view>
-<view class="row hint">
-<text>{{zh?'你的赏金':'Your offer'}}</text>
-<text class="strong">¥{{request.rewardText}} + ¥{{request.fee}} {{zh?'服务费':'service'}}</text>
-</view>
-<view wx:if="{{request.discount}}" class="row hint">
-<text>{{zh?'优惠券':'Coupon'}}</text>
-<text>−¥{{request.discount}}</text>
-</view>
-<view class="divider"/>
-<view class="row strong">
-<text>{{zh?'模拟合计':'Demo total'}}</text>
-<text>¥{{request.total}}</text>
-</view>
-<view class="hint">{{request.note}}</view>
-</view>
+
 <button wx:if="{{request.isMine && (request.status==='confirmed'||request.status==='cancelled'||request.status==='refunded')}}" class="btn outline" bindtap="repeat">{{zh?'再来一单':'Post again'}}</button>
 </view>
 <view wx:else class="empty">{{zh?'订单暂不可用，请检查网络和账号。':'Request unavailable. Check your connection and account.'}}</view>
@@ -202,3 +153,7 @@
 </view>
 </view>
 </view>
+
+<template is="customerCancelSheet" data="{{cancelOpen,cancelOptions,cancelReason,cancelNote,cancelNoteOpen,cancelReady,cancelling,zh}}"/>
+
+<view wx:if="{{request.cancelReasonLabel}}" class="flow-card"><view class="strong">{{zh?'取消原因':'Cancellation reason'}}</view><view>{{request.cancelReasonLabel}}</view></view>

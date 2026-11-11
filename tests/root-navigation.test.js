@@ -3,13 +3,14 @@ const calls=[],titles=[];let stack=[{route:'pages/jobs/index',options:{}}],defin
 global.getCurrentPages=()=>stack;
 global.wx={getStorageSync:()=>null,setStorageSync(){},reLaunch:o=>calls.push(o),navigateTo:o=>calls.push(o),setNavigationBarTitle:o=>titles.push(o.title)};
 const store=require('../utils/store');store.reset();const nav=require('../utils/nav');
-nav.reLaunch({url:'/pages/jobs/index'});assert.equal(calls.length,0,'current tab never recreates itself');
-nav.reLaunch({url:'/pages/requests/index'});const first=calls.at(-1);assert.equal(calls.length,1);
-nav.reLaunch({url:'/pages/profile/index'});nav.navigateTo({url:'/pages/request/index?id=r'});assert.equal(calls.length,1,'overlapping root/detail transitions are ignored');
-first.complete({errMsg:'reLaunch:ok'});nav.reLaunch({url:'/pages/profile/index'});assert.equal(calls.length,1,'API completion alone is earlier than destination ready');
-nav.pageReady({route:'pages/jobs/index'});nav.reLaunch({url:'/pages/profile/index'});assert.equal(calls.length,1,'old page ready cannot release the new transition');
-stack=[{route:'pages/requests/index',options:{}}];nav.pageReady(stack[0]);nav.reLaunch({url:'/pages/profile/index'});assert.equal(calls.length,2);
-calls.at(-1).fail({errMsg:'reLaunch:fail test'});nav.reLaunch({url:'/pages/profile/index'});assert.equal(calls.length,3,'failed navigation can be retried');
+(async()=>{
+nav.reLaunch({url:'/pages/jobs/index'});assert.equal(calls.length,0);
+nav.reLaunch({url:'/pages/requests/index'});const first=calls.at(-1);
+nav.reLaunch({url:'/pages/profile/index'});nav.navigateTo({url:'/pages/request/index?id=r'});assert.equal(calls.length,1,'no overlapping native transitions');
+first.complete({errMsg:'reLaunch:ok'});assert.equal(calls.length,1,'native completion still waits for ready');
+nav.pageReady({route:'pages/jobs/index'});assert.equal(calls.length,1);
+stack=[{route:'pages/requests/index',options:{}}];nav.pageReady(stack[0]);await Promise.resolve();assert.equal(calls.length,2);assert.equal(calls.at(-1).url,'/pages/request/index?id=r','latest detail request is preserved until ready');
+nav.reLaunch({url:'/pages/profile/index'});assert.equal(calls.length,3);calls.at(-1).fail({errMsg:'reLaunch:fail test'});nav.reLaunch({url:'/pages/profile/index'});assert.equal(calls.length,4,'failed navigation releases the lock');
 stack=[{route:'pages/profile/index',options:{}}];nav.pageReady(stack[0]);
 // Component attachment sees the old stack during a route change; page hooks must not use it as the destination.
 global.Page=o=>definition=o;Page._uniearnMotion=true;Page._uniearnAnalytics=true;
@@ -22,3 +23,5 @@ stack=[requests];hooks.onShow.call(requests);assert.equal(titles.at(-1),'我的�
 let component;global.Component=o=>component=o;require('../components/lang-switch/index');const count=titles.length;component.lifetimes.attached.call({});assert.equal(titles.length,count,'component attachment never retitles a possibly stale global page');
 const css=fs.readFileSync(require.resolve('../components/daily-checkin/index.wxss'),'utf8');assert.doesNotMatch(css,/(?:^|[\s>+~])(?:view|text|button|image|video)(?=[\s.#[:>+~{])/m,'isolated check-in styles use classes instead of forbidden element selectors');
 console.log('Root navigation: current-tab no-op, overlap guard until target ready, failed retry, stale lifecycle/title isolation, preserved hooks and component class selectors passed.');
+
+})().catch(e=>{console.error(e);process.exitCode=1});

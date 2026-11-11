@@ -184,6 +184,18 @@
       {
         "value": "assets/yuni-worried.svg",
         "type": "file"
+      },
+      {
+        "type": "file",
+        "value": "assets/yuni-look.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/yuni-sleep.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/yuni-worried.png"
       }
     ],
     "include": []

@@ -59,7 +59,7 @@ const night={...food,night:true,shop:'East gate stall'};
   async function create(data){const r=await h.call('customer','create',{data});assert.equal(r.ok,true,r.error);return r.value.id;}
   async function accept(id){const r=await h.call('runner','accept',{ids:[id]});assert.equal(r.ok,true,r.error);return r;}
   const waiting=await create(food);
-  assert.equal((await h.call('customer','cancel',{id:waiting})).ok,true);
+  assert.equal((await h.call('customer','cancel',{reason:'测试',id:waiting})).ok,true);
   assert.equal(h.state.requests.find(r=>r.id===waiting).status,'cancelled');
 
   for(const sample of [food,task,parcel,night]){
@@ -69,20 +69,21 @@ const night={...food,night:true,shop:'East gate stall'};
     assert.equal(row.status,'taken');
     h.edit(s=>{s.requests.find(r=>r.id===id).takenAt=Date.now()-60*1000;});
     const raised=await h.call('customer','raise',{id,amount:1.25});
-    assert.equal(raised.ok,true,raised.error);
-    assert.equal(h.state.requests.find(r=>r.id===id).reward,Math.round((row.reward+1.25)*100)/100);
-    const early=await h.call('customer','cancel',{id});
+    assert.equal(raised.ok,false,'accepted orders cannot increase the offer');
+    assert.match(raised.error,/no longer be increased/);
+    assert.equal(h.state.requests.find(r=>r.id===id).reward,row.reward,'rejected increase leaves price unchanged');
+    const early=await h.call('customer','cancel',{reason:'测试',id});
     assert.equal(early.ok,true,sample.category+' '+early.error);
     const saved=h.state.requests.find(r=>r.id===id);
     assert.equal(saved.status,'cancelled');
-    assert.equal(saved.cancelReason,'customer');
+    assert.equal(saved.cancelReason,'测试');
     assert.ok(!h.state.trips.some(t=>(t.requestIds||[]).includes(id)),'a real cancel leaves the runner trip');
   }
 
   const late=await create(parcel);
   await accept(late);
   h.edit(s=>{s.requests.find(r=>r.id===late).takenAt=Date.now()-181000;});
-  const denied=await h.call('customer','cancel',{id:late});
+  const denied=await h.call('customer','cancel',{reason:'测试',id:late});
   assert.equal(denied.ok,false);
   assert.match(denied.error,/Cancel window ended/);
   assert.equal(h.state.requests.find(r=>r.id===late).status,'taken');
@@ -90,7 +91,7 @@ const night={...food,night:true,shop:'East gate stall'};
   const picked=await create(food);
   await accept(picked);
   h.edit(s=>{const r=s.requests.find(x=>x.id===picked);r.collected=['bag'];r.takenAt=Date.now();});
-  assert.equal((await h.call('customer','cancel',{id:picked})).ok,true);
+  assert.equal((await h.call('customer','cancel',{reason:'测试',id:picked})).ok,true);
   assert.equal(h.state.requests.find(r=>r.id===picked).status,'cancelled');
 
   const ghost=await create(parcel);

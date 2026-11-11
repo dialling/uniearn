@@ -228,10 +228,11 @@ function execute(s, actor, account, event, now = Date.now()) {
     const t = f.startTrip(tripState, { category: cfg.category, when: cfg.when, time: cfg.time, duration: cfg.duration, station: cfg.station, pickupAddress:cfg.pickupAddress,waypoint:cfg.waypoint,destinationType:cfg.destinationType,deliveryAddress:cfg.deliveryAddress,dorm: cfg.dorm, capacity: cfg.capacity, ...(Object.prototype.hasOwnProperty.call(cfg,'requestIds')?{requestIds:cfg.requestIds}:{}) }, now);s.nextId=tripState.nextId;
     t.campusId=campusId;t.universityId='xjtlu';t.runnerAccountId = actor; t.runnerName=contact.name; t.runnerPhone=contact.phone; t.runnerAvatar=account.profile.avatarUrl||''; t.createdAt = now;
     t.requestIds.forEach(id => {const row=s.requests.find(r => r.id === id);if(row)row.runnerName=contact.name;f.event(row, 'Runner accepted', now);}); value = { id: t.id };
-  } else if (['raise','cancel','confirm','report','riderPhoto','foodArrived'].includes(action)) {
+  } else if (['taskTip','raise','cancel','confirm','report','riderPhoto','foodArrived'].includes(action)) {
     const r = ownRequest(s, event.id, actor);
+    if(action==='taskTip')value=require('./task-tip').addTaskTip(s,r.id,event.amount,now);
     if (action === 'raise') { check((r.raised || 0) + Number(event.amount || 0) <= 100, 'Offer increase limit reached.'); f.raise(s, r.id, event.amount); }
-    if (action === 'cancel') { d.customerCancel(s, r.id, now); f.event(r, 'Cancelled · demo refund', now); }
+    if (action === 'cancel') { check(event.note === undefined || typeof event.note === 'string', 'Invalid cancel note.'); d.customerCancel(s, r.id, now, event.reason, event.note); f.event(r, 'Cancelled · demo refund', now); }
     if (action === 'confirm') { d.confirm(s, r.id); f.event(r, 'Confirmed', now); }
     if (action === 'report') { check(r.category!=='takeout'||now<=r.deliveredAt+30*60000,'Report takeaway problems within 30 minutes of delivery.'); check(typeof event.note === 'string' && event.note.length <= 500, 'Keep the note under 500 characters.'); f.report(s, r.id, event.reason, photo(event.photo, actor), event.note); }
     if (action === 'foodArrived') { check(r.category==='takeout'&&['waiting','taken'].includes(r.status)&&!r.arrived, 'Only food awaiting pickup can be marked as arrived.'); r.arrived=true; r.arrivalAt=now; f.event(r,'Food is there now',now); }

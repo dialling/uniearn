@@ -39,10 +39,10 @@ Component({
    const n=checkin.claim(true);if(!n)return false;this.showNotice(n);return true;
   },
   showNotice(n){
-   this.token=n;this.cancelAnimation();const fed=checkin.wasFed(n),collected=checkin.wasCollected(n);
+   this.token=n;this.rewardCompleting=false;this.cancelAnimation();const fed=checkin.wasFed(n)||checkin.wasCollected(n),collected=!!n.preview&&fed;if(collected)checkin.markCollected(n);
    const weeklyPoints=Number(n.weeklyPoints??(n.cycleDay===7?Math.min(10,n.points):0))||0;
    const dailyPoints=Number(n.dailyPoints??Math.max(0,n.points-weeklyPoints))||0;
-   this.setData({open:true,collected,motionEnabled:motion.enabled(),phase:fed?'happy':'waiting',pose:fed?2:0,feeding:false,fed,floating:'',streak:n.streak,cycleDay:n.cycleDay,points:n.points,dailyPoints,weeklyPoints});this.refreshCopy();
+   this.setData({open:true,collected,motionEnabled:motion.enabled(),phase:fed?'happy':'waiting',pose:fed?2:0,feeding:false,fed,floating:'',streak:n.streak,cycleDay:n.cycleDay,points:n.points,dailyPoints,weeklyPoints});this.refreshCopy();if(fed&&!n.preview)this.completeReward();
   },
   // The existing first-login check-in has already credited this server notice.
   // Feed only presents that reward; it must never call a points/check-in API.
@@ -59,12 +59,9 @@ Component({
    this.later(this.data.weeklyPoints?3740:3040,()=>this.setData({floating:''}));
   },
   floatReward(bonus){const points=bonus?this.data.weeklyPoints:this.data.dailyPoints;if(points)this.setData({floating:'+'+points+(bonus?' '+this.data.ui.bonus:(store.get().language==='en'?' pts':' 积分')),floatKey:bonus?'bonus':'daily'});},
-  finishFeed(keepFloating=false){checkin.markFed(this.token);this.setData({fed:true,feeding:false,phase:'happy',pose:2,floating:keepFloating?this.data.floating:''});this.refreshCopy();},
-  collectReward(){
-   if(!this.token||!this.data.open||!this.data.fed||this.data.feeding||(this.data.collected&&this.data.points>0))return;
-   if(!this.data.points){this.close();return;}
-   checkin.markCollected(this.token);this.setData({collected:true});this.ackNotice(this.token);
-  },
+  finishFeed(keepFloating=false){if(!this.token||!this.data.open)return;checkin.markFed(this.token);this.setData({fed:true,feeding:false,collected:false,phase:'happy',pose:2,floating:keepFloating?this.data.floating:''});this.refreshCopy();this.completeReward();},
+  completeReward(){if(!this.token||this.rewardCompleting)return;this.rewardCompleting=true;checkin.markCollected(this.token);this.ackNotice(this.token);this.later(1200,()=>this.hide());},
+  collectReward(){if(this.token&&this.data.collected)this.close();},
   ackNotice(token){
    const p=store.get().profile;if(!token||token.ackSent||token.acknowledged||p.accountId!==token.accountId||p.loggedOut)return;
    token.ackSent=true;require('../../utils/orders').act('ackLoyaltyNotice',{noticeId:token.id}).catch(()=>{});

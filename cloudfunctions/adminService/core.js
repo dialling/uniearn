@@ -75,7 +75,7 @@ function createService({repo, env, now = Date.now, random = () => crypto.randomB
         for (const k of ['id','category','title','station','dorm','reward','serviceFee','discount','couponId','status',
           'ownerId','runnerId','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','cancelledAt',
           'autoConfirmed','cancelReason','refundedAt','refundAmount','refundReason','isTest','rating','arrivalAt',
-          'dueAt','small','big','night','runnerBonus','cancelledBy','dispute']) if (r[k] !== undefined) out[k] = clone(r[k]);
+          'dueAt','small','big','night','runnerBonus','cancel_reason','cancelReason','cancelledBy','dispute']) if (r[k] !== undefined) out[k] = clone(r[k]);
         return out;
       });
       const tickets = Object.entries(state.members || {}).flatMap(([accountId, member]) =>

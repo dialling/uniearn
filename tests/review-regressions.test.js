@@ -19,9 +19,9 @@ try{
   const {s,id,coupon}=parcelState();split(s,id);
   const remainder=s.requests.find(r=>r.splitParentId===id);
   split(s,remainder.id);
-  execute(s,owner,'cancel',{id});
+  execute(s,owner,'cancel',{reason:'测试',id});
   assert.equal(coupon.usedBy,id,'a waiting sibling keeps the coupon consumed');
-  for(const r of s.requests.filter(r=>r.status==='waiting'))execute(s,owner,'cancel',{id:r.id});
+  for(const r of s.requests.filter(r=>r.status==='waiting'))execute(s,owner,'cancel',{reason:'测试',id:r.id});
   assert.equal(coupon.usedBy,undefined,'all nested split parts cancelled restores the coupon');
   const next=execute(s,owner,'create',{couponId:'welcome-two',data:{category:'takeout',owner:'Student',phone:'13800000000',station:'North gate',dorm:'D01',room:'101',bags:1,price:4,arrived:true}});
   rewards.settle(s,now);
@@ -34,7 +34,7 @@ try{
   execute(s,runner,'pickup',{id:remainder.id,index:0});execute(s,runner,'pickup',{id:remainder.id,index:1});
   execute(s,runner,'deliver',{id:remainder.id,photo:'cloud://test/order-photos/'+runner+'/'+'a'.repeat(32)+'.jpg'});
   execute(s,owner,'confirm',{id:remainder.id});
-  execute(s,owner,'cancel',{id});
+  execute(s,owner,'cancel',{reason:'测试',id});
   assert.equal(coupon.usedBy,id,'completed sibling must keep the coupon consumed');
   assert.equal(coupon.usedByCompleted,true);
  }

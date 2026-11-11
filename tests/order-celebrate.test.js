@@ -24,7 +24,7 @@ assert.match(xml,/<video[^>]*src="\{\{videoSrc\}\}" autoplay muted loop="\{\{fal
 assert.match(xml,/binderror="videoError"/);
 assert.match(xml,/wx:if="\{\{request\.isMine && request\.category==='takeout'.*class="flow-card rider-photo-card"/,'rider photo upload stays customer-only');
 assert.match(xml,/wx:for="\{\{request\.riderPhotos\}\}"[^>]*class="rider-photo-thumb"[^>]*bindtap="previewRider"/,'uploaded rider photos render as tappable thumbnails');
-assert.match(xml,/wx:if="\{\{!request\.riderPhotos\.length\}\}"[^>]*class="rider-photo-action rider-photo-empty"[^>]*bindtap="riderPhoto".*photo-orange\.svg/s,'the untouched empty state keeps the original icon-and-copy upload card');
+assert.match(xml,/wx:if="\{\{!request\.riderPhotos\.length\}\}"[^>]*class="rider-photo-action rider-photo-empty"[^>]*bindtap="riderPhoto".*photo-green\.svg/s,'the untouched empty state keeps the original icon-and-copy upload card');
 assert.match(xml,/request\.riderPhotos\.length<3[^>]*class="rider-photo-add-more"[^>]*bindtap="riderPhoto"/,'the add-photo control remains to the right until three photos are stored');
 assert.match(xml,/request\.riderPhotos\.length\}\}\/3/,'the upload count reports the three-photo limit');
 assert.doesNotMatch(xml,/美团或饿了么|Meituan or Ele\.me/,'platform labels are removed from the rider photo card');

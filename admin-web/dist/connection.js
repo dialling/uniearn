@@ -106,7 +106,7 @@ function hydrateAdmin(data) {
       customer:r.ownerId, runner:runner || null, status:statuses[r.status] || 'cancelled', postedAt:r.createdAt || NOW,
       paidAt:r.createdAt || NOW, takenAt:r.takenAt || null, pickedAt:r.collectedAt || null, deliveredAt:r.deliveredAt || null,
       confirmedAt:r.confirmedAt || null, cancelledAt:r.cancelledAt || r.refundedAt || null,
-      confirmedBy:r.autoConfirmed ? 'auto' : 'student', cancelReason:r.cancelReason || r.refundReason || 'Other',
+      confirmedBy:r.autoConfirmed ? 'auto' : 'student', cancelReason:r.cancel_reason || r.cancelReason || r.refundReason || 'Other', cancelNote:r.cancelNote || '',
       cancelledBy:r.cancelledBy || (r.status === 'cancelled' ? 'student' : null), cancelStage:r.takenAt ? 'taken' : 'posted',
       fee:Math.round((Number(r.reward)||0)*100), svc:Math.round((Number(r.serviceFee)||0)*100), offerRaised:0,
       coupon:r.discount ? {id:r.couponId,fen:Math.round(r.discount*100)} : null,

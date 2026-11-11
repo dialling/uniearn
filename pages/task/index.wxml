@@ -1,3 +1,4 @@
+<import src="../../utils/customer-cancel-sheet.wxml"/>
 <import src="../../utils/waiting-ticket.wxml"/>
 <view style="{{motionStyle}}">
 <lang-switch></lang-switch>
@@ -41,6 +42,7 @@
 
 <view class="row task-reward"><text class="hint">{{request.isMine?ui.yourPrice:ui.youGet}}</text><text class="strong">¥{{request.rewardText}}</text></view>
 </view>
+<view wx:if="{{request.isMine && request.category==='task' && request.runnerId && (request.status==='taken'||request.status==='delivered')}}" class="flow-card task-tip-card"><view class="task-tip-head"><view class="strong">{{zh?'给跑手小费':'Tip your runner'}}</view><text class="task-tip-optional">{{zh?'选填':'Optional'}}</text></view><view class="hint">{{zh?'想表达感谢？金额由你决定，小费计入跑手收益。':'Want to say thanks? Choose any amount to add to your runner’s earnings.'}}</view><view wx:if="{{request.taskTip>0}}" class="task-tip-given">{{zh?'已添加小费':'Tips added'}} ¥{{request.taskTipText}}</view><view class="task-tip-input-row"><text>¥</text><input type="digit" maxlength="12" value="{{tipAmount}}" bindinput="tipInput" placeholder="{{zh?'输入小费金额':'Enter tip amount'}}" disabled="{{tipping}}" aria-label="{{zh?'小费金额':'Tip amount'}}"/><button class="task-tip-add" bindtap="addTip" loading="{{tipping}}" disabled="{{!tipValid||tipping}}">{{zh?'添加小费':'Add tip'}}</button></view></view>
 <view wx:if="{{request.isMine && request.status==='waiting'}}" class="flow-card offer-card">
 <view class="offer-heading">
 <text class="strong">{{zh?'提高赏金':'Add to your offer'}}</text>
@@ -57,7 +59,7 @@
 
 <text class="hint" wx:if="{{request.closesAt}}">{{zh?'若 '+request.closeTime+' 前无人接单，将全额退款。':'Full refund if nobody takes it by '+request.closeTime+'.'}}</text>
 <text class="hint" wx:else>{{zh?'无人接单时可免费取消。':'Cancel free before a runner accepts.'}}</text>
-<view wx:if="{{cancelWindow.phase!=='hidden'}}" class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}">{{cancelWindow.tip}}</view>
+<view wx:if="{{request.status!=='waiting' && cancelWindow.phase!=='hidden'}}" class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}">{{cancelWindow.tip}}</view>
 </view>
 <button wx:if="{{cancelWindow.canCancel}}" class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel">{{cancelWindow.button}}</button>
 </view>
@@ -78,7 +80,7 @@
 </view>
 <view class="flow-card">
 <view class="strong">{{zh?'费用明细':'Price details'}}</view>
-<view class="row hint">
+<view wx:if="{{request.taskTip>0}}" class="row hint"><text>{{zh?'任务赏金':'Task offer'}}</text><text>¥{{request.taskBaseText}}</text></view><view wx:if="{{request.taskTip>0}}" class="row hint"><text>{{zh?'给跑手的小费':'Runner tip'}}</text><text>¥{{request.taskTipText}}</text></view><view class="row hint">
 <text>{{ui.serviceFee}}</text>
 <text>¥{{request.fee}}</text>
 </view>
@@ -93,3 +95,7 @@
 <view wx:else class="empty">{{ui.unavailable}}</view>
 <yuni-assistant topic=""/>
 </view>
+
+<template is="customerCancelSheet" data="{{cancelOpen,cancelOptions,cancelReason,cancelNote,cancelNoteOpen,cancelReady,cancelling,zh}}"/>
+
+<view wx:if="{{request.cancelReasonLabel}}" class="flow-card"><view class="strong">{{zh?'取消原因':'Cancellation reason'}}</view><view>{{request.cancelReasonLabel}}</view></view>

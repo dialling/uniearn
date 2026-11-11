@@ -20,7 +20,7 @@ const played=new Set();
 function wasFed(token){if(!token?.key)return false;try{return played.has(token.key)||!!wx.getStorageSync('uniearn:yuni-fed:'+token.key);}catch(_){return played.has(token.key);}}
 function markFed(token){if(!token?.key)return;played.add(token.key);try{wx.setStorageSync('uniearn:yuni-fed:'+token.key,true);}catch(_){} }
 const collected=new Set();
-function wasCollected(token){if(!token?.key)return false;if(token.acknowledged)return true;try{return collected.has(token.key)||!!wx.getStorageSync('uniearn:yuni-collected:'+token.key);}catch(_){return collected.has(token.key);}}
+function wasCollected(token){if(!token?.key)return false;try{return collected.has(token.key)||!!wx.getStorageSync('uniearn:yuni-collected:'+token.key);}catch(_){return collected.has(token.key);}}
 function markCollected(token){if(!token?.key)return;collected.add(token.key);try{wx.setStorageSync('uniearn:yuni-collected:'+token.key,true);}catch(_){} }
 function release(key){if(active!==key)return;active='';store.update(()=>{});}
 function pending(){return !!active||!!notice();}
