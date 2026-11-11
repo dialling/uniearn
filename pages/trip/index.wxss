@@ -14,3 +14,21 @@
 .pickup-code-line{display:flex;align-items:center;justify-content:space-between;margin:10rpx 0;padding:14rpx 18rpx;border-radius:14rpx;background:#f3faf6;color:#0b7a55;font-size:24rpx}.pickup-code-value{font-weight:800;letter-spacing:3rpx;font-size:30rpx}.page-dark .pickup-code-line{background:#44423c;color:#6fd0a8}
 
 .seal-report-row{gap:20rpx;margin:16rpx 0}.seal-report-description{flex:1;min-width:0}.seal-report-action,.seal-report-recorded{flex-shrink:0;white-space:nowrap}
+
+.parcel-collect-card{padding:32rpx 28rpx 28rpx;border:none;box-shadow:0 10rpx 32rpx rgba(40,36,28,.07)}
+.parcel-collect-card.is-done{opacity:.84}
+.parcel-code-row{align-items:flex-start;margin:0 0 4rpx}
+.parcel-code{letter-spacing:2rpx;line-height:1.05;margin:0}
+.parcel-station{font-size:34rpx;font-weight:700;color:#2a2925;line-height:1.35;margin:8rpx 0 16rpx}
+.page-dark .parcel-station{color:#f3f0e8}
+.parcel-collect-card .contact-person{margin:4rpx 0 8rpx}
+.parcel-note{background:#f6f3ec;border-radius:18rpx;padding:18rpx 20rpx;margin:10rpx 0 6rpx}
+.parcel-note-label{font-size:20rpx;color:#8a877e;margin-bottom:6rpx}
+.parcel-note-text{font-size:26rpx;color:#3a3832;line-height:1.55;white-space:pre-wrap}
+.page-dark .parcel-note{background:#3a3832}
+.page-dark .parcel-note-label{color:#a8a59c}
+.page-dark .parcel-note-text{color:#f3f0e8}
+.parcel-collect-card .order-picture-list{margin:12rpx 0 4rpx}
+.parcel-collect-card .pickup-actions{margin:22rpx 0 12rpx}
+.parcel-cancel-hint{font-size:22rpx;color:#8a877e;line-height:1.5;text-align:center;margin:0 4rpx 2rpx}
+.page-dark .parcel-cancel-hint{color:#a8a59c}
