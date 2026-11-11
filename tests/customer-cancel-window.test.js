@@ -142,7 +142,7 @@ const night={...food,night:true,shop:'East gate stall'};
   assert.match(fs.readFileSync(require.resolve('../utils/post-copy.js'),'utf8'),/your deadline for the task/);
   const jobs=fs.readFileSync(require.resolve('../pages/jobs/index.wxml'),'utf8');
   assert.doesNotMatch(jobs,/class="hall-locker"/);
-  assert.match(jobs,/!\(tab==='open' && item\.category==='task'\)/);
+  assert.match(jobs,/!\(tab==='open' && !item\.running && item\.category==='task'\)/);
 
   let check;global.Page=x=>check=x;
   delete require.cache[require.resolve('../pages/student-check/index')];
