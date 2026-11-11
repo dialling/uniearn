@@ -74,8 +74,15 @@
 .job-card-header{align-items:flex-start;gap:16rpx}
 .job-badges{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:7rpx}
 .jobs-page .job-card .job-badges .badge{margin:0;padding:5rpx 11rpx;border-radius:9rpx;font-size:20rpx;font-weight:550;line-height:1.45}
-.jobs-page .job-card .job-badges .state-badge{background:transparent!important;color:#777d76;padding-left:0;padding-right:3rpx;font-weight:500}
+.jobs-page .job-card .job-badges .state-badge{display:inline-flex;align-items:center;gap:8rpx;background:transparent!important;color:#777d76;padding-left:0;padding-right:3rpx;font-weight:500}
 .jobs-page .job-card .job-badges .state-badge.done-badge,.jobs-page .job-card .job-badges .state-badge.own-badge{color:#0b7a55;font-weight:650}
+.jobs-page .job-card .job-badges .state-badge.state-live-open{color:#c2410c;font-weight:650}
+.jobs-page .job-card .job-badges .state-badge.state-live-running{color:#0b7a55;font-weight:650}
+.state-live-dot{position:relative;flex:none;width:12rpx;height:12rpx;border-radius:50%;background:currentColor}
+.state-live-ring{position:absolute;left:50%;top:50%;width:12rpx;height:12rpx;margin:-6rpx 0 0 -6rpx;border-radius:50%;background:currentColor;animation:var(--ue-animation,hall-live-pulse 1.7s ease-out infinite)}
+@keyframes hall-live-pulse{0%{transform:scale(1);opacity:.55}70%,100%{transform:scale(2.4);opacity:0}}
+.page-dark.jobs-page .job-card .job-badges .state-badge.state-live-open{color:#f0a07a}
+.page-dark.jobs-page .job-card .job-badges .state-badge.state-live-running{color:#6fd0a8}
 .jobs-page .job-card .badge.takeout{color:#8a4b24;background:#f6eadc}
 .jobs-page .job-card .badge.orange{background:#fff2e9;color:#b45321}
 .jobs-page .job-card .amount{display:flex;align-items:baseline;flex:none;gap:3rpx;font-family:inherit;font-variant-numeric:tabular-nums;font-size:48rpx;font-weight:750;letter-spacing:-1rpx;line-height:1.05;color:#c2410c;white-space:nowrap}
