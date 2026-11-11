@@ -50,10 +50,6 @@
 <button wx:for="{{offerAmounts}}" wx:key="*this" class="offer-option" hover-class="offer-option-press" data-amount="{{item}}" bindtap="raise">＋¥{{item}}</button>
 <button class="offer-option offer-custom" hover-class="offer-option-press" bindtap="customRaise">{{zh?'自定义':'Custom'}}</button>
 </view>
-<view class="offer-custom-row">
-<input class="offer-custom-input" type="digit" maxlength="8" placeholder="{{zh?'输入想加的金额':'Type the amount to add'}}" value="{{customOffer}}" bindinput="customOfferInput"/>
-<button class="offer-option offer-custom" hover-class="offer-option-press" bindtap="submitCustomOffer" disabled="{{!customOffer}}">{{zh?'加价':'Add'}}</button>
-</view>
 <view class="offer-footer">
 <text class="hint" wx:if="{{request.status==='waiting' && request.closesAt}}">{{zh?'若 '+request.closeTime+' 前无人接单，将全额退款。':'Full refund if nobody takes it by '+request.closeTime+'.'}}</text>
 <text class="hint" wx:elif="{{request.status==='waiting'}}">{{zh?'无人接单时可免费取消。':'Cancel free before a runner accepts.'}}</text>
@@ -68,12 +64,10 @@
 <view class="rider-photo-copy">
 <view class="strong rider-photo-title">
 <block wx:if="{{zh}}">
-<text class="rider-photo-title-line">外卖已送达？</text>
-<text class="rider-photo-title-line">添加骑手照片（选填）</text>
+<text class="rider-photo-title-line">放置位置照片（选填）</text>
 </block>
 <block wx:else>
-<text class="rider-photo-title-line">Food arrived?</text>
-<text class="rider-photo-title-line">Add the rider’s photo (optional)</text>
+<text class="rider-photo-title-line">Placement photos (optional)</text>
 </block>
 </view>
 <view class="rider-photo-help">{{zh?'用于告诉跑手外卖袋放置的位置。':'It shows your runner where the bag is.'}}</view>
@@ -84,12 +78,10 @@
 <view class="rider-photo-copy">
 <view class="strong rider-photo-title">
 <block wx:if="{{zh}}">
-<text class="rider-photo-title-line">外卖已送达？</text>
-<text class="rider-photo-title-line">添加骑手照片（选填）</text>
+<text class="rider-photo-title-line">放置位置照片（选填）</text>
 </block>
 <block wx:else>
-<text class="rider-photo-title-line">Food arrived?</text>
-<text class="rider-photo-title-line">Add the rider’s photo (optional)</text>
+<text class="rider-photo-title-line">Placement photos (optional)</text>
 </block>
 </view>
 <view class="rider-photo-help">{{zh?'用于告诉跑手外卖袋放置的位置。':'It shows your runner where the bag is.'}}</view>

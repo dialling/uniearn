@@ -130,7 +130,7 @@ const night={...food,night:true,shop:'East gate stall'};
   assert.doesNotMatch(fs.readFileSync(require.resolve('../pages/task/index.js'),'utf8'),/profile\.name/);
   const taskXml=fs.readFileSync(require.resolve('../pages/task/index.wxml'),'utf8');
   assert.ok(taskXml.indexOf('order-progress-card')<taskXml.indexOf('flow-title'));
-  assert.match(taskXml,/offer-custom-input/);
+  assert.match(taskXml,/bindtap="customRaise"/);
   assert.match(taskXml,/bindtap="cancel"/);
 
   const chat=fs.readFileSync(require.resolve('../pages/chat/index.wxml'),'utf8');

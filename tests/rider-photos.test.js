@@ -11,6 +11,7 @@ async function file(who='customer'){const r=await h.call(who,'prepareUpload');as
 (async()=>{
  store.reset();const accountId=h.engine.idFor('customer');store.update(s=>{s.language='zh';s.profile={...s.profile,...h.accounts[accountId].profile,accountId,onboarded:true};});
  const id=await create(),legacy=await file();assert.equal((await h.call('customer','riderPhoto',{id,photo:legacy})).ok,true);await orders.sync();
+ assert.equal(h.state.requests.find(r=>r.id===id).arrived,false,'uploading placement photos must not mark food as arrived');
  assert.equal(store.get().orderCapabilities.riderPhotos,true);
  const detail=page('request',id);assert.equal(detail.data.request.riderPhotos.length,1,'legacy single-photo API stays compatible');
  detail.previewRider(tap(0));assert.equal(preview.urls.length,1);
@@ -37,7 +38,7 @@ async function file(who='customer'){const r=await h.call(who,'prepareUpload');as
  assert.equal((await h.call('runner','riderPhoto',{id,photos:[await file('runner')]})).ok,false,'runner can view but cannot replace customer platform photos');
  const picked=await h.call('runner','pickup',{id});assert.equal(picked.ok,true);assert.equal((await h.call('customer','riderPhoto',{id,photos:[]})).ok,false,'editing closes after pickup');
  h.user='customer';const clear=await create();await h.call('customer','riderPhoto',{id:clear,photos:[legacy]});await orders.sync();const clearPage=page('request',clear);await clearPage.removeRiderPhoto(tap(0));
- assert.deepEqual(clearPage.data.request.riderPhotos,[]);assert.equal(h.state.requests.find(r=>r.id===clear).riderPhoto,'');assert.equal(h.state.requests.find(r=>r.id===clear).arrived,true);
+ assert.deepEqual(clearPage.data.request.riderPhotos,[]);assert.equal(h.state.requests.find(r=>r.id===clear).riderPhoto,'');assert.equal(h.state.requests.find(r=>r.id===clear).arrived,false,'placement photos must not mark food as arrived');
  assert.deepEqual(paths({riderPhoto:legacy}),[legacy]);assert.deepEqual(paths({riderPhotos:[],riderPhoto:legacy}),[],'an intentionally cleared list must not resurrect the old photo');
  // Old cloud deployments must fail clearly before selecting/uploading, not lose all but the first image.
  const sync=orders.sync;orders.sync=async()=>{};store.update(s=>s.orderCapabilities={});chooseOptions=null;await clearPage.riderPhoto();assert.equal(chooseOptions,null);assert.match(notices.at(-1),/云端/);orders.sync=sync;

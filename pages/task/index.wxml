@@ -61,10 +61,6 @@
 <button wx:for="{{offerAmounts}}" wx:key="*this" class="offer-option" hover-class="offer-option-press" data-amount="{{item}}" bindtap="raise">＋¥{{item}}</button>
 <button class="offer-option offer-custom" hover-class="offer-option-press" bindtap="customRaise">{{zh?'自定义':'Custom'}}</button>
 </view>
-<view class="offer-custom-row">
-<input class="offer-custom-input" type="digit" maxlength="8" placeholder="{{zh?'输入想加的金额':'Type the amount to add'}}" value="{{customOffer}}" bindinput="customOfferInput"/>
-<button class="offer-option offer-custom" hover-class="offer-option-press" bindtap="submitCustomOffer" disabled="{{!customOffer}}">{{zh?'加价':'Add'}}</button>
-</view>
 <view class="offer-footer">
 <text class="hint" wx:if="{{request.status!=='waiting'}}">{{zh?'接单后仍可加价，金额计入整笔任务。':'You can still add to the offer after a runner accepts.'}}</text>
 <text class="hint" wx:elif="{{request.closesAt}}">{{zh?'若 '+request.closeTime+' 前无人接单，将全额退款。':'Full refund if nobody takes it by '+request.closeTime+'.'}}</text>

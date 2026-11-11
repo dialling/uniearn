@@ -8,6 +8,12 @@ assert.equal(wxml.includes('class="timeline"'),false,'the old bottom vertical pr
 assert.match(js,/offerAmounts:\[1\.88,3\.88,5\.88,8\.88,13\.88,18\.88\]/,'the reference offer amounts are available from the shared view model');
 assert.match(wxml,/offer-cancel[^>]*bindtap="cancel"/,'free cancellation remains a real bordered button wired to the existing action');
 
+assert.equal(wxml.includes('offer-custom-row'),false,'custom amounts use the single 自定义 entry, not a second disabled add button');
+assert.match(wxml,/bindtap="customRaise"/,'the custom amount entry stays on the offer grid');
+assert.equal(wxml.includes('外卖已送达'),false,'waiting-state copy must not ask if food has already arrived');
+assert.match(wxml,/放置位置照片（选填）/);
+assert.match(wxml,/Placement photos \(optional\)/);
+
 const request={id:'offer',category:'task',status:'waiting',reward:5,history:[]},state={requests:[request]};
 for(const amount of [1.88,3.88,5.88,8.88]){
  request.reward=5;request.raised=0;request.history=[];
