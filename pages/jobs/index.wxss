@@ -56,15 +56,27 @@
  .hall-genders{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8rpx}
 
 /* Compact campus route slips: destination, reward, pickup, then action. */
-.jobs-page .job-card{padding:26rpx 26rpx 22rpx;margin:18rpx 0;border:1rpx solid #e0e5dd;border-radius:26rpx;background:#fff;box-shadow:0 5rpx 18rpx rgba(32,53,39,.035)}
-.jobs-page .job-card.own-post{border:1rpx solid #a6cdb8;background:#fff}
-.jobs-page .job-card.taken-card{border-style:solid}
+.jobs-page .job-card{position:relative;overflow:hidden;padding:26rpx 26rpx 22rpx;margin:18rpx 0;border:1rpx solid #e4ddd4;border-radius:26rpx;background:linear-gradient(165deg,#fffaf4 0%,#fffefb 46%,#fff 100%);box-shadow:0 12rpx 28rpx rgba(70,52,32,.07),inset 0 1rpx 0 rgba(255,255,255,.92)}
+.jobs-page .job-card::before{content:'';position:absolute;left:0;right:0;top:0;height:6rpx;background:linear-gradient(90deg,#efc09a,#d98955)}
+.jobs-page .job-card.job-card-takeout{background:linear-gradient(165deg,#fff6ec 0%,#fffdf9 52%,#fff 100%);border-color:#ead9c8;box-shadow:0 12rpx 30rpx rgba(180,90,30,.08),inset 0 1rpx 0 rgba(255,255,255,.94)}
+.jobs-page .job-card.job-card-takeout::before{background:linear-gradient(90deg,#f0c49a,#e08a4a)}
+.jobs-page .job-card.job-card-parcel{background:linear-gradient(165deg,#eef3fb 0%,#f8faff 50%,#fff 100%);border-color:#d5deee;box-shadow:0 12rpx 30rpx rgba(40,70,140,.08),inset 0 1rpx 0 rgba(255,255,255,.94)}
+.jobs-page .job-card.job-card-parcel::before{background:linear-gradient(90deg,#9bb6e8,#6a8fd0)}
+.jobs-page .job-card.job-card-task{background:linear-gradient(165deg,#eef4fb 0%,#f7faff 50%,#fff 100%);border-color:#d3deee}
+.jobs-page .job-card.job-card-task::before{background:linear-gradient(90deg,#8fb3e8,#4d7fd4)}
+.jobs-page .job-card.job-card-night,.jobs-page .job-card.job-card-takeout.job-card-night{background:linear-gradient(165deg,#fff3e8 0%,#fffaf4 50%,#fff 100%);border-color:#ebd0b8}
+.jobs-page .job-card.job-card-night::before,.jobs-page .job-card.job-card-takeout.job-card-night::before{background:linear-gradient(90deg,#f0b27a,#c2410c)}
+.jobs-page .job-card.own-post{border:1rpx solid #a6cdb8}
+.jobs-page .job-card.taken-card{border-style:solid;border-color:#c5dfd1;background:linear-gradient(165deg,#eaf6f0 0%,#f6fbf8 48%,#fff 100%);box-shadow:0 12rpx 30rpx rgba(11,122,85,.09),inset 0 1rpx 0 rgba(255,255,255,.94)}
+.jobs-page .job-card.taken-card::before{background:linear-gradient(90deg,#7dc4a6,#0b7a55)}
+.jobs-page .job-card.done-card{border-color:#cfe8dc;background:linear-gradient(165deg,#f3faf6 0%,#fff 55%)}
+.jobs-page .job-card.done-card::before{background:linear-gradient(90deg,#9dd4bb,#0b7a55)}
 .job-card-header{align-items:flex-start;gap:16rpx}
 .job-badges{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:7rpx}
 .jobs-page .job-card .job-badges .badge{margin:0;padding:5rpx 11rpx;border-radius:9rpx;font-size:20rpx;font-weight:550;line-height:1.45}
 .jobs-page .job-card .job-badges .state-badge{background:transparent!important;color:#777d76;padding-left:0;padding-right:3rpx;font-weight:500}
 .jobs-page .job-card .job-badges .state-badge.done-badge,.jobs-page .job-card .job-badges .state-badge.own-badge{color:#0b7a55;font-weight:650}
-.jobs-page .job-card .badge.takeout{color:#0b7a55;background:#eaf4ee}
+.jobs-page .job-card .badge.takeout{color:#8a4b24;background:#f6eadc}
 .jobs-page .job-card .badge.orange{background:#fff2e9;color:#b45321}
 .jobs-page .job-card .amount{display:flex;align-items:baseline;flex:none;gap:3rpx;font-family:inherit;font-variant-numeric:tabular-nums;font-size:48rpx;font-weight:750;letter-spacing:-1rpx;line-height:1.05;color:#c2410c;white-space:nowrap}
 .job-card .job-currency{font-size:27rpx;font-weight:650;letter-spacing:0}
@@ -84,7 +96,9 @@
 .job-note-copy{flex:1;min-width:0;white-space:pre-wrap;overflow-wrap:anywhere}
 .job-card>.hint{margin:10rpx 0;font-size:22rpx;line-height:1.5}
 .jobs-page .job-card .green-note{margin:12rpx 0;padding:9rpx 14rpx;font-size:22rpx;border-radius:10rpx}
-.job-footer{display:flex;align-items:center;justify-content:space-between;gap:24rpx;margin-top:20rpx;padding-top:18rpx;border-top:1rpx solid #edf0e9}
+.job-footer{display:flex;align-items:center;justify-content:space-between;gap:24rpx;margin-top:20rpx;padding-top:18rpx;border-top:1rpx solid rgba(70,52,32,.08)}
+.jobs-page .job-card.job-card-parcel .job-footer{border-top-color:rgba(40,70,140,.1)}
+.jobs-page .job-card.taken-card .job-footer{border-top-color:rgba(11,122,85,.12)}
 .job-deadline-label{font-size:21rpx;color:#8a9088}
 .job-deadline-value{font-size:24rpx;font-weight:650;font-variant-numeric:tabular-nums;color:#394438}
 /* 接单截止跟在同一信息行右侧，不要单独占一行 */
@@ -93,17 +107,25 @@
 .job-deadline-mini{display:flex;flex:none;align-items:baseline;gap:8rpx;margin-left:auto;padding-left:16rpx;line-height:1.4;text-align:right;white-space:nowrap}
 .job-card .job-timing .job-deadline-mini{margin:0 0 0 auto}
 .jobs-page .job-card .btn{margin:0;min-height:74rpx;padding:17rpx 20rpx;border-radius:17rpx;font-size:25rpx;line-height:1.5;box-sizing:border-box}
-.jobs-page .job-card .btn.job-take-button{display:flex;align-items:center;justify-content:space-between;gap:26rpx;flex:none;width:212rpx;min-width:0;margin:0;padding:15rpx 24rpx;background:#0b7a55;color:#fff;font-size:27rpx;font-weight:650;line-height:1.5;min-height:74rpx;border-radius:17rpx;transition:var(--ue-transition,transform .15s,opacity .15s)}
+.jobs-page .job-card .btn.job-take-button{display:flex;align-items:center;justify-content:space-between;gap:26rpx;flex:none;width:212rpx;min-width:0;margin:0;padding:15rpx 24rpx;border:0;background:linear-gradient(180deg,#1aa36f 0%,#0c7d58 52%,#086847 100%);color:#fff;font-size:27rpx;font-weight:650;line-height:1.5;min-height:74rpx;border-radius:17rpx;box-shadow:0 10rpx 20rpx rgba(11,122,85,.28),inset 0 2rpx 0 rgba(255,255,255,.28),inset 0 -3rpx 0 rgba(0,40,24,.1);text-shadow:0 1rpx 0 rgba(0,40,24,.18);transition:var(--ue-transition,transform .15s,opacity .15s,box-shadow .15s)}
+.jobs-page .job-card .btn.job-take-continue{background:linear-gradient(180deg,#1b9080 0%,#0a6e5c 52%,#085c4d 100%);box-shadow:0 10rpx 20rpx rgba(8,100,85,.26),inset 0 2rpx 0 rgba(255,255,255,.26),inset 0 -3rpx 0 rgba(0,36,28,.1)}
 .job-take-arrow{font-size:33rpx;font-weight:400;line-height:1}
 .job-footer-take{display:block}
 .jobs-page .job-card .job-footer-take .job-take-button{justify-content:center;gap:14rpx;width:100%;padding-left:0;padding-right:0}
-.job-take-press{transform:scale(.97);opacity:.88}
+.job-take-press{transform:scale(.97);opacity:.92;box-shadow:0 4rpx 10rpx rgba(11,122,85,.2),inset 0 2rpx 0 rgba(255,255,255,.16),inset 0 -2rpx 0 rgba(0,40,24,.12)!important}
 .job-footer.own-footer,.job-footer.taken-footer,.job-footer.done-footer{display:block}
 .job-footer.own-footer>.hint,.job-footer.taken-footer>.hint{margin:0 0 12rpx;font-size:21rpx;line-height:1.5}
 .completed-order-footer{display:flex;align-items:center;justify-content:space-between;gap:16rpx;font-size:21rpx;margin:0}
 .completed-order-footer>view{flex:1;min-width:0}
 .completed-order-link{flex:none;color:#0b7a55;font-weight:650}
-.page-dark.jobs-page .job-card{border-color:#3a4338;background:#242522}
+.page-dark.jobs-page .job-card{border-color:#4a453c!important;background:linear-gradient(165deg,#2c2a26 0%,#242522 60%)!important;box-shadow:0 12rpx 28rpx rgba(0,0,0,.28),inset 0 1rpx 0 rgba(255,255,255,.04)!important}
+.page-dark.jobs-page .job-card.job-card-takeout{border-color:#5a4a3a!important;background:linear-gradient(165deg,#32281f 0%,#242522 62%)!important}
+.page-dark.jobs-page .job-card.job-card-parcel,.page-dark.jobs-page .job-card.job-card-task{border-color:#3a4458!important;background:linear-gradient(165deg,#222834 0%,#242522 62%)!important}
+.page-dark.jobs-page .job-card.taken-card{border-color:#2f4a3e!important;background:linear-gradient(165deg,#1d2f28 0%,#242522 62%)!important}
+.page-dark.jobs-page .job-card .btn.job-take-button{background:linear-gradient(180deg,#7ed9b4 0%,#4cbc8c 55%,#2f9d73 100%);color:#10241b;text-shadow:none;box-shadow:0 10rpx 20rpx rgba(0,0,0,.28),inset 0 2rpx 0 rgba(255,255,255,.28)}
+.page-dark.jobs-page .job-card .btn.job-take-continue{background:linear-gradient(180deg,#6fd0c0 0%,#3fafa0 55%,#2a8f82 100%)}
+.page-dark.jobs-page .job-card .badge.takeout{color:#f0c49a;background:#3a2e22}
+.page-dark.jobs-page .job-card .job-footer{border-top-color:rgba(237,235,228,.1)}
 .page-dark.jobs-page .job-card .job-price{color:#f4a06e}
 .page-dark.jobs-page .job-card .job-route-destination,.page-dark.jobs-page .job-card .hall-locker-value{color:#edebe4}
 .page-dark.jobs-page .job-card .job-route-origin,.page-dark.jobs-page .job-card .hall-location-label,.page-dark.jobs-page .job-card .job-note-label,.page-dark.jobs-page .job-card .job-deadline-label{color:#aaaF9f}
