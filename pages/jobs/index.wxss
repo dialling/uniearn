@@ -87,9 +87,11 @@
 .job-footer{display:flex;align-items:center;justify-content:space-between;gap:24rpx;margin-top:20rpx;padding-top:18rpx;border-top:1rpx solid #edf0e9}
 .job-deadline-label{font-size:21rpx;color:#8a9088}
 .job-deadline-value{font-size:24rpx;font-weight:650;font-variant-numeric:tabular-nums;color:#394438}
-/* 接单截止贴在信息行右沿，接单按钮独占最后一行 */
+/* 接单截止跟在同一信息行右侧，不要单独占一行 */
+.job-card .job-meta-row{display:flex;align-items:baseline;justify-content:space-between;gap:16rpx}
+.job-card .job-meta-row>text{flex:1;min-width:0}
 .job-deadline-mini{display:flex;flex:none;align-items:baseline;gap:8rpx;margin-left:auto;padding-left:16rpx;line-height:1.4;text-align:right;white-space:nowrap}
-.job-deadline-row{display:flex;justify-content:flex-end;margin:12rpx 0 0}
+.job-card .job-timing .job-deadline-mini{margin:0 0 0 auto}
 .jobs-page .job-card .btn{margin:0;min-height:74rpx;padding:17rpx 20rpx;border-radius:17rpx;font-size:25rpx;line-height:1.5;box-sizing:border-box}
 .jobs-page .job-card .btn.job-take-button{display:flex;align-items:center;justify-content:space-between;gap:26rpx;flex:none;width:212rpx;min-width:0;margin:0;padding:15rpx 24rpx;background:#0b7a55;color:#fff;font-size:27rpx;font-weight:650;line-height:1.5;min-height:74rpx;border-radius:17rpx;transition:var(--ue-transition,transform .15s,opacity .15s)}
 .job-take-arrow{font-size:33rpx;font-weight:400;line-height:1}
