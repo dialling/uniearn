@@ -23,6 +23,7 @@ function view(r,language='zh'){
  const steps=[step('已发布','Posted',r.createdAt),step('已由认证学生接单','Taken by a verified student',r.takenAt)];
  if(!task)steps.push(step('已取件','Picked up',r.collectedAt));
  steps.push(step(task?'任务已完成 · 已提交凭证':'已送达 · 已提交凭证',task?'Task completed · proof submitted':'Delivered · proof submitted',r.deliveredAt),step('已确认','Confirmed',r.confirmedAt));
- return {id:String(r.id||''),category:r.category,status:r.status,statusLabel:status[zh?0:1],type,fields,flags,steps,note:food?String(r.note||'').trim():'',pickupPointDisplay:food&&!r.night?pickup:'',rewardText:Number.isFinite(Number(r.reward))?Number(r.reward).toFixed(2):'—',label:task?String(r.title||type):post.label(r.station,language)+' → '+destination};
+ const routeFrom=task?'':((food&&r.night&&r.shop)?String(r.shop):(pickup||type));const routeTo=task?'':destination;
+ return {id:String(r.id||''),category:r.category,status:r.status,statusLabel:status[zh?0:1],type,fields,flags,steps,note:food?String(r.note||'').trim():'',pickupPointDisplay:food&&!r.night?pickup:'',rewardText:Number.isFinite(Number(r.reward))?Number(r.reward).toFixed(2):'—',label:task?String(r.title||type):post.label(r.station,language)+' → '+destination,routeFrom,routeTo};
 }
 module.exports={view};
