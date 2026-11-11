@@ -71,10 +71,6 @@
 <text class="hint" wx:else>{{zh?'无人接单时可免费取消。':'Cancel free before a runner accepts.'}}</text>
 </view>
 </view>
-<view wx:if="{{cancelWindow.phase!=='hidden'}}" class="flow-card cancel-window-card">
-<button class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel" disabled="{{!cancelWindow.canCancel}}">{{cancelWindow.button}}</button>
-<view class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}"><text class="{{cancelWindow.phase==='grace'?'cancel-clock':''}}">{{cancelWindow.tip}}</text></view>
-</view>
 <view wx:if="{{request.photo||request.completionNote}}" class="flow-card">
 <image wx:if="{{request.photo}}" class="proof" src="{{request.photo}}" mode="aspectFill" data-photo="{{request.photo}}" bindtap="preview"/>
 <view class="hint">{{zh?'完成说明 · ':'Completion · '}}{{request.deliveredTime}}</view>
@@ -107,6 +103,10 @@
 <view wx:if="{{request.cancelReasonLabel}}" class="hint">{{zh?'取消原因：':'Cancel reason: '}}{{request.cancelReasonLabel}}</view>
 </view>
 <button class="btn light" bindtap="help">{{ui.help}}</button>
+<view wx:if="{{cancelWindow.phase!=='hidden'}}" class="flow-card cancel-window-card">
+<button class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel" disabled="{{!cancelWindow.canCancel}}">{{cancelWindow.button}}</button>
+<view class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}"><text class="{{cancelWindow.phase==='grace'?'cancel-clock':''}}">{{cancelWindow.tip}}</text></view>
+</view>
 </view>
 <view wx:else class="empty">{{ui.unavailable}}</view>
 <yuni-assistant topic=""/>

@@ -60,10 +60,6 @@
 <text class="hint" wx:else>{{zh?'接单后仍可加价，金额计入整笔订单。':'You can still add to the offer after a runner accepts. It is added once to the whole order.'}}</text>
 </view>
 </view>
-<view wx:if="{{cancelWindow.phase!=='hidden'}}" class="flow-card cancel-window-card">
-<button class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel" disabled="{{!cancelWindow.canCancel}}">{{cancelWindow.button}}</button>
-<view class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}"><text class="{{cancelWindow.phase==='grace'?'cancel-clock':''}}">{{cancelWindow.tip}}</text></view>
-</view>
 <view wx:if="{{request.isMine && request.category==='takeout' && (request.status==='waiting'||request.status==='taken')}}" class="flow-card rider-photo-card">
 <view wx:if="{{!request.riderPhotos.length}}" class="rider-photo-action rider-photo-empty" bindtap="riderPhoto" hover-class="rider-photo-press">
 <view class="rider-photo-media">
@@ -181,6 +177,10 @@
 <view class="hint">{{request.cancelReasonLabel}}</view>
 </view>
 <button wx:if="{{request.isMine && (request.status==='confirmed'||request.status==='cancelled'||request.status==='refunded')}}" class="btn outline" bindtap="repeat">{{zh?'再来一单':'Post again'}}</button>
+<view wx:if="{{cancelWindow.phase!=='hidden'}}" class="flow-card cancel-window-card">
+<button class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel" disabled="{{!cancelWindow.canCancel}}">{{cancelWindow.button}}</button>
+<view class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}"><text class="{{cancelWindow.phase==='grace'?'cancel-clock':''}}">{{cancelWindow.tip}}</text></view>
+</view>
 </view>
 <view wx:else class="empty">{{zh?'订单暂不可用，请检查网络和账号。':'Request unavailable. Check your connection and account.'}}</view>
 <yuni-assistant topic=""/>
