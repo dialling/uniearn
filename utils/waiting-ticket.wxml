@@ -15,6 +15,6 @@
   <view class="hint" wx:elif="{{request.status==='collected'}}">{{zh?(request.isRunner?'物品已取到，送达后请提交送达凭证。':'物品已取到，跑手正在为你送达。'):(request.isRunner?'Submit delivery proof after dropping off the items.':'Your runner has collected the items and is delivering them.')}}</view>
   <view class="hint" wx:elif="{{request.status==='delivered'}}">{{zh?(request.isMine?'请查看完成说明，核实后确认任务完成。':'完成说明已提交，等待发布者确认。'):(request.isMine?'Review the completion note, then confirm the task.':'Completion submitted. Waiting for the customer to confirm.')}}</view>
   <view class="hint" wx:elif="{{request.status==='confirmed'}}">{{zh?'本单已完成，可在历史订单中查看记录。':'This order is complete. You can find it in your order history.'}}</view>
-  <view class="hint" wx:elif="{{request.status==='disputed'}}">{{zh?'问题已提交，结算暂停，请留意处理结果。':'The issue has been reported. Settlement is paused pending review.'}}</view>
+  <view class="hint" wx:elif="{{request.status==='disputed'}}">{{zh?'问题已提交，赏金已冻结，我们将在 24 小时内处理'+ (request.holdTime?'（'+request.holdTime+' 前）':'') + '。':'The payout is held. We will resolve this within 24 hours'+(request.holdTime?' (by '+request.holdTime+')':'')+'.'}}</view>
   <view class="hint" wx:elif="{{request.status==='cancelled'||request.status==='refunded'}}">{{zh?'本单已结束，模拟退款金额为 ¥':'This order is closed. Demo refund: ¥'}}{{request.refundAmount || '0.00'}}{{zh?'，可重新发布订单。':'. You can post another order.'}}</view>
 </template>

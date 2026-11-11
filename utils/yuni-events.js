@@ -16,6 +16,6 @@ if(r.status==='delivered'&&mine){title=zh?'送到了！':'It’s here!';text=zh?
 if(r.status==='confirmed'){title=zh?'已确认完成！':'Confirmed!';text=zh?'订单已完成，测试账本已结算。':'The order is complete and the test ledger has settled.';pose='earn';}
 if(r.status==='cancelled'){title=zh?'订单已取消':'Order cancelled';text=zh?'查看订单了解详情和测试退款记录。':'Open the order for details and its test refund record.';pose='oops';}
 if(r.status==='refunded'){title=zh?'无人接单，已退款':'No runner · refunded';text=zh?'订单已关闭，测试退款已记录。':'The order closed and the demo refund is recorded.';pose='oops';}
-if(r.status==='disputed'){title=zh?'问题已提交':'Problem reported';text=zh?'结算已暂停，等待团队处理。':'Settlement is paused while the team checks.';pose='think';}
+if(r.status==='disputed'){title=zh?'问题已提交':'Problem reported';text=zh?'赏金已冻结，我们将在 24 小时内处理。':'The payout is held. We will resolve this within 24 hours.';pose='think';}
 if(title)emit({key:'order:'+store.get().profile.accountId+':'+r.id+':'+r.status+':'+revision,title,text,pose});}
 module.exports={emit,subscribe,next,reset,status};

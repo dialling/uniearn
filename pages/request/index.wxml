@@ -113,7 +113,7 @@
 <block wx:if="{{!reporting}}">
 <button class="btn orange" bindtap="confirm">{{zh?'已收到 · 确认 ¥':'Got it · confirm ¥'}}{{request.rewardText}}</button>
 <button class="btn outline" disabled="{{!request.canReport}}" bindtap="issue">{{zh?'有问题':'Something’s wrong'}}</button>
-<view class="hint">{{zh?'送达 '+request.autoHours+' 小时后（'+request.autoTime+'）自动确认入账。':'Automatically confirms '+request.autoHours+' '+(request.autoHours===1?'hour':'hours')+' after delivery ('+request.autoTime+').'}}</view>
+<view class="hint">{{zh?'送达 '+request.autoHours+' 小时内可确认或投诉；未确认将在 '+request.autoTime+' 自动入账给跑手。投诉后赏金冻结，我们将在 24 小时内处理。':'Confirm or report a problem within '+request.autoHours+' '+(request.autoHours===1?'hour':'hours')+' of delivery. If you do not confirm, it credits the runner at '+request.autoTime+'. A report holds the payout, and we resolve it within 24 hours.'}}</view>
 </block>
 <block wx:else>
 <view class="strong">{{zh?'遇到了什么问题？':'What went wrong?'}}</view>

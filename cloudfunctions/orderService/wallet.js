@@ -55,14 +55,14 @@ function rules(en = false) {
     arrive: en ? 'Simulation completes immediately. No money reaches WeChat.' : '模拟流程立即完成，不会转入微信零钱。',
     channel: en ? 'Test ledger only; no real transfer' : '仅操作测试账本，不发起真实转账',
     fee: en ? 'No test withdrawal fee' : '模拟提现无手续费',
-    notice: en ? 'Confirmed orders credit once; otherwise they auto-credit 2 hours after delivery. Disputed orders remain pending. Failed simulations return the balance automatically.' : '送达后进入待入账，确认后立即入账；未确认的订单在送达 2 小时后自动入账。同一订单只入账一次；争议订单暂停入账。模拟提现失败会自动退回余额。'};
+    notice: en ? 'Confirmed orders credit once; otherwise they auto-credit 2 hours after delivery. A report within those 2 hours holds the payout for review, and the team has 24 hours to resolve it; if still unresolved, it then credits the runner. Failed simulations return the balance automatically.' : '送达后进入待入账，确认后立即入账；未确认的订单在送达 2 小时后自动入账。同一订单只入账一次。2 小时内投诉则冻结赏金，由团队在 24 小时内处理；逾期未处理则自动入账给跑手。模拟提现失败会自动退回余额。'};
 }
 function pending(s, actor) {
   const tripIds = new Set((s.trips || []).filter(t => t.runnerAccountId === actor).map(t => t.id));
   return (s.requests || []).filter(r => tripIds.has(r.runnerId) && ['delivered', 'disputed'].includes(r.status)).map(r => ({
     order_id: r.id, title: r.title || (r.category === 'parcel' ? '快递代取' : r.night ? '夜市代买' : r.category === 'task' ? '校园任务' : '外卖代取'), type: r.category,
     amount_cents: Math.round((Number(r.reward || 0) + Number(r.runnerBonus || 0)) * 100),
-    completed_at: r.deliveredAt || 0, auto_settle_at: r.status === 'disputed' ? 0 : (r.deliveredAt || 0) + require('./workflow').hours(r) * 3600000,
+    completed_at: r.deliveredAt || 0, auto_settle_at: r.status === 'disputed' ? (r.settle_hold_until || 0) : (r.deliveredAt || 0) + require('./workflow').hours(r) * 3600000,
     disputed: r.status === 'disputed'
   }));
 }
