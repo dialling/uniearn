@@ -181,11 +181,12 @@ function execute(s, actor, account, event, now = Date.now()) {
   } else if (action === 'supportMessage') {
     const m=s.members[actor];m.supportTickets=m.supportTickets||[];
     const text=String(event.text||'').trim().slice(0,500);
-    check(text.length>0,'Enter a message.');
+    const image=event.photo?photo(event.photo,actor,true):'';
+    check((text||image)&&text.length<=500,'Enter a message or attach a photo.');
     let t=m.supportTickets.filter(x=>!x.orderId&&x.status==='open').at(-1);
     if(!t){check(m.supportTickets.filter(x=>now-x.createdAt<86400000).length<10,'You can send up to 10 support requests a day.');t={id:'support-'+s.nextId++,topic:['order','payment','other','deletion'].includes(event.topic)?event.topic:'other',createdAt:now,status:'open'};m.supportTickets.push(t);m.supportTickets=m.supportTickets.slice(-50);}
     check((t.messages||[]).filter(msg=>now-msg.at<86400000).length<50,'Too many messages today. Please wait for the team to reply.');
-    t.messages=t.messages||[];t.messages.push({text,at:now,mine:true});value={ticket:t};
+    t.messages=t.messages||[];t.messages.push({text,at:now,mine:true,...(image?{photo:image}:{})});value={ticket:t};
   } else if (action === 'supportReply') {
     check(account._admin===true||account._reviewer===true,'Admin access required.');
     const accountId=String(event.accountId||''),member=s.members[accountId];

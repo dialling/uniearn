@@ -6,14 +6,50 @@
 .mine .bubble{background:#e7f3ed}
 .team-bubble{background:#fff}
 .message-time{font-size:20rpx;color:#8a877e;text-align:right;margin-top:8rpx}
+.chat-photo{display:block;width:360rpx;max-width:100%;border-radius:14rpx}
+.photo-caption{display:block;margin-top:10rpx}
 .topic-row{display:flex;flex-wrap:wrap;gap:14rpx;padding:0 30rpx;margin:8rpx 0 10rpx}
 .pill{font-size:22rpx;padding:10rpx 22rpx;border-radius:30rpx;background:#fff;border:1rpx solid #e2e0d9;color:#44423c}
 .pill.on{background:#0b7a55;color:#fff;border-color:#0b7a55}
-.chat-compose{position:fixed;left:0;right:0;bottom:0;z-index:20;background:#f7f7f7;border-top:1rpx solid #e2e0d9;padding:14rpx 24rpx calc(14rpx + env(safe-area-inset-bottom));box-shadow:0 -6rpx 24rpx #0000000d}
+.chat-compose{position:fixed;left:0;right:0;bottom:0;z-index:20;background:#eeede8;border-top:1rpx solid #e2e0d9;padding:16rpx 20rpx calc(16rpx + env(safe-area-inset-bottom))}
 .compose-row{display:flex;align-items:center;gap:12rpx;width:100%}
-.compose-input{flex:1;min-width:0;height:72rpx;background:#fff;border:1rpx solid #e2e0d9;border-radius:36rpx;padding:0 28rpx;font-size:28rpx;box-sizing:border-box}
-.send-button{flex:none;width:68rpx;height:68rpx;min-width:68rpx;min-height:68rpx;margin:0;padding:0;border-radius:50%;background:#b8d7c7;display:flex;align-items:center;justify-content:center;line-height:0;opacity:1}
+.photo-send{flex:none;width:68rpx;height:68rpx;min-width:68rpx;min-height:68rpx;margin:0;padding:0;border-radius:50%;border:1rpx solid #cfe3d8;background:#fff;display:flex;align-items:center;justify-content:center;line-height:0}
+.photo-send::after{border:0}
+.photo-send image{width:34rpx;height:34rpx}
+.photo-send[disabled]{opacity:.38}
+.compose-input{flex:1;min-width:0;height:72rpx;background:#fff;border:1rpx solid #e2e0d9;border-radius:36rpx;padding:0 28rpx;font-size:28rpx;box-sizing:border-box;color:#241c14}
+.compose-input:disabled{opacity:.7}
+.send-button{flex:none;width:68rpx;height:68rpx;min-width:68rpx;min-height:68rpx;margin:0;padding:0;border-radius:50%;background:#d9d6ce;display:flex;align-items:center;justify-content:center;line-height:0;opacity:1}
 .send-button.ready{background:#0b7a55}
 .send-button::after{border:0}
-.send-button image{width:31rpx;height:31rpx;margin-left:3rpx}
-.send-button[disabled]{background:#b8d7c7;opacity:1}
+.send-button image{width:31rpx;height:31rpx;margin-left:3rpx;filter:brightness(0) opacity(.45)}
+.send-button.ready image{filter:none}
+.send-button[disabled]{background:#d9d6ce;opacity:1}
+
+/* WeChat button defaults to width:100%; lock these to circles so they cannot stretch. */
+.compose-row .compose-input{flex:1 1 0%;min-width:0;width:0}
+button.photo-send,button.send-button,.compose-row .photo-send,.compose-row .send-button{flex:0 0 68rpx;width:68rpx;max-width:68rpx;min-width:68rpx;height:68rpx;min-height:68rpx;margin:0;padding:0;box-sizing:border-box;overflow:hidden}
+
+/* Scoped: pages/chat imports this file and keeps its own composer. */
+.support-compose{background:#f6f3eb;border-top:1rpx solid #e7e2d6;padding:14rpx 22rpx calc(14rpx + env(safe-area-inset-bottom));box-shadow:0 -8rpx 28rpx rgba(64,52,24,.05)}
+.support-compose .compose-row{gap:6rpx;padding:6rpx;background:#fffdf9;border:1rpx solid #e3ddcf;border-radius:46rpx;box-sizing:border-box}
+.support-compose .photo-send{background:#edf3ee;border:0}
+.support-compose .photo-send image{width:36rpx;height:36rpx}
+.support-compose .photo-send.button-hover{background:#dde9e1}
+.support-compose .compose-input{height:68rpx;padding:0 14rpx;background:transparent;border:0;border-radius:0;font-size:29rpx;color:#2b2620}
+.support-compose .compose-placeholder{color:#a8a08f}
+.support-compose .send-button{background:#ece7dc}
+.support-compose .send-button image{width:32rpx;height:32rpx;margin-left:4rpx;filter:brightness(0) opacity(.32)}
+.support-compose .send-button.ready{background:#41775b;box-shadow:0 4rpx 12rpx rgba(65,119,91,.28)}
+.support-compose .send-button.ready image{filter:none}
+.support-compose .send-button.ready.button-hover{background:#365f49}
+.page-dark .support-compose{background:#1f201d!important;border-color:#353731!important}
+.page-dark .support-compose .compose-row{background:#2a2c28;border-color:#3d3f39}
+.page-dark .support-compose .photo-send{background:#33392f!important}
+.page-dark .support-compose .compose-input{background:transparent!important;border:0!important;color:#eeebe3}
+.page-dark .support-compose .photo-send image{filter:brightness(0) invert(1) opacity(.72)}
+.page-dark .support-compose .compose-placeholder{color:#7f7b70}
+.page-dark .support-compose .send-button{background:#383a34!important}
+.page-dark .support-compose .send-button image{filter:brightness(0) invert(1) opacity(.35)}
+.page-dark .support-compose .send-button.ready{background:#41775b!important}
+.page-dark .support-compose .send-button.ready image{filter:none}

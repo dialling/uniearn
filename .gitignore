@@ -14,3 +14,6 @@ admin-web/.env
 
 # Machine-specific News administration bootstrap settings.
 /cloudfunctions/newsService/settings.json
+
+# Local OpenAI/admin tooling; do not publish.
+admin-web/.openai/

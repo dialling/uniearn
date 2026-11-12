@@ -122,6 +122,11 @@
 </view>
 
 <order-feedback order-id="{{request.id}}" resolvable="{{request.canResolveFeedback}}" completes="{{request.feedbackResolutionCompletes}}" zh="{{zh}}" dark="{{darkClass}}"/>
+<view wx:if="{{cancelWindow.phase!=='hidden'}}" class="flow-card cancel-window-card">
+<button class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel" disabled="{{!cancelWindow.canCancel}}">{{cancelWindow.button}}</button>
+<view class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}"><text class="{{cancelWindow.phase==='grace'?'cancel-clock':''}}">{{cancelWindow.tip}}</text></view>
+</view>
+<view wx:if="{{request.cancelReasonLabel}}" class="flow-card"><view class="strong">{{zh?'取消原因':'Cancellation reason'}}</view><view>{{request.cancelReasonLabel}}</view></view>
 <button wx:if="{{request.isMine && (request.status==='confirmed'||request.status==='cancelled'||request.status==='refunded')}}" class="btn outline" bindtap="repeat">{{zh?'再来一单':'Post again'}}</button>
 </view>
 <view wx:else class="empty">{{zh?'订单暂不可用，请检查网络和账号。':'Request unavailable. Check your connection and account.'}}</view>
@@ -151,10 +156,5 @@
 </view>
 </view>
 
-<view wx:if="{{cancelWindow.phase!=='hidden'}}" class="flow-card cancel-window-card">
-<button class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel" disabled="{{!cancelWindow.canCancel}}">{{cancelWindow.button}}</button>
-<view class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}"><text class="{{cancelWindow.phase==='grace'?'cancel-clock':''}}">{{cancelWindow.tip}}</text></view>
-</view>
 <template is="customerCancelSheet" data="{{cancelOpen,cancelOptions,cancelReason,cancelNote,cancelNoteOpen,cancelReady,cancelling,zh}}"/>
 
-<view wx:if="{{request.cancelReasonLabel}}" class="flow-card"><view class="strong">{{zh?'取消原因':'Cancellation reason'}}</view><view>{{request.cancelReasonLabel}}</view></view>

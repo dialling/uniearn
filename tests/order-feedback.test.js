@@ -1,10 +1,10 @@
 const assert=require('node:assert/strict'),fs=require('fs'),path=require('path'),{harness}=require('./helpers/order-cloud');
 const base={station:'Gate',dorm:'D01',room:'101',owner:'Customer',phone:'13801026092'};
-const data=category=>category==='task'?{category,title:'Please help with these books',price:3}:category==='parcel'?{...base,category,parcelItems:[{size:'small',code:'A'}]}:{...base,category,arrived:true,bags:1,price:3};
+const data=category=>category==='task'?{category,title:'Please help with these books',price:3}:category==='parcel'?{...base,category,parcelItems:[{size:'small',code:'A'}]}:category==='night'?{...base,category:'takeout',night:true,shop:'South stall',arrived:true,bags:1,price:4}:{...base,category,arrived:true,bags:1,price:3};
 async function create(category='takeout'){const h=harness(),result=await h.call('customer','create',{data:data(category)});assert.equal(result.ok,true,result.error);return {h,id:result.value.id};}
 const order=(h,id)=>h.state.requests.find(r=>r.id===id),tickets=(h,who)=>(h.state.members[h.engine.idFor(who)]||{}).supportTickets||[];
 (async()=>{
- for(const category of ['takeout','parcel','task']){
+ for(const category of ['takeout','parcel','task','night']){
   const {h,id}=await create(category);let result=await h.call('customer','orderFeedbackSubmit',{id,reason:'Something else',note:'Need help before pickup',photo:''});assert.equal(result.ok,true,result.error);assert.equal(order(h,id).status,'waiting');assert.equal(tickets(h,'customer')[0].orderId,id);
   result=await h.call('runner','accept',{ids:[id]});assert.equal(result.ok,true,result.error);
   result=await h.call('runner','orderFeedbackSubmit',{id,reason:'Something else',note:'The student is not answering',photo:''});assert.equal(result.ok,true,result.error);assert.equal(order(h,id).status,'taken','runner feedback does not cancel or freeze the order');assert.equal(tickets(h,'runner')[0].orderId,id);
@@ -12,6 +12,10 @@ const order=(h,id)=>h.state.requests.find(r=>r.id===id),tickets=(h,who)=>(h.stat
   const before=JSON.stringify(h.state);result=await h.call('other','orderFeedbackContact',{id,channel:'team'});assert.equal(result.ok,false);assert.equal(JSON.stringify(h.state),before,'unrelated users cannot touch the order');
   const operation={id,channel:'message',operationId:'order_feedback_retry_0001'};result=await h.call('customer','orderFeedbackContact',operation);assert.equal(result.ok,true,result.error);assert.equal(result.value.paused,true);assert.equal(order(h,id).status,'disputed');const count=tickets(h,'customer')[0].messages.length;await h.call('customer','orderFeedbackContact',operation);assert.equal(tickets(h,'customer')[0].messages.length,count,'lost response is idempotent');
   h.edit(s=>h.engine.expire(s,Date.now()+3*3600000));assert.equal(order(h,id).status,'disputed','automatic confirmation stays paused past two hours');
+  const hold=order(h,id).settle_hold_until;assert.ok(hold>Date.now()+23*3600000&&hold<=Date.now()+24*3600000,'feedback pause must set a 24-hour settlement hold');
+  const pending=require('../cloudfunctions/orderService/wallet').overview(h.state,h.engine.idFor('runner')).pending.find(p=>p.order_id===id);
+  assert.equal(pending.auto_settle_at,hold,'wallet pending must use the hold, not zero');
+  if(category==='night')assert.equal(pending.night,true);
   result=await h.call('runner','orderFeedbackResolve',{id});assert.equal(result.ok,true,result.error);assert.equal(order(h,id).status,'disputed','resolving a runner ticket cannot release the customer hold');
   const image='cloud://test/order-photos/'+h.engine.idFor('customer')+'/'+'a'.repeat(32)+'.jpg';result=await h.call('customer','orderFeedbackSubmit',{id,reason:'Spilled or damaged',note:'The item was damaged at delivery',photo:image});assert.equal(result.ok,true,result.error);assert.equal(order(h,id).dispute.photo,image);assert.match(result.snapshot.photoURLs[image],/private.example/);
   assert.equal(result.snapshot.supportTickets.length,1);result=await h.call('runner','sync');assert.equal(result.snapshot.supportTickets.length,1,'runner only sees their own support ticket');assert.equal(result.snapshot.supportTickets[0].messages.some(m=>m.photo===image),false,'customer conversation is private');
@@ -26,5 +30,11 @@ const order=(h,id)=>h.state.requests.find(r=>r.id===id),tickets=(h,who)=>(h.stat
  const root=path.join(__dirname,'..');for(const page of ['request','task','trip'])assert.ok(fs.readFileSync(path.join(root,'pages/'+page+'/index.wxml'),'utf8').includes('<order-feedback '),'shared entry on '+page);
  const tripXML=fs.readFileSync(path.join(root,'pages/trip/index.wxml'),'utf8'),stack=[];for(const m of tripXML.matchAll(/<(\/?)([\w:-]+)\b(?:[^>"']|"[^"]*"|'[^']*')*?(\/?)>/g)){const [tag,close,name,self]=m;if(name==='order-feedback')assert.ok(stack.some(t=>/wx:for="\{\{(?:parcels|requests)\}\}"/.test(t)),'runner feedback must stay inside its per-order card');if(close)stack.pop();else if(!self)stack.push(tag);}
  const component=fs.readFileSync(path.join(root,'components/order-feedback/index.wxml'),'utf8');assert.ok(component.includes('订单反馈')&&component.includes('Order feedback'));assert.equal(JSON.parse(fs.readFileSync(path.join(root,'app.json'))).subpackages.some(s=>s.root==='pages/order-feedback'),true);
+ const held=await create();await held.h.call('runner','accept',{ids:[held.id]});held.h.edit(()=>{order(held.h,held.id).status='delivered';order(held.h,held.id).deliveredAt=Date.now();});
+ const paused=await held.h.call('customer','orderFeedbackContact',{id:held.id,channel:'team'});assert.equal(paused.ok,true,paused.error);const until=order(held.h,held.id).settle_hold_until;assert.ok(until);
+ held.h.edit(s=>held.h.engine.expire(s,until-1));assert.equal(order(held.h,held.id).status,'disputed');
+ held.h.edit(s=>held.h.engine.expire(s,until));assert.equal(order(held.h,held.id).status,'confirmed','review window ending auto-confirms and releases settlement');
+ require('../cloudfunctions/orderService/wallet').settle(held.h.state,until);assert.ok(held.h.state.wallets[held.h.engine.idFor('runner')].balance_cents>0);
+ assert.equal((fs.readFileSync(path.join(root,'pages/trip/index.wxml'),'utf8').match(/<order-feedback /g)||[]).length,2,'runner feedback entry on parcel collect and on the shared request cards');
  console.log('Unified feedback: all order types/states, participant privacy, order-linked tickets, private evidence, exact retry, two-hour pause, customer resolution/settlement, isolated general support and common entry passed.');
 })().catch(e=>{console.error(e);process.exitCode=1});

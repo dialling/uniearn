@@ -1,0 +1,18 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const poster=require('../utils/wenyuan-roadshow');
+const zh=poster(true,Date.parse('2026-11-12T12:00:00+08:00'));
+const en=poster(false,Date.parse('2026-11-12T12:00:00+08:00'));
+assert.equal(zh.place,'文缘夜市');assert.equal(zh.dateHero,'11.15');assert.equal(zh.kicker,'路演推广');
+assert.equal(en.place,'Wenyuan Night Market');assert.equal(en.kicker,'CAMPUS ROADSHOW');
+assert.doesNotMatch(en.title,/[一-鿿]/);assert.doesNotMatch(en.subtitle,/[一-鿿]/);assert.doesNotMatch(en.body,/[一-鿿]/);
+assert.equal(poster(true,Date.parse('2026-11-16T23:00:00+08:00')).id,'roadshow-20261115');
+assert.equal(poster(true,Date.parse('2026-11-17T00:00:00+08:00')),null);
+const xml=fs.readFileSync(path.join(__dirname,'../pages/rewards/index.wxml'),'utf8');
+assert(xml.includes('template is="roadshowPoster"'));assert.equal((xml.match(/data="{{...roadshow}}"/g)||[]).length,3);assert(xml.includes('yuni-party.png'));
+assert(xml.includes('!roadshow && (newsLoading || newsError || !news.length)'));
+const js=fs.readFileSync(path.join(__dirname,'../pages/rewards/index.js'),'utf8');
+assert(js.includes("openRoadshow"));assert(js.includes("wenyuan-roadshow"));
+assert(js.includes("showCampusNotices:false"));
+assert(xml.includes('wx:if="{{showCampusNotices}}"'));
+assert(xml.includes("校园通知与活动"));
+console.log('Wenyuan roadshow poster: bilingual copy, no Chinese in English, visible through 16 Nov, hidden from 17 Nov, and News templates bind it.');

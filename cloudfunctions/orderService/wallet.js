@@ -62,8 +62,8 @@ function pending(s, actor) {
   return (s.requests || []).filter(r => tripIds.has(r.runnerId) && ['delivered', 'disputed'].includes(r.status)).map(r => ({
     order_id: r.id, title: r.title || (r.category === 'parcel' ? '快递代取' : r.night ? '夜市代买' : r.category === 'task' ? '校园任务' : '外卖代取'), type: r.category,
     amount_cents: Math.round((Number(r.reward || 0) + Number(r.runnerBonus || 0)) * 100),
-    completed_at: r.deliveredAt || 0, auto_settle_at: r.status === 'disputed' ? (r.settle_hold_until || 0) : (r.deliveredAt || 0) + require('./workflow').hours(r) * 3600000,
-    disputed: r.status === 'disputed'
+    completed_at: r.deliveredAt || 0, auto_settle_at: r.status === 'disputed' ? (r.settle_hold_until || (r.dispute && r.dispute.at && r.dispute.at + require('./workflow').reviewHours() * 3600000) || 0) : (r.deliveredAt || 0) + require('./workflow').hours(r) * 3600000,
+    disputed: r.status === 'disputed', night: !!r.night
   }));
 }
 function summary(s, actor) {

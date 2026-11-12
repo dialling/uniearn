@@ -13,13 +13,13 @@ assert.equal(
   'client and orderService share one reason catalog'
 );
 assert.deepEqual(reasons.REASONS.map(row => row.key), cloudReasons.REASONS.map(row => row.key));
-assert.deepEqual(reasons.REASONS.map(row => row.key), ['测试', '信息填错', '没人接单', '其他']);
-assert.deepEqual(reasons.options({status: 'waiting'}, false).map(row => row.label), ['Test', 'Wrong details', 'No one took the order', 'Other']);
-assert.deepEqual(reasons.options({status: 'taken'}, true).map(row => row.label), ['测试', '信息填错', '没人接单', '其他']);
+assert.deepEqual(reasons.REASONS.map(row => row.key), ['信息填错', '不需要了', '我自己取了', '跑手太慢', '没人接单', '测试', '其他']);
+assert.deepEqual(reasons.options({status: 'waiting'}, false).map(row => row.label), ['Wrong details in the order', 'Changed my mind', 'Collected it myself', 'Runner too slow to pick up', 'No one took the order', 'Test order', 'Other']);
+assert.deepEqual(reasons.options({status: 'taken'}, true).map(row => row.label), ['信息填错', '不需要了', '我自己取了', '跑手太慢', '没人接单', '测试', '其他']);
 assert.deepEqual(reasons.options({status: 'waiting'}, false).map(row => row.value), reasons.options({status: 'collected'}, false).map(row => row.value));
 for (const label of reasons.options({}, false).map(row => row.label)) assert.doesNotMatch(label, /[\u4e00-\u9fff]/);
 assert.equal(reasons.label('expired', false), '');
-assert.equal(reasons.label('测试', false), 'Test');
+assert.equal(reasons.label('测试', false), 'Test order');
 assert.equal(reasons.label('其他：late class', false), 'Other: late class');
 assert.equal(reasons.label('其他：晚了', true), '其他：晚了');
 
@@ -65,7 +65,7 @@ assert.equal(saved.status, 'cancelled');
 assert.equal(saved.cancel_reason, '信息填错');
 assert.equal(saved.cancelledBy, 'student');
 assert.equal(workflow.view(saved, 'zh').cancelReasonLabel, '信息填错');
-assert.equal(workflow.view(saved, 'en').cancelReasonLabel, 'Wrong details');
+assert.equal(workflow.view(saved, 'en').cancelReasonLabel, 'Wrong details in the order');
 const snap = engine.snapshot(state, owner, person, Date.now());
 assert.equal(snap.requests.find(row => row.id === posted).cancel_reason, '信息填错');
 
@@ -73,7 +73,7 @@ const accepted = act(state, 'owner', 'create', {data: {category: 'takeout', owne
 act(state, 'runner', 'accept', {ids: [accepted]});
 act(state, 'owner', 'cancel', {id: accepted, reason: '没人接单'});
 const takenReason = state.requests.find(row => row.id === accepted);
-assert.equal(takenReason.cancel_reason, '没人接单', 'the same four reasons apply after acceptance');
+assert.equal(takenReason.cancel_reason, '没人接单', 'the same seven reasons apply after acceptance');
 const acceptedAgain = act(state, 'owner', 'create', {data: {category: 'takeout', owner: 'Student', phone: '13800000000', station: 'North gate', dorm: 'D01', room: '102', bags: 1, price: 4, arrived: true}}).id;
 act(state, 'runner', 'accept', {ids: [acceptedAgain]});
 act(state, 'owner', 'cancel', {id: acceptedAgain, reason: '其他', note: '  Runner has not moved  '});
@@ -104,7 +104,9 @@ for (const page of ['request', 'task']) {
   assert.match(js, /orders\.act\('cancel'/);
   assert.doesNotMatch(js, /ui\.confirm\([^)]*取消这笔订单/);
 }
-assert.match(fs.readFileSync('pages/request/index.wxml', 'utf8'), /cancel-window-card/, 'publisher cancel stays at the bottom of the request page');
+const requestXml=fs.readFileSync('pages/request/index.wxml', 'utf8');
+assert.match(requestXml, /cancel-window-card/);
+assert.ok(requestXml.indexOf('<order-feedback ') < requestXml.indexOf('cancel-window-card') && requestXml.indexOf('cancel-window-card') < requestXml.indexOf('bindtap="repeat"'), 'cancel sits under order feedback, not stuck to the page bottom');
 assert.match(fs.readFileSync('pages/task/index.wxml', 'utf8'), /cancel-tip/, 'task page keeps its cancel window tip');
 const history = fs.readFileSync('pages/requests/index.wxml', 'utf8');
 assert.match(history, /cancelReasonLabel/);
@@ -133,7 +135,7 @@ page.cancel();
 assert.equal(page.data.cancelOpen, true);
 assert.equal(page.data.cancelReady, false);
 assert.equal(calls.length, 0, 'opening the sheet does not cancel');
-assert.deepEqual(page.data.cancelOptions.map(row => row.label), ['Test', 'Wrong details', 'No one took the order', 'Other']);
+assert.deepEqual(page.data.cancelOptions.map(row => row.label), ['Wrong details in the order', 'Changed my mind', 'Collected it myself', 'Runner too slow to pick up', 'No one took the order', 'Test order', 'Other']);
 page.submitCancel();
 assert.equal(calls.length, 0, 'confirm stays blocked until a reason is chosen');
 (async () => {
@@ -168,8 +170,8 @@ assert.equal(calls.length, 0, 'confirm stays blocked until a reason is chosen');
   assert.equal(page.data.cancelWindow.phase, 'grace');
   assert.equal(page.data.zh, true);
   page.cancel();
-  assert.deepEqual(page.data.cancelOptions.map(row => row.value), ['测试', '信息填错', '没人接单', '其他']);
-  assert.deepEqual(page.data.cancelOptions.map(row => row.label), ['测试', '信息填错', '没人接单', '其他']);
+  assert.deepEqual(page.data.cancelOptions.map(row => row.value), ['信息填错', '不需要了', '我自己取了', '跑手太慢', '没人接单', '测试', '其他']);
+  assert.deepEqual(page.data.cancelOptions.map(row => row.label), ['信息填错', '不需要了', '我自己取了', '跑手太慢', '没人接单', '测试', '其他']);
   require('../utils/customer-cancel').stop(page);
-  console.log('Publisher cancel uses XP’s four reasons, submits them immediately, and keeps the 其他 note optional.');
+  console.log('Publisher cancel uses XP’s cancel vocabulary, submits a listed reason immediately, and keeps the 其他 note optional.');
 })().catch(error => { console.error(error); process.exitCode = 1; });

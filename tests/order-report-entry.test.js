@@ -1,0 +1,16 @@
+const assert=require('node:assert/strict'),fs=require('fs'),path=require('path');
+let definition,route='';
+global.Page=p=>definition=p;
+global.wx={getStorageSync:()=>null,setStorageSync(){},setNavigationBarTitle(){},showToast(){}};
+const nav=require('../utils/nav');
+nav.navigateTo=o=>{route=o.url;};
+require('../pages/request/index');
+const page={...definition,id:'r9',data:structuredClone(definition.data),setData(v){Object.assign(this.data,v)}};
+page.issue();
+assert.equal(route,'/pages/order-feedback/index?id=r9','Something’s wrong must open the shared feedback page');
+const xml=fs.readFileSync(path.join(__dirname,'../pages/request/index.wxml'),'utf8');
+assert.ok(xml.includes('bindtap="issue"')&&xml.includes('<order-feedback order-id="{{request.id}}"'));
+assert.ok(!xml.includes('wx:if="{{reporting}}"'),'the removed in-page report sheet must stay gone');
+const json=JSON.parse(fs.readFileSync(path.join(__dirname,'../pages/order-feedback/index.json'),'utf8'));
+assert.notEqual(json.navigationBarTitleText,'订单反馈','English mode must not flash a Chinese navigation title');
+console.log('Report entry: publisher Something’s wrong opens feedback, no leftover sheet, no Chinese nav default.');

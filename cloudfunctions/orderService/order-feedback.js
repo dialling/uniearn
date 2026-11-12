@@ -15,10 +15,16 @@ function ticket(s,actor,r,now){
  check(t.messages.filter(m=>now-m.at<86400000).length<50,'Too many messages today. Please wait for the team to reply.');
  return t;
 }
+function holdUntil(r,now){
+ const window=workflow.reviewHours()*3600000;
+ return Math.max((r.deliveredAt||now)+window,now+window);
+}
 function pause(r,owner,channel,now){
  if(!owner||r.status!=='delivered')return false;
  // expire() runs before every action: already settled orders are never reopened.
- r.status='disputed';r.dispute={reason:'Something else',note:'Customer requested help via '+channel,at:now,channel,contactOnly:true};
+ r.status='disputed';
+ r.settle_hold_until=holdUntil(r,now);
+ r.dispute={reason:'Something else',note:'Customer requested help via '+channel,at:now,channel,contactOnly:true};
  workflow.event(r,'Order help requested · settlement paused',now);return true;
 }
 function contact(s,actor,data,now){

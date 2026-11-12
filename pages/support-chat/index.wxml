@@ -6,9 +6,9 @@
 <view class="topic-row">
 <text wx:for="{{topicOptions}}" wx:key="id" class="pill {{topic===item.id?'on':''}}" data-id="{{item.id}}" bindtap="chooseTopic">{{item.label}}</text>
 </view>
-<view wx:for="{{messages}}" wx:key="at" class="message-row {{item.mine?'mine':''}}"><view class="bubble {{item.mine?'':'team-bubble'}}">{{item.text}}<view class="message-time">{{item.time}}</view></view></view>
+<view wx:for="{{messages}}" wx:key="at" class="message-row {{item.mine?'mine':''}}"><view class="bubble {{item.mine?'':'team-bubble'}}"><block wx:if="{{item.photo}}"><image class="chat-photo" src="{{item.photo}}" mode="widthFix" data-photo="{{item.photo}}" bindtap="previewPhoto"/><text wx:if="{{item.text}}" class="photo-caption">{{item.text}}</text></block><block wx:else>{{item.text}}</block><view class="message-time">{{item.time}}</view></view></view>
 <view wx:if="{{error}}" class="notice-error">{{error}}</view>
-<view class="chat-compose"><view class="compose-row"><input class="compose-input" value="{{text}}" bindinput="input" bindconfirm="send" confirm-type="send" maxlength="500" placeholder="{{zh?'输入消息…':'Message…'}}" cursor-spacing="20" disabled="{{sending}}"/><button class="send-button {{canSend&&!sending?'ready':''}}" disabled="{{!canSend||sending}}" bindtap="send" aria-label="{{zh?'发送消息':'Send message'}}"><image src="/assets/send.svg" mode="aspectFit"/></button></view></view>
+<view class="chat-compose support-compose"><view class="compose-row"><button class="photo-send" disabled="{{sending}}" bindtap="sendPhoto" aria-label="{{zh?'发送图片':'Send a photo'}}"><image src="/assets/photo-green.svg" mode="aspectFit"/></button><input class="compose-input" value="{{text}}" bindinput="input" bindconfirm="send" confirm-type="send" maxlength="500" placeholder="{{zh?'输入消息…':'Message…'}}" placeholder-class="compose-placeholder" cursor-spacing="20" disabled="{{sending}}"/><button class="send-button {{canSend&&!sending?'ready':''}}" disabled="{{!canSend||sending}}" bindtap="send" aria-label="{{zh?'发送消息':'Send message'}}"><image src="/assets/send.svg" mode="aspectFit"/></button></view></view>
 </view>
 
 </view>

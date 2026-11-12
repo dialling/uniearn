@@ -6,5 +6,5 @@ const sizes=[
 ];
 function category(r){return r.category||'parcel';}
 function sizeId(r){return r.parcelSize||(r.big?'large':'small');}
-function label(r){if(r.parcelItems){const counts={};r.parcelItems.forEach(x=>counts[x.size]=(counts[x.size]||0)+1);return sizes.filter(x=>counts[x.id]).map(x=>x.label+' × '+counts[x.id]).join(' · ');}return category(r)==='takeout'?'Takeaway':(sizes.find(x=>x.id===sizeId(r))||sizes[0]).label;}
+function label(r){if(r.parcelItems){const counts={};r.parcelItems.forEach(x=>counts[x.size]=(counts[x.size]||0)+1);return sizes.filter(x=>counts[x.id]).map(x=>x.label+' × '+counts[x.id]).join(' · ');}return category(r)==='takeout'?(r.night?'Night market':'Takeaway'):(sizes.find(x=>x.id===sizeId(r))||sizes[0]).label;}
 module.exports={sizes,category,sizeId,label};
