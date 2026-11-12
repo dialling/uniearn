@@ -99,3 +99,15 @@ button.task-icon{position:relative;display:flex;align-items:center;justify-conte
 .task-ticket-type{font-size:22rpx;color:#64735f;margin-bottom:10rpx}.task-ticket-title{font-size:29rpx;line-height:1.6;font-weight:700;color:#233d30;white-space:pre-wrap;word-break:break-word}.task-waiting-ticket .journey-times{flex-wrap:wrap;gap:12rpx}.page-dark .task-ticket-title{color:#edf2e8}
 
 .task-page .completion-card{background:#f0f4ff;border:1rpx solid #cbd7f3;border-left:6rpx solid #4265cf;padding:26rpx;border-radius:23rpx}.completion-head{display:flex;align-items:center;gap:16rpx}.completion-icon{display:flex;align-items:center;justify-content:center;flex:none;width:62rpx;height:62rpx;border-radius:17rpx;background:#dfe8ff}.completion-icon image{width:32rpx;height:32rpx}.completion-heading{flex:1;min-width:0}.completion-title{font-size:28rpx;font-weight:750;line-height:1.4;color:#2b478d}.completion-time{margin-top:5rpx;font-size:21rpx;color:#8793ac}.completion-message{display:block;margin-top:22rpx;font-size:31rpx;font-weight:650;line-height:1.75;color:#263954;white-space:pre-wrap;overflow-wrap:anywhere}.completion-photo{display:block;width:100%;margin-top:22rpx;border-radius:16rpx}.completion-review{margin-top:22rpx;padding-top:16rpx;border-top:1rpx solid #d5def1;color:#6d7fa3;font-size:22rpx;line-height:1.6}.page-dark.task-page .completion-card{background:#26324a!important;border-color:#53678f!important;border-left-color:#9ab3ff!important}.page-dark .completion-icon{background:#384c72}.page-dark .completion-title{color:#c3d3ff}.page-dark .completion-message{color:#edf2ff}.page-dark .completion-time,.page-dark .completion-review{color:#acbad5}.page-dark .completion-review{border-color:#495b7e}
+
+/* Task ticket: type tag, title, then Posted / Deadline side by side with room to breathe. */
+.journey-route-section.task-ticket-section{flex-direction:column;align-items:stretch;gap:0;padding:28rpx 40rpx 30rpx}
+.task-ticket-section .task-ticket-type{align-self:flex-start;margin:0 0 14rpx;padding:6rpx 16rpx;border-radius:999rpx;background:#e7f3ed;color:#0b7a55;font-size:22rpx;font-weight:700;line-height:1.4}
+.task-ticket-section .task-ticket-title{font-size:32rpx;line-height:1.5;margin:0}
+.task-ticket-times{display:flex;gap:16rpx;margin-top:22rpx}
+.task-ticket-time{flex:1;min-width:0;display:flex;flex-direction:column;gap:4rpx;padding:16rpx 20rpx;border-radius:16rpx;background:rgba(255,255,255,.7);border:1rpx solid #ebe3d3}
+.task-ticket-time-label{font-size:21rpx;color:#8a877c}
+.task-ticket-time-value{font-size:26rpx;font-weight:700;color:#26332c;line-height:1.4;word-break:break-word}
+.page-dark .task-ticket-section .task-ticket-type{background:#1f2d25;color:#8fd3b0}
+.page-dark .task-ticket-time{background:#242522;border-color:#3a3b37}
+.page-dark .task-ticket-time-value{color:#edf2e8}

@@ -65,3 +65,17 @@
 .trip-page .contact-button{position:relative;overflow:visible}.trip-chat-dot{position:absolute;right:-2rpx;top:-2rpx;width:17rpx;height:17rpx;border:3rpx solid #fff;border-radius:50%;background:#fa5151;box-sizing:content-box;pointer-events:none}.page-dark .trip-chat-dot{border-color:#242522}
 
 button.missing-parcel-link{display:block;width:100%;margin:0;padding:14rpx 0;min-height:72rpx;line-height:1.5;text-align:left;background:transparent;color:#c46524;font-size:28rpx;border-radius:0}button.missing-parcel-link::after{border:0}button.missing-parcel-link[disabled]{background:transparent;color:#999}
+
+/* Pickup codes: wrap several codes as chips instead of a tall stacked list. */
+.pickup-code-chips{display:flex;flex-wrap:wrap;gap:14rpx;margin-top:14rpx}
+.pickup-code-chip{display:inline-flex;align-items:center;justify-content:center;min-width:132rpx;box-sizing:border-box;padding:12rpx 22rpx;border-radius:16rpx;background:#fff;border:2rpx solid #d9e5dc;color:#16181c;font-size:34rpx;font-weight:800;letter-spacing:4rpx;font-variant-numeric:tabular-nums;line-height:1.3}
+.page-dark .pickup-code-chip{background:#242522;border-color:#3a3b37;color:#edebe4}
+
+/* Delivery cards lead with where to go: address is the headline, customer below. */
+.trip-card-address{font-size:34rpx;font-weight:800;color:#16181c;line-height:1.35}
+.trip-card-owner{font-size:25rpx;color:#6b6860}
+.page-dark .trip-card-address{color:#edebe4}
+
+/* Take delivery photo matches the full-width "Picked up, go deliver" button. */
+button.btn.delivery-photo-btn{display:flex;align-items:center;justify-content:center;gap:12rpx;width:100%!important;max-width:none;margin:24rpx 0 18rpx;min-height:82rpx;border-radius:20rpx;font-size:27rpx;box-sizing:border-box;background:#0b7a55;color:#fff}
+.delivery-photo-icon{width:36rpx;height:36rpx;flex:none}

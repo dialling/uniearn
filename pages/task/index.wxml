@@ -12,7 +12,7 @@
  <view class="journey-ticket-band"><text class="journey-brand">UniEarn</text><text class="journey-band-divider">|</text><text class="journey-band-title">{{zh?'任务旅程':'Task journey'}}</text><image class="journey-anchor" src="/assets/journey-anchor.svg" mode="aspectFit"/></view>
  <view class="journey-ticket-body"><view class="journey-hero"><image class="journey-mascot" src="/assets/yuni-journey-ticket.png" mode="aspectFit"/><view class="journey-status"><view class="journey-status-title">{{zh?'等待跑手接单':'Waiting for a runner'}}</view><view class="journey-status-note">{{request.cancellation?(zh?'任务已退回大厅，正在等待新的跑手。':'Your task is back on the board, waiting for another runner.'):(zh?'任务已发布，正在等待跑手。':'Your task is on the job board.')}}</view></view></view>
  <view class="journey-progress"><view wx:for="{{taskJourneySteps}}" wx:key="name" class="journey-step {{index===0?'current':''}}"><view class="journey-step-dot">{{index===0?'✓':''}}</view><view class="journey-step-name">{{item.name}}</view><view class="journey-step-time">{{index===0?item.time:''}}</view></view></view>
- <view class="journey-route-section"><view class="task-ticket-type">{{request.taskMode==='online'?(zh?'线上帮助':'Online help'):(zh?'线下帮助':'Offline help')}}</view><view class="task-ticket-title">{{request.title}}</view><view class="journey-times"><view><text>{{zh?'发布：':'Posted: '}}</text><text>{{taskPostedTime}}</text></view><view><text>{{zh?'截止：':'Deadline: '}}</text><text>{{request.dueAt?request.due:(zh?'无截止时间':'No deadline')}}</text></view></view></view>
+ <view class="journey-route-section task-ticket-section"><view class="task-ticket-type">{{request.taskMode==='online'?(zh?'线上帮助':'Online help'):(zh?'线下帮助':'Offline help')}}</view><view class="task-ticket-title">{{request.title}}</view><view class="task-ticket-times"><view class="task-ticket-time"><text class="task-ticket-time-label">{{zh?'发布时间':'Posted'}}</text><text class="task-ticket-time-value">{{taskPostedTime}}</text></view><view class="task-ticket-time"><text class="task-ticket-time-label">{{zh?'截止时间':'Deadline'}}</text><text class="task-ticket-time-value">{{request.dueAt?request.due:(zh?'无截止时间':'No deadline')}}</text></view></view></view>
  </view>
 </view>
 <view wx:elif="{{!request.feedbackOpen && !(request.isRunner && request.status==='taken')}}" class="flow-card status-card">
@@ -47,7 +47,7 @@
 </view>
 </view>
 
-<view class="row task-reward"><text class="hint">{{request.isMine?ui.yourPrice:ui.youGet}}</text><text class="strong">¥{{request.rewardText}}</text></view>
+<view wx:if="{{!request.isMine}}" class="row task-reward"><text class="hint">{{ui.youGet}}</text><text class="strong">¥{{request.rewardText}}</text></view>
 </view>
 <view wx:if="{{request.photo||request.completionNote}}" class="flow-card completion-card">
 <view class="completion-head"><view class="completion-icon"><image src="/assets/message.svg" mode="aspectFit"/></view><view class="completion-heading"><view class="completion-title">{{request.completionNote?(zh?'骑手完成留言':'Runner’s completion note'):(zh?'骑手完成凭证':'Runner’s completion proof')}}</view><view class="completion-time">{{zh?'提交于 ':'Sent at '}}{{request.deliveredTime}}</view></view></view>
