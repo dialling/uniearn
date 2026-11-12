@@ -1,4 +1,4 @@
-<view style="{{motionStyle}}">
+<view class="ue-enter" style="{{motionStyle}}">
 <lang-switch></lang-switch>
 <view class="post-page addr-page {{darkClass}}"><include src="../../utils/address-form.wxml"/></view>
 

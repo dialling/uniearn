@@ -1,4 +1,4 @@
-<view style="{{motionStyle}}">
+<view class="ue-enter" style="{{motionStyle}}">
 <lang-switch></lang-switch>
 <view class="cp-page {{darkClass}}">
  <view class="cp-tabs"><view class="cp-tab {{tab==='usable'?'on':''}}" data-tab="usable" bindtap="switchTab">{{zh?'可使用':'Available'}} {{usable.length}}</view><view class="cp-tab {{tab==='expired'?'on':''}}" data-tab="expired" bindtap="switchTab">{{zh?'已过期':'Expired'}} {{expired.length}}</view><view class="cp-slider {{tab==='expired'?'right':''}}"></view></view>

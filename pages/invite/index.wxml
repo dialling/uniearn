@@ -1,4 +1,4 @@
-<view style="{{motionStyle}}">
+<view class="ue-enter" style="{{motionStyle}}">
 <view class="iv-page">
  <view class="iv-bg">
   <text class="iv-mark m1">UniEarn</text>

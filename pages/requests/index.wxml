@@ -1,5 +1,5 @@
 <import src="./runner-card.wxml"/>
-<view style="{{motionStyle}}">
+<view class="ue-enter" style="{{motionStyle}}">
 
 <lang-switch></lang-switch>
 <view class="flow-page requests-page {{darkClass}}"><view class="orders-header"><view class="flow-title">{{zh?'我的订单':'My orders'}}</view><view class="flow-sub">{{zh?(tab==='running'?'你帮其他同学接的任务':'你请其他同学帮忙代取的订单'):tab==='running'?'Jobs you took for other students':'Things you asked other students to bring'}}</view><view class="service-tabs glass"><view class="glass-thumb of-2" style="transform:translateX({{(tab==='running'?1:0)*100}}%)"><view wx:for="{{[tab]}}" wx:key="*this" class="glass-blob"/></view><button class="service-tab {{tab==='requested'?'active':''}}" data-value="requested" bindtap="switchTab">{{zh?'我发布的':'I requested'}} {{requestedCount}}</button><button class="service-tab {{tab==='running'?'active':''}}" data-value="running" bindtap="switchTab">{{zh?'我接的单':'I’m running'}} {{running.length}}</button></view></view><view class="orders-content">

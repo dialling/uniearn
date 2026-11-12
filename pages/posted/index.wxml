@@ -1,4 +1,4 @@
-<view style="{{motionStyle}}">
+<view class="ue-enter" style="{{motionStyle}}">
 <view class="{{darkClass}}"/>
 
 </view>

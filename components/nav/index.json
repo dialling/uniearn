@@ -1,1 +1,1 @@
-{"component":true}
+{"component": true, "usingComponents": {"level-up": "/components/level-up/index"}}

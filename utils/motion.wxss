@@ -65,3 +65,8 @@ button.button-hover{transform:scale(.97)}
 @media (prefers-reduced-motion:reduce){
  .flow-card,.card,.flow-sheet,.filter-panel,.selectable-order,.empty-yuni,.address-nudge,.done-proof,.glass-blob,.glass-blob::after{animation:var(--ue-animation,none)}
 }
+
+/* 页面切换：淡入过渡。只动 opacity，避免 transform 生成包含块，
+   把 fixed 的底部导航和弹层带偏。 */
+@keyframes ue-page-in{from{opacity:0}to{opacity:1}}
+.ue-enter{animation:var(--ue-animation,ue-page-in .22s ease-out both)}

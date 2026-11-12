@@ -1,4 +1,4 @@
-<view style="{{motionStyle}}">
+<view class="ue-enter" style="{{motionStyle}}">
 <lang-switch></lang-switch>
 <view class="levels-page {{darkClass}}">
  <view class="levels-intro"><view class="eyebrow">{{language==='zh'?'Uniearn 等级成长':'Uniearn Level Journey'}}</view><view class="intro-title">{{language==='zh'?'我的等级':'My level'}}</view></view>

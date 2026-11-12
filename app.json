@@ -45,15 +45,6 @@
     "backgroundColor": "#eeede8"
   },
   "style": "v2",
-  "usingComponents": {
-    "contact-avatar": "/components/contact-avatar/index",
-    "app-nav": "/components/nav/index",
-    "yuni-tip": "/components/yuni/index",
-    "yuni-assistant": "/components/yuni-assistant/index",
-    "lang-switch": "/components/lang-switch/index",
-    "level-up": "/components/level-up/index",
-    "daily-checkin": "/components/daily-checkin/index"
-  },
   "entryPagePath": "pages/jobs/index",
   "lazyCodeLoading": "requiredComponents",
   "subpackages": [

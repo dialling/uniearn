@@ -11,7 +11,13 @@ async function flush(){
  try{const {result}=await require('./cloud').ensureCloud().callFunction({name:'newsService',data:{action:'analyticsBatch',events:batch}});if(!result?.ok)throw Error();queue=queue.filter(e=>!batch.some(b=>b.id===e.id));backoff=5000;}catch(_){backoff=Math.min(60000,backoff*2);}finally{sending=false;schedule();}
 }
 function open(options={}){if(!session||Date.now()-lastActive>=1800000){session=id();const scene=Number(options.scene);source=options.query?.invite?'invite':[1007,1008,1044].includes(scene)?'share':[1011,1012,1013,1047,1048,1049].includes(scene)?'qr':'direct';}record('app_open');}
-function observe(page){try{if(!page||!wx.createIntersectionObserver)return;if(page._analyticsObserver)page._analyticsObserver.disconnect();const observer=wx.createIntersectionObserver(page,{observeAll:true});page._analyticsObserver=observer;observer.relativeToViewport().observe('.analytics-card',entry=>{if(entry.intersectionRatio<=0)return;const d=entry.dataset||{},key=d.kind+':'+d.contentId;page._analyticsSeen=page._analyticsSeen||new Set();if(page._analyticsSeen.has(key))return;page._analyticsSeen.add(key);record(d.kind==='news'?'news_view':'campaign_view',{contentId:d.contentId,page:'rewards'});});}catch(_){}}
+function observe(page){try{if(!page||!wx.createIntersectionObserver)return;
+if(page.createSelectorQuery){page.createSelectorQuery().selectAll('.analytics-card').boundingClientRect(rows=>{
+  if(!rows||!rows.length)return; // nothing to watch: skip so the runtime does not warn about a missing node
+  attach(page);
+}).exec();return;}
+attach(page);}catch(_){}}
+function attach(page){try{if(page._analyticsObserver)page._analyticsObserver.disconnect();const observer=wx.createIntersectionObserver(page,{observeAll:true});page._analyticsObserver=observer;observer.relativeToViewport().observe('.analytics-card',entry=>{if(entry.intersectionRatio<=0)return;const d=entry.dataset||{},key=d.kind+':'+d.contentId;page._analyticsSeen=page._analyticsSeen||new Set();if(page._analyticsSeen.has(key))return;page._analyticsSeen.add(key);record(d.kind==='news'?'news_view':'campaign_view',{contentId:d.contentId,page:'rewards'});});}catch(_){}}
 function install(){
  if(typeof Page!=='function'||Page._uniearnAnalytics)return;
  const original=Page,wrapped=function(options){

@@ -87,7 +87,10 @@ assert.equal(validateApplication({realName:'张三',gender:'female',phone:'13800
  await page.onShow();assert.equal(page.data.stage,'apply');assert.equal(page.data.form.realName,'张三');assert.equal(page.data.form.phone,'13800000000');
  await page.submit();assert.match(page.data.error,/性别/);assert.equal(calls.filter(c=>c.action==='apply').length,0);page.chooseGender({currentTarget:{dataset:{gender:'female'}}});await page.submit();assert.match(page.data.error,/学号/);assert.equal(calls.filter(c=>c.action==='apply').length,0);
  page.field({currentTarget:{dataset:{field:'studentId'}},detail:{value:'2512345'}});await page.submit();assert.equal(page.data.stage,'rules');assert.equal(calls.filter(c=>c.action==='apply').length,0);await page.finish();assert.equal(calls.filter(c=>c.action==='apply').length,0);page.rule({currentTarget:{dataset:{index:-1}}});assert.equal(page.data.ruleCount,page.data.rules.length);await page.finish();
- assert.deepEqual(JSON.parse(JSON.stringify(calls.at(-1))),{action:'apply',application:{realName:'张三',gender:'female',phone:'13800000000',studentId:'2512345'}});assert.equal(page.data.stage,'pending');assert.equal(page.data.busy,false);assert.ok(calls.every(x=>x.action!=='wechatLogin'),'manual submission never requests WeChat phone authorization');
+ const applied=calls.filter(c=>c.action==='apply').at(-1);
+assert.deepEqual(JSON.parse(JSON.stringify(applied)),{action:'apply',application:{realName:'张三',gender:'female',phone:'13800000000',studentId:'2512345'}});
+assert.ok(calls.some(c=>c.action==='agreeRules'),'rules are accepted in the same step');
+assert.equal(page.data.stage,'pending');assert.equal(page.data.busy,false);assert.ok(calls.every(x=>x.action!=='wechatLogin'),'manual submission never requests WeChat phone authorization');
  page.reapply();assert.equal(page.data.stage,'apply');
  page.next='/pages/trip-start/index';page.startTrip();assert.deepEqual(calls.at(-1),{action:'reLaunch',url:'/pages/jobs/index'});
  let component;

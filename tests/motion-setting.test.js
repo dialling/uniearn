@@ -36,7 +36,7 @@ store.update(s=>s.yuniTips=false);request.onMotionChange(false);videoResolve('wx
  function walk(dir){return fs.readdirSync(dir,{withFileTypes:true}).flatMap(entry=>entry.isDirectory()?walk(path.join(dir,entry.name)):[path.join(dir,entry.name)]);}
  const css=walk(root+'/pages').concat(walk(root+'/components'),walk(root+'/utils')).filter(p=>p.endsWith('.wxss'));
  for(const file of css){const source=fs.readFileSync(file,'utf8').replace(/\/\*[\s\S]*?\*\//g,'');for(const match of source.matchAll(/(?<![-\w])(animation|animation-name|transition)\s*:\s*([^;}]+)/g))assert.match(match[2],/^var\(--ue-/,path.relative(root,file)+' has uncontrolled motion');}
- for(const route of require('../app.json').pages){const xml=fs.readFileSync(root+'/'+route+'.wxml','utf8');assert.match(xml,/<view style="\{\{motionStyle\}\}">/,route+' must carry the motion preference to all overlays/components');}
+ for(const route of require('../app.json').pages){const xml=fs.readFileSync(root+'/'+route+'.wxml','utf8');assert.match(xml,/<view[^>]*style="\{\{motionStyle\}\}"/,route+' must carry the motion preference to all overlays/components');}
  const me=require('../utils/me-copy')('zh');assert.equal(me.tips,'动画与 Yuni 提示');
  console.log('Motion preference: first render, retained pages, persistence, event suppression, active/pending video stop, live component update, level gestures and all stylesheet motion passed');
 })().catch(e=>{console.error(e);process.exitCode=1;});

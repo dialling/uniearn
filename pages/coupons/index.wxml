@@ -1,4 +1,4 @@
-<view style="{{motionStyle}}">
+<view class="ue-enter" style="{{motionStyle}}">
 <view class="wallet-page {{darkClass}}">
  <view class="wallet-heading"><view class="wallet-title">{{language==='zh'?'我的卡包':'My wallet'}}</view><view class="wallet-subtitle">{{language==='zh'?'优惠券都收在这里':'All your coupons in one place'}}</view></view>
  <view class="wallet-tabs"><view class="wallet-tab {{tab==='available'?'active':''}}" data-tab="available" bindtap="switchTab">{{language==='zh'?'可使用':'Available'}}</view><view class="wallet-tab {{tab==='used'?'active':''}}" data-tab="used" bindtap="switchTab">{{language==='zh'?'已使用':'Used'}}</view><view class="wallet-tab {{tab==='expired'?'active':''}}" data-tab="expired" bindtap="switchTab">{{language==='zh'?'已过期':'Expired'}}</view></view>

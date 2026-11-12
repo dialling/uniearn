@@ -1,7 +1,7 @@
 <import src="../../utils/contact-identity.wxml"/>
 <import src="../../utils/waiting-ticket.wxml"/>
 <import src="../../utils/customer-cancel-sheet.wxml"/>
-<view style="{{motionStyle}}">
+<view class="ue-enter" style="{{motionStyle}}">
 <lang-switch></lang-switch>
 <view class="flow-page {{darkClass}}" wx:if="{{request}}">
 <view class="flow-title">{{zh?(request.isMine?'我的订单':'订单详情'):request.isMine?'My request':'Order details'}}</view>

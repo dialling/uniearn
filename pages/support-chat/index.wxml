@@ -1,4 +1,4 @@
-<view style="{{motionStyle}}">
+<view class="ue-enter" style="{{motionStyle}}">
 <lang-switch></lang-switch>
 <view class="v8-page chat-page {{darkClass}}">
 <view class="hint center chat-note">{{zh?'团队人工支持 · 服务时间目标 10:00–22:00':'A person from the team · planned hours 10:00–22:00'}}</view>

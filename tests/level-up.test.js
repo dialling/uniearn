@@ -68,7 +68,9 @@ assert.match(xml,/assets\/yuni-party\.png/,'a still image stands in when the cli
 assert.match(xml,/noticeType==='weekly'\?'✦ 7 DAY STREAK':'✦ LEVEL UP'/);
 for(const p of ['jobs','earnings','profile','requests'])assert.match(fs.readFileSync('pages/'+p+'/index.wxml','utf8'),/<app-nav/,p+' mounts the shared bottom bar');
 assert.match(fs.readFileSync('components/nav/index.wxml','utf8'),/<level-up\s*\/>/,'the popup rides with the shared bottom bar, so every tab gets it once');
-assert.ok(require('../app.json').usingComponents['level-up']);
+const navJson=JSON.parse(fs.readFileSync('components/nav/index.json','utf8'));
+assert.equal(navJson.usingComponents['level-up'],'/components/level-up/index','the bar that mounts it also declares it');
+assert.equal(require('../app.json').usingComponents,undefined,'no global components, so lazy injection stays effective');
 assert.ok(fs.statSync('pages/posted/yuni/yuni-levelup.mp4').size<300000);
 
 (async()=>{

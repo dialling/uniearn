@@ -1,1 +1,1 @@
-{"navigationBarTitleText":"Choose parcels"}
+{"navigationBarTitleText": "Choose parcels", "usingComponents": {"contact-avatar": "/components/contact-avatar/index", "lang-switch": "/components/lang-switch/index", "yuni-assistant": "/components/yuni-assistant/index"}}
