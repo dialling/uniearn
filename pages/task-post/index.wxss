@@ -1,4 +1,3 @@
-@import "../../utils/photo-upload.wxss";
 @import "../../utils/deadline-fields.wxss";
 @import "../../utils/flow.wxss";
 @import "../../utils/fee-control.wxss";
@@ -28,9 +27,3 @@
 .pg-add-press{transform:scale(.96);background:#e8eefc}
 .page-dark .pg-add-square{background:#1d2433;border-color:#33406b;color:#9db4ff}
 .page-dark .pg-add-press{background:#233050}
-
-.task-need-head{gap:10rpx;flex-wrap:wrap}.task-need-title{flex:1;min-width:140rpx}
-.task-mode-switch{display:flex;flex:none;padding:5rpx;border-radius:16rpx;background:#eef2fc;gap:4rpx}
-.task-mode-option{padding:10rpx 16rpx;border-radius:12rpx;font-size:23rpx;font-weight:600;line-height:1.3;color:#68738a}
-.task-mode-option.selected{background:#315ca6;color:#fff}
-.page-dark .task-mode-switch{background:#29374f}.page-dark .task-mode-option{color:#becce3}.page-dark .task-mode-option.selected{background:#486fae;color:#fff}

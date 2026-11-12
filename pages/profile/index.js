@@ -8,7 +8,7 @@ const AVATAR_NAMES=['star','helper','pro','ace','captain'];
 function tierAvatar(level){return '/assets/yuni-adventure-'+AVATAR_NAMES[level-1]+'.png';}
 function postTier(n){return n>=30?'gold':n>=10?'silver':'bronze';}
 Page({
- data:{...require('../../utils/motion').data(),ui:meCopy('zh'),language:'zh',appearance:'light',initial:'?',tierLevel:1,tierAvatar:tierAvatar(1),postedCount:0,deliveredCount:0,couponCount:0,unlockedCount:0,profile:{},loading:false,loggingOut:false,error:'',level:'Yuni 新星',limit:10,remaining:15,levelOpen:false,stickersOpen:false,settingsOpen:false,nameEditorOpen:false,nameDraft:'',savingName:false,nameError:'',postedBadge:'bronze',jobsBadge:'bronze',tierName:'Yuni 新星',rankName:'Yuni 新星',nextJobsText:''},
+ data:{...require('../../utils/motion').data(),ui:meCopy('zh'),language:'zh',appearance:'light',initial:'?',tierLevel:1,tierAvatar:tierAvatar(1),postedCount:0,deliveredCount:0,couponCount:0,unlockedCount:0,profile:{},loading:false,loggingOut:false,error:'',level:'Yuni 新星',limit:10,remaining:15,levelOpen:false,stickersOpen:false,settingsOpen:false,postedBadge:'bronze',jobsBadge:'bronze',tierName:'Yuni 新星',rankName:'Yuni 新星',nextJobsText:''},
  onLoad(o={}){this.pendingInviteCode=String(o.invite||'').trim();},
  async onShow(){if(this.pendingInviteCode){store.update(s=>{s.pendingInviteCode=this.pendingInviteCode;});this.pendingInviteCode='';return wx.reLaunch({url:'/pages/welcome/index'});}this.setData({loading:true,error:''});try{this.refresh();this.refreshTier();await account.call('status');await require('../../utils/orders').sync();this.refresh();this.refreshTier();}catch(e){this.setData({error:e.message});}finally{this.setData({loading:false});}},
 
@@ -38,19 +38,6 @@ Page({
   }catch(e){this.setData({error:e.message||'Could not log out. Please try again.'});}
   finally{this.setData({loggingOut:false});}
  },
- profileEntry(){if(this.data.isRunner)this.editUsername();else this.studentCheck();},
- editUsername(){const p=store.get().profile;if(!p.onboarded||p.loggedOut)return;this.setData({nameEditorOpen:true,nameDraft:p.displayName||p.name||'',nameError:''});},
- nameInput(e){this.setData({nameDraft:e.detail.value,nameError:''});},
- closeNameEditor(){if(!this.data.savingName)this.setData({nameEditorOpen:false,nameError:''});},
- async saveUsername(){
-  if(this.data.savingName)return;const name=String(this.data.nameDraft||'').trim(),zh=this.data.language==='zh';
-  if(!name||name.length>60||/[\u0000-\u001f\u007f]/.test(name)){this.setData({nameError:zh?'请输入 1–60 个字符的用户名':'Enter a username of 1–60 characters.'});return;}
-  this.setData({savingName:true,nameError:''});
-  try{await account.call('saveDisplayName',{displayName:name});this.refresh();this.refreshTier();this.setData({nameEditorOpen:false});wx.showToast({title:zh?'用户名已更新':'Username updated',icon:'success'});}
-  catch(e){this.setData({nameError:e.message||(zh?'保存失败，请重试':'Could not save. Try again.')});}
-  finally{this.setData({savingName:false});}
- },
- noop(){},
  studentCheck(){require('../../utils/nav').navigateTo({url:'/pages/student-check/index'});},admin(){require('../../utils/nav').navigateTo({url:'/pages/admin/index'});},
  reset(){wx.showModal({title:'Clear this device cache?',content:'Cloud orders and your profile stay saved. Check My requests first if a previous action had a network error.',success:r=>{if(r.confirm){const profile=store.get().profile;store.reset();store.update(s=>{s.profile=profile;});this.refresh();require('../../utils/orders').sync().catch(()=>{});}}});}
 });

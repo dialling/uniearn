@@ -11,7 +11,7 @@ function pickup(order = {}, language = 'zh') {
   if (category === 'task') return '';
   if (category === 'takeout') {
     if (order.night) return order.shop || (zh ? '夜市摊位' : 'Night market stall');
-    return lockers.label(order.pickupPoint, language) || place(order.station, language);
+    return lockers.label(order.pickupPoint, language) || (zh ? '外卖取餐点' : 'Takeaway pickup point');
   }
   return post.label(order.station, language) || order.station || (zh ? '取件点' : 'Pickup point');
 }
@@ -21,11 +21,6 @@ function place(station, language = 'zh') {
   const zh = language !== 'en';
   if (!station || station === 'Takeaway pickup') return zh ? '外卖取餐点' : 'Takeaway pickup point';
   return post.label(station, language) || station;
-}
-
-// One label for a group of orders sharing a destination; joined when their pickups differ.
-function group(orders = [], language = 'zh') {
-  return [...new Set((orders || []).map(order => pickup(order, language)).filter(Boolean))].join(' · ');
 }
 
 function destination(order = {}, language = 'zh') {
@@ -41,4 +36,4 @@ function destination(order = {}, language = 'zh') {
   return order.dorm || '';
 }
 
-module.exports = { pickup, place, destination, group };
+module.exports = { pickup, place, destination };

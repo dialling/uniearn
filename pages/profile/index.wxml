@@ -13,8 +13,8 @@
  <view class="me-header-top">
   <view class="avatar header-avatar"><image class="rank-avatar" src="{{tierAvatar}}" mode="aspectFit" aria-label="{{tierName}}"/></view>
   <view class="header-main">
-   <view class="header-name" bindtap="editUsername" role="button" aria-label="{{language==='zh'?'修改用户名':'Edit username'}}">{{profile.displayName||profile.name||ui.account}}<text class="header-edit-mark">✎</text></view>
-   <view class="header-badge-row"><view class="header-badge {{isRunner?'verified':''}}" bindtap="profileEntry">{{isRunner?'✓ '+ui.verified+(verifiedDate?' '+verifiedDate:''):ui.check}}</view></view>
+   <view class="header-name">{{profile.name||ui.account}}</view>
+   <view class="header-badge-row"><view class="header-badge {{isRunner?'verified':''}}" bindtap="studentCheck">{{isRunner?'✓ '+ui.verified+(verifiedDate?' '+verifiedDate:''):ui.check}}</view></view>
   </view>
   <view wx:if="{{isRunner}}" class="header-actions">
    <view wx:if="{{isRunner}}" class="runner-tag"><text class="runner-tag-dot"></text>{{ui.runnerTag}}</view>
@@ -56,7 +56,6 @@
 </view>
 <view class="me-footer">{{ui.footer}}<view>Uniearn v{{version}}</view></view>
 </block></view><app-nav active="profile"></app-nav>
-<view wx:if="{{nameEditorOpen}}" class="username-mask" catchtap="closeNameEditor" catchtouchmove="noop"><view class="username-editor" catchtap="noop"><view class="username-title">{{language==='zh'?'修改用户名':'Edit username'}}</view><view class="username-hint">{{language==='zh'?'设置你在 Me 页面显示的名字。':'Choose the name shown on your Me page.'}}</view><input class="username-input" value="{{nameDraft}}" bindinput="nameInput" maxlength="60" focus="{{nameEditorOpen}}" disabled="{{savingName}}" placeholder="{{language==='zh'?'输入用户名':'Enter username'}}" confirm-type="done" bindconfirm="saveUsername"/><view wx:if="{{nameError}}" class="username-error">{{nameError}}</view><view class="username-actions"><button class="username-cancel" bindtap="closeNameEditor" disabled="{{savingName}}">{{language==='zh'?'取消':'Cancel'}}</button><button class="username-save" bindtap="saveUsername" loading="{{savingName}}" disabled="{{savingName||!nameDraft}}">{{language==='zh'?'保存':'Save'}}</button></view></view></view>
 <yuni-assistant id="me-yuni" topic="me" language="{{language}}"></yuni-assistant>
 
 </view>

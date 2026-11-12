@@ -1,4 +1,4 @@
-const location=require('./hall-location'),post=require('./post-copy'),runner=require('./runner-copy'),routeLabel=require('./route-label');
+const location=require('./hall-location'),post=require('./post-copy'),runner=require('./runner-copy');
 const clock=require('./workflow').clock,boxes=require('./domain').boxes;
 const clean=value=>String(value||'').trim();
 const unique=values=>[...new Set(values.filter(Boolean))];
@@ -19,7 +19,7 @@ function card(trip,requests,language='zh',now=Date.now()){
   else if(food&&r.deliverBy&&['taken','collected'].includes(r.status))deadline=r.deliverBy;
   else if(category==='parcel'&&['taken','collected'].includes(r.status))deadline=clean(r.deadline);
   const pickup=food?(r.night?clean(r.shop):require('./takeaway-lockers').label(r.pickupPoint,language)):task?'':unique((r.parcelItems||[]).map(p=>name(p.pickupPoint))).join(' / ')||name(r.station||trip.station);
-  return {id:r.id,category,title:task?clean(r.title):'',origin:food?(r.night?(zh?'夜市代买':'Night market'):routeLabel.pickup({...r,category},language)):name(r.station||trip.station),destination:name(destination)||name(trip.dorm),gender:loc.gender,genderKey:loc.genderKey,
+  return {id:r.id,category,title:task?clean(r.title):'',origin:name(r.station||trip.station),destination:name(destination)||name(trip.dorm),gender:loc.gender,genderKey:loc.genderKey,
    status,timing,deadline,deadlineLabel,pickup,pickupLabel:food?(r.night?(zh?'店名 / 摊位':'Shop / stall'):(zh?'外卖柜':'Locker')):(zh?'取件点':'Pickup'),
    note:clean(r.note),dropNote:runner.name(r.dropNote,language)||'',quantity:boxes(r),unit:task?(zh?'项':'tasks'):food?(zh?'袋':'bags'):(zh?'件':'parcels'),
    soup:!!r.soup,fragile:!!r.fragile,raised:Number(r.raised||0)>0,reward:Number(r.reward||0).toFixed(2)};
@@ -28,7 +28,7 @@ function card(trip,requests,language='zh',now=Date.now()){
  const genders=items.filter((r,i)=>r.genderKey&&items.findIndex(x=>x.genderKey===r.genderKey)===i).map(r=>({key:r.genderKey,label:r.gender}));
  const taskId=trip.category==='task'&&requests[0]?requests[0].id:'';
  return {...trip,taskId,done,items,genders,type:trip.category==='task'?(zh?'任务':'Task'):trip.category==='takeout'?(requests.some(r=>r.night)?(zh?'夜市代买':'Night market'):(zh?'外卖代取':'Takeaway')):(zh?'快递代取':'Parcels'),
-  route:trip.category==='task'?(items[0]?.title||(zh?'任务':'Task')):(trip.category==='takeout'?(routeLabel.group(requests,language)||routeLabel.place(trip.station,language)):name(trip.station))+' → '+name(trip.dorm),
+  route:trip.category==='task'?(items[0]?.title||(zh?'任务':'Task')):name(trip.station)+' → '+name(trip.dorm),
   total:requests.reduce((sum,r)=>sum+Number(r.reward||0),0).toFixed(2),quantity:items.reduce((sum,r)=>sum+r.quantity,0)};
 }
 module.exports={card};

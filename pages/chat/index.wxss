@@ -70,15 +70,3 @@ button.chat-call{flex:none;display:flex;align-items:center;justify-content:cente
 .quick-scroll{width:100%;white-space:nowrap;margin-bottom:12rpx}
 .quick-track{display:inline-flex;align-items:center;gap:12rpx;padding:2rpx 0}
 .quick-track .pill{flex:none;white-space:nowrap;margin:0}
-
-.chat-tools{grid-template-columns:1fr;gap:14rpx;padding:4rpx 0}
-.chat-tools button.chat-tool{flex-direction:row;justify-content:flex-start;gap:20rpx;padding:18rpx 22rpx;border:2rpx dashed #a7cbbb;border-radius:24rpx;text-align:left;background:#fff}
-.chat-tools .chat-tool-icon{flex:none;width:82rpx;height:82rpx;border:0;border-radius:20rpx;background:#edf6f1}
-.chat-tool-copy{display:flex;flex-direction:column;gap:6rpx;flex:1;min-width:0}
-.chat-tool-copy>text:first-child{font-size:26rpx;font-weight:650;color:#252a25}
-.chat-tool-hint{font-size:21rpx;color:#77786f;line-height:1.5}
-.chat-page.menu-open{padding-bottom:700rpx}
-.chat-page.stickers-open{padding-bottom:640rpx}
-.page-dark .chat-tools button.chat-tool{background:#242522;border-color:#577a64}
-.page-dark .chat-tools .chat-tool-icon{background:#283e31}
-.page-dark .chat-tool-copy>text:first-child{color:#edece4}.page-dark .chat-tool-hint{color:#b6b7ae}

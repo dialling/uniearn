@@ -1,5 +1,6 @@
 <import src="../../utils/contact-identity.wxml"/>
 <import src="../../utils/waiting-ticket.wxml"/>
+<import src="../../utils/customer-cancel-sheet.wxml"/>
 <view style="{{motionStyle}}">
 <lang-switch></lang-switch>
 <view class="flow-page {{darkClass}}" wx:if="{{request}}">
@@ -20,7 +21,7 @@
 </view>
 <template wx:if="{{request.status==='waiting'}}" is="waitingTicket" data="{{request,zh}}"/>
 <view wx:else class="flow-card status-card">
-
+<view class="status-stub"><image class="status-yuni" src="/assets/yuni-wave.png" mode="aspectFit"/></view>
 <view class="status-copy">
 <view class="flow-title status-{{request.status}}">{{request.status==='taken'?runner+(zh?' 已接单':' took your request'):request.statusLabel}}</view>
 <view class="hint" wx:if="{{request.status==='delivered'}}">{{zh?runner+' 已于 '+request.deliveredTime+' 送达：'+request.deliveryLocationLabel+'。':runner+' left it '+request.deliveryLocationLabel+' at '+request.deliveredTime+'.'}}</view>
@@ -32,14 +33,14 @@
 <view class="contact-actions">
 <view class="contact-button" bindtap="chat">
 <image src="/assets/message.svg"/>
-<view wx:if="{{request.unread}}" class="chat-dot"/>
+<text wx:if="{{request.unread}}" class="unread">{{request.unread}}</text>
 </view>
 <view class="contact-button" bindtap="phone">
 <image src="/assets/phone.svg"/>
 </view>
 </view>
 </view>
-<view wx:if="{{request.isMine && request.status==='waiting'}}" class="flow-card offer-card">
+<view wx:if="{{request.isMine && (request.status==='waiting' || request.status==='taken' || request.status==='collected')}}" class="flow-card offer-card">
 <view class="offer-heading">
 <text class="strong">{{zh?'提高赏金':'Add to your offer'}}</text>
 <text class="offer-current">{{zh?'当前赏金':'Your offer'}} <text>¥{{request.rewardText}}</text></text>
@@ -50,13 +51,9 @@
 <button class="offer-option offer-custom" hover-class="offer-option-press" bindtap="customRaise">{{zh?'自定义':'Custom'}}</button>
 </view>
 <view class="offer-footer">
-<view class="offer-footer-copy">
 <text class="hint" wx:if="{{request.status==='waiting' && request.closesAt}}">{{zh?'若 '+request.closeTime+' 前无人接单，将全额退款。':'Full refund if nobody takes it by '+request.closeTime+'.'}}</text>
 <text class="hint" wx:elif="{{request.status==='waiting'}}">{{zh?'无人接单时可免费取消。':'Cancel free before a runner accepts.'}}</text>
-
-<view wx:if="{{cancelWindow.phase!=='hidden'}}" class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}">{{cancelWindow.tip}}</view>
-</view>
-<button wx:if="{{cancelWindow.canCancel}}" class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel">{{cancelWindow.button}}</button>
+<text class="hint" wx:else>{{zh?'接单后仍可加价，金额计入整笔订单。':'You can still add to the offer after a runner accepts. It is added once to the whole order.'}}</text>
 </view>
 </view>
 <view wx:if="{{request.isMine && request.category==='takeout' && (request.status==='waiting'||request.status==='taken')}}" class="flow-card rider-photo-card">
@@ -67,12 +64,10 @@
 <view class="rider-photo-copy">
 <view class="strong rider-photo-title">
 <block wx:if="{{zh}}">
-<text class="rider-photo-title-line">外卖已送达？</text>
-<text class="rider-photo-title-line">添加骑手照片（选填）</text>
+<text class="rider-photo-title-line">放置位置照片（选填）</text>
 </block>
 <block wx:else>
-<text class="rider-photo-title-line">Food arrived?</text>
-<text class="rider-photo-title-line">Add the rider’s photo (optional)</text>
+<text class="rider-photo-title-line">Placement photos (optional)</text>
 </block>
 </view>
 <view class="rider-photo-help">{{zh?'用于告诉跑手外卖袋放置的位置。':'It shows your runner where the bag is.'}}</view>
@@ -80,21 +75,16 @@
 <text class="rider-photo-count">0/3</text>
 </view>
 <view wx:else class="rider-photo-action rider-photo-filled">
-<view class="upload-head" data-mode="append" bindtap="riderPhoto" role="button">
-<view class="rider-photo-media"><image class="rider-photo-placeholder" src="/assets/photo-orange.svg" mode="aspectFit"/></view>
 <view class="rider-photo-copy">
 <view class="strong rider-photo-title">
 <block wx:if="{{zh}}">
-<text class="rider-photo-title-line">外卖已送达？</text>
-<text class="rider-photo-title-line">添加骑手照片（选填）</text>
+<text class="rider-photo-title-line">放置位置照片（选填）</text>
 </block>
 <block wx:else>
-<text class="rider-photo-title-line">Food arrived?</text>
-<text class="rider-photo-title-line">Add the rider’s photo (optional)</text>
+<text class="rider-photo-title-line">Placement photos (optional)</text>
 </block>
 </view>
 <view class="rider-photo-help">{{zh?'用于告诉跑手外卖袋放置的位置。':'It shows your runner where the bag is.'}}</view>
-</view>
 </view>
 <text class="rider-photo-count">{{request.riderPhotos.length}}/3</text>
 <view class="rider-photo-gallery">
@@ -123,12 +113,12 @@
 <block wx:if="{{!reporting}}">
 <button class="btn orange" bindtap="confirm">{{zh?'已收到 · 确认 ¥':'Got it · confirm ¥'}}{{request.rewardText}}</button>
 <button class="btn outline" disabled="{{!request.canReport}}" bindtap="issue">{{zh?'有问题':'Something’s wrong'}}</button>
-<view class="hint">{{zh?'送达 '+request.autoHours+' 小时后（'+request.autoTime+'）自动确认入账。':'Automatically confirms '+request.autoHours+' '+(request.autoHours===1?'hour':'hours')+' after delivery ('+request.autoTime+').'}}</view>
+<view class="hint">{{zh?'送达 '+request.autoHours+' 小时内可确认或投诉；未确认将在 '+request.autoTime+' 自动入账给跑手。投诉后赏金冻结，我们将在 24 小时内处理。':'Confirm or report a problem within '+request.autoHours+' '+(request.autoHours===1?'hour':'hours')+' of delivery. If you do not confirm, it credits the runner at '+request.autoTime+'. A report holds the payout, and we resolve it within 24 hours.'}}</view>
 </block>
 <block wx:else>
 <view class="strong">{{zh?'遇到了什么问题？':'What went wrong?'}}</view>
 <view wx:for="{{reasons}}" wx:key="*this" class="pill" style="margin-top:14rpx" data-value="{{item}}" bindtap="chooseReason">{{reason===item?'◉':'○'}} {{reasonLabels[index]||item}}</view>
-<view class="upload-card upload-green"><view class="upload-head" bindtap="addIssuePhoto" hover-class="upload-card-press" role="button"><view class="upload-icon"><image src="/assets/photo-green.svg" mode="aspectFit"/></view><view class="upload-copy"><view class="upload-title">{{zh?'问题凭证':'Issue evidence'}}</view><view class="upload-hint">{{zh?'拍照或相册上传；洒漏问题需提供照片。':'Camera or album; a photo is required for spills.'}}</view></view></view><text class="upload-count">{{(issuePhoto?1:0)}}/1</text><view wx:if="{{(issuePhoto?1:0)>0}}" class="upload-gallery"><view class="upload-tile"><image class="upload-image" src="{{issuePhoto}}" mode="aspectFill" data-photo="{{issuePhoto}}" bindtap="previewIssue"/><view class="upload-remove" catchtap="removeIssuePhoto" role="button" aria-label="{{zh?'删除照片':'Remove photo'}}">×</view></view></view></view>
+<view class="dash" bindtap="addIssuePhoto">{{zh?(issuePhoto?'✓ 已添加照片 · 更换':'添加照片（洒漏时必填）'):issuePhoto?'✓ Photo added · replace':'Add a photo (needed for spilled food)'}}</view>
 <textarea class="field" placeholder="{{zh?'描述一下问题':'Describe the issue'}}" value="{{issueNote}}" bindinput="note" maxlength="500"/>
 <view class="action-row">
 <button class="btn outline" bindtap="backIssue">{{zh?'返回':'Back'}}</button>
@@ -149,7 +139,7 @@
 <view wx:if="{{request.category==='parcel' && request.isMine}}" wx:for="{{request.parcelItems}}" wx:key="index" class="hint">{{zh?'包裹 ':'Parcel '}}{{index+1}} · {{item.pickupPoint||request.station}} · {{item.code}}</view>
 <view class="row hint">
 <text>{{zh?'路线':'Route'}}</text>
-<text>{{request.pickupDisplay||request.station}} → {{request.destinationDisplay}}</text>
+<text>{{request.station}} → {{request.destinationDisplay}}</text>
 </view>
 <view class="row hint" wx:if="{{request.category==='takeout'}}">
 <text>{{zh?'外卖送达':'Food arrives'}}</text>
@@ -174,10 +164,19 @@
 </view>
 <view class="hint">{{request.note}}</view>
 </view>
+<view wx:if="{{request.cancelReasonLabel}}" class="flow-card">
+<view class="strong">{{zh?'取消原因':'Cancel reason'}}</view>
+<view class="hint">{{request.cancelReasonLabel}}</view>
+</view>
 <button wx:if="{{request.isMine && (request.status==='confirmed'||request.status==='cancelled'||request.status==='refunded')}}" class="btn outline" bindtap="repeat">{{zh?'再来一单':'Post again'}}</button>
+<view wx:if="{{cancelWindow.phase!=='hidden'}}" class="flow-card cancel-window-card">
+<button class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel" disabled="{{!cancelWindow.canCancel}}">{{cancelWindow.button}}</button>
+<view class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}"><text class="{{cancelWindow.phase==='grace'?'cancel-clock':''}}">{{cancelWindow.tip}}</text></view>
+</view>
 </view>
 <view wx:else class="empty">{{zh?'订单暂不可用，请检查网络和账号。':'Request unavailable. Check your connection and account.'}}</view>
 <yuni-assistant topic=""/>
+<template is="customerCancelSheet" data="{{zh,cancelOpen,cancelOptions,cancelReason,cancelNote,cancelNoteOpen,cancelling,cancelReady,motionEnabled}}"/>
 <view wx:if="{{celebrate&&request}}" class="yuni-mask" bindtap="closeCelebrate" catchtouchmove="noop">
 <view class="yuni-pop" catchtap="noop">
 <view class="yuni-badge">{{request.night?successUI.typeNight:request.category==='takeout'?successUI.typeTakeout:successUI.typeParcel}}</view>
@@ -192,7 +191,7 @@
 </view>
 <view class="yuni-foot">
 <view class="yuni-foot-main">
-<view class="yuni-route">{{request.pickupDisplay||successUI.labels[request.station]||request.station}} → {{successUI.labels[request.dorm]||request.dorm}}</view>
+<view class="yuni-route">{{successUI.labels[request.station]||request.station}} → {{successUI.labels[request.dorm]||request.dorm}}</view>
 <view class="yuni-meta">{{request.night?successUI.typeNight:request.category==='takeout'?successUI.typeTakeout:successUI.typeParcel}} · {{request.boxes}}{{request.category==='takeout'?successUI.bagUnit:successUI.parcelUnit}} · ¥{{request.total}}</view>
 </view>
 <view class="yuni-pill">{{successUI.pending}}</view>

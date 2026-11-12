@@ -48,19 +48,6 @@ Page({
  onShow(){this.localize(false);require('../../utils/orders').bind(this,'refreshCheckin');require('../../utils/page-title').apply(this);this.stopPointsSync();this.stopPoints=require('../../utils/activity-sync').subscribe(config=>{this.pointsConfig=activityDisplay.latest(this.pointsConfig,config);this.updatePointTasks();this.setData({pointsSyncError:false});},()=>this.setData({pointsSyncError:true}));},
  stopPointsSync(){if(this.stopPoints){this.stopPoints();this.stopPoints=null;}},
  refreshCheckin(){const state=store.get(),view=levelData.view(state.progression||{});this.setData({checkin:checkinView(state,this.data.language),currentLevel:view.level,points:view.points});},
- async openYuniFeed(){
-  if(this.openingFeed)return;
-  const host=this.selectComponent('#level-page-hook');if(!host)return;
-  if(host.openYuniFeed())return;
-  const state=store.get(),en=this.data.language==='en';
-  if(!state.profile.accountId||state.profile.loggedOut){wx.showToast({title:en?'Sign in in Me first':'请先在我的页面登录',icon:'none'});return;}
-  this.openingFeed=true;wx.showLoading({title:en?'Syncing…':'正在同步…'});
-  let message='';
-  try{await require('../../utils/orders').sync();this.refreshCheckin();if(!host.openYuniFeed())message=en?'Check-in is syncing. Try again shortly.':'签到正在同步，请稍后再试';}
-  catch(_){message=en?'Could not sync. Please try again.':'同步失败，请稍后重试';}
-  finally{this.openingFeed=false;wx.hideLoading();}
-  if(message)wx.showToast({title:message,icon:'none'});
- },
  updatePointTasks(){const cached=(store.get().rewards||{}).activities;this.pointsConfig=activityDisplay.latest(this.pointsConfig,cached&&cached.config);const view=activityDisplay.display(this.pointsConfig,this.data.language==='zh');this.setData({pointTasks:view.activityTasks,pointsStatus:view.activityStatusLabel});},
  localize(first){
   const state=store.get(),language=state.language==='en'?'en':'zh',view=levelData.view(state.progression||{}),current=first?Math.max(0,view.level-1):this.data.current;

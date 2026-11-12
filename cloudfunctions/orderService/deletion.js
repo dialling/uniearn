@@ -31,10 +31,10 @@ function purge(state, actor, now = Date.now()) {
     const owner = r.ownerId === actor, runner = trips.has(r.runnerId);
     if (!owner && !runner) continue;
     if (owner) {
-      collect([...(r.completionPhotos || []), r.photo, r.noticePhoto, ...(r.orderPictures || []), r.dispute && r.dispute.photo]);
+      collect([r.photo, r.noticePhoto, ...(r.orderPictures || []), r.dispute && r.dispute.photo]);
       Object.assign(r, {
         owner: '', phone: '', room: '', codes: (r.codes || []).map(() => ''),
-        note: '', orderPictures: [], completionPhotos: [], photo: '', noticePhoto: '', dropNote: '', completionNote: '',
+        note: '', orderPictures: [], photo: '', noticePhoto: '', dropNote: '', completionNote: '',
         anonymized: true, anonymizedAt: now
       });
       delete r.ownerId;
@@ -42,8 +42,8 @@ function purge(state, actor, now = Date.now()) {
       counts.requests++;
     }
     if (runner) {
-      collect([...(r.completionPhotos || []), r.photo, r.riderPhoto, ...(r.riderPhotos || [])]);
-      Object.assign(r, { completionPhotos: [], riderPhoto: '', riderPhotos: [], runnerPhone: '', runnerName: '', photo: owner ? '' : (r.photo || '') });
+      collect([r.photo, r.riderPhoto, ...(r.riderPhotos || [])]);
+      Object.assign(r, { riderPhoto: '', riderPhotos: [], runnerPhone: '', runnerName: '', photo: owner ? '' : (r.photo || '') });
     }
     if (Array.isArray(r.analyticsEvents)) {
       const before = r.analyticsEvents.length;

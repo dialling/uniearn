@@ -6,23 +6,16 @@ function next(){current=null;currentListener=null;flush();}
 function reset(){pending=[];current=null;currentListener=null;Object.keys(seen).forEach(k=>delete seen[k]);}
 // Discard cosmetic events muted by the user; order notifications use a separate channel.
 if(store.subscribe)store.subscribe(()=>{if(store.get().yuniTips===false){pending=[];current=null;currentListener=null;}});
-// A queued status is valid only while the latest server snapshot still agrees.
-function reconcile(snapshot){
- if(!snapshot||!snapshot.accountId)return;
- const valid=e=>!e.orderId||(e.accountId===snapshot.accountId&&(snapshot.requests||[]).some(r=>r.id===e.orderId&&(r.isMine||r.isRunner)&&r.status===e.orderStatus));
- pending=pending.filter(valid);
- if(current&&!valid(current)){const listener=currentListener;current=null;currentListener=null;if(listener)listener(null);}
- flush();
-}
-function status(r,revision){const zh=store.get().language!=='en',mine=r.isMine,orderMeta={orderId:r.id,orderStatus:r.status,accountId:store.get().profile.accountId};let title='',text='',pose='wave';
+function status(r,revision){const zh=store.get().language!=='en',mine=r.isMine;let title='',text='',pose='wave';
 // The dedicated success video already confirms a new order; do not queue a second popup.
-if(r.status==='waiting'){if(r.cancellation&&mine){title=zh?'订单仍在进行':'Order still active';text=zh?'订单已回到接单大厅，并未取消。可在我的订单中继续查看。':'It is back on the job board and was not cancelled. It stays in My orders.';pose='wave';emit({...orderMeta,key:'order:'+store.get().profile.accountId+':'+r.id+':returned:'+revision,title,text,pose});}return;}
+if(r.status==='waiting'){if(r.cancellation&&mine){title=zh?'订单仍在进行':'Order still active';text=zh?'订单已回到接单大厅，并未取消。可在我的订单中继续查看。':'It is back on the job board and was not cancelled. It stays in My orders.';pose='wave';emit({key:'order:'+store.get().profile.accountId+':'+r.id+':returned:'+revision,title,text,pose});}return;}
 if(r.status==='taken'){title=mine?(zh?'有人接单了！':'A runner is on it!'):(zh?'出发吧！':'Let’s go!');text=mine?(zh?'留意订单消息，保持联系。':'Keep an eye on order messages.'):(zh?'前往取件地点，核对订单信息。':'Head to '+r.station+'. Check the order details before pickup.');pose='go';}
-if(r.status==='collected'){title=zh?'已取到！':'Picked up!';text=mine?(zh?'跑手正在送来。':'Your runner is bringing it to you.'):(zh?'请送到约定地点。':'Deliver to the agreed spot.');pose='bag';}
-if(r.status==='delivered'){title=mine?(zh?'送到了！':'It’s here!'):(zh?'这单完成了！':'Nice run!');text=mine?(zh?'检查物品后，在订单里确认完成。':'Check it, then confirm completion on the order.'):(zh?'等待同学确认后计入测试收益。':'Your test earnings settle when the student confirms.');pose=mine?'happy':'deliver';}
+// Runners trigger collected and delivered themselves, so only the poster gets those popups.
+if(r.status==='collected'&&mine){title=zh?'已取到！':'Picked up!';text=zh?'跑手正在送来。':'Your runner is bringing it to you.';pose='bag';}
+if(r.status==='delivered'&&mine){title=zh?'送到了！':'It’s here!';text=zh?'检查物品后，在订单里确认完成。':'Check it, then confirm completion on the order.';pose='happy';}
 if(r.status==='confirmed'){title=zh?'已确认完成！':'Confirmed!';text=zh?'订单已完成，测试账本已结算。':'The order is complete and the test ledger has settled.';pose='earn';}
 if(r.status==='cancelled'){title=zh?'订单已取消':'Order cancelled';text=zh?'查看订单了解详情和测试退款记录。':'Open the order for details and its test refund record.';pose='oops';}
 if(r.status==='refunded'){title=zh?'无人接单，已退款':'No runner · refunded';text=zh?'订单已关闭，测试退款已记录。':'The order closed and the demo refund is recorded.';pose='oops';}
-if(r.status==='disputed'){title=zh?'问题已提交':'Problem reported';text=zh?'结算已暂停，等待团队处理。':'Settlement is paused while the team checks.';pose='think';}
-if(title)emit({...orderMeta,key:'order:'+store.get().profile.accountId+':'+r.id+':'+r.status+':'+revision,title,text,pose});}
-module.exports={emit,subscribe,next,reset,status,reconcile};
+if(r.status==='disputed'){title=zh?'问题已提交':'Problem reported';text=zh?'赏金已冻结，我们将在 24 小时内处理。':'The payout is held. We will resolve this within 24 hours.';pose='think';}
+if(title)emit({key:'order:'+store.get().profile.accountId+':'+r.id+':'+r.status+':'+revision,title,text,pose});}
+module.exports={emit,subscribe,next,reset,status};

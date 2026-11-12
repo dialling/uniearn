@@ -1,4 +1,3 @@
-@import "../../utils/photo-upload.wxss";
 @import "../../utils/order-pictures.wxss";
 @import "../../utils/flow.wxss";
 
@@ -16,6 +15,46 @@
 
 .seal-report-row{gap:20rpx;margin:16rpx 0}.seal-report-description{flex:1;min-width:0}.seal-report-action,.seal-report-recorded{flex-shrink:0;white-space:nowrap}
 
-.pickup-contact-info{margin:18rpx 0;padding:22rpx;border:1rpx solid #c6dfd3;border-radius:22rpx;background:#f0f8f4;word-break:break-all}.pickup-contact-info .value{font-size:28rpx}.page-dark .pickup-contact-info{background:#26382f;border-color:#466353}
-
-.missing-parcel-link{color:#c46524}.page-dark .missing-parcel-link{color:#f4aa70}
+.parcel-collect-card{padding:28rpx 28rpx 24rpx;border-color:#ebe7dd;box-shadow:0 8rpx 28rpx rgba(40,36,28,.06)}
+.parcel-collect-card.is-done{opacity:.78}
+.parcel-code-plate{display:flex;align-items:center;justify-content:space-between;gap:16rpx;background:#eef6f1;border-radius:22rpx;padding:20rpx 24rpx}
+.parcel-code-copy{min-width:0}
+.parcel-code-label{font-size:22rpx;color:#4f7a63;line-height:1.3}
+.parcel-code{display:block;font-family:monospace;font-size:60rpx;font-weight:850;letter-spacing:4rpx;line-height:1.15;color:#1f2a24;word-break:break-all}
+.parcel-box-badge{flex:none;background:#fff;color:#4f7a63;border-radius:999rpx;padding:8rpx 18rpx;font-size:22rpx;font-weight:600}
+.is-done .parcel-code-plate{background:#f0efea}
+.is-done .parcel-code-label,.is-done .parcel-box-badge{color:#8a877e}
+.parcel-station-row{display:flex;align-items:center;gap:18rpx;margin:24rpx 0 4rpx}
+.parcel-station-icon{flex:none;width:64rpx;height:64rpx;border-radius:20rpx;background:#f6f3ec;display:flex;align-items:center;justify-content:center}
+.parcel-station-icon image{width:34rpx;height:34rpx}
+.parcel-station-copy{min-width:0}
+.parcel-station-label{font-size:22rpx;color:#8a877e;line-height:1.3}
+.parcel-station{font-size:36rpx;font-weight:750;color:#2a2925;line-height:1.3;overflow-wrap:break-word}
+.parcel-fragile{display:inline-block;margin:14rpx 0 0;padding:6rpx 16rpx;border-radius:999rpx;background:#fbefe6;color:#b45321;font-size:22rpx}
+.parcel-contact{display:flex;align-items:center;justify-content:space-between;gap:16rpx;margin:20rpx 0 0;padding-top:20rpx;border-top:1rpx solid #efebe2}
+.parcel-owner{font-size:28rpx;font-weight:650;color:#2a2925;line-height:1.35}
+.parcel-room{font-size:24rpx;color:#7d7a72;line-height:1.4}
+.parcel-contact .contact-actions{flex:none}
+.parcel-memo{margin:20rpx 0 0;padding:18rpx 20rpx;border-radius:18rpx;background:#f7f4ed}
+.parcel-memo-label{font-size:22rpx;color:#8a877e;margin-bottom:8rpx}
+.parcel-note-text{font-size:27rpx;color:#3a3832;line-height:1.6;white-space:pre-wrap;overflow-wrap:break-word}
+.parcel-picture-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12rpx;margin-top:14rpx}
+.parcel-note-text+.parcel-picture-grid{margin-top:16rpx}
+.parcel-memo-label+.parcel-picture-grid{margin-top:4rpx}
+.parcel-picture{width:100%;height:190rpx;border-radius:14rpx;background:#ece8de}
+.parcel-collect-card .pickup-actions{margin:24rpx 0 14rpx}
+.parcel-cancel-hint{display:flex;align-items:center;justify-content:center;gap:8rpx;font-size:22rpx;color:#8a877e;line-height:1.5;text-align:center}
+.parcel-cancel-hint image{flex:none;width:24rpx;height:24rpx;opacity:.7}
+.page-dark .parcel-collect-card{border-color:#3a3b37}
+.page-dark .parcel-code-plate{background:#2f3a33}
+.page-dark .parcel-code-label,.page-dark .parcel-box-badge{color:#8fcfae}
+.page-dark .parcel-code{color:#f3f0e8}
+.page-dark .parcel-box-badge{background:#242522}
+.page-dark .is-done .parcel-code-plate{background:#343831}
+.page-dark .parcel-station-icon,.page-dark .parcel-memo{background:#2e2f2b}
+.page-dark .parcel-station-icon image{opacity:.8}
+.page-dark .parcel-station,.page-dark .parcel-owner,.page-dark .parcel-note-text{color:#f3f0e8}
+.page-dark .parcel-station-label,.page-dark .parcel-room,.page-dark .parcel-memo-label,.page-dark .parcel-cancel-hint{color:#a8a59c}
+.page-dark .parcel-contact{border-top-color:#3a3b37}
+.page-dark .parcel-fragile{background:#3c2c23;color:#f4b582}
+.page-dark .parcel-picture{background:#343831}

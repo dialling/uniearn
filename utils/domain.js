@@ -151,13 +151,14 @@ const CUSTOMER_CANCEL_MS=3*60*1000;
 function customerCanCancel(r,now=Date.now()){
   if(!r)return false;
   if(r.status==='waiting'&&!r.runnerId)return true;
-  if(!['taken','collected'].includes(r.status))return false;
+  if(r.status!=='taken'||(r.collected&&r.collected.length))return false;
   const takenAt=Number(r.takenAt);
-  return Number.isFinite(takenAt)&&takenAt>0&&now>=takenAt&&now-takenAt<CUSTOMER_CANCEL_MS;
+  return Number.isFinite(takenAt)&&takenAt>0&&now-takenAt<=CUSTOMER_CANCEL_MS;
 }
-function customerCancel(s,id,now=Date.now()){
+function customerCancel(s,id,now=Date.now(),reason,note){
   const r=s.requests.find(x=>x.id===id);
   if(!r||!customerCanCancel(r,now))throw Error('Cancel window ended');
+  const picked=require('./customer-cancel-reasons').check(reason,note);
   if(r.runnerId){
     const t=s.trips.find(x=>x.id===r.runnerId);
     if(t){
@@ -169,7 +170,8 @@ function customerCancel(s,id,now=Date.now()){
   }
   r.status='cancelled';r.runnerId=null;r.collected=[];
   r.refundAmount=Math.max(0,Math.round((r.reward+(r.serviceFee===undefined?serviceFee(boxes(r)):r.serviceFee)-Number(r.discount||0))*100)/100);
-  r.cancelledAt=now;r.cancelReason='customer';
+  r.cancelledAt=now;r.cancel_reason=picked.stored;r.cancelReason=picked.stored;r.cancelledBy='student';
+  delete r.cancelNote;
   return r;
 }
 const EXPIRE_MS=3600000;

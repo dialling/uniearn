@@ -60,13 +60,6 @@ function createHandler({getOpenId,repo,env,now=Date.now}) {
         await repo.logout(id);
         return {ok:true,account:publicAccount({...account,loggedOut:true},id)};
       }
-      if(action==='saveDisplayName'){
-        if(account.loggedOut||!account.profile)return fail('LOGIN_REQUIRED',zh?'请先登录。':'Sign in first.');
-        const displayName=typeof event.displayName==='string'?event.displayName.trim():'';
-        if(!displayName||displayName.length>60||/[\u0000-\u001f\u007f]/.test(displayName))return fail('INVALID_DISPLAY_NAME',zh?'请输入 1–60 个字符的用户名。':'Enter a username of 1–60 characters.');
-        const patch={profile:{...account.profile,displayName},updatedAt:now()};
-        await repo.patch(id,patch);return {ok:true,account:publicAccount({...account,...patch},id)};
-      }
       if(action==='saveDorm'){
         if(account.loggedOut||!account.profile)return fail('LOGIN_REQUIRED','Sign in first.');
         const address={};for(const key of ['dorm','room','pickup']){if(typeof event[key]!=='string')return fail('INVALID_ADDRESS','Complete your building, room and pickup point.');address[key]=event[key].trim();if(!address[key]||address[key].length>100)return fail('INVALID_ADDRESS','Complete your building, room and pickup point.');}

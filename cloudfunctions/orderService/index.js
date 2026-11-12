@@ -60,12 +60,6 @@ exports.main = async (event = {}) => {
   const actor = engine.idFor(openid), action = event.action || 'sync';
   try {
     if (JSON.stringify(event).length > 18000) throw Error('Request is too large.');
-    // Upload authorization does not need the shared order transaction or full snapshot.
-    if (action === 'prepareUpload') {
-      const account = await getAccount(db, actor);
-      if (!account.profile || account.loggedOut) throw Error('Save your profile / log in in Me first.');
-      return {ok:true,value:{cloudPath:'order-photos/' + actor + '/' + crypto.randomBytes(16).toString('hex') + '.jpg'}};
-    }
     let deletionPlan = null;
     const result = await db.runTransaction(async tx => {
       const ref = tx.collection('uniearn_order_state').doc('team-test');
@@ -86,6 +80,9 @@ exports.main = async (event = {}) => {
       if (action === 'wallet') {
         if (!account.profile || account.loggedOut) throw Error('Log in before opening your wallet.');
         value = require('./wallet').overview(state,actor,now,event.lang==='en');
+      } else if (action === 'prepareUpload') {
+        if (!account.profile || account.loggedOut) throw Error('Save your profile / log in in Me first.');
+        value = {cloudPath:'order-photos/' + actor + '/' + crypto.randomBytes(16).toString('hex') + '.jpg'};
       } else if (action === 'closeMyOrders') {
         if (!account.profile || account.loggedOut) throw Error('Sign in before closing your orders.');
         value = { counts: deletion.closeOwn(state, actor, now) };
@@ -150,7 +147,7 @@ exports.main = async (event = {}) => {
     // Private storage remains private. Only photos in this authorized snapshot get URLs.
     const ids = new Set();
     for (const r of response.snapshot.requests) {
-      [r.photo,...(r.completionPhotos||[]),r.riderPhoto,...(r.riderPhotos||[]),r.noticePhoto,...(r.orderPictures||[]),r.dispute&&r.dispute.photo,...(r.messages||[]).map(m=>m.photo)].forEach(p=>{if(typeof p==='string'&&p.startsWith('cloud://'))ids.add(p);});
+      [r.photo,r.riderPhoto,...(r.riderPhotos||[]),r.noticePhoto,...(r.orderPictures||[]),r.dispute&&r.dispute.photo,...(r.messages||[]).map(m=>m.photo)].forEach(p=>{if(typeof p==='string'&&p.startsWith('cloud://'))ids.add(p);});
     }
     const urls = {};
     try {

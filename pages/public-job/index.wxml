@@ -1,5 +1,5 @@
 <import src="./detail.wxml"/>
 <view style="{{motionStyle}}">
 <lang-switch></lang-switch>
-<view class="flow-page {{darkClass}}"><view class="flow-title">{{zh?'订单公开详情':'Public order details'}}</view><view class="flow-sub">{{zh?'查看订单要求与公开进度':'Order requirements and public progress'}}</view><view wx:if="{{job}}" class="flow-card"><template is="public-order-detail" data="{{job:job,zh:zh}}"/></view><view wx:else class="flow-card empty">{{zh?'这个订单已无法查看。':'This order is no longer available.'}}</view><button class="btn" bindtap="jobs">{{zh?'查看待接单任务':'See open jobs'}}</button></view><yuni-assistant topic=""/>
+<view class="flow-page {{darkClass}}"><view class="flow-title">{{zh?'订单公开详情':'Public order details'}}</view><view class="flow-sub">{{zh?'查看公开的取件与送达信息':'Pickup, destination and other public details'}}</view><view wx:if="{{job}}" class="flow-card"><template is="public-order-detail" data="{{job:job,zh:zh}}"/></view><view wx:else class="flow-card empty">{{zh?'这个订单已无法查看。':'This order is no longer available.'}}</view><button class="btn" bindtap="jobs">{{zh?'查看待接单任务':'See open jobs'}}</button></view><yuni-assistant topic=""/>
 </view>

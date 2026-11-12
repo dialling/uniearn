@@ -14,7 +14,7 @@ const words = {
  confirmText: ['将全部可用测试余额 ¥{n} 模拟提现，不会发生真实转账。', 'Simulate withdrawing all ¥{n} of your available test balance. No real money moves.'],
  success: ['模拟提现完成', 'Simulation completed'], failed: ['模拟失败，余额已退回', 'Simulation failed; balance returned'],
  processing: ['模拟处理中', 'Simulation processing'], approved: ['模拟提现完成', 'Simulation completed'], rejected: ['模拟失败，已退回', 'Failed; balance returned'],
- disputed: ['争议处理中，暂停入账', 'On hold during review'], auto: ['最迟自动入账', 'Auto-confirm by'],
+ disputed: ['争议处理中，赏金已冻结，24 小时内处理', 'Held for review, resolved within 24 hours'], auto: ['最迟自动入账', 'Auto-confirm by'],
  payout: ['跑腿费入账', 'Job earnings'], opening_balance: ['历史测试收益迁入', 'Previous test earnings'], withdraw_refund: ['模拟提现失败退回', 'Failed simulation returned'],
  deduction: ['订单审核扣回', 'Reviewed deduction'], refresh: ['重新加载', 'Reload'], noBalance: ['暂无可提现的测试余额', 'No test balance to withdraw'],
  earnings: ['查看收益详情', 'View earnings details']
