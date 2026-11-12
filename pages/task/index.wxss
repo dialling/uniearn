@@ -111,3 +111,9 @@ button.task-icon{position:relative;display:flex;align-items:center;justify-conte
 .page-dark .task-ticket-section .task-ticket-type{background:#1f2d25;color:#8fd3b0}
 .page-dark .task-ticket-time{background:#242522;border-color:#3a3b37}
 .page-dark .task-ticket-time-value{color:#edf2e8}
+
+/* 取消原因弹层：选项变多后按钮可能被挤出可视区，操作区固定在底部 */
+.cancel-sheet{background:#fff;max-height:70vh;overflow-y:auto}
+.cancel-sheet .soft{padding:14rpx 0}
+.cancel-sheet .action-row,.cancel-sheet>button.btn{position:sticky;bottom:-30rpx;background:inherit;padding:16rpx 0 4rpx}
+.page-dark .cancel-sheet{background:#242522}

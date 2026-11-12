@@ -138,9 +138,13 @@ assert.equal(calls.length, 0, 'opening the sheet does not cancel');
 assert.deepEqual(page.data.cancelOptions.map(row => row.label), ['Wrong details in the order', 'Changed my mind', 'Collected it myself', 'Runner too slow to pick up', 'No one took the order', 'Test order', 'Other']);
 page.submitCancel();
 assert.equal(calls.length, 0, 'confirm stays blocked until a reason is chosen');
-(async () => {
+const mainRun = (async () => {
   await page.chooseCancelReason({currentTarget: {dataset: {value: '测试'}}});
-  assert.equal(calls.length, 1, 'a listed reason other than 其他 submits immediately');
+  assert.equal(calls.length, 0, 'choosing a reason only selects it');
+  assert.equal(page.data.cancelReason, '测试');
+  assert.equal(page.data.cancelReady, true, 'the Cancel order button is ready once a reason is chosen');
+  await page.submitCancel();
+  assert.equal(calls.length, 1, 'Cancel order sends the chosen reason');
   assert.deepEqual(calls[0].payload, {id: 'o1', reason: '测试'});
   assert.equal(page.data.cancelOpen, false);
 
@@ -173,5 +177,33 @@ assert.equal(calls.length, 0, 'confirm stays blocked until a reason is chosen');
   assert.deepEqual(page.data.cancelOptions.map(row => row.value), ['信息填错', '不需要了', '我自己取了', '跑手太慢', '没人接单', '测试', '其他']);
   assert.deepEqual(page.data.cancelOptions.map(row => row.label), ['信息填错', '不需要了', '我自己取了', '跑手太慢', '没人接单', '测试', '其他']);
   require('../utils/customer-cancel').stop(page);
-  console.log('Publisher cancel uses XP’s cancel vocabulary, submits a listed reason immediately, and keeps the 其他 note optional.');
+  console.log('Publisher cancel uses XP’s cancel vocabulary, sends the chosen reason from the Cancel order button, and keeps the 其他 note optional.');
 })().catch(error => { console.error(error); process.exitCode = 1; });
+
+// Sheet: Back before a reason is chosen, Cancel order after; older servers get 其他 with the reason as the note.
+{
+  const sheetXml = fs.readFileSync('utils/customer-cancel-sheet.wxml', 'utf8');
+  assert.match(sheetXml, /wx:if="\{\{cancelReason\}\}"[^>]*bindtap="submitCancel"[^>]*>\{\{zh\?'取消订单':'Cancel order'\}\}/);
+  assert.match(sheetXml, /wx:else class="btn outline" bindtap="backCancel"/);
+  const cancelHelper = require('../utils/customer-cancel');
+  assert.deepEqual(cancelHelper.legacyBody({reason: '我自己取了'}, Error('Choose a cancel reason')), {reason: '其他', note: '我自己取了'});
+  assert.equal(cancelHelper.legacyBody({reason: '我自己取了'}, Error('Network down')), null);
+}
+mainRun.then(async () => {
+  const cancelHelper = require('../utils/customer-cancel');
+  // Simulate the deployed old orderService, which only knows four reasons.
+  const old = new Set(['信息填错', '不需要了', '我自己取了', '其他']);
+  for (const pageName of ['request', 'task']) {
+    let spec; global.Page = s => { spec = s; };
+    delete require.cache[require.resolve('../pages/' + pageName + '/index')];
+    require('../pages/' + pageName + '/index');
+    const sent = [];
+    orders.act = async (action, body) => { sent.push(body); if (!old.has(body.reason)) throw Error('Choose a cancel reason'); };
+    const pg = {...spec, id: 'o1', data: {...structuredClone(spec.data), cancelReason: '测试', cancelNote: '', cancelReady: true, cancelOpen: true}, setData(p) { Object.assign(this.data, p); }, refresh() {}};
+    await pg.submitCancel();
+    assert.deepEqual(sent.map(b => b.reason), ['测试', '其他'], pageName + ' falls back to 其他 when an old server rejects the reason');
+    assert.equal(sent[1].note, '测试');
+    assert.equal(pg.data.cancelOpen, false, pageName + ' closes the sheet after the cancel goes through');
+  }
+  console.log('Cancel sheet: Back becomes Cancel order after a reason is chosen; older servers get 其他 with the reason kept as the note.');
+}).catch(e => { console.error(e); process.exitCode = 1; });

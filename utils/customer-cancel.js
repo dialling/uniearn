@@ -88,6 +88,7 @@ function choose(page, event) {
   const value = event && event.currentTarget && event.currentTarget.dataset.value;
   const item = reasons.REASONS.find(row => row.key === value);
   if (!item || (page.data && page.data.cancelling)) return;
+  // Choosing only selects the reason; the sheet's Back button becomes "Cancel order" to send it.
   if (item.note) {
     page.setData({
       cancelReason: value,
@@ -97,7 +98,6 @@ function choose(page, event) {
     return;
   }
   page.setData({cancelReason: value, cancelNote: '', cancelNoteOpen: false, cancelReady: true});
-  return {submit: true, reason: value};
 }
 
 function note(page, event) {
@@ -131,4 +131,11 @@ function syncOpen(page) {
   });
 }
 
-module.exports = {WINDOW_MS, clock, runnerLabel, view, arm, stop, sync, openSheet, choose, note, close, payload, syncOpen};
+function legacyBody(body, error) {
+  const text = String(error && error.message || error || '');
+  if (!/Choose a cancel reason|选择取消原因|取消原因/.test(text)) return null;
+  const note = String((body && (body.note || body.reason)) || '').slice(0, 200);
+  return note ? {reason: '其他', note} : null;
+}
+
+module.exports = {WINDOW_MS, clock, runnerLabel, view, arm, stop, sync, openSheet, choose, note, close, payload, syncOpen, legacyBody};
