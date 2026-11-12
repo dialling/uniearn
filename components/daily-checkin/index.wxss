@@ -1,6 +1,6 @@
 .checkin-mask{position:fixed;inset:0;z-index:1100;background:rgba(22,35,28,.52);display:flex;align-items:center;justify-content:center;padding:24rpx;animation:var(--ue-animation,checkin-fade .2s ease both)}
 .checkin-card{position:relative;width:660rpx;max-height:calc(100vh - 80rpx);overflow-y:auto;padding:28rpx 30rpx;border-radius:34rpx;background:#fffdfa;color:#23382f;box-sizing:border-box;box-shadow:0 24rpx 70rpx rgba(24,44,34,.24);animation:var(--ue-animation,checkin-in .3s ease both)}
-.checkin-close{position:absolute;right:8rpx;top:4rpx;width:88rpx;height:88rpx;line-height:88rpx;padding:0;margin:0;background:transparent;border:0;color:#617164;font-size:38rpx}.checkin-close::after,.checkin-feed::after,.checkin-cta::after{border:0}
+.checkin-card .checkin-close{position:absolute;left:auto;right:12rpx;top:12rpx;z-index:2;display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:88rpx;max-width:88rpx;height:88rpx;line-height:1;padding:0;margin:0!important;background:transparent;border:0;color:#617164;font-size:38rpx}.checkin-close::after,.checkin-feed::after,.checkin-cta::after{border:0}
 .checkin-eyebrow{width:max-content;margin:0 auto 24rpx;padding:7rpx 20rpx;border-radius:99rpx;background:#fbf3df;color:#816022;font-size:17rpx;letter-spacing:2rpx}
 .checkin-heading{display:flex;align-items:center;justify-content:space-between;gap:12rpx}.checkin-title{font-size:40rpx;font-weight:750}.checkin-streak{padding:10rpx 15rpx;border-radius:40rpx;background:#e7efe3;color:#42654c;font-size:21rpx;white-space:nowrap}.checkin-sub{margin:10rpx 0 20rpx;font-size:23rpx;line-height:1.5;color:#647165}
 .checkin-stage{position:relative;width:100%;height:410rpx;border-radius:25rpx;overflow:hidden;background:linear-gradient(145deg,#f1f7f3,#e5eee5)}.checkin-platform{position:absolute;left:60rpx;right:40rpx;bottom:22rpx;height:68rpx;border-radius:50%;background:#fffdf2;box-shadow:0 5rpx 0 #e4e8da}
@@ -15,4 +15,4 @@
 @keyframes reward-float{0%{opacity:0;transform:translateY(16rpx)}20%,70%{opacity:1}100%{opacity:0;transform:translateY(-25rpx)}}@keyframes checkin-fade{from{opacity:0}to{opacity:1}}@keyframes checkin-in{from{opacity:0;transform:translateY(16rpx)}to{opacity:1;transform:none}}
 .checkin-feed,.checkin-cta{min-height:44px}.checkin-close{min-width:44px;min-height:44px}.checkin-float.bonus{animation:var(--ue-animation,reward-bonus 1s ease both)}
 @keyframes reward-bonus{0%{opacity:0;transform:translateY(16rpx)}20%,70%{opacity:1}100%{opacity:0;transform:translateY(-25rpx)}}
-.checkin-cta.collected[disabled]{background:#222;color:#fff;opacity:1}
+.checkin-cta.collected[disabled]{background:#e6e8e2;color:#8b9487;opacity:1}

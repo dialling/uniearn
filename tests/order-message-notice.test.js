@@ -13,7 +13,7 @@ p.refresh();
 assert.equal(p.data.active[0].messageNotice.preview,'我到楼下了');
 assert.equal(p.data.active[0].messageNotice.unread,2);
 assert.equal(p.data.running[0].items[0].messageNotice.preview,'[图片]');
-assert.equal(p.data.running[0].items[0].messageNotice.peer,'顾客');
+assert.equal(p.data.running[0].items[0].messageNotice.peer,'顾客');assert.equal(p.data.running[0].hasUnread,true);assert.equal(p.data.running[0].unreadOrderId,'b');store.update(s=>s.requests.find(r=>r.id==='b').unread=0);p.refresh();assert.equal(p.data.running[0].hasUnread,false);store.update(s=>s.requests.find(r=>r.id==='b').unread=1);p.refresh();
 orders.act=(action,data)=>{calls.push({action,...data});return new Promise(resolve=>resolveSend=resolve);};
 (async()=>{
  const tap={currentTarget:{dataset:{id:'a'}}};

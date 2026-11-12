@@ -61,3 +61,7 @@
 
 .missing-parcel-link{color:#c46524}
 .nav-dark .missing-parcel-link,.dark .missing-parcel-link{color:#e8a06a}
+
+.trip-page .contact-button{position:relative;overflow:visible}.trip-chat-dot{position:absolute;right:-2rpx;top:-2rpx;width:17rpx;height:17rpx;border:3rpx solid #fff;border-radius:50%;background:#fa5151;box-sizing:content-box;pointer-events:none}.page-dark .trip-chat-dot{border-color:#242522}
+
+button.missing-parcel-link{display:block;width:100%;margin:0;padding:14rpx 0;min-height:72rpx;line-height:1.5;text-align:left;background:transparent;color:#c46524;font-size:28rpx;border-radius:0}button.missing-parcel-link::after{border:0}button.missing-parcel-link[disabled]{background:transparent;color:#999}

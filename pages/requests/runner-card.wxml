@@ -2,7 +2,7 @@
  <view class="flow-card runner-card {{item.hasDispute?'runner-has-issue':''}} {{item.hasDispute && item.items.length===1?'runner-issue-single':''}}" data-id="{{item.id}}" data-taskid="{{item.taskId}}" bindtap="trip" hover-class="runner-card-press" role="button" aria-label="{{zh?'查看任务':'Open job'}} {{item.route}}">
   <view class="runner-card-header">
    <view class="runner-badges">
-    <text class="badge {{item.category}}">{{item.type}}</text>
+    <view class="runner-kind"><text class="badge {{item.category}}">{{item.type}}</text><view wx:if="{{item.hasUnread}}" class="runner-unread-dot" data-id="{{item.unreadOrderId}}" catchtap="openChat" role="button" aria-label="{{zh?'查看未读消息':'Open unread messages'}}"/></view>
     <text wx:for="{{item.genders}}" wx:for-item="gender" wx:key="key" class="badge hall-gender dorm-{{gender.key}}">{{gender.label}}</text>
     <block wx:if="{{item.items.length===1}}"><text wx:if="{{item.items[0].raised}}" class="badge runner-raised">{{zh?'已加价':'Raised'}}</text><text wx:if="{{item.items[0].soup}}" class="badge runner-caution">{{zh?'含汤或饮品':'Soup / drinks'}}</text><text wx:if="{{item.items[0].fragile}}" class="badge runner-caution">{{zh?'易碎':'Fragile'}}</text></block>
    </view>
