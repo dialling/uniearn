@@ -97,3 +97,9 @@ button.task-icon{position:relative;display:flex;align-items:center;justify-conte
 .task-photo-card{gap:16rpx;padding:20rpx}.task-photo-card .task-photo-icon{width:64rpx;height:64rpx;border-radius:16rpx}.task-photo-card .task-photo-icon image{width:34rpx;height:34rpx}.task-photo-card .task-photo-copy{flex:1 1 0;width:0;min-width:0}.task-photo-card .task-photo-title{font-size:25rpx;line-height:1.4}.task-photo-card .task-photo-sub{font-size:21rpx;line-height:1.4}.task-photo-card .task-photo-hint{font-size:18rpx;line-height:1.4}.task-photo-card button.task-photo-add{box-sizing:border-box;flex:0 0 92rpx;width:92rpx;min-width:0;max-width:92rpx;height:92rpx;min-height:92rpx;margin:0;padding:8rpx;border-radius:16rpx;font-size:18rpx;line-height:1.3}.task-photo-card .task-photo-plus{font-size:30rpx;line-height:1.1}
 
 .task-ticket-type{font-size:22rpx;color:#64735f;margin-bottom:10rpx}.task-ticket-title{font-size:29rpx;line-height:1.6;font-weight:700;color:#233d30;white-space:pre-wrap;word-break:break-word}.task-waiting-ticket .journey-times{flex-wrap:wrap;gap:12rpx}.page-dark .task-ticket-title{color:#edf2e8}
+
+/* 取消原因弹层：选项变多后按钮可能被挤出可视区，操作区固定在底部 */
+.cancel-sheet{background:#fff;max-height:70vh;overflow-y:auto}
+.cancel-sheet .soft{padding:14rpx 0}
+.cancel-sheet .action-row,.cancel-sheet>button.btn{position:sticky;bottom:-30rpx;background:inherit;padding:16rpx 0 4rpx}
+.page-dark .cancel-sheet{background:#242522}

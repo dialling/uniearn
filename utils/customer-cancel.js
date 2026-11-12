@@ -131,4 +131,11 @@ function syncOpen(page) {
   });
 }
 
-module.exports = {WINDOW_MS, clock, runnerLabel, view, arm, stop, sync, openSheet, choose, note, close, payload, syncOpen};
+function legacyBody(body, error) {
+  const text = String(error && error.message || error || '');
+  if (!/Choose a cancel reason|选择取消原因|取消原因/.test(text)) return null;
+  const note = String((body && (body.note || body.reason)) || '').slice(0, 200);
+  return note ? {reason: '其他', note} : null;
+}
+
+module.exports = {WINDOW_MS, clock, runnerLabel, view, arm, stop, sync, openSheet, choose, note, close, payload, syncOpen, legacyBody};

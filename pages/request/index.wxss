@@ -123,3 +123,9 @@ page{background:#f2f1ec}.journey-page{background:#f2f1ec;padding:30rpx 28rpx 75r
 
 /* Expanded waiting-offer controls reuse the shared offer layout. */
 .journey-ticket-actions{display:flex;margin-top:20rpx}.journey-ticket-actions>button.journey-cancel{flex:1;min-width:0;width:100%;margin:0;padding:15rpx 12rpx;font-size:25rpx;line-height:1.5;border-radius:15rpx}.journey-offer-panel.offer-card{padding:22rpx 0 0;margin-top:16rpx;border-top:1rpx dashed #d8cfbd}.journey-offer-panel .offer-hint{font-size:21rpx;line-height:1.6;color:#787b6e}.journey-offer-panel button.offer-option[disabled]{opacity:.5}.journey-offer-panel button.offer-option::after{border:0}.page-dark .journey-offer-panel{border-color:#56634e}.page-dark .journey-offer-panel .offer-hint{color:#a9b3a3}
+
+/* 取消原因弹层：选项变多后按钮可能被挤出可视区，操作区固定在底部 */
+.cancel-sheet{background:#fff;max-height:70vh;overflow-y:auto}
+.cancel-sheet .soft{padding:14rpx 0}
+.cancel-sheet .action-row,.cancel-sheet>button.btn{position:sticky;bottom:-30rpx;background:inherit;padding:16rpx 0 4rpx}
+.page-dark .cancel-sheet{background:#242522}
