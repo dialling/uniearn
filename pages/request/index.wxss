@@ -100,3 +100,5 @@
 .page-dark .offer-pill{background:#3a2416;border-color:#5a3a24;color:#f4a06e}
 .page-dark .offer-cancel{background:#3a2416;border-color:#5a3a24;color:#f4a06e}
 .page-dark .offer-foot{border-color:#3a3b37}
+
+.cancel-sheet{max-height:70vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)}
