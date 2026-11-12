@@ -42,9 +42,10 @@ const DOC={
    {h:'六、隐私保护',ps:['我们按照《隐私政策》处理你的个人信息。除为完成订单、履行法定义务或取得你同意外，不会向第三方提供你的个人信息。']},
    {h:'七、交易与结算（测试账本）',ps:['当前版本为团队测试版，订单只记录在测试账本中：不接入真实微信支付，不产生真实扣款、转账或提现。','订单确认或自动确认后，账本记录对应金额；如对金额有疑问，可在订单内反馈，由团队核实。','平台不向发布人加价、不向跑手抽成。']},
    {h:'八、费用与取消',ps:['跑腿费按小程序内公示的定价计算（见「用户须知」）。','外卖代取、夜市代买无人接单时，已送达订单在下单 30 分钟后自动取消；未送达订单在填写的预计送达时间后 30 分钟自动取消；快递与其他任务不设自动取消。','跑手取货前可取消接单；取货后订单不可取消。发布人取消前请先与跑手沟通。']},
-   {h:'九、责任限制',ps:['本服务按“现状”提供。因不可抗力、第三方行为或你自身原因造成的损失，我们不承担责任，法律另有规定的除外。','你应自行判断并承担使用本服务可能带来的风险。']},
+   {h:'九、责任限制',ps:['本服务按“现状”提供。因不可抗力、第三方行为或你自身原因造成的损失，我们不承担责任，法律另有规定的除外。','因我们的故意或重大过失、造成人身损害的，或依法不得免除的责任，我们不以此条限制或免除。','你应自行判断并承担使用本服务可能带来的风险。']},
    {h:'十、争议解决',ps:['因本条款产生的争议，双方应先友好协商；协商不成的，可向运营方所在地有管辖权的人民法院提起诉讼。','本条款适用中华人民共和国法律。']},
-   {h:'十一、其他',ps:['本条款自你首次使用本小程序之日起生效。','本条款部分无效不影响其余条款的效力。']}
+   {h:'十一、投诉与举报',ps:['对订单、跑手行为或平台处理有异议，可在「我的 → 帮助与支持」提交，并附上订单号与说明。','我们在 7 个工作日内答复；涉及资金或安全的事项优先处理。']},
+   {h:'十二、其他',ps:['本条款自你首次使用本小程序之日起生效。','本条款部分无效不影响其余条款的效力。']}
   ]},
   en:{title:'UniEarn · Terms of service',intro:'These terms govern your use of this mini program. By continuing to use it you accept them.',sections:[
    {h:'1. General',ps:['These terms are a legal agreement between you and the UniEarn operator. Accessing or using the mini program means you accept them.','We may update, modify or discontinue parts of the service; changes take effect once published in the mini program.']},
@@ -55,9 +56,10 @@ const DOC={
    {h:'6. Privacy',ps:['We handle personal data under the Privacy policy. We do not give it to third parties except to complete an order, to meet legal duties, or with your consent.']},
    {h:'7. Transactions and settlement (test ledger)',ps:['This is a team test build. Orders are recorded in a test ledger only: no real WeChat Pay, no real charge, transfer or withdrawal.','Once an order is confirmed or auto-confirmed, the ledger records the amount. Questions about an amount can be raised in the order for the team to review.','The platform adds no markup for publishers and takes no commission from runners.']},
    {h:'8. Fees and cancellations',ps:['Errand fees follow the pricing published in the mini program (see “Before you order”).','Unaccepted takeaway and night-market orders marked arrived are cancelled 30 minutes after posting; those marked not yet arrived are cancelled 30 minutes after the entered ETA. Parcels and other tasks are not auto-cancelled.','A runner may cancel before pickup; after pickup the order cannot be cancelled. Publishers should talk to the runner before cancelling.']},
-   {h:'9. Limits of liability',ps:['The service is provided “as is”. We are not liable for losses caused by force majeure, third parties or your own actions, except where the law says otherwise.','You judge and bear the risks of using the service.']},
+   {h:'9. Limits of liability',ps:['The service is provided “as is”. We are not liable for losses caused by force majeure, third parties or your own actions, except where the law says otherwise.','Nothing here limits liability for our wilful misconduct or gross negligence, for personal injury, or where the law forbids limiting it.','You judge and bear the risks of using the service.']},
    {h:'10. Disputes',ps:['Disputes under these terms should first be discussed in good faith; failing that, either side may sue in the competent court where the operator is based.','These terms are governed by the laws of the People’s Republic of China.']},
-   {h:'11. Miscellaneous',ps:['These terms take effect when you first use the mini program.','If one clause is invalid, the rest stay in force.']}
+   {h:'11. Complaints',ps:['If an order, a runner or our handling is wrong, tell us in Me → Help and support with the order number and what happened.','We answer within 7 working days, and sooner for anything involving money or safety.']},
+   {h:'12. Miscellaneous',ps:['These terms take effect when you first use the mini program.','If one clause is invalid, the rest stay in force.']}
   ]}
  },
  privacy:{
@@ -70,7 +72,12 @@ const DOC={
    {h:'六、你的权利',ps:['你可以查看、更正个人资料与常用路线。','你可以要求删除账号及相关数据：在「我的 → 帮助与支持」提交，团队核实后处理。','你可以随时撤回授权；撤回不影响此前已完成的处理。']},
    {h:'七、未成年人',ps:['本服务面向高校在校学生。若你未满 18 周岁，请在监护人指导下使用。']},
    {h:'八、政策更新',ps:['本政策可能随功能调整而更新，更新后在「用户须知 / 隐私政策」内公布并生效。']},
-   {h:'九、联系我们',ps:['对本政策有疑问，可在「我的 → 帮助与支持」联系我们。']}
+   {h:'九、联系我们',ps:['对本政策有疑问，可在「我的 → 帮助与支持」联系我们。']},
+   {h:'十、处理者与投诉',ps:['本小程序的个人信息处理者为 UniEarn 在校学生运营团队，通过微信云开发环境存放数据。','投诉与举报：在小程序内「我的 → 帮助与支持」提交，或通过小程序资料页公示的联系方式反馈；我们会在 7 个工作日内答复。']},
+   {h:'十一、法律依据与保存期限',ps:['我们依据履行服务合同所必需、你的同意及法定义务处理信息。','订单与结算记录保存 12 个月；学生认证材料在认证失效或账号注销后 30 天内删除；运行日志保存 30 天。','保存期限届满或你注销账号后，我们删除或匿名化处理，法律要求保留的除外。']},
+   {h:'十二、敏感信息与单独同意',ps:['房间号、手机号、学生证照片属于敏感个人信息。提交认证材料前，我们会单独说明用途并取得你的同意；你可以拒绝，但将无法通过跑手认证。','订单进行期间，房间号、手机号与取件码只向该订单的发布人和接单跑手展示；订单结束后不再展示。']},
+   {h:'十三、第三方服务',ps:['我们使用微信登录、微信云开发（存储与云函数）完成服务；当前版本未接入微信支付。','除上述必要服务与法定情形外，我们不会向其他第三方提供你的个人信息，也不会出售个人信息。']},
+   {h:'十四、注销与删除',ps:['你可以在「我的 → 帮助与支持」申请注销账号；核实身份后我们在 30 天内删除或匿名化相关数据，并停止处理。','注销后，进行中的订单需先完成或取消。']}
   ]},
   en:{title:'UniEarn · Privacy policy',intro:'This policy explains what we collect, how we use it, who can see it, and what you can ask us to do.',sections:[
    {h:'1. Introduction',ps:['UniEarn is a student-to-student errand mini program for XJTLU. We collect only what an errand needs, and as little as possible.']},
@@ -81,7 +88,12 @@ const DOC={
    {h:'6. Your rights',ps:['You can view and correct your profile and saved routes.','You can ask us to delete your account and data via Me → Help and support; the team handles it after verification.','You can withdraw consent at any time; withdrawal does not affect processing already completed.']},
    {h:'7. Minors',ps:['The service is for university students. If you are under 18, please use it with a guardian’s guidance.']},
    {h:'8. Changes',ps:['This policy may change as features change. Updates are published in Before you order / Privacy policy and take effect there.']},
-   {h:'9. Contact',ps:['Questions about this policy: reach us at Me → Help and support.']}
+   {h:'9. Contact',ps:['Questions about this policy: reach us at Me → Help and support.']},
+   {h:'10. Who processes your data, and complaints',ps:['The processor is the UniEarn student operations team; data lives in the WeChat cloud environment.','Complaints: file them in Me → Help and support, or through the contact shown on the mini program profile page. We answer within 7 working days.']},
+   {h:'11. Legal basis and retention',ps:['We process data because a contract needs it, because you agreed, or to meet legal duties.','Orders and settlement records: 12 months. Student verification material: deleted within 30 days after verification ends or the account closes. Logs: 30 days.','When a period ends, or after you close the account, we delete or anonymise the data unless the law requires us to keep it.']},
+   {h:'12. Sensitive data and separate consent',ps:['Room numbers, phone numbers and student card photos are sensitive personal data. Before you submit verification material we explain the purpose and ask for your separate consent; you may refuse, but then you cannot be verified as a runner.','While an order is active, the room number, phone number and pickup codes are shown only to that order’s publisher and runner, and stop being shown once it ends.']},
+   {h:'13. Third-party services',ps:['We use WeChat login and WeChat Cloud Development (storage and cloud functions). This build does not use WeChat Pay.','Apart from those services and legal requirements, we do not give your data to other third parties and never sell it.']},
+   {h:'14. Closing your account',ps:['Ask in Me → Help and support. After we verify you, we delete or anonymise the data within 30 days and stop processing it.','Active orders must be finished or cancelled first.']}
   ]}
  },
  disclaimer:{
@@ -89,7 +101,7 @@ const DOC={
    {h:'一、服务提供',ps:['本小程序基于现有技术和条件提供服务，我们尽力保证稳定，但不对连续性、及时性、安全性或准确性作任何保证。']},
    {h:'二、信息准确性',ps:['你应确保填写的姓名、手机号、地址、取件码等信息真实准确。因填写错误造成的损失由你自行承担。']},
    {h:'三、使用规范',ps:['你应遵守法律法规、社会公德和小程序规则，不得从事违法或侵害他人权益的行为。']},
-   {h:'四、第三方行为',ps:['对于其他用户或第三方服务造成的损失，我们不承担责任；请自行判断交易风险。']},
+   {h:'四、第三方行为',ps:['对于其他用户或第三方服务造成的损失，我们不承担责任；请自行判断交易风险。','因我们的故意或重大过失造成的损害，或依法不得免除的责任，不受本条限制。']},
    {h:'五、不可抗力',ps:['因自然灾害、网络故障、政府行为等不可抗力造成的服务中断或数据丢失，我们不承担责任。']},
    {h:'六、测试版本',ps:['当前为团队测试版：不接入真实支付，不产生真实扣款或提现；测试账本中的金额仅用于演示与对账。']},
    {h:'七、账户处理',ps:['对恶意下单、冒领、骚扰等行为，我们有权视情节拒单、警告、暂停或终止账号。']},
@@ -101,7 +113,7 @@ const DOC={
    {h:'1. Service',ps:['The mini program runs on current technology and conditions. We work to keep it stable but make no guarantee of continuity, timeliness, security or accuracy.']},
    {h:'2. Accuracy of information',ps:['You are responsible for the name, phone number, address and pickup codes you enter. Losses from wrong details are yours.']},
    {h:'3. Conduct',ps:['Follow the law, common decency and the mini program’s rules. Do not do anything unlawful or harmful to others.']},
-   {h:'4. Third parties',ps:['We are not liable for losses caused by other users or third-party services. Judge the risks yourself.']},
+   {h:'4. Third parties',ps:['We are not liable for losses caused by other users or third-party services. Judge the risks yourself.','Loss caused by our wilful misconduct or gross negligence, or liability the law does not allow us to exclude, is not covered by this clause.']},
    {h:'5. Force majeure',ps:['We are not liable for outages or data loss caused by natural disasters, network failures or government action.']},
    {h:'6. Test build',ps:['This is a team test build: no real payment, no real charge and no withdrawal. Amounts in the test ledger are for demonstration and reconciliation only.']},
    {h:'7. Account action',ps:['For bad-faith orders, taking another student’s delivery or harassment, we may refuse, warn, suspend or close the account depending on severity.']},
@@ -123,7 +135,7 @@ Page({
   localize(){
     const zh=store.get().language!=='en';
     const tab=this.data.tab;
-    this.setData({zh,tabs:TABS.map(t=>({id:t.id,label:zh?t.zh:t.en})),doc:DOC[TABS[tab].id][zh?'zh':'en'],updated:zh?'更新日期：2026 年 10 月':'Updated October 2026'});
+    this.setData({zh,tabs:TABS.map(t=>({id:t.id,label:zh?t.zh:t.en})),doc:DOC[TABS[tab].id][zh?'zh':'en'],updated:zh?'更新日期：2026 年 11 月':'Updated November 2026'});
   },
   choose(e){
     const i=Number(e.currentTarget.dataset.i)||0;

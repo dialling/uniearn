@@ -1,12 +1,14 @@
-// Publisher cancel reasons from XP跑了么 miniprogram/pages/detail/detail.js doCancel():
-// const REASONS = ['测试', '信息填错', '没人接单', '其他'];
-// The same four apply before and after acceptance. A non-其他 choice is stored
-// as that Chinese string. 其他 is stored alone, or as 其他： plus a trimmed note.
+// Publisher cancel reasons, aligned with XP跑了么's canonical cancel vocabulary
+// (admin CANCEL_EN: 信息填错 / 我自己取了 / 不需要了 / 跑手太慢 / 没人接单 / 测试 / 其他).
+// Stored as the Chinese key; 其他 keeps an optional note as 其他：<note>.
 const NOTE_MAX = 200;
 const REASONS = [
-  {key: '测试', en: 'Test'},
-  {key: '信息填错', en: 'Wrong details'},
+  {key: '信息填错', en: 'Wrong details in the order'},
+  {key: '不需要了', en: 'Changed my mind'},
+  {key: '我自己取了', en: 'Collected it myself'},
+  {key: '跑手太慢', en: 'Runner too slow to pick up'},
   {key: '没人接单', en: 'No one took the order'},
+  {key: '测试', en: 'Test order'},
   {key: '其他', en: 'Other', note: true}
 ];
 

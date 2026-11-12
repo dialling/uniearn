@@ -128,6 +128,10 @@ function hydrateAdmin(data) {
   for (const m of data.marks) if (ensureUser(m.accountId)) MARKS.push({id:m.id || String(m.index),runner:m.accountId,rule:String(m.reason || ''),givenAt:m.at,expiresAt:m.at+14*DAY,by:m.by || 'System'});
   activeRunners.push(...USERS.filter(u => u.certified)); realUsers.push(...USERS.filter(u => !u.isTest));
   replaceMap(OMAP,ORDERS); replaceMap(AMAP,ADDRS);
+  // Sample coupons carry claims that point at sample orders; once OMAP is the live
+  // map those lookups throw and the membership/coupon pages freeze. Coupon inventory
+  // is not part of the admin snapshot yet, so keep the live pages empty but usable.
+  COUPONS.length=0;
   ST.newsLog=[]; ST.exportLog=[]; ST.accessLog=[]; ST.changeLog=(data.audit || []).map(a=>({at:a.at,by:a.username,what:a.action+' · '+a.target}));
   ST.opsBalance=0; ST.role=adminConnection.user.role; ST.me=adminConnection.user.username;
   ST.qr={uploadedAt:null,img:null}; ST.serviceFeeOn=false;
