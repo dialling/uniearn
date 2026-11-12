@@ -5,5 +5,5 @@ module.exports = account => {
   const phone = value => String(value || '').replace(/\s/g, '');
   const reviewed = v.status === 'verified' ? phone(v.phone) : '';
   const candidates = [reviewed, phone(p.phone), phone(account && account.wechatPhone), phone(p.wechatPhone)];
-  return {name: String(p.name || '').trim() || 'Runner', phone: candidates.find(value => /^1\d{10}$/.test(value)) || ''};
+  return {name: String(p.displayName || p.name || '').trim() || 'Runner', phone: candidates.find(value => /^1\d{10}$/.test(value)) || ''};
 };

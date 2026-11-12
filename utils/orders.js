@@ -125,7 +125,12 @@ async function performAct(action, payload = {}) {
   const started=Date.now();
   try {
     return await (async()=>{
-      const s=store.get(), signature=JSON.stringify({action,...payload});
+      const s=store.get();
+      const displayName=String(s.profile.displayName||'').trim();
+      if(action==='create'&&payload.data&&displayName) {
+        payload={...payload,data:{...payload.data,owner:displayName}};
+      }
+      const signature=JSON.stringify({action,...payload});
       let pending=s.pendingOrderOperation;
       // The server keeps retry receipts for 24 hours. Replaying an older operation could run it twice,
       // so drop it, refresh, and let the student check before trying again.

@@ -1,0 +1,18 @@
+<view class="name-page {{dark?'dark':''}}">
+  <view class="name-preview">
+    <view class="name-avatar">{{initial}}</view>
+    <view class="name-preview-text">
+      <text class="preview-label">{{zh?'订单中显示':'Shown on orders'}}</text>
+      <text class="preview-name">{{draft|| (zh?'你的昵称':'Your display name')}}</text>
+    </view>
+  </view>
+  <view class="name-form">
+    <label for="display-name" class="name-label">{{zh?'昵称':'Display name'}}</label>
+    <view class="input-row">
+      <input id="display-name" value="{{draft}}" bindinput="input" maxlength="60" disabled="{{saving}}" placeholder="{{zh?'输入昵称':'Enter a display name'}}" confirm-type="done" bindconfirm="save" />
+      <text class="name-count">{{draft.length}}/60</text>
+    </view>
+    <view wx:if="{{error}}" class="name-error">{{error}}</view>
+    <button class="name-save" bindtap="save" loading="{{saving}}" disabled="{{!canSave||saving}}">{{zh?'保存昵称':'Save name'}}</button>
+  </view>
+</view>

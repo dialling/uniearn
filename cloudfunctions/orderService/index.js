@@ -119,6 +119,20 @@ exports.main = async (event = {}) => {
         // Retry receipts expire after 24 hours. Clients must not replay older operations.
         for (const k of Object.keys(state.receipts)) if (state.receipts[k].at < now - 86400000) delete state.receipts[k];
       }
+      const displayName = String(account.profile?.displayName || '').trim();
+      if (displayName && !account.loggedOut && (action === 'sync' || action === 'create')) {
+        const activeStatuses = new Set(['waiting','taken','collected','delivered','disputed']);
+        const runnerTrips = new Map(state.trips.filter(t => t.runnerAccountId === actor).map(t => [t.id,t]));
+        for (const order of state.requests) {
+          if (!activeStatuses.has(order.status)) continue;
+          if (order.ownerId === actor) order.owner = displayName;
+          const trip = runnerTrips.get(order.runnerId);
+          if (trip) {
+            trip.runnerName = displayName;
+            order.runnerName = displayName;
+          }
+        }
+      }
       require('./analytics').annotate(state,analyticsBefore,actor,event,now);
       if (JSON.stringify(state) !== before) {
         state.revision = (state.revision || 0) + 1;
