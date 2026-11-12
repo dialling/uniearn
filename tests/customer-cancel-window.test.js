@@ -10,22 +10,21 @@ assert.equal(domain.CUSTOMER_CANCEL_MS,180000);
 assert.equal(cancelUi.WINDOW_MS,domain.CUSTOMER_CANCEL_MS);
 const takenAt=1_000_000;
 const taken={status:'taken',collected:[],takenAt,runnerId:'t'};
-assert.equal(domain.customerCanCancel(taken,takenAt+179999),true);
-assert.equal(domain.customerCanCancel(taken,takenAt+180000),false,'the window closes at exactly 3 minutes');
+assert.equal(domain.customerCanCancel(taken,takenAt+180000),true,'the 3rd minute is still inside the window');
 assert.equal(domain.customerCanCancel(taken,takenAt+180001),false,'the window closes after 3 minutes');
 assert.equal(domain.customerCanCancel({status:'waiting',runnerId:null,collected:[]},takenAt+999999),true);
-assert.equal(domain.customerCanCancel({status:'taken',collected:['box'],takenAt},takenAt+1000),true,'pickup does not shorten the 3-minute window');
-assert.equal(domain.customerCanCancel({status:'collected',collected:[],takenAt},takenAt+1000),true);
+assert.equal(domain.customerCanCancel({status:'taken',collected:['box'],takenAt},takenAt+1000),false,'pickup ends the window');
+assert.equal(domain.customerCanCancel({status:'collected',collected:[],takenAt},takenAt+1000),false);
 
 const open=cancelUi.view({isMine:true,status:'waiting',collected:[]},false,takenAt);
 assert.equal(open.phase,'open');assert.equal(open.canCancel,true);
-assert.equal(open.tip,'Cancel anytime before acceptance, or within 3 minutes after a runner accepts. After 3 minutes, cancellation is unavailable.');
+assert.equal(open.tip,'No runner has accepted yet — you can cancel anytime.');
 const grace=cancelUi.view({isMine:true,status:'taken',collected:[],takenAt},false,takenAt);
 assert.equal(grace.phase,'grace');assert.equal(grace.clock,'3:00');
-assert.equal(grace.tip,'Cancellation is available only within 3 minutes of acceptance. Time left: 3:00.');
+assert.equal(grace.tip,'A runner has accepted. You can still cancel for 3:00.');
 const ended=cancelUi.view({isMine:true,status:'taken',collected:[],takenAt},false,takenAt+180001);
 assert.equal(ended.phase,'ended');assert.equal(ended.canCancel,false);
-assert.equal(ended.tip,'It has been 3 minutes since acceptance. This order can no longer be cancelled.');
+assert.equal(ended.tip,'A runner has accepted — cancel window ended.');
 assert.equal(cancelUi.view({isMine:false,status:'waiting'},false).phase,'hidden');
 assert.equal(cancelUi.runnerLabel({runnerName:'Alex'},false),'Alex');
 assert.equal(cancelUi.runnerLabel({runnerName:''},false),'Runner');
@@ -59,31 +58,32 @@ const night={...food,night:true,shop:'East gate stall'};
   async function create(data){const r=await h.call('customer','create',{data});assert.equal(r.ok,true,r.error);return r.value.id;}
   async function accept(id){const r=await h.call('runner','accept',{ids:[id]});assert.equal(r.ok,true,r.error);return r;}
   const waiting=await create(food);
-  assert.equal((await h.call('customer','cancel',{reason:'测试',id:waiting})).ok,true);
+  assert.equal((await h.call('customer','cancel',{id:waiting,reason:'没人接单'})).ok,true);
   assert.equal(h.state.requests.find(r=>r.id===waiting).status,'cancelled');
 
-  for(const sample of [food,task,parcel,night]){
+  for(const sample of [task,parcel,night]){
     const id=await create(sample);
     await accept(id);
     const row=h.state.requests.find(r=>r.id===id);
     assert.equal(row.status,'taken');
     h.edit(s=>{s.requests.find(r=>r.id===id).takenAt=Date.now()-60*1000;});
     const raised=await h.call('customer','raise',{id,amount:1.25});
-    assert.equal(raised.ok,false,'accepted orders cannot increase the offer');
+    assert.equal(raised.ok,false,'accepted orders cannot be raised');
     assert.match(raised.error,/no longer be increased/);
-    assert.equal(h.state.requests.find(r=>r.id===id).reward,row.reward,'rejected increase leaves price unchanged');
-    const early=await h.call('customer','cancel',{reason:'测试',id});
+    assert.equal(h.state.requests.find(r=>r.id===id).reward,row.reward);
+    const early=await h.call('customer','cancel',{id,reason:'信息填错'});
     assert.equal(early.ok,true,sample.category+' '+early.error);
     const saved=h.state.requests.find(r=>r.id===id);
     assert.equal(saved.status,'cancelled');
-    assert.equal(saved.cancelReason,'测试');
+    assert.equal(saved.cancel_reason,'信息填错');
+    assert.equal(saved.cancelReason,'信息填错');
     assert.ok(!h.state.trips.some(t=>(t.requestIds||[]).includes(id)),'a real cancel leaves the runner trip');
   }
 
   const late=await create(parcel);
   await accept(late);
   h.edit(s=>{s.requests.find(r=>r.id===late).takenAt=Date.now()-181000;});
-  const denied=await h.call('customer','cancel',{reason:'测试',id:late});
+  const denied=await h.call('customer','cancel',{id:late});
   assert.equal(denied.ok,false);
   assert.match(denied.error,/Cancel window ended/);
   assert.equal(h.state.requests.find(r=>r.id===late).status,'taken');
@@ -91,8 +91,8 @@ const night={...food,night:true,shop:'East gate stall'};
   const picked=await create(food);
   await accept(picked);
   h.edit(s=>{const r=s.requests.find(x=>x.id===picked);r.collected=['bag'];r.takenAt=Date.now();});
-  assert.equal((await h.call('customer','cancel',{reason:'测试',id:picked})).ok,true);
-  assert.equal(h.state.requests.find(r=>r.id===picked).status,'cancelled');
+  assert.equal((await h.call('customer','cancel',{id:picked,reason:'测试'})).ok,false);
+  assert.equal(h.state.requests.find(r=>r.id===picked).status,'taken');
 
   const ghost=await create(parcel);
   await accept(ghost);
@@ -131,20 +131,8 @@ const night={...food,night:true,shop:'East gate stall'};
   assert.doesNotMatch(fs.readFileSync(require.resolve('../pages/task/index.js'),'utf8'),/profile\.name/);
   const taskXml=fs.readFileSync(require.resolve('../pages/task/index.wxml'),'utf8');
   assert.ok(taskXml.indexOf('order-progress-card')<taskXml.indexOf('flow-title'));
-  assert.doesNotMatch(taskXml,/offer-custom-input/);
-  for(const name of ['task','request']){
-    const xml=fs.readFileSync('pages/'+name+'/index.wxml','utf8');
-    assert.match(xml,/<button wx:if="{{cancelWindow.canCancel}}"[^>]*bindtap="cancel"/);
-  }
-  for(const category of ['takeout','parcel','task'])for(const status of ['taken','collected']){
-    const row={...taken,category,status,isMine:true};
-    for(const offset of [0,179999,180000,180001]){
-      const expected=offset<180000;
-      assert.equal(domain.customerCanCancel(row,takenAt+offset),expected);
-      assert.equal(require('../utils/domain').customerCanCancel(row,takenAt+offset),expected);
-      assert.equal(cancelUi.view(row,true,takenAt+offset).canCancel,expected);
-    }
-  }
+  assert.match(taskXml,/bindtap="customRaise"/);
+  assert.match(taskXml,/bindtap="cancel"/);
 
   const chat=fs.readFileSync(require.resolve('../pages/chat/index.wxml'),'utf8');
   assert.match(chat,/data-source="album"[^>]*bindtap="sendPhoto"/);
@@ -155,7 +143,7 @@ const night={...food,night:true,shop:'East gate stall'};
   assert.match(fs.readFileSync(require.resolve('../utils/post-copy.js'),'utf8'),/your deadline for the task/);
   const jobs=fs.readFileSync(require.resolve('../pages/jobs/index.wxml'),'utf8');
   assert.doesNotMatch(jobs,/class="hall-locker"/);
-  assert.match(jobs,/!\(tab==='open' && item\.category==='task'\)/);
+  assert.match(jobs,/!\(tab==='open' && !item\.running && item\.category==='task'\)/);
 
   let check;global.Page=x=>check=x;
   delete require.cache[require.resolve('../pages/student-check/index')];

@@ -1,4 +1,3 @@
-<import src="./message-notice.wxml"/>
 <template name="runner-card">
  <view class="flow-card runner-card {{item.hasDispute?'runner-has-issue':''}} {{item.hasDispute && item.items.length===1?'runner-issue-single':''}}" data-id="{{item.id}}" data-taskid="{{item.taskId}}" bindtap="trip" hover-class="runner-card-press" role="button" aria-label="{{zh?'查看任务':'Open job'}} {{item.route}}">
   <view class="runner-card-header">
@@ -24,7 +23,6 @@
    <view wx:if="{{order.pickup}}" class="runner-info"><text class="runner-info-label">{{order.pickupLabel}}</text><text class="runner-info-value">{{order.pickup}}</text></view>
    <view wx:if="{{order.note}}" class="runner-info runner-note"><text class="runner-info-label">{{zh?'备注':'Note'}}</text><text class="runner-info-value">{{order.note}}</text></view>
    <view wx:if="{{order.dropNote}}" class="runner-info runner-note"><text class="runner-info-label">{{zh?'送达方式':'Drop-off'}}</text><text class="runner-info-value">{{order.dropNote}}</text></view>
-   <template is="message-notice" data="{{notice:order.messageNotice,zh,replyingId}}"/>
   </view>
   <view wx:if="{{!item.items.length}}" class="runner-route"><text class="runner-destination">{{item.route}}</text></view>
   <view class="runner-card-footer"><text class="runner-count">{{item.items.length}} {{zh?'单':'orders'}}<text wx:if="{{item.quantity}}"> · {{item.quantity}} {{item.category==='task'?(zh?'项':'tasks'):item.category==='takeout'?(zh?'袋':'bags'):(zh?'件':'parcels')}}</text></text><text class="runner-open">{{zh?'查看任务':'Open job'}} <text>›</text></text></view>

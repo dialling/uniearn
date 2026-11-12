@@ -1,11 +1,51 @@
 /* Public order detail styles are embedded to avoid a stale DevTools import index.
    Source: utils/public-order.wxss */
-.public-order-summary{display:flex;align-items:center;justify-content:space-between;gap:24rpx}.public-order-type{font-size:27rpx;font-weight:750;color:#16181c}.public-order-status{display:inline-block;margin-top:10rpx;padding:6rpx 14rpx;border-radius:12rpx;background:#e7f3ed;color:#0b7a55;font-size:22rpx;line-height:1.4}.public-order-status.status-waiting{background:#fff2e9;color:#b45321}.public-order-price{flex:none;color:#c2410c;font-size:48rpx;font-weight:750;line-height:1.1;font-variant-numeric:tabular-nums}.public-order-price text{margin-right:3rpx;font-size:26rpx}
-.public-order-route{margin:24rpx 0 20rpx;font-size:31rpx;font-weight:750;line-height:1.5;overflow-wrap:anywhere}.public-order-flags{display:flex;flex-wrap:wrap;gap:10rpx;margin:0 0 18rpx}.public-order-flags text{padding:7rpx 14rpx;border-radius:12rpx;background:#f5f4ef;color:#6b6860;font-size:22rpx}
-.public-order-fields{padding:4rpx 20rpx;background:#f6f5f1;border-radius:20rpx}.public-order-field{display:flex;align-items:baseline;gap:22rpx;padding:15rpx 0;border-bottom:1rpx solid #e8e6df;line-height:1.5;font-size:24rpx}.public-order-field:last-child{border-bottom:0}.public-order-label{flex:none;width:156rpx;color:#77766d}.public-order-value{flex:1;min-width:0;color:#303930;font-weight:600;overflow-wrap:anywhere;white-space:pre-wrap}
-.public-order-section{margin:28rpx 0 14rpx;font-size:26rpx;font-weight:750}.public-order-note{font-size:25rpx;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;color:#454d43}.public-order-note .public-order-section{margin-bottom:8rpx}.public-order-step{display:flex;align-items:baseline;gap:12rpx;padding:15rpx 0;border-bottom:1rpx solid #eeede8;font-size:23rpx;line-height:1.5;color:#8a877e}.public-order-dot{flex:none;width:24rpx}.public-order-step.done .public-order-dot{color:#0b7a55}.public-order-step-name{flex:1;min-width:0}.public-order-step.done .public-order-step-name{color:#303930}.public-order-step-time{flex:none;max-width:42%;text-align:right;font-size:20rpx;font-variant-numeric:tabular-nums}.public-order-privacy{margin:20rpx 0 6rpx;font-size:21rpx;line-height:1.6;color:#8a877e}
-.public-detail-overlay{position:fixed;inset:0;z-index:300}.public-detail-mask{position:absolute;inset:0;background:rgba(22,24,28,.44)}.public-detail-panel{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;height:84vh;max-height:calc(100vh - 90rpx);padding:24rpx 30rpx calc(22rpx + env(safe-area-inset-bottom));border-radius:30rpx 30rpx 0 0;background:#fff;box-sizing:border-box;animation:var(--ue-animation,public-detail-in .24s ease-out both)}.public-detail-header{display:flex;align-items:center;justify-content:space-between;gap:20rpx;margin-bottom:22rpx;font-size:31rpx;font-weight:750}.public-detail-close{display:flex;align-items:center;justify-content:center;flex:none;width:64rpx;height:64rpx;padding:0;margin:0;border:0;border-radius:50%;background:#f0efea;color:#6b6860;font-size:38rpx;font-weight:400;line-height:1}.public-detail-close::after{border:0}.public-detail-scroll{flex:1;min-height:0;height:0}.public-detail-body{padding:0 4rpx 12rpx}.public-detail-footer{display:flex;gap:14rpx;flex:none;padding-top:18rpx;border-top:1rpx solid #eeede8}.public-detail-footer .btn{flex:1;min-width:0;margin:0}
-.public-detail-overlay.page-dark{background:transparent!important}.page-dark .public-detail-panel,.page-dark .public-order-fields{background:#242522}.page-dark .public-order-type,.page-dark .public-order-value,.page-dark .public-order-step.done .public-order-step-name{color:#edebe4}.page-dark .public-order-fields{background:#30322c}.page-dark .public-order-price{color:#f4a06e}.page-dark .public-order-status{background:#203b30;color:#6fd0a8}.page-dark .public-order-status.status-waiting{background:#3d2c22;color:#f4b582}.page-dark .public-order-label,.page-dark .public-order-privacy,.page-dark .public-order-step,.page-dark .public-order-note{color:#a9a69c}.page-dark .public-order-field,.page-dark .public-order-step,.page-dark .public-detail-footer{border-color:#3a3b37}.page-dark .public-order-flags text,.page-dark .public-detail-close{background:#34372f;color:#c8c7bd}
+.public-order-summary{display:flex;align-items:flex-start;justify-content:space-between;gap:24rpx}
+.public-order-heading{min-width:0}
+.public-order-type{font-size:28rpx;font-weight:750;color:#16181c;line-height:1.3}
+.public-order-status{display:inline-flex;align-items:center;margin-top:12rpx;padding:6rpx 14rpx;border-radius:999rpx;background:#e7f3ed;color:#0b7a55;font-size:22rpx;line-height:1.4;font-weight:650}
+.public-order-status.status-waiting{background:#fde8dc;color:#c2410c}
+.public-order-price{flex:none;color:#c2410c;font-size:52rpx;font-weight:750;line-height:1;font-variant-numeric:tabular-nums}
+.public-order-price text{margin-right:4rpx;font-size:26rpx;font-weight:700}
+.public-order-route{margin:28rpx 0 24rpx;padding:24rpx 26rpx;background:#f7f5f0;border-radius:24rpx}
+.public-order-route-single{font-size:31rpx;font-weight:750;line-height:1.5;overflow-wrap:anywhere}
+.public-order-leg{display:flex;flex-direction:column;gap:6rpx}
+.public-order-kicker{font-size:20rpx;color:#8a877e;font-weight:650;letter-spacing:1rpx}
+.public-order-place{font-size:30rpx;font-weight:750;color:#16181c;line-height:1.45;overflow-wrap:anywhere}
+.public-order-trail{width:3rpx;height:22rpx;margin:12rpx 0 12rpx 6rpx;border-radius:3rpx;background:#d8d3c8}
+.public-order-flags{display:flex;flex-wrap:wrap;gap:10rpx;margin:0 0 20rpx}
+.public-order-flags text{padding:8rpx 16rpx;border-radius:999rpx;background:#f3f1eb;color:#6b6860;font-size:22rpx}
+.public-order-fields{padding:8rpx 24rpx;background:#f7f5f0;border-radius:24rpx}
+.public-order-field{display:flex;align-items:baseline;gap:22rpx;padding:20rpx 0;border-bottom:1rpx solid #ebe7de;line-height:1.55;font-size:26rpx}
+.public-order-field:last-child{border-bottom:0}
+.public-order-label{flex:none;width:168rpx;color:#8a877e}
+.public-order-value{flex:1;min-width:0;color:#303930;font-weight:650;overflow-wrap:anywhere;white-space:pre-wrap}
+.public-order-section{margin:0 0 10rpx;font-size:22rpx;font-weight:700;color:#8a877e;letter-spacing:1rpx}
+.public-order-note{margin-top:24rpx;padding:22rpx 24rpx;background:#f7f5f0;border-radius:24rpx;font-size:26rpx;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere;color:#454d43}
+.public-order-privacy{margin:24rpx 4rpx 4rpx;font-size:21rpx;line-height:1.65;color:#9a978e}
+.public-detail-overlay{position:fixed;inset:0;z-index:300}
+.public-detail-mask{position:absolute;inset:0;background:rgba(22,24,28,.44)}
+.public-detail-panel{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;height:auto;max-height:calc(100vh - 100rpx);padding:8rpx 30rpx calc(22rpx + env(safe-area-inset-bottom));border-radius:36rpx 36rpx 0 0;background:#fff;box-sizing:border-box;animation:var(--ue-animation,public-detail-in .24s ease-out both)}
+.public-detail-handle{flex:none;width:72rpx;height:8rpx;margin:10rpx auto 18rpx;border-radius:8rpx;background:#d8d3c8}
+.public-detail-header{display:flex;align-items:center;justify-content:space-between;gap:20rpx;margin-bottom:26rpx;font-size:30rpx;font-weight:750;color:#16181c}
+.public-detail-close{display:flex;align-items:center;justify-content:center;flex:none;width:56rpx;height:56rpx;min-width:56rpx;max-width:56rpx;padding:0;margin:0;border:0;border-radius:50%;background:#efece6;color:#6b6860;font-size:34rpx;font-weight:400;line-height:56rpx;text-align:center;box-sizing:border-box}
+.public-detail-scroll{flex:1 1 auto;min-height:0;max-height:56vh;height:auto}
+.public-detail-body{padding:0 2rpx 16rpx}
+.public-detail-footer{display:flex;gap:16rpx;flex:none;padding-top:20rpx;border-top:1rpx solid #eeede8}
+.public-detail-footer .btn{flex:1;min-width:0;margin:0;min-height:84rpx;border-radius:20rpx;font-size:29rpx;font-weight:650}
+.public-detail-footer .public-detail-take{border:0;background:linear-gradient(180deg,#1aa36f 0%,#0c7d58 52%,#086847 100%);color:#fff;box-shadow:0 10rpx 20rpx rgba(11,122,85,.28),inset 0 2rpx 0 rgba(255,255,255,.28),inset 0 -3rpx 0 rgba(0,40,24,.1);text-shadow:0 1rpx 0 rgba(0,40,24,.18)}
+.public-detail-overlay.page-dark{background:transparent!important}
+.page-dark .public-detail-panel{background:#242522}
+.page-dark .public-order-type,.page-dark .public-order-place,.page-dark .public-order-value,.page-dark .public-detail-header{color:#edebe4}
+.page-dark .public-order-fields,.page-dark .public-order-route,.page-dark .public-order-note{background:#30322c}
+.page-dark .public-order-price{color:#f4a06e}
+.page-dark .public-order-status{background:#203b30;color:#6fd0a8}
+.page-dark .public-order-status.status-waiting{background:#3d2c22;color:#f4b582}
+.page-dark .public-order-label,.page-dark .public-order-privacy,.page-dark .public-order-kicker,.page-dark .public-order-section,.page-dark .public-order-note{color:#a9a69c}
+.page-dark .public-order-field,.page-dark .public-detail-footer{border-color:#3a3b37}
+.page-dark .public-order-flags text,.page-dark .public-detail-close{background:#34372f;color:#c8c7bd}
+.page-dark .public-detail-handle,.page-dark .public-order-trail{background:#4a4b45}
+.page-dark .public-detail-footer .public-detail-take{background:linear-gradient(180deg,#7ed9b4 0%,#4cbc8c 55%,#2f9d73 100%);color:#10241b;text-shadow:none;box-shadow:0 10rpx 20rpx rgba(0,0,0,.28),inset 0 2rpx 0 rgba(255,255,255,.28)}
 @keyframes public-detail-in{from{transform:translateY(35rpx);opacity:0}to{transform:none;opacity:1}}
 /* End public order detail styles. */
 @import "../../utils/dorm-gender.wxss";
@@ -14,7 +54,7 @@
 .filter-row .filter-chip-track .filter-pill{flex:none;margin:0}
 .jobs-page{padding:0 0 160rpx;background:#eeede8}.jobs-header{background:transparent;padding:28rpx 42rpx 18rpx}.jobs-header .flow-title{margin:0;font-size:38rpx}.jobs-header .flow-sub{margin:6rpx 0 0}.filter-trigger{display:flex;align-items:center;gap:10rpx;border:1rpx solid #e2e0d9;border-radius:50rpx;padding:14rpx 25rpx;white-space:nowrap;font-size:26rpx;color:#16181c}.filter-trigger.open{border-color:#16181c}.filter-icon{font-size:35rpx;line-height:25rpx;transform:rotate(180deg)}.filter-panel{margin-top:26rpx}.filter-row{display:flex;align-items:center;min-width:0;gap:14rpx;margin:12rpx 0}.filter-name{width:77rpx;flex:none;font-size:23rpx;font-weight:750;color:#44423c}.filter-row .scroll-pills{flex:1;width:0;margin:0}.filter-row .filter-pill{font-size:23rpx;padding:13rpx 20rpx}.clear-filter{text-align:right;font-size:23rpx;margin:10rpx 0 0}.jobs-content{padding:20rpx 40rpx 0}.jobs-hint{color:#6b6860;font-size:24rpx;line-height:1.55;margin:6rpx 0 26rpx}.jobs-page .flow-card{margin:20rpx 0;padding:27rpx}.jobs-page .flow-card .btn{width:100%;margin:18rpx 0 0}.jobs-page .amount{font-size:40rpx}.jobs-page .route{font-size:30rpx}.jobs-page .green-note{padding:20rpx}.jobs-page .badge{font-size:21rpx}
 
-.jobs-page .own-post{border:2rpx dashed #0b7a55}.jobs-page .taken-card{border:1rpx dashed #e2e0d9;background:#f7f6f2}.jobs-page .done-card{border-color:#cfe8dc}.jobs-page .own-badge{background:#0b7a55;color:#fff}.jobs-page .done-badge{background:#0b7a55;color:#fff}.jobs-page .taken-badge{background:#e7f3ed;color:#0b7a55}.jobs-page .badge.takeout{background:#e7f3ed;color:#8e3b6e}.jobs-page .badge.parcel{background:#e6edfc;color:#1e40af}.jobs-page .badge.task{background:#e6edfc;color:#1d4ed8}.job-timing{padding:22rpx;background:#f7f6f2;border-radius:20rpx;margin:20rpx 0;font-size:24rpx;font-weight:700;color:#44423c}.taken-card .job-timing{background:#f0eee8}.done-card .job-timing{background:#e7f3ed;color:#0b7a55}.jobs-page .own-order{background:#f3faf6;color:#0b7a55}.done-proof{border-radius:27rpx;padding:30rpx;background:#0b7a55;color:#fff;font-size:22rpx;line-height:1.55;margin:24rpx 0}.proof-count{font-weight:700;margin:20rpx 0}.proof-count text{font-size:60rpx;margin-right:15rpx}.date-heading{font-size:25rpx;font-weight:700;margin:28rpx 4rpx 0}.date-heading .hint{font-weight:400}
+.jobs-page .own-post{border:2rpx dashed #0b7a55}.jobs-page .taken-card{border:1rpx solid #cfe8dc;background:#fff}.jobs-page .final-tabs view{font-size:23rpx;padding:16rpx 2rpx}.jobs-page .done-card{border-color:#cfe8dc}.jobs-page .own-badge{background:#0b7a55;color:#fff}.jobs-page .done-badge{background:#0b7a55;color:#fff}.jobs-page .taken-badge{background:#e7f3ed;color:#0b7a55}.jobs-page .badge.takeout{background:#e7f3ed;color:#8e3b6e}.jobs-page .badge.parcel{background:#e6edfc;color:#1e40af}.jobs-page .badge.task{background:#e6edfc;color:#1d4ed8}.job-timing{padding:22rpx;background:#f7f6f2;border-radius:20rpx;margin:20rpx 0;font-size:24rpx;font-weight:700;color:#44423c}.taken-card .job-timing{background:#f0eee8}.done-card .job-timing{background:#e7f3ed;color:#0b7a55}.jobs-page .own-order{background:#f3faf6;color:#0b7a55}.done-proof{border-radius:27rpx;padding:30rpx;background:#0b7a55;color:#fff;font-size:22rpx;line-height:1.55;margin:24rpx 0}.proof-count{font-weight:700;margin:20rpx 0}.proof-count text{font-size:60rpx;margin-right:15rpx}.date-heading{font-size:25rpx;font-weight:700;margin:28rpx 4rpx 0}.date-heading .hint{font-weight:400}.taken-heading{margin-top:36rpx;color:#3d6b57}
 
 .guide-modal{top:16%;max-height:calc(100vh - 210rpx);overflow-y:auto;box-sizing:border-box}.guide-modal.bottom-modal{top:auto;bottom:190rpx;max-height:calc(100vh - 230rpx)}.guide-modal .guide-text{font-size:25rpx;line-height:1.6}.guide-example{border:2rpx dashed #6fd0a8;border-radius:22rpx;padding:22rpx;margin:18rpx 0}.guide-example .route{margin:16rpx 0;font-size:27rpx}.example-button{pointer-events:none;text-align:center}.guide-complete{position:fixed;bottom:180rpx;left:26rpx;right:26rpx;z-index:100;background:#16181c;color:#fff;padding:24rpx;border-radius:24rpx;font-size:25rpx;line-height:1.5}.empty-reminder{margin-top:22rpx}.jobs-page .empty-post{background:#0b7a55;width:auto;padding:0 40rpx;display:flex;align-items:center;justify-content:center;min-height:88rpx;line-height:1.2}.nav .item text{white-space:nowrap}
 
@@ -56,21 +96,40 @@
  .hall-genders{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8rpx}
 
 /* Compact campus route slips: destination, reward, pickup, then action. */
-.jobs-page .job-card{padding:26rpx 26rpx 22rpx;margin:18rpx 0;border:1rpx solid #e0e5dd;border-radius:26rpx;background:#fff;box-shadow:0 5rpx 18rpx rgba(32,53,39,.035)}
-.jobs-page .job-card.own-post{border:1rpx solid #a6cdb8;background:#fff}
-.jobs-page .job-card.taken-card{border-style:solid}
+.jobs-page .job-card{position:relative;overflow:hidden;padding:26rpx 26rpx 22rpx;margin:18rpx 0;border:1rpx solid #e4ddd4;border-radius:26rpx;background:linear-gradient(165deg,#fffaf4 0%,#fffefb 46%,#fff 100%);box-shadow:0 12rpx 28rpx rgba(70,52,32,.07),inset 0 1rpx 0 rgba(255,255,255,.92)}
+.jobs-page .job-card::before{content:'';position:absolute;left:0;right:0;top:0;height:6rpx;background:linear-gradient(90deg,#efc09a,#d98955)}
+.jobs-page .job-card.job-card-takeout{background:linear-gradient(165deg,#fff6ec 0%,#fffdf9 52%,#fff 100%);border-color:#ead9c8;box-shadow:0 12rpx 30rpx rgba(180,90,30,.08),inset 0 1rpx 0 rgba(255,255,255,.94)}
+.jobs-page .job-card.job-card-takeout::before{background:linear-gradient(90deg,#f0c49a,#e08a4a)}
+.jobs-page .job-card.job-card-parcel{background:linear-gradient(165deg,#eef3fb 0%,#f8faff 50%,#fff 100%);border-color:#d5deee;box-shadow:0 12rpx 30rpx rgba(40,70,140,.08),inset 0 1rpx 0 rgba(255,255,255,.94)}
+.jobs-page .job-card.job-card-parcel::before{background:linear-gradient(90deg,#9bb6e8,#6a8fd0)}
+.jobs-page .job-card.job-card-task{background:linear-gradient(165deg,#eef4fb 0%,#f7faff 50%,#fff 100%);border-color:#d3deee}
+.jobs-page .job-card.job-card-task::before{background:linear-gradient(90deg,#8fb3e8,#4d7fd4)}
+.jobs-page .job-card.job-card-night,.jobs-page .job-card.job-card-takeout.job-card-night{background:linear-gradient(165deg,#fff3e8 0%,#fffaf4 50%,#fff 100%);border-color:#ebd0b8}
+.jobs-page .job-card.job-card-night::before,.jobs-page .job-card.job-card-takeout.job-card-night::before{background:linear-gradient(90deg,#f0b27a,#c2410c)}
+.jobs-page .job-card.own-post{border:1rpx solid #a6cdb8}
+.jobs-page .job-card.taken-card{border-style:solid;border-color:#c5dfd1;background:linear-gradient(165deg,#eaf6f0 0%,#f6fbf8 48%,#fff 100%);box-shadow:0 12rpx 30rpx rgba(11,122,85,.09),inset 0 1rpx 0 rgba(255,255,255,.94)}
+.jobs-page .job-card.taken-card::before{background:linear-gradient(90deg,#7dc4a6,#0b7a55)}
+.jobs-page .job-card.done-card{border-color:#cfe8dc;background:linear-gradient(165deg,#f3faf6 0%,#fff 55%)}
+.jobs-page .job-card.done-card::before{background:linear-gradient(90deg,#9dd4bb,#0b7a55)}
 .job-card-header{align-items:flex-start;gap:16rpx}
 .job-badges{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:7rpx}
 .jobs-page .job-card .job-badges .badge{margin:0;padding:5rpx 11rpx;border-radius:9rpx;font-size:20rpx;font-weight:550;line-height:1.45}
-.jobs-page .job-card .job-badges .state-badge{background:transparent!important;color:#777d76;padding-left:0;padding-right:3rpx;font-weight:500}
+.jobs-page .job-card .job-badges .state-badge{display:inline-flex;align-items:center;gap:8rpx;background:transparent!important;color:#777d76;padding-left:0;padding-right:3rpx;font-weight:500}
 .jobs-page .job-card .job-badges .state-badge.done-badge,.jobs-page .job-card .job-badges .state-badge.own-badge{color:#0b7a55;font-weight:650}
-.jobs-page .job-card .badge.takeout,.jobs-page .job-card .badge.parcel{color:#0b7a55;background:#eaf4ee}
+.jobs-page .job-card .job-badges .state-badge.state-live-open{color:#c2410c;font-weight:650}
+.jobs-page .job-card .job-badges .state-badge.state-live-running{color:#0b7a55;font-weight:650}
+.state-live-dot{position:relative;flex:none;width:12rpx;height:12rpx;border-radius:50%;background:currentColor}
+.state-live-ring{position:absolute;left:50%;top:50%;width:12rpx;height:12rpx;margin:-6rpx 0 0 -6rpx;border-radius:50%;background:currentColor;animation:var(--ue-animation,hall-live-pulse 1.7s ease-out infinite)}
+@keyframes hall-live-pulse{0%{transform:scale(1);opacity:.55}70%,100%{transform:scale(2.4);opacity:0}}
+.page-dark.jobs-page .job-card .job-badges .state-badge.state-live-open{color:#f0a07a}
+.page-dark.jobs-page .job-card .job-badges .state-badge.state-live-running{color:#6fd0a8}
+.jobs-page .job-card .badge.takeout{color:#8a4b24;background:#f6eadc}
 .jobs-page .job-card .badge.orange{background:#fff2e9;color:#b45321}
 .jobs-page .job-card .amount{display:flex;align-items:baseline;flex:none;gap:3rpx;font-family:inherit;font-variant-numeric:tabular-nums;font-size:48rpx;font-weight:750;letter-spacing:-1rpx;line-height:1.05;color:#c2410c;white-space:nowrap}
 .job-card .job-currency{font-size:27rpx;font-weight:650;letter-spacing:0}
 .jobs-page .job-card .route{display:flex;align-items:baseline;gap:13rpx;margin:22rpx 0 0;font-size:31rpx;font-weight:750;line-height:1.45}
-.job-route-origin{flex:0 1 auto;max-width:56%;min-width:0;color:#16181c;font-size:31rpx;font-weight:750;overflow-wrap:anywhere}
-.job-route-arrow{flex:none;color:#16181c;font-size:31rpx;font-weight:750}
+.job-route-origin{flex:0 1 auto;max-width:44%;min-width:0;color:#7b817a;font-size:24rpx;font-weight:500;overflow-wrap:anywhere}
+.job-route-arrow{flex:none;color:#a0a79f;font-size:24rpx;font-weight:400}
 .job-route-destination{flex:1;min-width:0;overflow-wrap:anywhere;color:#16181c}
 .job-task-title{min-width:0;overflow-wrap:anywhere}
 .job-card .job-timing{margin:13rpx 0 17rpx;padding:0;background:transparent;border-radius:0;gap:12rpx;flex-wrap:wrap;font-size:22rpx;font-weight:550;line-height:1.5;color:#0b7a55}
@@ -84,33 +143,49 @@
 .job-note-copy{flex:1;min-width:0;white-space:pre-wrap;overflow-wrap:anywhere}
 .job-card>.hint{margin:10rpx 0;font-size:22rpx;line-height:1.5}
 .jobs-page .job-card .green-note{margin:12rpx 0;padding:9rpx 14rpx;font-size:22rpx;border-radius:10rpx}
-.job-footer{display:flex;align-items:center;justify-content:space-between;gap:24rpx;margin-top:20rpx;padding-top:18rpx;border-top:1rpx solid #edf0e9}
+.job-footer{display:flex;align-items:center;justify-content:space-between;gap:24rpx;margin-top:20rpx;padding-top:18rpx;border-top:1rpx solid rgba(70,52,32,.08)}
+.jobs-page .job-card.job-card-parcel .job-footer{border-top-color:rgba(40,70,140,.1)}
+.jobs-page .job-card.taken-card .job-footer{border-top-color:rgba(11,122,85,.12)}
 .job-deadline-label{font-size:21rpx;color:#8a9088}
 .job-deadline-value{font-size:24rpx;font-weight:650;font-variant-numeric:tabular-nums;color:#394438}
-/* 接单截止贴在信息行右沿，接单按钮独占最后一行 */
+/* 接单截止跟在同一信息行右侧，不要单独占一行 */
+.job-card .job-meta-row{display:flex;align-items:baseline;justify-content:space-between;gap:16rpx}
+.job-card .job-meta-row>text{flex:1;min-width:0}
 .job-deadline-mini{display:flex;flex:none;align-items:baseline;gap:8rpx;margin-left:auto;padding-left:16rpx;line-height:1.4;text-align:right;white-space:nowrap}
-.job-deadline-row{display:flex;justify-content:flex-end;margin:12rpx 0 0}
+.job-card .job-timing .job-deadline-mini{margin:0 0 0 auto}
 .jobs-page .job-card .btn{margin:0;min-height:74rpx;padding:17rpx 20rpx;border-radius:17rpx;font-size:25rpx;line-height:1.5;box-sizing:border-box}
-.jobs-page .job-card .btn.job-take-button{display:flex;align-items:center;justify-content:space-between;gap:26rpx;flex:none;width:212rpx;min-width:0;margin:0;padding:15rpx 24rpx;background:#0b7a55;color:#fff;font-size:27rpx;font-weight:650;line-height:1.5;min-height:74rpx;border-radius:17rpx;transition:var(--ue-transition,transform .15s,opacity .15s)}
+.jobs-page .job-card .btn.job-take-button{display:flex;align-items:center;justify-content:space-between;gap:26rpx;flex:none;width:212rpx;min-width:0;margin:0;padding:15rpx 24rpx;border:0;background:linear-gradient(180deg,#1aa36f 0%,#0c7d58 52%,#086847 100%);color:#fff;font-size:27rpx;font-weight:650;line-height:1.5;min-height:74rpx;border-radius:17rpx;box-shadow:0 10rpx 20rpx rgba(11,122,85,.28),inset 0 2rpx 0 rgba(255,255,255,.28),inset 0 -3rpx 0 rgba(0,40,24,.1);text-shadow:0 1rpx 0 rgba(0,40,24,.18);transition:var(--ue-transition,transform .15s,opacity .15s,box-shadow .15s)}
+.jobs-page .job-card .btn.job-take-continue{background:linear-gradient(180deg,#1b9080 0%,#0a6e5c 52%,#085c4d 100%);box-shadow:0 10rpx 20rpx rgba(8,100,85,.26),inset 0 2rpx 0 rgba(255,255,255,.26),inset 0 -3rpx 0 rgba(0,36,28,.1)}
 .job-take-arrow{font-size:33rpx;font-weight:400;line-height:1}
-.job-footer-take{display:block}
-.jobs-page .job-card .job-footer-take .job-take-button{justify-content:center;gap:14rpx;width:100%;padding-left:0;padding-right:0}
-.job-take-press{transform:scale(.97);opacity:.88}
+.job-footer-take{display:flex;align-items:center;justify-content:space-between;gap:20rpx}
+.job-poster{display:flex;align-items:center;gap:14rpx;min-width:0;flex:1}
+.job-poster-avatar{display:flex;align-items:center;justify-content:center;width:64rpx;height:64rpx;border-radius:50%;background:#e7f3ed;color:#0b7a55;font-size:26rpx;font-weight:700;line-height:1;flex:none}
+.job-poster-name{min-width:0;font-size:26rpx;font-weight:650;color:#303930;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jobs-page .job-card .job-footer-take .job-take-button{justify-content:center;gap:10rpx;width:auto;min-width:168rpx;max-width:48%;padding:15rpx 22rpx;flex:none;white-space:nowrap}
+.job-take-press{transform:scale(.97);opacity:.92;box-shadow:0 4rpx 10rpx rgba(11,122,85,.2),inset 0 2rpx 0 rgba(255,255,255,.16),inset 0 -2rpx 0 rgba(0,40,24,.12)!important}
 .job-footer.own-footer,.job-footer.taken-footer,.job-footer.done-footer{display:block}
 .job-footer.own-footer>.hint,.job-footer.taken-footer>.hint{margin:0 0 12rpx;font-size:21rpx;line-height:1.5}
 .completed-order-footer{display:flex;align-items:center;justify-content:space-between;gap:16rpx;font-size:21rpx;margin:0}
 .completed-order-footer>view{flex:1;min-width:0}
 .completed-order-link{flex:none;color:#0b7a55;font-weight:650}
-.page-dark.jobs-page .job-card{border-color:#3a4338;background:#242522}
+.page-dark.jobs-page .job-card{border-color:#4a453c!important;background:linear-gradient(165deg,#2c2a26 0%,#242522 60%)!important;box-shadow:0 12rpx 28rpx rgba(0,0,0,.28),inset 0 1rpx 0 rgba(255,255,255,.04)!important}
+.page-dark.jobs-page .job-card.job-card-takeout{border-color:#5a4a3a!important;background:linear-gradient(165deg,#32281f 0%,#242522 62%)!important}
+.page-dark.jobs-page .job-card.job-card-parcel,.page-dark.jobs-page .job-card.job-card-task{border-color:#3a4458!important;background:linear-gradient(165deg,#222834 0%,#242522 62%)!important}
+.page-dark.jobs-page .job-card.taken-card{border-color:#2f4a3e!important;background:linear-gradient(165deg,#1d2f28 0%,#242522 62%)!important}
+.page-dark.jobs-page .job-card .btn.job-take-button{background:linear-gradient(180deg,#7ed9b4 0%,#4cbc8c 55%,#2f9d73 100%);color:#10241b;text-shadow:none;box-shadow:0 10rpx 20rpx rgba(0,0,0,.28),inset 0 2rpx 0 rgba(255,255,255,.28)}
+.page-dark.jobs-page .job-card .btn.job-take-continue{background:linear-gradient(180deg,#6fd0c0 0%,#3fafa0 55%,#2a8f82 100%)}
+.page-dark.jobs-page .job-card .badge.takeout{color:#f0c49a;background:#3a2e22}
+.page-dark.jobs-page .job-card .job-footer{border-top-color:rgba(237,235,228,.1)}
 .page-dark.jobs-page .job-card .job-price{color:#f4a06e}
 .page-dark.jobs-page .job-card .job-route-destination,.page-dark.jobs-page .job-card .hall-locker-value{color:#edebe4}
-.page-dark.jobs-page .job-card .hall-location-label,.page-dark.jobs-page .job-card .job-note-label,.page-dark.jobs-page .job-card .job-deadline-label{color:#aaaF9f}
-.page-dark.jobs-page .job-card .job-route-origin,.page-dark.jobs-page .job-card .job-route-arrow{color:#edebe4}
+.page-dark.jobs-page .job-card .job-route-origin,.page-dark.jobs-page .job-card .hall-location-label,.page-dark.jobs-page .job-card .job-note-label,.page-dark.jobs-page .job-card .job-deadline-label{color:#aaaF9f}
 .page-dark.jobs-page .job-card .job-timing,.page-dark.jobs-page .job-card .job-badges .state-badge.done-badge,.page-dark.jobs-page .job-card .job-badges .state-badge.own-badge{color:#6fd0a8}
 .page-dark.jobs-page .job-card .order-note{background:transparent;color:#b7c0b3}
 .page-dark.jobs-page .job-card .job-deadline-value{color:#e0e8dc}
 .page-dark.jobs-page .job-card .job-footer{border-top-color:#3a4338}
 .page-dark.jobs-page .job-card .completed-order-link{color:#6fd0a8}
+.page-dark.jobs-page .job-card .job-poster-avatar{background:#1d2f28;color:#6fd0a8}
+.page-dark.jobs-page .job-card .job-poster-name{color:#edebe4}
 
 /* Translucent filter controls share the green palette without solid black fills. */
 .filter-row .filter-pill{--filter-ink:#0b7a55;--filter-tint:rgba(11,122,85,.12);--filter-border:rgba(11,122,85,.28);display:inline-flex;align-items:center;justify-content:center;flex:none;border:1rpx solid rgba(255,255,255,.76);border-radius:999rpx;background:rgba(255,255,255,.46);color:#5e5c55;line-height:1.4;box-shadow:inset 0 1rpx 0 rgba(255,255,255,.72),0 3rpx 10rpx rgba(22,24,28,.025);-webkit-backdrop-filter:blur(14rpx);backdrop-filter:blur(14rpx);transition:var(--ue-transition,background .18s ease,border-color .18s ease,color .18s ease)}
@@ -151,17 +226,3 @@
 .page-dark .group-fold{background:#324a39}
 .page-dark .group-head{background:#263a2c;border-color:#567361}
 .page-dark .group-label,.page-dark .group-fold,.page-dark .group-route>view>text{color:#a5d7b9}
-
-.group-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:18rpx}
-.group-title-row .group-label{flex:1;min-width:0;padding-top:8rpx;line-height:1.5}
-.group-total{flex:none;display:flex;flex-direction:column;align-items:flex-end;max-width:60%}
-.group-total-label{font-size:20rpx;color:#74766b;line-height:1.4;margin-bottom:3rpx}
-.group-total-amount{color:#c4470b;font-size:46rpx;font-weight:850;line-height:1.15;letter-spacing:-1rpx;white-space:nowrap}
-.group-total-currency{font-size:27rpx;font-weight:650;letter-spacing:0;margin-right:2rpx}
-.group-fold-row{display:flex;justify-content:flex-end;margin-top:10rpx}
-.page-dark .group-total-label{color:#b5bbaf}
-.page-dark .group-total-amount{color:#f4a06e}
-.jobs-page .job-card .job-badges .task-mode-badge{font-size:18rpx;padding:4rpx 9rpx;font-weight:600}.jobs-page .task-mode-online{background:#e8f4ee;color:#27734e}.jobs-page .task-mode-offline{background:#f0eee8;color:#685f4e}.page-dark.jobs-page .task-mode-online{background:#243c30;color:#91d3ac}.page-dark.jobs-page .task-mode-offline{background:#39362f;color:#d8ceba}
-/* Give long locker names the full route width. */
-
-.tracked-orders{margin:18rpx 0 24rpx;padding:10rpx 24rpx 4rpx;background:#f7fbf7;border:1rpx solid #dbe8dc;border-radius:24rpx}.tracked-orders-heading{display:flex;justify-content:space-between;align-items:center;gap:12rpx;color:#41664b;font-size:24rpx;font-weight:700}.tracked-orders-heading button{min-height:44px;margin:0;padding:12rpx 0 12rpx 18rpx;background:none;color:#41664b;font-size:21rpx;line-height:1.5;font-weight:600}.tracked-orders-heading button::after{border:0}.tracked-order-row{display:flex;align-items:center;gap:18rpx;min-height:44px;padding:18rpx 0;border-top:1rpx solid #e4ece2}.tracked-order-copy{flex:1;min-width:0}.tracked-order-title{font-size:25rpx;line-height:1.5;font-weight:650;color:#263a2d;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tracked-order-status{font-size:21rpx;color:#497557;margin-top:4rpx}.tracked-order-chevron{font-size:32rpx;color:#7c987d}.page-dark .tracked-orders{background:#24352c;border-color:#3d5141}.page-dark .tracked-order-row{border-color:#3d5141}.page-dark .tracked-order-title{color:#e1ebe2}.page-dark .tracked-order-status,.page-dark .tracked-orders-heading,.page-dark .tracked-orders-heading button{color:#a2cead}

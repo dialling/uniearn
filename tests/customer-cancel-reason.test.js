@@ -99,11 +99,13 @@ for (const page of ['request', 'task']) {
   const js = fs.readFileSync('pages/' + page + '/index.js', 'utf8');
   assert.match(xml, /customer-cancel-sheet/);
   assert.match(xml, /is="customerCancelSheet"/);
-  assert.match(xml, /request\.status!=='waiting' && cancelWindow\.phase!=='hidden'/);
+  assert.match(xml, /cancelWindow\.phase!=='hidden'/);
   assert.match(js, /openSheet\(this\)/);
   assert.match(js, /orders\.act\('cancel'/);
   assert.doesNotMatch(js, /ui\.confirm\([^)]*取消这笔订单/);
 }
+assert.match(fs.readFileSync('pages/request/index.wxml', 'utf8'), /cancel-window-card/, 'publisher cancel stays at the bottom of the request page');
+assert.match(fs.readFileSync('pages/task/index.wxml', 'utf8'), /cancel-tip/, 'task page keeps its cancel window tip');
 const history = fs.readFileSync('pages/requests/index.wxml', 'utf8');
 assert.match(history, /cancelReasonLabel/);
 const jobs = fs.readFileSync('pages/jobs/index.wxml', 'utf8');

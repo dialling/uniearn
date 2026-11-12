@@ -125,6 +125,12 @@ function expire(s, now) {
     if (r.status === 'delivered' && now >= r.deliveredAt + f.hours(r) * 3600000) {
       r.status = 'confirmed'; r.confirmedAt = now; r.autoConfirmed = true; f.event(r, 'Automatically confirmed', now);
     }
+    if (r.status === 'disputed') {
+      const hold = r.settle_hold_until || (r.dispute && r.dispute.at && r.dispute.at + f.reviewHours() * 3600000);
+      if (hold && now >= hold) {
+        r.status = 'confirmed'; r.confirmedAt = now; r.autoConfirmed = true; f.event(r, 'Review window ended · automatically confirmed', now);
+      }
+    }
   }
 }
 function restoreDormGenders(s,actor,campusId,repairs,now){
@@ -239,12 +245,12 @@ function execute(s, actor, account, event, now = Date.now()) {
     if (action === 'raise') { check((r.raised || 0) + Number(event.amount || 0) <= 100, 'Offer increase limit reached.'); f.raise(s, r.id, event.amount); }
     if (action === 'cancel') { check(event.note === undefined || typeof event.note === 'string', 'Invalid cancel note.'); d.customerCancel(s, r.id, now, event.reason, event.note); f.event(r, 'Cancelled · demo refund', now); }
     if (action === 'confirm') { d.confirm(s, r.id); f.event(r, 'Confirmed', now); }
-    if (action === 'report') { check(r.category!=='takeout'||now<=r.deliveredAt+30*60000,'Report takeaway problems within 30 minutes of delivery.'); check(typeof event.note === 'string' && event.note.length <= 500, 'Keep the note under 500 characters.'); f.report(s, r.id, event.reason, photo(event.photo, actor), event.note); }
+    if (action === 'report') { check(r.status==='delivered'&&r.deliveredAt&&now<r.deliveredAt+f.hours(r)*3600000,'Report problems within 2 hours of delivery.'); check(typeof event.note === 'string' && event.note.length <= 500, 'Keep the note under 500 characters.'); f.report(s, r.id, event.reason, photo(event.photo, actor), event.note, now); }
     if (action === 'foodArrived') { check(r.category==='takeout'&&['waiting','taken'].includes(r.status)&&!r.arrived, 'Only food awaiting pickup can be marked as arrived.'); r.arrived=true; r.arrivalAt=now; f.event(r,'Food is there now',now); }
-    if (action === 'riderPhoto') { check(['waiting','taken'].includes(r.status), 'Pickup has already started.'); const replacing=event.replace===true,incoming=Array.isArray(event.photos)?event.photos:(event.photo?[event.photo]:[]),existing=Array.isArray(r.riderPhotos)?r.riderPhotos.slice():(r.riderPhoto?[r.riderPhoto]:[]);check(incoming.length<=(replacing?3:3-existing.length),'Up to three rider photos.');check(replacing||incoming.length>0,'Add at least one rider photo.');r.riderPhotos=(replacing?incoming:existing.concat(incoming)).map(p=>photo(p,actor,true));r.riderPhoto=r.riderPhotos[0]||'';r.arrived=true;value={riderPhotos:r.riderPhotos.slice()}; }
+    if (action === 'riderPhoto') { check(['waiting','taken'].includes(r.status), 'Pickup has already started.'); const replacing=event.replace===true,incoming=Array.isArray(event.photos)?event.photos:(event.photo?[event.photo]:[]),existing=Array.isArray(r.riderPhotos)?r.riderPhotos.slice():(r.riderPhoto?[r.riderPhoto]:[]);check(incoming.length<=(replacing?3:3-existing.length),'Up to three rider photos.');check(replacing||incoming.length>0,'Add at least one rider photo.');r.riderPhotos=(replacing?incoming:existing.concat(incoming)).map(p=>photo(p,actor,true));r.riderPhoto=r.riderPhotos[0]||'';value={riderPhotos:r.riderPhotos.slice()}; }
   } else if (['pickup','deliver','missingParcel','runnerCancel','taskDone','sealBroken'].includes(action)) {
     const r = runnerRequest(s, event.id, actor);
-    if(action==='taskDone'){check(r.category==='task'&&r.status==='taken','This task cannot be completed now.');check(event.note===undefined||typeof event.note==='string','Invalid completion note.');const note=String(event.note||'').trim();check(note.length<=500,'Keep the completion note under 500 characters.');const proof=photo(event.photo,actor);r.status='delivered';r.photo=proof;r.completionNote=note;r.deliveredAt=now;const taskTrip=ownTrip(s,r.runnerId,actor);taskTrip.phase=taskTrip.requestIds.every(id=>['delivered','confirmed','disputed'].includes(s.requests.find(x=>x.id===id).status))?'done':'collect';if(taskTrip.phase==='done')taskTrip.joinUntil=now;f.event(r,'Completion submitted',now);rewards.recordBonus(s,actor,r,now);}
+    if(action==='taskDone'){check(r.category==='task'&&r.status==='taken','This task cannot be completed now.');const note=String(event.note||'').trim();check(note.length>=3&&note.length<=500,'Add a short completion note.');r.status='delivered';r.photo=photo(event.photo,actor);r.completionNote=note;r.deliveredAt=now;const taskTrip=ownTrip(s,r.runnerId,actor);taskTrip.phase=taskTrip.requestIds.every(id=>['delivered','confirmed','disputed'].includes(s.requests.find(x=>x.id===id).status))?'done':'collect';if(taskTrip.phase==='done')taskTrip.joinUntil=now;f.event(r,'Completion submitted',now);rewards.recordBonus(s,actor,r,now);}
     if(action==='sealBroken'){check(r.category==='takeout'&&r.status==='taken','Report a seal before pickup.');r.sealReportedAt=now;f.event(r,'Seal already broken at pickup',now);}
     if(action==='missingParcel')value=require('./parcel-missing').missingParcel(s,r.id,event.index,event.expectedCodes,now);
     if (action === 'pickup') {

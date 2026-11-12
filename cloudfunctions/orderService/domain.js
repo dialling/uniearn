@@ -152,9 +152,9 @@ const CUSTOMER_CANCEL_MS=3*60*1000;
 function customerCanCancel(r,now=Date.now()){
   if(!r)return false;
   if(r.status==='waiting'&&!r.runnerId)return true;
-  if(!['taken','collected'].includes(r.status))return false;
+  if(r.status!=='taken'||(r.collected&&r.collected.length))return false;
   const takenAt=Number(r.takenAt);
-  return Number.isFinite(takenAt)&&takenAt>0&&now>=takenAt&&now-takenAt<CUSTOMER_CANCEL_MS;
+  return Number.isFinite(takenAt)&&takenAt>0&&now-takenAt<=CUSTOMER_CANCEL_MS;
 }
 function customerCancel(s,id,now=Date.now(),reason,note){
   const r=s.requests.find(x=>x.id===id);

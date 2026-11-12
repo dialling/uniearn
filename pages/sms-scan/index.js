@@ -9,8 +9,6 @@ Page({
   onShow(){this.localize();},
   localize(){const zh=store.get().language!=='en',mode=this.data.mode,heading=mode==='sms'?'Read pickup screenshot':mode==='list'?'Read pending pickup list':'Read parcel details';this.setData({zh,labels:zh?zhText:{},heading:zh?zhText[heading]:heading});if(wx.setNavigationBarTitle)wx.setNavigationBarTitle({title:this.data.heading});},
   t(value){if(value==='All detected codes are listed. Select up to 12 from one pickup point.')return this.data.zh?'已列出识别到的取件码，请核对每个包裹的驿站，最多选择 12 个。':'Review the station for each parcel and select up to 12 codes.';if(value==='No pickup codes found. Try a clearer photo or paste the SMS.')value='No pickup codes found. Try a clearer screenshot.';return this.data.zh&&zhText[value]||value;},
-  previewScreenshot(){if(this.data.preview)wx.previewImage({urls:[this.data.preview],current:this.data.preview});},
-  removeScreenshot(){if(this.data.busy)return;this.setData({preview:''});},
   async capture(e) {
     if(this.data.busy)return;
     let path;

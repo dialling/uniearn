@@ -21,22 +21,22 @@ function view(order, zh, now = Date.now()) {
   if (order.status === 'waiting') {
     return {
       phase: 'open', canCancel: true, button, clock: '', remainingMs: 0,
-      tip: zh ? '接单前可随时取消；跑手接单后 3 分钟内仍可取消，满 3 分钟后不可取消。' : 'Cancel anytime before acceptance, or within 3 minutes after a runner accepts. After 3 minutes, cancellation is unavailable.'
+      tip: zh ? '还没有跑手接单，你可以随时取消。' : 'No runner has accepted yet — you can cancel anytime.'
     };
   }
-  if (['taken', 'collected'].includes(order.status)) {
+  if (order.status === 'taken' && !(order.collected || []).length) {
     const takenAt = Number(order.takenAt);
     const left = Number.isFinite(takenAt) && takenAt > 0 ? takenAt + WINDOW_MS - now : 0;
-    if (left > 0 && now >= takenAt) {
+    if (left > 0) {
       const time = clock(left);
       return {
         phase: 'grace', canCancel: true, button, clock: time, remainingMs: left,
-        tip: zh ? '接单后仅限 3 分钟内取消，剩余 ' + time + '；倒计时结束后不可取消。' : 'Cancellation is available only within 3 minutes of acceptance. Time left: ' + time + '.'
+        tip: zh ? '跑手已接单。你还可以取消，剩余 ' + time + '。' : 'A runner has accepted. You can still cancel for ' + time + '.'
       };
     }
     return {
       phase: 'ended', canCancel: false, button, clock: '0:00', remainingMs: 0,
-      tip: zh ? '跑手接单已满 3 分钟，无法取消订单。' : 'It has been 3 minutes since acceptance. This order can no longer be cancelled.'
+      tip: zh ? '跑手已接单，取消时限已结束。' : 'A runner has accepted — cancel window ended.'
     };
   }
   return hidden;

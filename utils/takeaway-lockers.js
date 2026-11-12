@@ -16,10 +16,10 @@ function options(address,language='zh'){
  const area=address.destinationType==='place'?'':building?building.id:address.area;
  const common=area==='wenyuan'||area==='wenxing';
  const group=common?'wenyuan-wenxing':area==='wencui'?'wencui':area==='wenhui'?'wenhui':'manual';
- const presets=common?shared:area==='wencui'?wencui:shared.concat(wencui);
+ const presets=common?shared:area==='wencui'?wencui:[];
  const items=presets.map(x=>({...x,label:language==='en'?x.en:x.value}));
- items.push({id:'other',value:'',label:language==='en'?'Other (type it yourself)':'其他（自行填写）'});
- return {group,manual:false,items};
+ if(common)items.push({id:'other',value:'',label:language==='en'?'Other (type it yourself)':'其他（自行填写）'});
+ return {group,manual:!presets.length,items};
 }
 
 function label(value,language='zh'){

@@ -20,6 +20,7 @@ const tap=id=>({currentTarget:{dataset:{ids:[id]}}});
  const night=detail.view({...row,night:true,shop:'KFC',purchaseStatus:'needs_purchase'});assert.equal(night.fields.find(f=>f.label==='店铺').value,'KFC');assert.match(night.fields.find(f=>f.label==='下单状态').value,/垫付/);
  const task=detail.view({...row,category:'task',title:'还书',dueAt:now+3600000});assert.equal(task.label,'还书');assert.equal(task.steps.length,4);assert.ok(task.fields.some(f=>f.label==='完成截止'));assert.equal(task.note,'');
  const xml=fs.readFileSync(require.resolve('../pages/public-job/detail.wxml'),'utf8');assert.doesNotMatch(xml,/job\.(owner|room|phone|photo|codes|orderPictures)/);
+ assert.doesNotMatch(xml,/订单进度|Order progress/);assert.match(xml,/public-order-route/);
  const hall=fs.readFileSync(require.resolve('../pages/jobs/index.wxml'),'utf8');assert.match(hall,/catchtap="take"/,'card Take action remains separate');assert.match(hall,/bindtap="closePublicDetail"/);assert.match(hall,/publicDetail.canTake/);
  console.log('Public detail: card sheet, exact public fields, waiting status, full-order privacy allowlist, stale updates, ownership, bilingual copy, place/night/task variants and original acceptance controls passed.');
 })().catch(e=>{console.error(e);process.exitCode=1});

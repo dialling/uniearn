@@ -12,7 +12,7 @@
   <view class="journey-hero"><image class="journey-mascot" src="{{journey.mascot}}" mode="aspectFit"/><view class="journey-status"><view class="journey-status-title">{{journey.title}}</view><view class="journey-status-note">{{journey.note}}</view></view></view>
   <view class="journey-progress" aria-label="{{zh?'订单进度':'Order progress'}}"><view wx:for="{{steps}}" wx:key="name" class="journey-step {{item.done?'done':''}} {{item.current?'current':''}}"><view class="journey-step-dot">{{item.done||item.current?'✓':''}}</view><view class="journey-step-name">{{item.name}}</view><view class="journey-step-time">{{item.current?item.time:''}}</view></view></view>
   <view class="journey-route-section"><view class="journey-route"><view class="journey-route-point"><image class="journey-pin" src="/assets/journey-location.svg" mode="aspectFit"/><text aria-label="{{request.pickupDisplay||request.pickupPointDisplay||request.station}}">{{journey.pickupShort}}</text></view><text class="journey-route-arrow">→</text><view class="journey-route-point journey-destination"><image class="journey-pin" src="/assets/journey-location.svg" mode="aspectFit"/><text>{{request.destinationType==='place'?request.deliveryAddress:request.dorm}}</text></view></view><view class="journey-times"><view><text>{{zh?'发布：':'Posted: '}}</text><text>{{journey.posted}}</text></view><view wx:if="{{request.closesAt}}"><text>{{zh?'截止：':'Deadline: '}}</text><text>{{request.closeTime}}</text></view></view></view>
-  <view wx:if="{{request.isMine && (request.status==='waiting'||cancelWindow.phase!=='hidden')}}" class="journey-ticket-footer"><view class="journey-cancel-copy"><view wx:if="{{request.status==='waiting' && request.closesAt}}" class="journey-refund-note"><text class="journey-bullet">•</text><text>{{zh?'若 '+request.closeTime+' 前无人接单，将全额退款。':'Auto-refund if not taken by '+request.closeTime+'.'}}</text></view><view wx:if="{{request.status!=='waiting' && cancelWindow.phase!=='hidden'}}" class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}"><text class="journey-bullet">•</text><text>{{cancelWindow.tip}}</text></view></view><view wx:if="{{request.isMine && request.status==='waiting'}}" class="journey-offer-panel offer-card"><view class="offer-heading"><text class="strong">{{zh?'提高赏金':'Add to your offer'}}</text><text class="offer-current">{{zh?'当前赏金':'Your offer'}} <text>¥{{request.rewardText}}</text></text></view><view class="hint offer-hint">{{zh?'加价仅对整笔订单计算一次，接单后不可加价。':'Added once to the whole order. Available before acceptance only.'}}</view><view class="offer-options"><button wx:for="{{offerAmounts}}" wx:key="*this" class="offer-option" hover-class="offer-option-press" data-amount="{{item}}" bindtap="raise" disabled="{{raising}}">+¥{{item}}</button><button class="offer-option offer-custom" hover-class="offer-option-press" bindtap="customRaise" disabled="{{raising}}">{{zh?'自定义':'Custom'}}</button></view></view><view class="journey-ticket-actions"><button wx:if="{{cancelWindow.canCancel}}" class="offer-cancel journey-cancel" hover-class="journey-cancel-press" disabled="{{cancelling}}" loading="{{cancelling}}" bindtap="cancel">{{cancelWindow.button}}</button></view></view>
+  <view wx:if="{{request.isMine && (request.status==='waiting'||request.status==='taken'||request.status==='collected'||cancelWindow.phase!=='hidden')}}" class="journey-ticket-footer"><view class="journey-cancel-copy"><view wx:if="{{request.status==='waiting' && request.closesAt}}" class="journey-refund-note"><text class="journey-bullet">•</text><text>{{zh?'若 '+request.closeTime+' 前无人接单，将全额退款。':'Auto-refund if not taken by '+request.closeTime+'.'}}</text></view><view wx:if="{{request.status!=='waiting' && cancelWindow.phase!=='hidden'}}" class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}"><text class="journey-bullet">•</text><text>{{cancelWindow.tip}}</text></view></view><view wx:if="{{request.isMine && request.status==='waiting'}}" class="journey-offer-panel offer-card"><view class="offer-heading"><text class="strong">{{zh?'提高赏金':'Add to your offer'}}</text><text class="offer-current">{{zh?'当前赏金':'Your offer'}} <text>¥{{request.rewardText}}</text></text></view><view class="hint offer-hint">{{zh?'加价仅对整笔订单计算一次，接单后不可加价。':'Added once to the whole order. Available before acceptance only.'}}</view><view class="offer-options"><button wx:for="{{offerAmounts}}" wx:key="*this" class="offer-option" hover-class="offer-option-press" data-amount="{{item}}" bindtap="raise" disabled="{{raising}}">+¥{{item}}</button><button class="offer-option offer-custom" hover-class="offer-option-press" bindtap="customRaise" disabled="{{raising}}">{{zh?'自定义':'Custom'}}</button></view></view></view>
  </view>
 </view>
 
@@ -42,12 +42,10 @@
 <text wx:if="{{request.night}}" class="rider-photo-title-line">{{zh?'上传相关订单照片':'Upload related order photos'}}</text>
 <block wx:else>
 <block wx:if="{{zh}}">
-<text class="rider-photo-title-line">外卖已送达？</text>
-<text class="rider-photo-title-line">添加取件照片</text>
+<text class="rider-photo-title-line">放置位置照片（选填）</text>
 </block>
 <block wx:else>
-<text class="rider-photo-title-line">Food arrived?</text>
-<text class="rider-photo-title-line">Add pickup photos</text>
+<text class="rider-photo-title-line">Placement photos (optional)</text>
 </block>
 </block>
 </view>
@@ -63,12 +61,10 @@
 <text wx:if="{{request.night}}" class="rider-photo-title-line">{{zh?'上传相关订单照片':'Upload related order photos'}}</text>
 <block wx:else>
 <block wx:if="{{zh}}">
-<text class="rider-photo-title-line">外卖已送达？</text>
-<text class="rider-photo-title-line">添加取件照片</text>
+<text class="rider-photo-title-line">放置位置照片（选填）</text>
 </block>
 <block wx:else>
-<text class="rider-photo-title-line">Food arrived?</text>
-<text class="rider-photo-title-line">Add pickup photos</text>
+<text class="rider-photo-title-line">Placement photos (optional)</text>
 </block>
 </block>
 </view>
@@ -100,9 +96,13 @@
 <view wx:if="{{request.isMine && request.status==='delivered'}}" class="flow-card">
 <view class="soft hint">{{zh?'模拟合计 ¥'+request.total+'。确认后，预览版将向跑手结算 ¥'+request.rewardText+'。':'Demo total ¥'+request.total+'. Confirming settles ¥'+request.rewardText+' to the runner in this preview.'}}</view>
 
+<view wx:if="{{request.isMine && (request.status==='delivered'||request.status==='disputed')}}" class="flow-card">
+<button class="btn outline" disabled="{{!request.canReport}}" bindtap="issue">{{zh?'有问题':'Something’s wrong'}}</button>
+<view class="hint">{{zh?'送达 '+request.autoHours+' 小时内可确认或投诉；未确认将在 '+request.autoTime+' 自动入账给跑手。投诉后赏金冻结，我们将在 24 小时内处理。':'Confirm or report a problem within '+request.autoHours+' '+(request.autoHours===1?'hour':'hours')+' of delivery; otherwise it auto-credits the runner at '+request.autoTime+'. A report freezes the payout and we will resolve it within 24 hours.'}}</view>
+</view>
 <button class="btn orange" bindtap="confirm">{{zh?'已收到 · 确认 ¥':'Got it · confirm ¥'}}{{request.rewardText}}</button>
 
-<view class="hint">{{zh?'送达 '+request.autoHours+' 小时后（'+request.autoTime+'）自动确认入账。':'Automatically confirms '+request.autoHours+' '+(request.autoHours===1?'hour':'hours')+' after delivery ('+request.autoTime+').'}}</view>
+<view class="hint">{{zh?'送达 '+request.autoHours+' 小时内可确认或投诉；未确认将在 '+request.autoTime+' 自动入账给跑手。投诉后赏金冻结，我们将在 24 小时内处理。':'Confirm or report a problem within '+request.autoHours+' '+(request.autoHours===1?'hour':'hours')+' of delivery; otherwise it auto-credits the runner at '+request.autoTime+'. A report freezes the payout and we will resolve it within 24 hours.'}}</view>
 
 </view>
 <view wx:if="{{request.dispute}}" class="flow-card">
@@ -151,6 +151,10 @@
 </view>
 </view>
 
+<view wx:if="{{cancelWindow.phase!=='hidden'}}" class="flow-card cancel-window-card">
+<button class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel" disabled="{{!cancelWindow.canCancel}}">{{cancelWindow.button}}</button>
+<view class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}"><text class="{{cancelWindow.phase==='grace'?'cancel-clock':''}}">{{cancelWindow.tip}}</text></view>
+</view>
 <template is="customerCancelSheet" data="{{cancelOpen,cancelOptions,cancelReason,cancelNote,cancelNoteOpen,cancelReady,cancelling,zh}}"/>
 
 <view wx:if="{{request.cancelReasonLabel}}" class="flow-card"><view class="strong">{{zh?'取消原因':'Cancellation reason'}}</view><view>{{request.cancelReasonLabel}}</view></view>
