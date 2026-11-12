@@ -196,6 +196,22 @@
       {
         "type": "file",
         "value": "assets/yuni-worried.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/yuni-hello.png"
+      },
+      {
+        "type": "file",
+        "value": ".gitignore"
+      },
+      {
+        "type": "file",
+        "value": "project.config.json"
+      },
+      {
+        "type": "file",
+        "value": "project.private.config.json"
       }
     ],
     "include": []

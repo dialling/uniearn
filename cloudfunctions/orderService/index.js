@@ -149,6 +149,7 @@ exports.main = async (event = {}) => {
     for (const r of response.snapshot.requests) {
       [r.photo,r.riderPhoto,...(r.riderPhotos||[]),r.noticePhoto,...(r.orderPictures||[]),r.dispute&&r.dispute.photo,...(r.messages||[]).map(m=>m.photo)].forEach(p=>{if(typeof p==='string'&&p.startsWith('cloud://'))ids.add(p);});
     }
+    for(const ticket of [...(response.snapshot.supportTickets||[]),...(response.snapshot.supportInbox||[])])for(const message of ticket.messages||[])if(typeof message.photo==='string'&&message.photo.startsWith('cloud://'))ids.add(message.photo);
     const urls = {};
     try {
       const list = [...ids];

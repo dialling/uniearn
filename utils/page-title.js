@@ -10,6 +10,7 @@ const MAP={
   job:['选择快递','Choose parcels'],
   requests:['我的订单','My orders'],
   request:['订单详情','Order details'],
+  'order-feedback':['订单反馈','Order feedback'],
   posted:['已发布','Posted'],
   'public-job':['订单公开详情','Public order details'],
   create:['发布代取','Post a pick-up'],

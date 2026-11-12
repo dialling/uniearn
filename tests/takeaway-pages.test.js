@@ -20,7 +20,7 @@ async function login(name){h.user=name;orders.invalidate();store.reset();const a
  failAfterCommit=true;await p.post();assert.equal(postEvents.length,0,'successful posting must not queue a second status popup beside the video');stopPostEvents();assert.equal(h.state.requests.length,1,'lost response retry does not duplicate post');
  const rid=h.state.requests[0].id;assert.match(navigation,/request\/index\?celebrate=1&id=/);
  const mine=load('requests');mine.refresh();assert.equal(mine.data.active.length,1);
- const request=load('request',{id:rid});request.refresh();assert.equal(request.raise,undefined);assert.equal(h.state.requests[0].reward,6);
+ const request=load('request',{id:rid});request.refresh();assert.equal(typeof request.raise,'function');assert.equal(h.state.requests[0].reward,6);
  const ownBoard=load('jobs');ownBoard.refresh();assert.equal(ownBoard.data.cards.length,1,'own order appears as Your post');assert.equal(ownBoard.data.cards[0].mine,true);await ownBoard.take(e({ids:[rid]}));assert.equal(h.state.trips.length,0,'own order cannot be accepted');assert.match(notices.at(-1),/own post/);
  await login('runner');const jobs=load('jobs');jobs.refresh();assert.equal(jobs.data.cards.length,1);assert.ok(!JSON.stringify(jobs.data.cards).includes('13801026092'));
  await jobs.take(e({ids:[rid]}));const tid=h.state.trips[0].id;assert.match(navigation,/trip\/index/);

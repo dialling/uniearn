@@ -5,7 +5,7 @@ const wxml=fs.readFileSync('pages/request/index.wxml','utf8');
 const js=fs.readFileSync('pages/request/index.js','utf8');
 assert.ok(wxml.includes('journey-ticket')&&wxml.includes('journey-progress')&&wxml.includes('journey-mascot'),'Yuni and five-step progress are combined into one journey ticket');assert.ok(!wxml.includes('class="flow-card status-card"'),'no duplicate status banner');
 assert.equal(wxml.includes('class="timeline"'),false,'the old bottom vertical progress block is removed');
-assert.ok(!js.includes('offerAmounts:')&&!js.includes('customRaise()'),'Parcel/takeaway offer handlers removed');
+assert.ok(js.includes('offerAmounts:')&&js.includes('customRaise()'),'waiting offer presets and custom input are available');assert.ok(wxml.includes("request.isMine && request.status==='waiting'"),'increase panel is restricted to waiting owner');
 assert.match(wxml,/offer-cancel[^>]*bindtap="cancel"/,'free cancellation remains a real bordered button wired to the existing action');
 
 const request={id:'offer',category:'task',status:'waiting',reward:5,history:[]},state={requests:[request]};
@@ -16,4 +16,4 @@ for(const amount of [1.88,3.88,5.88,8.88]){
 request.raised=0;assert.doesNotThrow(()=>f.raise(state,'offer',2.66));
 for(const invalid of [0,-1,1.001,Infinity,101])assert.throws(()=>f.raise(state,'offer',invalid));
 request.raised=99;assert.throws(()=>f.raise(state,'offer',2),/limit/);
-console.log('Shared order flow and offer card: top five-step progress, old block removal, no parcel/takeaway raise buttons, cancellation wiring and backend amount parity passed.');
+console.log('Shared order flow and offer card: top five-step progress, old block removal, waiting-only increase entry, cancellation wiring and backend amount parity passed.');

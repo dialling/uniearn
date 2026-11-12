@@ -1,8 +1,10 @@
-const store=require('./store');let listeners=[],pending=[],current=null,currentListener=null;const seen={};
-function emit(event){if(!event||seen[event.key])return;seen[event.key]=true;if(store.get().yuniTips===false)return;pending.push(event);flush();}
-function flush(){if(store.get().yuniTips===false||current||!listeners.length||!pending.length)return;current=pending.shift();currentListener=listeners[listeners.length-1];currentListener(current);}
+const store=require('./store');let listeners=[],pending=[],current=null,currentListener=null;const seen={};let suspended=false;
+function emit(event){if(suspended||!event||seen[event.key])return;seen[event.key]=true;if(store.get().yuniTips===false)return;pending.push(event);flush();}
+function flush(){if(suspended)return;if(store.get().yuniTips===false||current||!listeners.length||!pending.length)return;current=pending.shift();currentListener=listeners[listeners.length-1];currentListener(current);}
 function subscribe(fn){listeners=listeners.filter(x=>x!==fn);listeners.push(fn);flush();return()=>{listeners=listeners.filter(x=>x!==fn);if(currentListener===fn&&current){pending.unshift(current);current=null;currentListener=null;}flush();};}
 function next(){current=null;currentListener=null;flush();}
+function suspend(){suspended=true;pending=[];const listener=currentListener;current=null;currentListener=null;if(listener)listener(null);}
+function resume(){suspended=false;}
 function reset(){pending=[];current=null;currentListener=null;Object.keys(seen).forEach(k=>delete seen[k]);}
 // Discard cosmetic events muted by the user; order notifications use a separate channel.
 if(store.subscribe)store.subscribe(()=>{if(store.get().yuniTips===false){pending=[];current=null;currentListener=null;}});
@@ -25,4 +27,4 @@ if(r.status==='cancelled'){title=zh?'订单已取消':'Order cancelled';text=zh?
 if(r.status==='refunded'){title=zh?'无人接单，已退款':'No runner · refunded';text=zh?'订单已关闭，测试退款已记录。':'The order closed and the demo refund is recorded.';pose='oops';}
 if(r.status==='disputed'){title=zh?'问题已提交':'Problem reported';text=zh?'结算已暂停，等待团队处理。':'Settlement is paused while the team checks.';pose='think';}
 if(title)emit({...orderMeta,key:'order:'+store.get().profile.accountId+':'+r.id+':'+r.status+':'+revision,title,text,pose});}
-module.exports={emit,subscribe,next,reset,status,reconcile};
+module.exports={suspend,resume,emit,subscribe,next,reset,status,reconcile};

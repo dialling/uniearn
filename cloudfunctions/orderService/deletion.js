@@ -64,6 +64,7 @@ function purge(state, actor, now = Date.now()) {
   }
 
   if (state.members && state.members[actor]) {
+    for(const ticket of state.members[actor].supportTickets||[])collect((ticket.messages||[]).map(m=>m.photo));
     counts.tickets = (state.members[actor].supportTickets || []).length;
     delete state.members[actor];
   }

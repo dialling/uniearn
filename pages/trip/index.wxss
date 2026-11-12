@@ -18,3 +18,5 @@
 
 .missing-parcel-link{color:#c46524}
 .page-dark .missing-parcel-link{color:#f4aa70}
+
+.trip-recipient-phone{margin-top:8rpx;font-size:25rpx;font-weight:600;line-height:1.5;color:#42745a;word-break:break-all}.page-dark .trip-recipient-phone{color:#b4d9bf}

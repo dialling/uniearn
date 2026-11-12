@@ -123,7 +123,7 @@ function hydrateAdmin(data) {
     if (!thread.length) thread.push({from:'user',text:String(t.topic || 'Support request'),at:t.createdAt || NOW});
     const first = thread.find(m => m.from === 'staff');
     TICKETS.push({id:t.id,user:t.accountId,topic:t.topic || 'Support',role:UMAP[t.accountId].certified ? 'runner' : 'student',
-      status:t.status,createdAt:t.createdAt || NOW,firstReplyAt:first?.at || null,thread,order:null});
+      status:t.status,createdAt:t.createdAt || NOW,firstReplyAt:first?.at || null,thread,order:t.orderId&&OMAP[t.orderId]?t.orderId:null});
   }
   for (const m of data.marks) if (ensureUser(m.accountId)) MARKS.push({id:m.id || String(m.index),runner:m.accountId,rule:String(m.reason || ''),givenAt:m.at,expiresAt:m.at+14*DAY,by:m.by || 'System'});
   activeRunners.push(...USERS.filter(u => u.certified)); realUsers.push(...USERS.filter(u => !u.isTest));

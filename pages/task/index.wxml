@@ -5,10 +5,17 @@
 <view class="flow-page task-page {{zh?'task-cn':''}} {{darkClass}}" wx:if="{{request}}">
 <view class="flow-title">{{request.isMine?ui.myTask:ui.yourTask}}</view>
 <view class="flow-sub">{{ui.badge}} · {{request.taskMode==='online'?(zh?'线上帮助':'Online help'):(zh?'线下帮助':'Offline help')}}</view>
-<view class="progress-row task-progress-row"><view class="progress-step active">{{request.status==='waiting'?(zh?'1 · 待接单':'1 · Waiting'):(zh?'1 · 完成任务':'1 · Do task')}}</view><view class="progress-step {{request.status==='delivered'||request.status==='confirmed'?'active':''}}">{{zh?'2 · 提交凭证':'2 · Submit proof'}}</view><view class="progress-step {{request.status==='confirmed'?'active':''}}">{{zh?'3 · 完成':'3 · Done'}}</view></view>
-<view wx:if="{{request.dueAt}}" class="flow-sub">{{ui.doneBy}}{{request.due}}</view>
-<template wx:if="{{request.status==='waiting'}}" is="waitingTicket" data="{{request,zh}}"/>
-<view wx:elif="{{!(request.isRunner && request.status==='taken')}}" class="flow-card status-card">
+<view wx:if="{{request.feedbackOpen}}" class="flow-card"><view class="strong" style="color:#b33838">{{zh?'问题反馈处理中':'Feedback in progress'}}</view><view class="hint">{{zh?'该订单的问题尚未解决，请跟进处理。':'This order has an unresolved issue. Please follow up.'}}</view></view>
+<view wx:if="{{request.status!=='waiting' && !request.feedbackOpen}}" class="progress-row task-progress-row"><view class="progress-step active">{{request.status==='waiting'?(zh?'1 · 待接单':'1 · Waiting'):(zh?'1 · 完成任务':'1 · Do task')}}</view><view class="progress-step {{request.status==='delivered'||request.status==='confirmed'?'active':''}}">{{zh?'2 · 提交凭证':'2 · Submit proof'}}</view><view class="progress-step {{request.status==='confirmed'?'active':''}}">{{zh?'3 · 完成':'3 · Done'}}</view></view>
+<view wx:if="{{request.dueAt && request.status!=='waiting'}}" class="flow-sub">{{ui.doneBy}}{{request.due}}</view>
+<view wx:if="{{request.status==='waiting' && !request.feedbackOpen}}" class="journey-ticket task-waiting-ticket">
+ <view class="journey-ticket-band"><text class="journey-brand">UniEarn</text><text class="journey-band-divider">|</text><text class="journey-band-title">{{zh?'任务旅程':'Task journey'}}</text><image class="journey-anchor" src="/assets/journey-anchor.svg" mode="aspectFit"/></view>
+ <view class="journey-ticket-body"><view class="journey-hero"><image class="journey-mascot" src="/assets/yuni-journey-ticket.png" mode="aspectFit"/><view class="journey-status"><view class="journey-status-title">{{zh?'等待跑手接单':'Waiting for a runner'}}</view><view class="journey-status-note">{{request.cancellation?(zh?'任务已退回大厅，正在等待新的跑手。':'Your task is back on the board, waiting for another runner.'):(zh?'任务已发布，正在等待跑手。':'Your task is on the job board.')}}</view></view></view>
+ <view class="journey-progress"><view wx:for="{{taskJourneySteps}}" wx:key="name" class="journey-step {{index===0?'current':''}}"><view class="journey-step-dot">{{index===0?'✓':''}}</view><view class="journey-step-name">{{item.name}}</view><view class="journey-step-time">{{index===0?item.time:''}}</view></view></view>
+ <view class="journey-route-section"><view class="task-ticket-type">{{request.taskMode==='online'?(zh?'线上帮助':'Online help'):(zh?'线下帮助':'Offline help')}}</view><view class="task-ticket-title">{{request.title}}</view><view class="journey-times"><view><text>{{zh?'发布：':'Posted: '}}</text><text>{{taskPostedTime}}</text></view><view><text>{{zh?'截止：':'Deadline: '}}</text><text>{{request.dueAt?request.due:(zh?'无截止时间':'No deadline')}}</text></view></view></view>
+ </view>
+</view>
+<view wx:elif="{{!request.feedbackOpen && !(request.isRunner && request.status==='taken')}}" class="flow-card status-card">
 <view class="status-stub"><image class="status-yuni" src="/assets/yuni-wave.png" mode="aspectFit"/></view>
 <view class="status-copy">
 <view class="flow-title">{{request.statusTitle}}</view>
@@ -30,10 +37,10 @@
 <view wx:if="{{request.isRunner && request.status==='taken'}}" class="task-completion">
 <view class="strong">{{ui.whenDone}}</view>
 <view class="hint">{{ui.sendHint}}</view>
-<button class="task-proof-upload" bindtap="handlePhoto" aria-label="{{photo?ui.retake:ui.takePhoto}}"><image src="/assets/camera.svg" mode="aspectFit"/><text>{{photo?ui.retake:ui.takePhoto}}</text></button>
+<view class="task-photo-card"><view class="task-photo-icon"><image src="/assets/camera.svg" mode="aspectFit"/></view><view class="task-photo-copy"><view class="task-photo-title">{{ui.takePhoto}}</view><view class="task-photo-sub">{{zh?'添加任务完成照片':'Add completion photos'}}</view><view class="task-photo-hint">{{zh?'选填 · 拍照或从相册选择':'Optional · Camera or album'}}</view></view><button class="task-photo-add" bindtap="handlePhoto"><text class="task-photo-plus">＋</text><text>{{zh?'上传':'Upload'}}</text></button></view>
 <image wx:if="{{photo}}" class="proof" src="{{photo}}" mode="aspectFill"/>
 <textarea class="field" data-field="note" bindinput="field" maxlength="500" value="{{note}}" placeholder="{{ui.notePlaceholder}}"/>
-<button class="btn task-primary" loading="{{sending}}" disabled="{{!photo||sending}}" bindtap="done">{{ui.sendBoth}}</button>
+<button class="btn task-primary" loading="{{sending}}" disabled="{{sending}}" bindtap="done">{{ui.sendBoth}}</button>
 <view class="task-secondary-actions">
 <button class="task-small-action" bindtap="giveBack">{{ui.giveBack}}</button>
 <button class="task-small-action" data-reason="mismatch" bindtap="giveBack">{{ui.mismatch}}</button>
@@ -71,12 +78,8 @@
 </view>
 <view wx:if="{{request.isMine && request.status==='delivered'}}" class="flow-card">
 <button class="btn" bindtap="confirm">{{ui.confirmPre}}{{request.rewardText}}</button>
-<button class="btn light" bindtap="issue">{{ui.wrong}}</button>
-<block wx:if="{{reporting}}">
-<view class="upload-card upload-blue"><view class="upload-head" bindtap="chooseIssuePhoto" hover-class="upload-card-press" role="button"><view class="upload-icon"><image src="/assets/photo-blue.svg" mode="aspectFit"/></view><view class="upload-copy"><view class="upload-title">{{zh?'问题凭证':'Issue evidence'}}</view><view class="upload-hint">{{zh?'拍照或从相册选择，帮助说明遇到的问题。':'Take or select a photo to explain the issue.'}}</view></view></view><text class="upload-count">{{(issuePhoto?1:0)}}/1</text><view wx:if="{{(issuePhoto?1:0)>0}}" class="upload-gallery"><view class="upload-tile"><image class="upload-image" src="{{issuePhoto}}" mode="aspectFill" data-photo="{{issuePhoto}}" bindtap="preview"/><view class="upload-remove" catchtap="removeIssuePhoto" role="button" aria-label="{{zh?'删除照片':'Remove photo'}}">×</view></view></view></view>
-<textarea class="field" value="{{issueNote}}" data-field="issueNote" bindinput="field" placeholder="{{ui.whatWrong}}"/>
-<button class="btn" disabled="{{!reason}}" bindtap="report">{{ui.sendUniearn}}</button>
-</block>
+
+
 </view>
 <view class="flow-card">
 <view class="strong">{{zh?'费用明细':'Price details'}}</view>
@@ -90,7 +93,7 @@
 </view>
 <view wx:if="{{request.status==='refunded'||request.status==='cancelled'}}" class="hint">{{ui.refund}}{{request.refundAmount}}</view>
 </view>
-<button class="btn light" bindtap="help">{{ui.help}}</button>
+<order-feedback order-id="{{request.id}}" resolvable="{{request.canResolveFeedback}}" completes="{{request.feedbackResolutionCompletes}}" zh="{{zh}}" dark="{{darkClass}}"/>
 </view>
 <view wx:else class="empty">{{ui.unavailable}}</view>
 <yuni-assistant topic=""/>

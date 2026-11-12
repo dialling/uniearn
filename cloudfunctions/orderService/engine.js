@@ -161,6 +161,11 @@ function execute(s, actor, account, event, now = Date.now()) {
   } else if (action === 'walletWithdraw') {
     wallet.settle(s, now);
     value = wallet.withdraw(s, actor, event.amount_cents, event.operationId, now, process.env.WALLET_TEST_WITHDRAW_FAIL === '1');
+  } else if(['orderFeedbackContact','orderFeedbackSubmit','orderFeedbackResolve'].includes(action)){
+    const feedback=require('./order-feedback');
+    if(action==='orderFeedbackContact')value=feedback.contact(s,actor,event,now);
+    if(action==='orderFeedbackSubmit')value=feedback.submit(s,actor,event,now,photo);
+    if(action==='orderFeedbackResolve')value=feedback.resolve(s,actor,event,now);
   } else if (action === 'supportRequest') {
     check(['order','payment','other','deletion'].includes(event.topic),'Choose a support topic.');
     const m=s.members[actor];m.supportTickets=m.supportTickets||[];
@@ -171,7 +176,7 @@ function execute(s, actor, account, event, now = Date.now()) {
     const m=s.members[actor];m.supportTickets=m.supportTickets||[];
     const text=String(event.text||'').trim().slice(0,500);
     check(text.length>0,'Enter a message.');
-    let t=m.supportTickets.filter(x=>x.status==='open').at(-1);
+    let t=m.supportTickets.filter(x=>!x.orderId&&x.status==='open').at(-1);
     if(!t){check(m.supportTickets.filter(x=>now-x.createdAt<86400000).length<10,'You can send up to 10 support requests a day.');t={id:'support-'+s.nextId++,topic:['order','payment','other','deletion'].includes(event.topic)?event.topic:'other',createdAt:now,status:'open'};m.supportTickets.push(t);m.supportTickets=m.supportTickets.slice(-50);}
     check((t.messages||[]).filter(msg=>now-msg.at<86400000).length<50,'Too many messages today. Please wait for the team to reply.');
     t.messages=t.messages||[];t.messages.push({text,at:now,mine:true});value={ticket:t};
@@ -239,7 +244,7 @@ function execute(s, actor, account, event, now = Date.now()) {
     if (action === 'riderPhoto') { check(['waiting','taken'].includes(r.status), 'Pickup has already started.'); const replacing=event.replace===true,incoming=Array.isArray(event.photos)?event.photos:(event.photo?[event.photo]:[]),existing=Array.isArray(r.riderPhotos)?r.riderPhotos.slice():(r.riderPhoto?[r.riderPhoto]:[]);check(incoming.length<=(replacing?3:3-existing.length),'Up to three rider photos.');check(replacing||incoming.length>0,'Add at least one rider photo.');r.riderPhotos=(replacing?incoming:existing.concat(incoming)).map(p=>photo(p,actor,true));r.riderPhoto=r.riderPhotos[0]||'';r.arrived=true;value={riderPhotos:r.riderPhotos.slice()}; }
   } else if (['pickup','deliver','missingParcel','runnerCancel','taskDone','sealBroken'].includes(action)) {
     const r = runnerRequest(s, event.id, actor);
-    if(action==='taskDone'){check(r.category==='task'&&r.status==='taken','This task cannot be completed now.');check(event.note===undefined||typeof event.note==='string','Invalid completion note.');const note=String(event.note||'').trim();check(note.length<=500,'Keep the completion note under 500 characters.');const proof=photo(event.photo,actor,true);r.status='delivered';r.photo=proof;r.completionNote=note;r.deliveredAt=now;const taskTrip=ownTrip(s,r.runnerId,actor);taskTrip.phase=taskTrip.requestIds.every(id=>['delivered','confirmed','disputed'].includes(s.requests.find(x=>x.id===id).status))?'done':'collect';if(taskTrip.phase==='done')taskTrip.joinUntil=now;f.event(r,'Completion submitted',now);rewards.recordBonus(s,actor,r,now);}
+    if(action==='taskDone'){check(r.category==='task'&&r.status==='taken','This task cannot be completed now.');check(event.note===undefined||typeof event.note==='string','Invalid completion note.');const note=String(event.note||'').trim();check(note.length<=500,'Keep the completion note under 500 characters.');const proof=photo(event.photo,actor);r.status='delivered';r.photo=proof;r.completionNote=note;r.deliveredAt=now;const taskTrip=ownTrip(s,r.runnerId,actor);taskTrip.phase=taskTrip.requestIds.every(id=>['delivered','confirmed','disputed'].includes(s.requests.find(x=>x.id===id).status))?'done':'collect';if(taskTrip.phase==='done')taskTrip.joinUntil=now;f.event(r,'Completion submitted',now);rewards.recordBonus(s,actor,r,now);}
     if(action==='sealBroken'){check(r.category==='takeout'&&r.status==='taken','Report a seal before pickup.');r.sealReportedAt=now;f.event(r,'Seal already broken at pickup',now);}
     if(action==='missingParcel')value=require('./parcel-missing').missingParcel(s,r.id,event.index,event.expectedCodes,now);
     if (action === 'pickup') {
@@ -292,7 +297,7 @@ function snapshot(s, actor, account, now = Date.now()) {
   const requests = s.requests.filter(r => r.status === 'waiting' && inCampus(r) || loggedIn && (r.ownerId === actor || myTrips.has(r.runnerId) || myTripOrders.has(r.id))).map(r => {
     const isMine = loggedIn && r.ownerId === actor, isRunner = myTrips.has(r.runnerId);
     if (isMine || isRunner) {
-      const out = clone(r); delete out.splitOriginal; delete out.ownerId;delete out.analytics;delete out.analyticsEvents;delete out.analyticsRunnerId;delete out.analyticsHistoryCapped;
+      const out = {...clone(r),...require('./order-feedback').state(s,r,actor)}; delete out.splitOriginal; delete out.ownerId;delete out.analytics;delete out.analyticsEvents;delete out.analyticsRunnerId;delete out.analyticsHistoryCapped;
       const rt=s.trips.find(t=>t.id===r.runnerId),thread=rt&&(s.threads||{})[r.id+':'+rt.id];
       out.runnerPhone=rt&&rt.runnerPhone||'';out.runnerStats=rt?(()=>{const st=stats(s,rt.runnerAccountId);return{jobsDone:st.jobsDone};})():{};out.unread=thread?thread.messages.filter(m=>m.sender!==actor&&m.at>(thread.read[actor]||0)).length:0;
       out.messages=thread?thread.messages.map(m=>({id:m.id,text:m.text,...(m.photo?{photo:m.photo}:{}),at:m.at,mine:m.sender===actor})):[];

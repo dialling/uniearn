@@ -1,0 +1,14 @@
+const assert=require('node:assert/strict'),{harness}=require('./helpers/order-cloud');
+(async()=>{
+ const h=harness();let result=await h.call('customer','create',{data:{category:'takeout',station:'Gate',dorm:'D01',room:'101',owner:'Customer',phone:'13801026092',arrived:true,bags:1,price:3}});assert.equal(result.ok,true,result.error);const id=result.value.id,req=()=>h.state.requests.find(r=>r.id===id);
+ const operation={id,amount:1.88,operationId:'waiting_raise_retry_0001'};result=await h.call('customer','raise',operation);assert.equal(result.ok,true,result.error);assert.equal(req().reward,4.88);await h.call('customer','raise',operation);assert.equal(req().reward,4.88,'retry credits once');
+ for(const who of ['runner','other']){const before=JSON.stringify(h.state);result=await h.call(who,'raise',{id,amount:1});assert.equal(result.ok,false);assert.equal(JSON.stringify(h.state),before)}
+ for(const amount of [0,-1,.001,Infinity,'2',101]){const before=JSON.stringify(h.state);result=await h.call('customer','raise',{id,amount});assert.equal(result.ok,false);assert.equal(JSON.stringify(h.state),before)}
+ let def,posts=[],confirm=true,finishConfirm;global.Page=v=>def=v;global.wx={getStorageSync:()=>null,setStorageSync(){},showToast(){}};const orders=require('../utils/orders'),ui=require('../utils/ui');orders.act=async(a,b)=>posts.push([a,b]);ui.confirm=async()=>confirm;require('../pages/request/index');const page={...def,id:'r',data:structuredClone(def.data),setData(v){Object.assign(this.data,v)},refresh(){}};page.data.request={isMine:true,status:'waiting',reward:3,raised:0};const event=amount=>({currentTarget:{dataset:{amount}}});
+ assert.equal(page.toggleOffer,undefined);await page.raise(event(1.88));assert.equal(posts.length,1);assert.deepEqual(posts[0],['raise',{id:'r',amount:1.88}]);assert.equal(page.data.raising,false);
+ confirm=false;await page.raise(event(1));assert.equal(posts.length,1);for(const amount of [0,-1,.001,101])await page.raise(event(amount));assert.equal(posts.length,1);
+ ui.confirm=()=>new Promise(resolve=>finishConfirm=resolve);const pending=page.raise(event(1));await page.raise(event(1));finishConfirm(true);await pending;assert.equal(posts.length,2,'double tap submits once');
+ page.data.request.isMine=false;await page.raise(event(1));assert.equal(posts.length,2);
+ const fs=require('fs'),path=require('path'),xml=fs.readFileSync(path.join(__dirname,'../pages/request/index.wxml'),'utf8');assert.ok(!xml.includes('offerOpen')&&!xml.includes('toggleOffer')&&!xml.includes('收起'));assert.ok(xml.includes('class="offer-options"')&&xml.includes('offer-option offer-custom'));assert.deepEqual(page.data.offerAmounts,[1.88,3.88,5.88,8.88,13.88,18.88]);
+ console.log('Waiting offer: exact cents, customer-only changes, retry idempotency, amount guards, confirm cancellation and duplicate-tap protection passed.');
+})().catch(e=>{console.error(e);process.exitCode=1});

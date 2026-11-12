@@ -6,10 +6,10 @@ const unique=values=>[...new Set(values.filter(Boolean))];
 // Accepted trips use the runner's request snapshot, including the full destination.
 function card(trip,requests,language='zh',now=Date.now()){
  const zh=language!=='en',name=value=>runner.name(post.label(value,language),language);
- const items=requests.map(r=>{
+ const items=requests.map(r=>{r=require('./order-feedback-state').view(r);
   const category=r.category||trip.category,food=category==='takeout',task=category==='task';let loc;try{loc=location.detail({...r,category},language,true);}catch(e){loc={area:'',building:r.dorm||trip.dorm||'',room:'',gender:'',genderKey:'',showDorm:false};}
   const destination=r.destinationType==='place'?clean(r.deliveryAddress)||clean(r.dorm):[loc.area,loc.building,loc.room?(zh?loc.room+'室':'Room '+loc.room):''].filter(Boolean).join(' ');
-  const status=({taken:zh?'待取件':'To collect',collected:zh?'配送中':'Delivering',delivered:zh?'已送达 · 等待确认':'Delivered · awaiting confirmation',confirmed:zh?'已完成':'Completed',disputed:zh?'有反馈 · 审核中':'Issue under review',cancelled:zh?'已取消':'Cancelled',refunded:zh?'已退款':'Refunded'})[r.status]||(zh?'进行中':'In progress');
+  const status=r.feedbackOpen?(zh?'问题反馈处理中':'Feedback in progress'):({taken:zh?'待取件':'To collect',collected:zh?'配送中':'Delivering',delivered:zh?'已送达 · 等待确认':'Delivered · awaiting confirmation',confirmed:zh?'已完成':'Completed',disputed:zh?'有反馈 · 审核中':'Issue under review',cancelled:zh?'已取消':'Cancelled',refunded:zh?'已退款':'Refunded'})[r.status]||(zh?'进行中':'In progress');
   let timing='';
   if(task&&r.dueAt)timing=(zh?'完成截止 ':'Complete by ')+clock(r.dueAt);
   else if(food&&r.night)timing=r.purchaseStatus==='needs_purchase'?(zh?'未下单 · 需垫付':'Not ordered · pay upfront'):(zh?'已下单':'Ordered');
@@ -20,14 +20,14 @@ function card(trip,requests,language='zh',now=Date.now()){
   else if(category==='parcel'&&['taken','collected'].includes(r.status))deadline=clean(r.deadline);
   const pickup=food?(r.night?clean(r.shop):require('./takeaway-lockers').label(r.pickupPoint,language)):task?'':unique((r.parcelItems||[]).map(p=>name(p.pickupPoint))).join(' / ')||name(r.station||trip.station);
   return {id:r.id,category,title:task?clean(r.title):'',origin:food?(r.night?(zh?'夜市代买':'Night market'):routeLabel.pickup({...r,category},language)):name(r.station||trip.station),destination:name(destination)||name(trip.dorm),gender:loc.gender,genderKey:loc.genderKey,
-   status,timing,deadline,deadlineLabel,pickup,pickupLabel:food?(r.night?(zh?'店名 / 摊位':'Shop / stall'):(zh?'外卖柜':'Locker')):(zh?'取件点':'Pickup'),
+   disputed:r.feedbackOpen,status,timing,deadline,deadlineLabel,pickup,pickupLabel:food?(r.night?(zh?'店名 / 摊位':'Shop / stall'):(zh?'外卖柜':'Locker')):(zh?'取件点':'Pickup'),
    note:clean(r.note),dropNote:runner.name(r.dropNote,language)||'',quantity:boxes(r),unit:task?(zh?'项':'tasks'):food?(zh?'袋':'bags'):(zh?'件':'parcels'),
    soup:!!r.soup,fragile:!!r.fragile,raised:Number(r.raised||0)>0,reward:Number(r.reward||0).toFixed(2)};
  });
- const done=trip.phase==='done'||requests.length>0&&requests.every(r=>['confirmed','cancelled','refunded'].includes(r.status));
+ const hasDispute=items.some(r=>r.disputed),done=!hasDispute&&(trip.phase==='done'||requests.length>0&&requests.every(r=>['confirmed','cancelled','refunded'].includes(r.status)));
  const genders=items.filter((r,i)=>r.genderKey&&items.findIndex(x=>x.genderKey===r.genderKey)===i).map(r=>({key:r.genderKey,label:r.gender}));
  const taskId=trip.category==='task'&&requests[0]?requests[0].id:'';
- return {...trip,taskId,done,items,genders,type:trip.category==='task'?(zh?'任务':'Task'):trip.category==='takeout'?(requests.some(r=>r.night)?(zh?'夜市代买':'Night market'):(zh?'外卖代取':'Takeaway')):(zh?'快递代取':'Parcels'),
+ return {...trip,taskId,done,hasDispute,items,genders,type:trip.category==='task'?(zh?'任务':'Task'):trip.category==='takeout'?(requests.some(r=>r.night)?(zh?'夜市代买':'Night market'):(zh?'外卖代取':'Takeaway')):(zh?'快递代取':'Parcels'),
   route:trip.category==='task'?(items[0]?.title||(zh?'任务':'Task')):(trip.category==='takeout'?(routeLabel.group(requests,language)||routeLabel.place(trip.station,language)):name(trip.station))+' → '+name(trip.dorm),
   total:requests.reduce((sum,r)=>sum+Number(r.reward||0),0).toFixed(2),quantity:items.reduce((sum,r)=>sum+r.quantity,0)};
 }

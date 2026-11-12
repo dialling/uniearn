@@ -4,13 +4,25 @@ const yuniEvents=require('./yuni-events');
 const cloudErrors=require('./cloud-errors');
 function track(name,props){try{require('./analytics').record(name,props);}catch(_){}}
 function pairMap(rows,value){const result={};rows.forEach(r=>{result[r.id]=value(r);});return result;}
-let queue = Promise.resolve(), syncing = null, mutating = false, timer = null;
+let syncing = null, mutating = false, timer = null;
+const jobs=[],activeActions=new Map();let queueRunning=false;
+let quietResume = true;
 let previous = null, lastError = '', foreground = true, generation = 0;
 const subscribers = new Set(), uploads = new Map(), STALE_OPERATION_MS = 20 * 3600000;
 // A cloud call that never answers must not freeze every later tap.
-const CALL_TIMEOUT_MS = 20000, MUTATION_STALE_MS = 30000;
-let mutatingAt = 0;
-function enqueue(fn) { const p = queue.then(fn); queue = p.catch(()=>{}); return p; }
+const CALL_TIMEOUT_MS = 20000;
+
+function enqueue(fn, priority=false) {
+ return new Promise((resolve,reject)=>{const job={fn,resolve,reject,priority};if(priority){const at=jobs.findIndex(x=>!x.priority);jobs.splice(at<0?jobs.length:at,0,job);}else jobs.push(job);Promise.resolve().then(drainQueue);});
+}
+async function drainQueue(){if(queueRunning)return;queueRunning=true;try{while(jobs.length){const job=jobs.shift();try{job.resolve(await job.fn());}catch(e){job.reject(e);}}}finally{queueRunning=false;}}
+function act(action,payload={}){
+ const key=JSON.stringify({action,...payload}),expectedGeneration=generation;
+ if(activeActions.has(key))return activeActions.get(key);
+ const result=enqueue(()=>{if(expectedGeneration!==generation)throw Error('Account changed. Please reopen this page.');return performAct(action,payload);},true);
+ activeActions.set(key,result);
+ const cleanup=()=>{if(activeActions.get(key)===result)activeActions.delete(key);};result.then(cleanup,cleanup);return result;
+}
 // Photo uploads must not queue behind sync()/act(): three photos should upload together, not one by one.
 const UPLOAD_SLOTS = 3; let uploadRunning = 0; const uploadWaiters = [];
 function uploadJob(fn) {
@@ -25,7 +37,7 @@ function apply(snapshot) {
   if (state.cloudRevision > snapshot.revision && state.profile.accountId === snapshot.accountId) return;
   try{yuniEvents.reconcile(snapshot);}catch(e){console.warn('Order notification cleanup failed',e);}
   if(!previous && state.cloudRevision>=0 && state.profile.accountId===snapshot.accountId)previous={accountId:snapshot.accountId,unread:pairMap(state.requests,r=>r.unread||0),tripIds:(state.publicTrips||[]).map(t=>t.id),status:pairMap(state.requests,r=>r.status)};
-  if (previous && previous.accountId === snapshot.accountId) {
+  if (previous && previous.accountId === snapshot.accountId && foreground && !quietResume) {
     const prefs=state.preferences||{},newMessage=snapshot.requests.some(r=>r.unread>(previous.unread?.[r.id]||0)),newRoute=(snapshot.publicTrips||[]).some(t=>!previous.tripIds?.includes(t.id)&&snapshot.requests.some(r=>r.isMine&&r.status==='waiting'&&r.station===t.station&&r.dorm===t.dorm));
     if(newMessage&&prefs.orderUpdates!==false)tell('New order message · open My orders');
     if(newRoute&&prefs.nearbyTrip)tell('A runner opened a trip on your route');
@@ -47,6 +59,7 @@ function apply(snapshot) {
     s.supportTickets=snapshot.supportTickets||[];s.supportInbox=snapshot.supportInbox||[];s.adjustments=snapshot.adjustments||[];s.rewards=snapshot.rewards;s.preferences=snapshot.preferences||{};s.photoURLs=snapshot.photoURLs||{}; s.cloudRevision=snapshot.revision; s.lastSyncAt=Date.now();
     s.profile={...s.profile,...snapshot.stats,accountId:snapshot.accountId};
   });
+  if(foreground)quietResume=false;
   subscribers.forEach(fn=>{try{fn();}catch(e){console.error('Order view refresh',e);}});
 }
 async function call(data) {
@@ -78,8 +91,17 @@ async function call(data) {
   }
   return result.value || {};
 }
+// Read receipts wait for pending operations without competing with order mutations.
+function readMessages(id) {
+ const expectedGeneration=generation;
+ return enqueue(()=>{
+  if(expectedGeneration!==generation)return;
+  return call({action:'readMessages',id,operationId:'read_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2)});
+ });
+}
 function sync() {
   if (syncing) return syncing;
+  if(!quietResume&&Date.now()-(store.get().lastSyncAt||0)<2000)return Promise.resolve();
   syncing = enqueue(async()=>{
     const syncGeneration=generation,value=await call({action:'sync'});
     if(syncGeneration!==generation)return value;
@@ -98,18 +120,11 @@ function sync() {
   }).finally(()=>{syncing=null;});
   return syncing;
 }
-async function act(action, payload = {}) {
-  if (mutating) {
-    // A lost cloud response used to leave this flag set forever; recover instead of blocking taps.
-    if (Date.now() - mutatingAt > MUTATION_STALE_MS) { console.warn('orders.act recovered a stale action'); mutating = false; }
-    else throw Error(store.get().language === 'en'
-      ? 'The previous action is still finishing. Try again in a second.'
-      : '上一个操作还在处理，请稍等一下再点。');
-  }
-  mutating=true; mutatingAt=Date.now();
+async function performAct(action, payload = {}) {
+  mutating=true;
   const started=Date.now();
   try {
-    return await enqueue(async()=>{
+    return await (async()=>{
       const s=store.get(), signature=JSON.stringify({action,...payload});
       let pending=s.pendingOrderOperation;
       // The server keeps retry receipts for 24 hours. Replaying an older operation could run it twice,
@@ -143,7 +158,7 @@ async function act(action, payload = {}) {
       store.update(x=>{delete x.pendingOrderOperation;});
       if (recovering && pending.signature!==signature) throw Error(store.get().language==='en'?'The previous action was recovered. Check your orders, then submit this change again.':'上一次操作已恢复，请查看订单后再提交本次操作。');
       track('action_result',{action,result:'ok',duration:Date.now()-started});return value;
-    });
+    })();
   } catch(e){track('action_result',{action,result:e.business?'business':'network',duration:Date.now()-started});throw e;}finally { mutating=false; }
 }
 async function upload(path) {
@@ -164,9 +179,9 @@ function bind(page, method='refresh') {
 }
 function subscribe(fn) { subscribers.add(fn); return ()=>subscribers.delete(fn); }
 function unbind(page) { if(page._orderRender)subscribers.delete(page._orderRender);page._orderRender=null; }
-function start() { foreground=true;stopTimer();sync().catch(()=>{});timer=setInterval(()=>{if(uploadRunning)return;sync().catch(()=>{});},10000); }
+function start() { quietResume=true;yuniEvents.resume();foreground=true;stopTimer();sync().catch(()=>{});timer=setInterval(()=>{if(uploadRunning||mutating||activeActions.size)return;sync().catch(()=>{});},10000); }
 function stopTimer() { if(timer)clearInterval(timer);timer=null; }
-function stop() { foreground=false;stopTimer(); }
+function stop() { foreground=false;quietResume=true;yuniEvents.suspend();stopTimer(); }
 function photoURL(path) { return store.get().photoURLs[path] || path; }
 function invalidate(){yuniEvents.reset();generation++;previous=null;uploads.clear();}
-module.exports={invalidate,sync,act,upload,bind,unbind,subscribe,start,stop,photoURL};
+module.exports={invalidate,sync,act,readMessages,upload,bind,unbind,subscribe,start,stop,photoURL};

@@ -1,0 +1,25 @@
+const assert=require('node:assert/strict'),{harness}=require('./helpers/order-cloud');
+const input=category=>category==='task'?{category,title:'Please help with this task',price:8}:{category,station:'Gate',dorm:'D01',room:'1111',owner:'Student',phone:'13801026092',...(category==='parcel'?{parcelItems:[{size:'small',code:'A'}]}:{arrived:true,bags:1,price:3})};
+(async()=>{
+ for(const category of ['task','takeout','parcel']){
+  const h=harness();let res=await h.call('customer','create',{data:input(category)});assert.equal(res.ok,true,res.error);const id=res.value.id;res=await h.call('runner','accept',{ids:[id]});assert.equal(res.ok,true,res.error);
+  // Existing order #326-style data: an open ticket while the order is still taken.
+  h.edit(s=>{s.members[h.engine.idFor('runner')].supportTickets=[{id:'legacy-feedback',topic:'order',orderId:id,status:'open',createdAt:Date.now(),messages:[{text:'Old unresolved report',at:Date.now(),mine:true}]}];s.trips[0].phase='done';});
+  res=await h.call('runner','sync');let row=res.snapshot.requests.find(r=>r.id===id);assert.equal(row.status,'taken');assert.equal(row.feedbackOpen,true);assert.equal(row.canResolveFeedback,true);assert.equal(row.feedbackResolutionCompletes,false);
+  let other=await h.call('customer','sync');const own=other.snapshot.requests.find(r=>r.id===id);assert.equal(own.feedbackOpen,true,'the counterparty also gets the warning');assert.equal(own.canResolveFeedback,false,'the counterparty cannot close the reporter’s ticket');assert.equal(other.snapshot.supportTickets.length,0,'no private feedback text is leaked');
+  const before=JSON.stringify(h.state);other=await h.call('customer','orderFeedbackResolve',{id});assert.equal(other.ok,false);assert.equal(JSON.stringify(h.state),before);
+  const pending={id,operationId:'resolve_legacy_feedback_0001'};res=await h.call('runner','orderFeedbackResolve',pending);assert.equal(res.ok,true,res.error);assert.equal(res.value.completed,false);row=res.snapshot.requests.find(r=>r.id===id);assert.equal(row.status,'taken','resolving feedback never completes unfulfilled work');assert.equal(row.feedbackOpen,false);assert.equal(row.canResolveFeedback,false);assert.equal(h.state.wallets?.[h.engine.idFor('runner')]?.balance_cents||0,0,'no early payment');await h.call('runner','orderFeedbackResolve',pending);assert.equal(h.state.requests.find(r=>r.id===id).status,'taken');
+  res=await h.call('runner','orderFeedbackSubmit',{id,reason:'Something else',note:'Another issue before pickup'});assert.equal(res.ok,true,res.error);assert.equal(res.snapshot.requests.find(r=>r.id===id).feedbackOpen,true,'new pre-delivery feedback is surfaced immediately');
+ }
+ let pageDefinition;global.wx={getStorageSync:()=>null,setStorageSync(){},setNavigationBarTitle(){},showToast(){}};global.Page=p=>pageDefinition=p;
+ const store=require('../utils/store'),state=require('../utils/order-feedback-state'),nav=require('../utils/nav');store.reset();
+ const request={id:'326',category:'task',title:'看看路拒绝',status:'taken',isRunner:true,isMine:false,runnerId:'t',reward:8,small:0,big:0,createdAt:Date.now(),collected:[],owner:'Customer'};
+ store.update(s=>{s.profile.accountId='runner';s.language='zh';s.requests=[request];s.trips=[{id:'t',category:'task',phase:'done',requestIds:['326']}];s.supportTickets=[{id:'old',orderId:'326',status:'open',messages:[]}];});
+ assert.equal(state.view(request).feedbackOpen,true,'cached old orders are recognized before the first fresh sync');
+ require('../pages/requests/index');let page={...pageDefinition,data:structuredClone(pageDefinition.data),setData(v){Object.assign(this.data,v)}};page.refresh();assert.equal(page.data.running.length,1);assert.equal(page.data.running[0].items[0].disputed,true);let route;nav.navigateTo=o=>route=o.url;page.feedback({currentTarget:{dataset:{id:'326'}}});assert.equal(route,'/pages/order-feedback/index?id=326');
+ require('../pages/task/index');page={...pageDefinition,id:'326',data:structuredClone(pageDefinition.data),setData(v){Object.assign(this.data,v)}};page.refresh();assert.equal(page.data.request.feedbackOpen,true);assert.equal(page.data.request.canResolveFeedback,true,'task detail can display the resolution button for its reporter');require('../utils/customer-cancel').stop(page);
+ require('../pages/request/index');page={...pageDefinition,id:'326',data:structuredClone(pageDefinition.data),setData(v){Object.assign(this.data,v)}};page.refresh();assert.equal(page.data.journey.title,'反馈处理中');assert.equal(page.data.request.canResolveFeedback,true);require('../utils/customer-cancel').stop(page);
+ store.update(s=>s.supportTickets[0].status='resolved');assert.equal(state.view(request).feedbackOpen,false);assert.equal(state.view(request).canResolveFeedback,false);
+ console.log('Open-feedback lifecycle: legacy pending tickets, all categories, counterparty warnings without private content, reporter-only resolution, no premature completion/payment, retry safety, cached list and detail entry passed.');
+})().catch(error=>{console.error(error);process.exitCode=1});
+

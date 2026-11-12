@@ -15,7 +15,7 @@ Page({
   const cards=[{key:'all',label:zh?'总订单':'Total orders',value:s.total,tap:true},{key:'waiting',label:zh?'待接单':'Waiting',value:s.waiting,tap:true},{key:'unpaid',label:zh?'未付款':'Unpaid',value:s.unpaid,tap:true},{key:'completed',label:zh?'已完成':'Completed',value:s.completed,tap:true},{key:'users',label:zh?'平台用户':'Users',value:s.users},{key:'runners',label:zh?'跑腿员':'Runners',value:s.runners}];
   await orders.sync();
   const topics={order:zh?'订单问题':'Order',payment:zh?'付款或退款':'Payment / refund',other:zh?'其他问题':'Other',deletion:zh?'删除账户与数据':'Account deletion'};
-  const supportInbox=(store.get().supportInbox||[]).map(t=>({...t,accountLabel:t.accountId.slice(0,8),topicLabel:topics[t.topic]||t.topic,time:time((t.messages||[]).at(-1)?.at||t.createdAt),messages:(t.messages||[]).map(m=>({...m,time:time(m.at)}))}));
+  const supportInbox=(store.get().supportInbox||[]).map(t=>({...t,accountLabel:t.accountId.slice(0,8),topicLabel:topics[t.topic]||t.topic,time:time((t.messages||[]).at(-1)?.at||t.createdAt),messages:(t.messages||[]).map(m=>({...m,photo:m.photo?orders.photoURL(m.photo):'',time:time(m.at)}))}));
   this.setData({stats:s,cards,supportInbox,applications:(r.applications||[]).map(a=>({...a,time:time(a.submittedAt)}))});
   await this.loadOrders(this.data.bucket);
  },

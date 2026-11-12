@@ -1,0 +1,16 @@
+const assert=require('node:assert/strict'),fs=require('fs'),path=require('path');let definition;
+global.Page=p=>definition=p;global.wx={getStorageSync:()=>null,setStorageSync(){}};
+const model=require('../utils/runner-trip-card'),store=require('../utils/store'),nav=require('../utils/nav');
+const now=Date.now(),base={station:'Gate',dorm:'D01',room:'1111',ownerId:'customer',isRunner:true,reward:3,small:1,big:0,createdAt:now,runnerId:'t',collected:[]};
+for(const category of ['takeout','parcel','task'])for(const language of ['zh','en']){
+ const trip={id:'t',category,station:'Gate',dorm:'D01',phase:'done',requestIds:['a','b']},requests=[{...base,id:'a',category,status:'confirmed'},{...base,id:'b',category,status:'disputed'}];
+ const before=JSON.stringify(requests),card=model.card(trip,requests,language);assert.equal(card.hasDispute,true);assert.equal(card.done,false,'a completed delivery with unresolved feedback stays in the active list');assert.deepEqual(card.items.map(r=>r.disputed),[false,true]);assert.match(card.items[1].status,language==='zh'?/反馈/:/Feedback|review/);assert.equal(JSON.stringify(requests),before);
+ requests[1].status='confirmed';const resolved=model.card(trip,requests,language);assert.equal(resolved.hasDispute,false);assert.equal(resolved.done,true,'resolution returns the trip to completed');
+}
+store.reset();store.update(s=>{s.profile.accountId='runner';s.language='zh';s.requests=[{...base,id:'b',category:'takeout',status:'disputed'}];s.trips=[{id:'t',category:'takeout',station:'Gate',dorm:'D01',phase:'done',requestIds:['b']}];});
+require('../pages/requests/index');const page={...definition,data:structuredClone(definition.data),setData(value){Object.assign(this.data,value)}};page.refresh();assert.equal(page.data.running.length,1);assert.equal(page.data.runningPast.length,0);assert.equal(page.data.running[0].hasDispute,true);
+let routes=[];nav.navigateTo=opts=>routes.push(opts.url);page.feedback({currentTarget:{dataset:{id:'b'}}});assert.deepEqual(routes,['/pages/order-feedback/index?id=b']);page.feedback({currentTarget:{dataset:{id:'unknown'}}});assert.equal(routes.length,1);
+const original=model.card,log=console.error;model.card=()=>{throw Error('Simulated legacy card failure')};console.error=()=>{};try{page.refresh();assert.equal(page.data.running[0].hasDispute,true);assert.equal(page.data.running[0].items[0].disputed,true);}finally{model.card=original;console.error=log;}
+store.update(s=>s.requests[0].status='confirmed');page.refresh();assert.equal(page.data.running.length,0);assert.equal(page.data.runningPast[0].hasDispute,false);page.feedback({currentTarget:{dataset:{id:'b'}}});assert.equal(routes.length,1,'a stale alert cannot open an unrelated/resolved feedback entry');
+const xml=fs.readFileSync(path.join(__dirname,'../pages/requests/runner-card.wxml'),'utf8');assert.ok(xml.includes('wx:if="{{order.disputed}}"'));assert.ok(xml.includes('data-id="{{order.id}}" catchtap="feedback"'));assert.ok(xml.includes('该订单有问题'));assert.ok(xml.includes('runner-issue-state'));
+console.log('Runner feedback alerts: all categories/locales, per-order warnings, active/completed transition, legacy fallback, exact-order navigation and tap isolation passed.');
