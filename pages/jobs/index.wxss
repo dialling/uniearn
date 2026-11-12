@@ -67,8 +67,8 @@
 @keyframes guide-float{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,-8rpx,0)}}
 @keyframes guide-toast-in{from{opacity:0;transform:translate3d(0,40rpx,0)}to{opacity:1;transform:translate3d(0,0,0)}}
 .guide-shade{z-index:100}
-.guide-focus{z-index:100;transition:var(--ue-transition,top .42s cubic-bezier(.3,.9,.25,1),left .42s cubic-bezier(.3,.9,.25,1),width .42s cubic-bezier(.3,.9,.25,1),height .42s cubic-bezier(.3,.9,.25,1));animation:var(--ue-animation,guide-spot-in .45s cubic-bezier(.3,.9,.25,1) backwards)}
-.guide-ring{position:absolute;left:-4rpx;top:-4rpx;right:-4rpx;bottom:-4rpx;border:4rpx solid #fff;border-radius:29rpx;animation:var(--ue-animation,guide-ring 1.8s ease-out .45s infinite)}
+.guide-focus{z-index:100;transition:var(--ue-transition,top .42s cubic-bezier(.3,.9,.25,1),left .42s cubic-bezier(.3,.9,.25,1),width .42s cubic-bezier(.3,.9,.25,1),height .42s cubic-bezier(.3,.9,.25,1),border-radius .42s cubic-bezier(.3,.9,.25,1));animation:var(--ue-animation,guide-spot-in .45s cubic-bezier(.3,.9,.25,1) backwards)}
+.guide-ring{position:absolute;left:-4rpx;top:-4rpx;right:-4rpx;bottom:-4rpx;border:4rpx solid #fff;border-radius:inherit;animation:var(--ue-animation,guide-ring 1.8s ease-out .45s infinite)}
 .guide-blocker{position:fixed;left:0;top:0;right:0;bottom:0;z-index:101}
 .guide-modal{z-index:102;box-shadow:0 20rpx 50rpx rgba(22,24,28,.18);animation:var(--ue-animation,guide-modal-in .46s cubic-bezier(.22,.9,.3,1) backwards)}
 .guide-step{animation:var(--ue-animation,guide-from-right .34s cubic-bezier(.22,.8,.3,1) backwards)}
