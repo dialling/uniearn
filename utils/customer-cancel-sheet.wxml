@@ -10,11 +10,8 @@
 <block wx:if="{{cancelNoteOpen}}">
 <view class="hint">{{zh?'补充说明（选填）':'A short note is optional.'}}</view>
 <textarea class="field" maxlength="200" value="{{cancelNote}}" bindinput="cancelNoteInput" placeholder="{{zh?'补充说明（选填）':'Optional note'}}"/>
-<view class="action-row">
-<button class="btn outline" bindtap="backCancel" disabled="{{cancelling}}">{{zh?'返回':'Back'}}</button>
-<button class="btn" disabled="{{cancelling}}" loading="{{motionEnabled && cancelling}}" bindtap="submitCancel">{{zh?'确认取消':'Confirm cancel'}}</button>
-</view>
 </block>
+<button wx:if="{{cancelReason}}" class="btn" disabled="{{cancelling||!cancelReady}}" loading="{{motionEnabled && cancelling}}" bindtap="submitCancel">{{zh?'取消订单':'Cancel order'}}</button>
 <button wx:else class="btn outline" bindtap="backCancel" disabled="{{cancelling}}">{{zh?'返回':'Back'}}</button>
 </view>
 </block>

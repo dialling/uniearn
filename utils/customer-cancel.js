@@ -88,6 +88,7 @@ function choose(page, event) {
   const value = event && event.currentTarget && event.currentTarget.dataset.value;
   const item = reasons.REASONS.find(row => row.key === value);
   if (!item || (page.data && page.data.cancelling)) return;
+  // Choosing only selects the reason; the sheet's Back button becomes "Cancel order" to send it.
   if (item.note) {
     page.setData({
       cancelReason: value,
@@ -97,7 +98,6 @@ function choose(page, event) {
     return;
   }
   page.setData({cancelReason: value, cancelNote: '', cancelNoteOpen: false, cancelReady: true});
-  return {submit: true, reason: value};
 }
 
 function note(page, event) {
