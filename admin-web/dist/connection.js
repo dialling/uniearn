@@ -4,24 +4,25 @@
 const adminConnection = {mode: 'locked', token: '', endpoint: '', user: null, busy: false, data: null};
 document.body.setAttribute('data-admin-locked', '');
 const access = document.createElement('section'); access.id = 'admin-access';
-access.innerHTML = `<form class="access-panel" id="admin-login"><span class="pill good">UNIEARN · OPERATIONS</span><h1>UniEarn 管理后台</h1><p>独立的校园运营工作台。请使用管理员账号和密码登录。</p><label for="admin-username">管理员账号</label><input id="admin-username" autocomplete="username" required maxlength="80"><label for="admin-password">密码</label><input id="admin-password" type="password" autocomplete="current-password" required maxlength="300"><p id="access-error" role="alert"></p><button class="primary" type="submit" id="admin-submit">登录后台</button></form>`;
+const loginZh=typeof LANG==='undefined'||LANG!=='en';
+access.innerHTML = `<form class="access-panel" id="admin-login"><span class="pill good">UNIEARN · OPERATIONS</span><h1>${loginZh?'UniEarn 管理后台':'UniEarn admin'}</h1><p>${loginZh?'独立的校园运营工作台。请使用管理员账号和密码登录。':'Campus operations console. Sign in with an admin username and password.'}</p><label for="admin-username">${loginZh?'管理员账号':'Username'}</label><input id="admin-username" autocomplete="username" required maxlength="80"><label for="admin-password">${loginZh?'密码':'Password'}</label><input id="admin-password" type="password" autocomplete="current-password" required maxlength="300"><p id="access-error" role="alert"></p><button class="primary" type="submit" id="admin-submit">${loginZh?'登录后台':'Sign in'}</button></form>`;
 document.body.prepend(access);
 const statusbar = document.createElement('div'); statusbar.id = 'admin-status'; statusbar.hidden = true;
 document.body.prepend(statusbar);
 adminConnection.endpoint = window.UNIEARN_ADMIN_ENDPOINT || '';
 function endpointURL(value) {
   const url = new URL(value);
-  if (url.username || url.password || url.hash || url.search || !(/^https:$/.test(url.protocol) || url.protocol === 'http:' && ['localhost','127.0.0.1'].includes(url.hostname))) throw Error('请填写 HTTPS 后台接口地址。');
+  if (url.username || url.password || url.hash || url.search || !(/^https:$/.test(url.protocol) || url.protocol === 'http:' && ['localhost','127.0.0.1'].includes(url.hostname))) throw Error(loginZh?'请填写 HTTPS 后台接口地址。':'Enter an HTTPS admin API address.');
   return url.href;
 }
 async function adminRequest(action, extra = {}) {
   const response = await fetch(adminConnection.endpoint, {method: 'POST', cache: 'no-store', credentials: 'omit',
     headers: {'Content-Type': 'application/json', ...(adminConnection.token ? {Authorization: 'Bearer ' + adminConnection.token} : {})},
     body: JSON.stringify({action, ...extra}), signal: AbortSignal.timeout(30000)});
-  const result = await response.json().catch(() => {throw Error('接口没有返回 JSON，请检查云函数部署和 HTTP 访问路径。');});
+  const result = await response.json().catch(() => {throw Error(loginZh?'接口没有返回 JSON，请检查云函数部署和 HTTP 访问路径。':'The API did not return JSON. Check the cloud function and HTTP path.');});
   if (!response.ok || !result.ok) {
     if (result.code === 'AUTH_REQUIRED' && action !== 'login') lockAdmin();
-    throw Error(result.error || '请求失败，请稍后重试。');
+    throw Error(result.error || (loginZh?'请求失败，请稍后重试。':'The request failed. Try again.'));
   }
   return result;
 }
@@ -46,16 +47,16 @@ if(new URLSearchParams(location.search).get('preview')==='1'){adminConnection.mo
 access.querySelector('form').onsubmit = async event => {
   event.preventDefault();
   const button = document.getElementById('admin-submit'), error = document.getElementById('access-error');
-  button.disabled = true; button.textContent = '正在连接…'; error.textContent = '';
+  button.disabled = true; button.textContent = loginZh?'正在连接…':'Connecting…'; error.textContent = '';
   try {
-    if(!adminConnection.endpoint)throw Error('后台服务正在配置中，请稍后登录。');
+    if(!adminConnection.endpoint)throw Error(loginZh?'后台服务正在配置中，请稍后登录。':'The admin service is still being configured. Try again later.');
     adminConnection.endpoint = endpointURL(adminConnection.endpoint);
     const result = await adminRequest('login', {username: document.getElementById('admin-username').value.trim(), password: document.getElementById('admin-password').value});
     adminConnection.token = result.token; adminConnection.user = result.user; adminConnection.mode = 'live';
     document.getElementById('admin-password').value = '';
     await refreshAdmin(); openAdmin();
-  } catch (e) {error.textContent = e.message === 'Failed to fetch' ? '无法连接云开发接口。请检查接口地址、跨域白名单和云函数是否已部署。' : e.message; adminConnection.token = ''; adminConnection.mode = 'locked';}
-  finally {button.disabled = false; button.textContent = '登录后台';}
+  } catch (e) {error.textContent = e.message === 'Failed to fetch' ? (loginZh?'无法连接云开发接口。请检查接口地址、跨域白名单和云函数是否已部署。':'Could not reach the CloudBase API. Check the endpoint, allowed origin and cloud function.') : e.message; adminConnection.token = ''; adminConnection.mode = 'locked';}
+  finally {button.disabled = false; button.textContent = loginZh?'登录后台':'Sign in';}
 };
 function replaceMap(target, list) {Object.keys(target).forEach(k => delete target[k]); for (const value of list) target[value.id] = value;}
 const validId = value => /^[A-Za-z0-9_-]{1,100}$/.test(String(value || ''));
@@ -142,30 +143,35 @@ async function refreshAdmin() {
   const result = await adminRequest('snapshot'); adminConnection.user=result.user; hydrateAdmin(result.data); render();
 }
 const suppliedRender = render, suppliedDrawer = renderDrawer;
+const zhUI=()=>typeof LANG==='undefined'||LANG!=='en';
 function annotateLiveView() {
   if (adminConnection.mode !== 'live') return;
   const view=document.getElementById('view');
   if (!view.querySelector('.live-notice')) {
     const notice=document.createElement('div');notice.className='live-notice';
-    notice.textContent='云开发真实数据 · 团队测试账本。已接入：订单/用户查询、跑腿申请审核、客服文字回复、争议结算、违规记录和后台备注。会员积分、营销配置、地点编辑及支付/提现尚未接入，保持只读。'+(adminConnection.data?.truncated?' 当前超过 5,000 条的列表已截断，请使用云端导出。':'');
+    const zh=zhUI();
+    notice.textContent=(zh
+      ?'云开发真实数据 · 团队测试账本。已接入：订单/用户查询、跑腿申请审核、客服文字回复、争议结算、违规记录和后台备注。会员积分、营销配置、地点编辑及支付/提现尚未接入，保持只读。'
+      :'Live CloudBase data · team test ledger. Connected: orders, members, runner reviews, support replies, dispute settlement, marks and admin notes. Membership points, promotions, places and payouts are not connected and stay read-only.')+(adminConnection.data?.truncated?(zh?' 当前超过 5,000 条的列表已截断，请使用云端导出。':' Lists over 5,000 rows are truncated; export from CloudBase.'):'');
     view.prepend(notice);
   }
   for (const id of ['role','me']) {const el=document.getElementById(id);if(el){el.innerHTML=`<option>${esc(id==='me'?adminConnection.user.username:roleName[adminConnection.user.role])}</option>`;el.disabled=true;}}
-  for (const el of document.querySelectorAll('[id^="cfg"],[id^="mem-"],[id^="goal-"],[id^="pu-"],[id^="pua-"],[id^="lk-"],[id^="bg-"],#feat-tasks,#ops-bal,#qr-file,#s-file')) {el.disabled=true;el.title='此项尚未接入小程序，当前只读';}
+  for (const el of document.querySelectorAll('[id^="cfg"],[id^="mem-"],[id^="goal-"],[id^="pu-"],[id^="pua-"],[id^="lk-"],[id^="bg-"],#feat-tasks,#ops-bal,#qr-file,#s-file')) {el.disabled=true;el.title=zhUI()?'此项尚未接入小程序，当前只读':'Not connected to the mini program; read-only';}
 }
 render = function(){suppliedRender();annotateLiveView();};
 renderDrawer = function(){suppliedDrawer();annotateLiveView();};
 // The supplied prototype invents order chats and automatic identity checks. Replace
 // those surfaces with factual records in connected mode.
 const suppliedChat=chatHTML,suppliedApp=dApp,suppliedSex=sexOf;
-chatHTML=function(o){return adminConnection.mode==='live'?'<p class="muted">订单内聊天和照片暂未开放到网页后台，请在云开发中按权限查询。</p>':suppliedChat(o);};
+chatHTML=function(o){return adminConnection.mode==='live'?'<p class="muted">'+(zhUI()?'订单内聊天和照片暂未开放到网页后台，请在云开发中按权限查询。':'Order chat and photos are not available in this web console.')+'</p>':suppliedChat(o);};
 sexOf=function(u){return adminConnection.mode==='live'?{g:u.sexChosen||'Unknown',src:'chosen'}:suppliedSex(u);};
 const suppliedSexL=sexL;
 sexL=(g,pl)=>g==='Unknown'?(LANG==='zh'?'未设置':'Not set'):suppliedSexL(g,pl);
 dApp=function(a){
   if(adminConnection.mode!=='live')return suppliedApp(a);
   const u=UMAP[a.user],v=u.verification;
-  return `<div class="drawer-head"><div><h3>跑腿员申请审核</h3><p>${esc(u.nick)} · ${fDT(a.appliedAt)}</p></div><button class="x" data-act="close" aria-label="Close">${IC.x}</button></div><div class="drawer-body"><dl class="dl"><dt>姓名</dt><dd>${esc(u.contact)}</dd><dt>性别</dt><dd>${u.sexChosen==='Male'?'男':u.sexChosen==='Female'?'女':'未填写'}</dd><dt>手机号</dt><dd>${esc(u.phone||'—')}</dd><dt>学号</dt><dd>${esc(u.sid||'—')}</dd><dt>宿舍</dt><dd>${esc(BLD[u.bld].name)}</dd><dt>状态</dt><dd>${esc(a.status)}</dd></dl><p class="muted">核对实际提交的信息后再审核。姓名、性别、手机号和学号均由管理员人工审核。</p>${a.status==='pending'?`<textarea id="admin-review-note" placeholder="审核备注；拒绝时必填" maxlength="300"></textarea><div class="row"><button class="btn primary" data-act="approve:${a.id}"${dis('approve')}>通过申请</button><button class="btn danger" data-act="reject:${a.id}"${dis('approve')}>拒绝申请</button></div>`:''}</div>`;
+  const zh=zhUI();
+  return `<div class="drawer-head"><div><h3>${zh?'跑腿员申请审核':'Runner application'}</h3><p>${esc(u.nick)} · ${fDT(a.appliedAt)}</p></div><button class="x" data-act="close" aria-label="Close">${IC.x}</button></div><div class="drawer-body"><dl class="dl"><dt>${zh?'姓名':'Name'}</dt><dd>${esc(u.contact)}</dd><dt>${zh?'性别':'Gender'}</dt><dd>${u.sexChosen==='Male'?(zh?'男':'Male'):u.sexChosen==='Female'?(zh?'女':'Female'):(zh?'未填写':'Not provided')}</dd><dt>${zh?'手机号':'Phone'}</dt><dd>${esc(u.phone||'—')}</dd><dt>${zh?'学号':'Student ID'}</dt><dd>${esc(u.sid||'—')}</dd><dt>${zh?'宿舍':'Dorm'}</dt><dd>${esc(BLD[u.bld].name)}</dd><dt>${zh?'状态':'Status'}</dt><dd>${esc(a.status)}</dd></dl><p class="muted">${zh?'核对实际提交的信息后再审核。姓名、性别、手机号和学号均由管理员人工审核。':'Check the submitted details before reviewing. Name, gender, phone and student ID are reviewed by an admin.'}</p>${a.status==='pending'?`<textarea id="admin-review-note" placeholder="${zh?'审核备注；拒绝时必填':'Review note, required to reject'}" maxlength="300"></textarea><div class="row"><button class="btn primary" data-act="approve:${a.id}"${dis('approve')}>${zh?'通过申请':'Approve'}</button><button class="btn danger" data-act="reject:${a.id}"${dis('approve')}>${zh?'拒绝申请':'Reject'}</button></div>`:''}</div>`;
 };
 const navigationActions=new Set(['view','go','range','order','member','runner','utab','back','app','ticket','sbox','ssel','quick','attDel','zoom','msex','ruleF','dispute','address','atab','close','page','creason','cback','cbld','corders','rwtab','ftab','coupon','lang','liveAll','clear','kgo','seg','mtab','rtab','appst','stab','chk','askRefund','reveal']);
 const valueOf=id=>document.getElementById(id)?.value || '';
@@ -175,13 +181,13 @@ async function performAdminAction(action,arg,parts) {
     const application=APPS.find(a=>a.id===arg);name='review';payload={accountId:application.user,submittedAt:application.appliedAt,decision:action==='reject'?'reject':'approve',note:valueOf('admin-review-note')};
   } else if(['send','sendResolve','reply'].includes(action)) {
     const ticket=TICKETS.find(t=>t.id===arg);name='supportReply';payload={accountId:ticket.user,ticketId:ticket.id,text:valueOf(action==='reply'?'reply-text':'s-reply')};
-    if(!payload.text.trim())throw Error('请输入回复内容。');
+    if(!payload.text.trim())throw Error(zhUI()?'请输入回复内容。':'Enter a reply.');
   } else if(['resolve','reopen'].includes(action)) {
     const ticket=TICKETS.find(t=>t.id===arg);name='supportStatus';payload={accountId:ticket.user,ticketId:ticket.id,status:action==='resolve'?'resolved':'open'};
   } else if(['uphold','rejectDsp'].includes(action)) {
     const order=OMAP[arg],note=valueOf('dsp-reason').trim();
-    if(note.length<10)throw Error('请填写至少 10 字的处理说明。');
-    if(action==='uphold'&&Math.round(Number(valueOf('dsp-amt'))*100)!==order.fee)throw Error('当前云端只支持全额测试退款，请填写完整配送金额。');
+    if(note.length<10)throw Error(zhUI()?'请填写至少 10 字的处理说明。':'Enter a decision note of at least 10 characters.');
+    if(action==='uphold'&&Math.round(Number(valueOf('dsp-amt'))*100)!==order.fee)throw Error(zhUI()?'当前云端只支持全额测试退款，请填写完整配送金额。':'The cloud ledger only supports a full test refund. Enter the full delivery amount.');
     name='resolveDispute';payload={id:arg,decision:action==='uphold'?'refund':'release',deduction:0,note};
   } else if(action==='note') {name='note';payload={kind:parts[0],id:parts[1],text:valueOf('note-text')};}
   else if(action==='tag') {name='tag';payload={kind:'member',id:parts[0],tag:parts.slice(1).join(':')};}
@@ -189,10 +195,10 @@ async function performAdminAction(action,arg,parts) {
   else if(action==='addMark') {name='addMark';payload={accountId:arg,reason:valueOf('mark-rule')};}
   else if(action==='rmMark') {const mark=MARKS.find(m=>m.id===arg);name='removeMark';payload={accountId:mark.runner,markId:mark.id};}
   else if(action==='export') {await exportAdmin(arg);return;}
-  else throw Error('该功能尚未接入小程序，当前不会修改任何云端数据。');
+  else throw Error(zhUI()?'该功能尚未接入小程序，当前不会修改任何云端数据。':'This control is not connected to the mini program and changes nothing.');
   await adminRequest(name,{...payload,operationId:crypto.randomUUID()});
   if(action==='sendResolve') {const ticket=TICKETS.find(t=>t.id===arg);await adminRequest('supportStatus',{accountId:ticket.user,ticketId:ticket.id,status:'resolved',operationId:crypto.randomUUID()});}
-  ST.support.draft=''; drawer=null; dstack=[]; await refreshAdmin(); toast('已保存到云开发。');
+  ST.support.draft=''; drawer=null; dstack=[]; await refreshAdmin(); toast(zhUI()?'已保存到云开发。':'Saved to CloudBase.');
 }
 document.addEventListener('click',event=>{
   if(adminConnection.mode!=='live')return;
@@ -208,7 +214,7 @@ document.addEventListener('change',event=>{
   if(adminConnection.mode!=='live')return;
   const id=event.target.id;
   if(['role','me','ops-bal','qr-file','s-file','s-link','feat-tasks'].includes(id)||/^(cfg|mem-|goal-|pu-|pua-|lk-|bg-)/.test(id)){
-    event.preventDefault();event.stopImmediatePropagation();toast('此项当前只读，未修改小程序数据。');
+    event.preventDefault();event.stopImmediatePropagation();toast(zhUI()?'此项当前只读，未修改小程序数据。':'This control is read-only and did not change the mini program.');
   }
 },true);
 async function exportAdmin(kind) {
@@ -217,6 +223,6 @@ async function exportAdmin(kind) {
   await adminRequest('export',{kind,operationId:crypto.randomUUID()});
   const cell=v=>{let s=String(v??'');if(/^[=+@\t\r-]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';};
   const blob=new Blob(['\uFEFF'+[head,...list].map(row=>row.map(cell).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'});
-  const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='uniearn-'+kind+'-'+new Date().toISOString().slice(0,10)+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('已导出，联系方式已脱敏。');
+  const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='uniearn-'+kind+'-'+new Date().toISOString().slice(0,10)+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast(zhUI()?'已导出，联系方式已脱敏。':'Exported. Contact details are masked.');
 }
 document.documentElement.lang=LANG==='zh'?'zh-CN':'en';

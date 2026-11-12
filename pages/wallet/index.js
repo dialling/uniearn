@@ -34,7 +34,7 @@ function weekStats(transactions, zh, now = Date.now()) {
   const income = days.map(d => rows.filter(r => r.day === d && r.cents > 0).reduce((n, r) => n + r.cents, 0));
   const paid = days.map(d => rows.filter(r => r.day === d && r.cents < 0).reduce((n, r) => n + r.cents, 0));
   const max = Math.max.apply(null, income.concat([1]));
-  const labels = ['日', '一', '二', '三', '四', '五', '六'];
+  const labels = zh ? ['日', '一', '二', '三', '四', '五', '六'] : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   return {
     bars: income.map(c => Math.max(0, Math.round((c / max) * 100))),
     labels: days.map((d, i) => (i === days.length - 1 ? (zh ? '今天' : 'Today') : (zh ? '周' : '') + labels[new Date(d + 'T00:00:00Z').getUTCDay()])),

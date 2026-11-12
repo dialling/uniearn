@@ -1,7 +1,7 @@
 const store=require('../../utils/store'),motion=require('../../utils/motion'),checkin=require('../../utils/checkin');
 const TEXT={
- zh:{title:'升级成功',sub:'继续积累积分，解锁下一等级',points:'当前积分',done:'Yuni 等级已升级',plus:'+1 级',cta:'继续使用',weekTitle:'连续登录奖励',weekSub:'已连续 7 天打开 UniEarn',weekPoints:'额外获得积分'},
- en:{title:'Level up!',sub:'Keep earning points to reach the next tier',points:'Points',done:'Yuni level unlocked',plus:'+1 level',cta:'Continue',weekTitle:'7-day login reward',weekSub:'You opened UniEarn 7 days in a row',weekPoints:'Bonus points'}
+ zh:{title:'升级成功',sub:'继续积累积分，解锁下一等级',points:'当前积分',done:'Yuni 等级已升级',plus:'+1 级',cta:'继续使用',weekTitle:'连续登录奖励',weekSub:'已连续 7 天打开 UniEarn',weekPoints:'额外获得积分',unit:'积分'},
+ en:{title:'Level up!',sub:'Keep earning points to reach the next tier',points:'Points',done:'Yuni level unlocked',plus:'+1 level',cta:'Continue',weekTitle:'7-day login reward',weekSub:'You opened UniEarn 7 days in a row',weekPoints:'Bonus points',unit:'points'}
 };
 Component({
  data:{motionEnabled:motion.enabled(),open:false,acknowledging:false,noticeId:'',noticeType:'',ui:TEXT.zh,level:'',levelNo:1,name:'',points:0,bonusPoints:10,videoSrc:'',videoFailed:false},
