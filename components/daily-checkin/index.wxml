@@ -18,7 +18,7 @@
   <view class="checkin-days"><view wx:for="{{days}}" wx:key="day" class="checkin-day {{item.done?'done':''}} {{item.today?'today':''}} {{item.day===7?'bonus-day':''}}"><view class="checkin-tile"><image class="tile-icon" src="{{item.done?(item.today?'/assets/yuni-feed/bones-white.png':'/assets/yuni-feed/bones.png'):(item.today?'/assets/yuni-feed/fish.png':'/assets/yuni-feed/fish-grey.png')}}"/><text wx:if="{{item.day===7}}" class="checkin-bonus">+10</text></view><text class="checkin-day-label">{{item.label}}</text></view></view>
   <view class="checkin-week-foot"><text>{{weekCount}}</text><text>{{weekBonus}}</text></view>
   <view wx:if="{{fed}}" class="checkin-result"><view class="checkin-result-copy"><view class="checkin-result-title">{{points?rewardTitle:ui.today}}</view><view class="checkin-result-sub">{{hint}}</view></view><text wx:if="{{points}}" class="checkin-points">+{{points}}</text></view>
-  <view class="checkin-rule">{{ui.goal}}</view>
+  <view class="checkin-rule">{{ui.goal}}</view><view class="checkin-cash">{{ui.cash}}</view>
   <button wx:if="{{collected}}" class="checkin-cta collected" disabled="{{true}}">{{ui.collected}}</button>
  </view>
 </view>
