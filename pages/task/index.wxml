@@ -2,6 +2,7 @@
 <import src="../../utils/waiting-ticket.wxml"/>
 <view style="{{motionStyle}}">
 <lang-switch></lang-switch>
+<view wx:if="{{celebrate&&request&&request.isMine}}" class="yuni-mask" bindtap="closeCelebrate" catchtouchmove="celebrateNoop"><view class="yuni-pop" catchtap="celebrateNoop"><view class="yuni-badge">{{zh?'任务':'Task'}}</view><view class="yuni-mark"><view class="yuni-tick"/></view><view class="yuni-title">{{zh?'任务已发布':'Task posted'}}</view><view class="yuni-sub">{{zh?'任务已发布，正在等待跑手接单':'Posted. Waiting for a runner.'}}</view><view class="yuni-stage yt-stage"><view class="yt-spark yt-spark-a"/><view class="yt-spark yt-spark-b"/><view class="yt-spark yt-spark-c"/><image class="yt-note" src="/assets/icons3d/task.svg" mode="aspectFit"/><image class="yt-yuni" src="/assets/yuni-work.png" mode="aspectFit"/><view class="yt-ground"/></view><view class="yuni-foot"><view class="yuni-foot-main"><view class="yuni-route">{{request.title}}</view><view class="yuni-meta">{{zh?'任务':'Task'}} · ¥{{request.rewardText}}</view></view><view class="yuni-pill">{{zh?'待接单':'Waiting'}}</view></view><view class="yuni-cta" bindtap="closeCelebrate">{{zh?'查看我的任务':'View my task'}}<text class="yuni-arrow">›</text></view></view></view>
 <view class="flow-page task-page {{zh?'task-cn':''}} {{darkClass}}" wx:if="{{request}}">
 <view class="flow-title">{{request.isMine?ui.myTask:ui.yourTask}}</view>
 <view class="flow-sub">{{ui.badge}} · {{request.taskMode==='online'?(zh?'线上帮助':'Online help'):(zh?'线下帮助':'Offline help')}}</view>

@@ -2,27 +2,17 @@
  <view class="flow-card runner-card {{item.hasDispute?'runner-has-issue':''}} {{item.hasDispute && item.items.length===1?'runner-issue-single':''}}" data-id="{{item.id}}" data-taskid="{{item.taskId}}" bindtap="trip" hover-class="runner-card-press" role="button" aria-label="{{zh?'查看任务':'Open job'}} {{item.route}}">
   <view class="runner-card-header">
    <view class="runner-badges">
-    <view class="runner-kind"><text class="badge {{item.category}}">{{item.type}}</text><view wx:if="{{item.hasUnread}}" class="runner-unread-dot" data-id="{{item.unreadOrderId}}" catchtap="openChat" role="button" aria-label="{{zh?'查看未读消息':'Open unread messages'}}"/></view>
+    <view class="runner-kind"><image class="nj-tile sm" mode="aspectFit" src="/assets/icons3d/{{item.category==='takeout'?'takeout':item.category==='task'?'task':'parcel'}}.svg"/><text class="badge {{item.category}}">{{item.type}}</text><view wx:if="{{item.hasUnread}}" class="runner-unread-dot" data-id="{{item.unreadOrderId}}" catchtap="openChat" role="button" aria-label="{{zh?'查看未读消息':'Open unread messages'}}"/></view>
     <text wx:for="{{item.genders}}" wx:for-item="gender" wx:key="key" class="badge hall-gender dorm-{{gender.key}}">{{gender.label}}</text>
     <block wx:if="{{item.items.length===1}}"><text wx:if="{{item.items[0].raised}}" class="badge runner-raised">{{zh?'已加价':'Raised'}}</text><text wx:if="{{item.items[0].soup}}" class="badge runner-caution">{{zh?'含汤或饮品':'Soup / drinks'}}</text><text wx:if="{{item.items[0].fragile}}" class="badge runner-caution">{{zh?'易碎':'Fragile'}}</text></block>
    </view>
    <text class="runner-price"><text class="runner-currency">¥</text>{{item.total}}</text>
   </view>
-  <view wx:for="{{item.items}}" wx:for-item="order" wx:key="id" class="runner-order {{order.disputed && item.items.length>1?'runner-order-issue':''}}">
+  <view wx:if="{{item.items.length && item.items[0].category!=='task'}}" class="nr-from">{{zh?'取自 ':'From '}}{{item.items[0].origin}}</view>
+  <view wx:for="{{item.items}}" wx:for-item="order" wx:key="id" class="runner-order nr-order {{order.disputed && item.items.length>1?'runner-order-issue':''}}">
    <button wx:if="{{order.disputed}}" class="runner-issue-corner" data-id="{{order.id}}" catchtap="feedback">{{zh?'该订单有问题':'Order issue'}}</button>
-   <view wx:if="{{item.items.length>1}}" class="runner-order-heading">
-    <text>{{zh?'订单':'Order'}} {{index+1}} · {{order.quantity}} {{order.unit}}<text wx:if="{{order.gender}}"> · {{order.gender}}</text></text>
-    <text>¥{{order.reward}}</text>
-   </view>
-   <view class="runner-route">
-    <text wx:if="{{order.category==='task'}}" class="runner-destination">{{order.title}}</text>
-    <block wx:else><text class="runner-origin">{{order.origin}}</text><text class="runner-arrow">→</text><text class="runner-destination">{{order.destination}}</text></block>
-   </view>
-   <view class="runner-state {{order.disputed?'runner-issue-state':''}}"><text>{{order.status}}</text><text wx:if="{{order.timing && !order.disputed}}" class="runner-timing">{{order.timing}}</text><text wx:if="{{order.deadline}}" class="runner-timing">{{order.deadlineLabel}} {{order.deadline}}</text><block wx:if="{{item.items.length>1}}"><text wx:if="{{order.soup}}" class="runner-flag">{{zh?'含汤或饮品':'Soup / drinks'}}</text><text wx:if="{{order.fragile}}" class="runner-flag">{{zh?'易碎':'Fragile'}}</text><text wx:if="{{order.raised}}" class="runner-flag">{{zh?'已加价':'Raised'}}</text></block></view>
-   <view wx:if="{{order.category==='task' && order.destination}}" class="runner-info"><text class="runner-info-label">{{zh?'地点':'Location'}}</text><text class="runner-info-value">{{order.destination}}</text></view>
-   <view wx:if="{{order.pickup}}" class="runner-info"><text class="runner-info-label">{{order.pickupLabel}}</text><text class="runner-info-value">{{order.pickup}}</text></view>
-   <view wx:if="{{order.note}}" class="runner-info runner-note"><text class="runner-info-label">{{zh?'备注':'Note'}}</text><text class="runner-info-value">{{order.note}}</text></view>
-   <view wx:if="{{order.dropNote}}" class="runner-info runner-note"><text class="runner-info-label">{{zh?'送达方式':'Drop-off'}}</text><text class="runner-info-value">{{order.dropNote}}</text></view>
+   <view class="nr-line"><text class="runner-destination nr-dest">{{order.category==='task'?order.title:order.destination}}</text><text wx:if="{{item.items.length>1}}" class="nr-fee">¥{{order.reward}}</text></view>
+   <view class="runner-state {{order.disputed?'runner-issue-state':''}}"><text>{{order.status}}</text><text wx:if="{{order.timing && !order.disputed}}" class="runner-timing">{{order.timing}}</text><text wx:if="{{order.deadline}}" class="runner-timing">{{order.deadlineLabel}} {{order.deadline}}</text></view>
   </view>
   <view wx:if="{{!item.items.length}}" class="runner-route"><text class="runner-destination">{{item.route}}</text></view>
   <view class="runner-card-footer"><text class="runner-count">{{item.items.length}} {{zh?'单':'orders'}}<text wx:if="{{item.quantity}}"> · {{item.quantity}} {{item.category==='task'?(zh?'项':'tasks'):item.category==='takeout'?(zh?'袋':'bags'):(zh?'件':'parcels')}}</text></text><text class="runner-open">{{zh?'查看任务':'Open job'}} <text>›</text></text></view>

@@ -35,3 +35,65 @@
 .requests-page .progress-strip>view{border-top:0;padding-top:0}.requests-page .progress-strip>view::before{height:7rpx}.requests-page .progress-strip .complete{color:#0b7a55}
 
 .requests-page{padding:0 0 185rpx}.orders-header{background:transparent;padding:28rpx 33rpx 22rpx}.orders-header .flow-title{margin:0 0 13rpx}.orders-header .flow-sub{margin:0 0 25rpx;font-size:23rpx}.orders-header .service-tabs{margin:0}.orders-content{padding:0 33rpx}.orders-content .orders-empty{padding:43rpx 33rpx;margin:25rpx 0 20rpx}.orders-empty>image{width:135rpx;height:170rpx}.orders-empty .hint{font-size:24rpx;line-height:1.65;margin:22rpx 0 8rpx}.orders-content .post-entry{padding:24rpx 26rpx;gap:17rpx;min-height:99rpx;border-radius:25rpx;margin:19rpx 0}.post-entry .badge{margin:0;flex:none;font-size:19rpx;padding:6rpx 14rpx}.post-entry>.strong{flex:1;min-width:0;font-size:26rpx;line-height:1.4}.post-entry .entry-price{flex:none;color:#6b6860;font-size:22rpx;white-space:nowrap}.post-entry.takeaway-entry{border:2rpx solid #0b7a55}.runner-empty-icon{width:90rpx;height:90rpx;border-radius:50%;background:#e7f3ed;display:flex;align-items:center;justify-content:center;margin:4rpx auto 24rpx}.runner-empty-icon image{width:40rpx;height:40rpx}.orders-content .runner-empty{padding:43rpx 33rpx}.runner-empty .find-job{display:inline-flex;align-items:center;justify-content:center;width:190rpx;min-width:190rpx;max-width:190rpx;min-height:85rpx;height:85rpx;line-height:1;padding:0;margin:23rpx auto 3rpx;border-radius:23rpx;font-size:27rpx}
+
+/* ---- Cleaner order cards, 2026-11 (design/jobs-orders-preview) ---- */
+.nj-tile{display:block;flex:none;width:84rpx;height:84rpx;padding:11rpx;box-sizing:border-box;border-radius:26rpx;background:linear-gradient(160deg,#fbfaf6,#efede6);box-shadow:inset 0 3rpx 0 rgba(255,255,255,.9),inset 0 -3rpx 0 rgba(22,24,28,.04),0 6rpx 12rpx rgba(22,24,28,.07)}
+.nj-tile.sm{width:76rpx;height:76rpx;border-radius:24rpx}
+.nj-tile.mute{filter:grayscale(1);opacity:.6}
+.page-dark .nj-tile{background:linear-gradient(160deg,#34362f,#2a2c26);box-shadow:inset 0 2rpx 0 rgba(255,255,255,.08)}
+.requests-page .flow-card.no-card{padding:32rpx;border-radius:36rpx}
+.requests-page .order-card .order-status.no-status{display:inline-flex;align-items:center;gap:8rpx;padding:7rpx 20rpx;border-radius:999rpx;background:#e7f3ed;color:#0b7a55;font-size:24rpx;line-height:1.5}
+.requests-page .order-card .order-status.no-status.status-waiting{background:#fde8dc;color:#c2410c}
+.requests-page .order-card .order-status.no-status.status-delivered{background:#0b7a55;color:#fff}
+.requests-page .order-card .order-status.no-status.no-warn{background:#fdeceb;color:#b42318}
+.requests-page .order-card .no-top{display:flex;align-items:center;gap:20rpx;margin:24rpx 0 0}
+.no-title{flex:1;min-width:0;display:flex;flex-direction:column}
+.no-title .strong{font-size:29rpx;line-height:1.35}
+.no-title .hint{margin:4rpx 0 0}
+.no-price{flex:none;font-size:34rpx;font-weight:700}
+.requests-page .order-card .progress-strip.no-track{display:flex;gap:0;margin:84rpx 0 6rpx}
+.requests-page .order-card .no-track .no-step{flex:1;position:relative;padding-top:34rpx;text-align:center;font-size:20rpx;line-height:1.4;white-space:nowrap;color:#8a877e}
+.requests-page .order-card .no-track .no-step::before{content:'';position:absolute;z-index:1;left:50%;top:2rpx;width:20rpx;height:20rpx;margin-left:-10rpx;box-sizing:border-box;border-radius:50%;border:3rpx solid #cfccc2;background:#fff}
+.requests-page .order-card .no-track .no-step::after{content:'';position:absolute;left:50%;top:10rpx;width:100%;height:4rpx;background:#e2e0d9}
+.requests-page .order-card .no-track .no-step:last-child::after{display:none}
+.requests-page .order-card .no-track .no-step.complete{color:#44423c}
+.requests-page .order-card .no-track .no-step.complete::before{background:#0b7a55;border-color:#0b7a55}
+.requests-page .order-card .no-track .no-step.complete::after{background:#0b7a55}
+.requests-page .order-card .no-track .no-step.now{color:#0b7a55;font-weight:700}
+.requests-page .order-card .no-track .no-step.now::before{box-shadow:0 0 0 7rpx #e7f3ed}
+.requests-page .order-card .no-track .no-step.now::after{background:#e2e0d9}
+.no-yuni{position:absolute;z-index:2;left:50%;top:-64rpx;width:64rpx;height:64rpx;margin-left:-32rpx;animation:var(--ue-animation,no-bob 2.4s ease-in-out infinite)}
+@keyframes no-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5rpx)}}
+.order-history-card .nj-tile{align-self:center}
+.order-history-card>.no-past-main{flex:1;min-width:0}
+.requests-page .runner-kind{display:flex;align-items:center}
+.runner-kind .nj-tile{margin-right:12rpx}
+.page-dark.requests-page .order-card .no-track .no-step::before{background:#2a2c26;border-color:#4a4b45}
+.page-dark.requests-page .order-card .no-track .no-step::after{background:#3a3b37}
+.nr-from{margin-top:18rpx;font-size:24rpx;line-height:1.5;color:#6b6860}
+.requests-page .runner-card .nr-order{padding:18rpx 0 0;margin-top:18rpx;border-top:1rpx solid #efeee9}
+.nr-line{display:flex;align-items:baseline;justify-content:space-between;gap:20rpx}
+.requests-page .runner-card .nr-dest{flex:1;min-width:0;font-size:30rpx;font-weight:700;line-height:1.35;color:#16181c}
+.nr-fee{flex:none;font-size:25rpx;color:#6b6860}
+.page-dark.requests-page .runner-card .nr-dest{color:#edebe4}
+.page-dark.requests-page .runner-card .nr-order{border-top-color:#3a3b37}
+/* Order cards as approved in the mock-up: white card, short title, next-step line */
+.requests-page .flow-card.order-card.no-card{background:#fff;border-color:#e2e0d9;box-shadow:0 4rpx 16rpx rgba(32,53,39,.035)}
+.requests-page .order-card .no-track .no-step.now.moving::after{background:repeating-linear-gradient(90deg,#0b7a55 0,#0b7a55 10rpx,transparent 10rpx,transparent 20rpx);background-size:20rpx 4rpx;animation:var(--ue-animation,no-dash .6s linear infinite)}
+@keyframes no-dash{to{background-position:20rpx 0}}
+.no-hint{margin-top:24rpx;font-size:25rpx;line-height:1.5;color:#6b6860}
+.no-confirm{margin-top:24rpx;padding:22rpx 16rpx;border-radius:24rpx;background:#0b7a55;color:#fff;text-align:center;font-size:28rpx;font-weight:700;line-height:1.5}
+.page-dark.requests-page .flow-card.order-card.no-card{background:#242522;border-color:#3a3b37}
+.page-dark .no-hint{color:#a9a69c}
+/* New-message strip: who + preview on the left, one-tap reply on the right */
+.requests-page .order-message-notice.no-msg{display:flex;align-items:center;gap:16rpx;margin-top:22rpx;padding:16rpx 16rpx 16rpx 24rpx;border:1rpx solid #cfe8dc;border-radius:24rpx;background:#f3faf6}
+.requests-page .no-msg .no-msg-main{flex:1;min-width:0;display:flex;align-items:center;gap:10rpx;margin:0;padding:0;background:transparent;border:0}
+.requests-page .no-msg .no-msg-peer{flex:none;display:flex;align-items:center;gap:8rpx;margin:0;font-size:26rpx;font-weight:700;color:#16181c}
+.requests-page .no-msg .no-msg-text{flex:1;min-width:0;margin:0;font-size:26rpx;color:#16181c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.no-msg-reply{flex:none;padding:12rpx 22rpx;border-radius:18rpx;background:#0b7a55;color:#fff;font-size:25rpx;font-weight:700;line-height:1.5;white-space:nowrap}
+.no-msg-reply.busy{opacity:.6}
+.page-dark.requests-page .order-message-notice.no-msg{background:#20302a;border-color:#2f5345}
+.page-dark.requests-page .no-msg .no-msg-peer,.page-dark.requests-page .no-msg .no-msg-text{color:#edebe4}
+/* Feedback 2026-11-13: completed orders only, no tinted rows */
+.requests-page .flow-card.order-history-card{background:#fff;border-color:#e2e0d9}
+.page-dark.requests-page .flow-card.order-history-card{background:#242522;border-color:#3a3b37}

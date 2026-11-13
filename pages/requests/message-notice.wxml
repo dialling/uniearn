@@ -1,8 +1,9 @@
 <template name="message-notice">
- <view wx:if="{{notice.unread>0}}" class="order-message-notice">
-  <view class="order-message-summary" data-id="{{notice.id}}" catchtap="openChat" role="button" aria-label="{{zh?'查看订单新消息':'Open unread order messages'}}">
-   <view class="order-message-heading"><text>{{notice.peer}}{{zh?'发来新消息':' sent a message'}}</text><text class="order-message-count">{{notice.unread>99?'99+':notice.unread}}</text></view>
-   <view class="order-message-preview">{{notice.preview}}</view>
+ <view wx:if="{{notice.unread>0}}" class="order-message-notice no-msg">
+  <view class="order-message-summary no-msg-main" data-id="{{notice.id}}" catchtap="openChat" role="button" aria-label="{{zh?'查看订单新消息':'Open unread order messages'}}">
+   <view class="order-message-heading no-msg-peer"><text>{{notice.peer}}{{zh?'：':':'}}</text><text wx:if="{{notice.unread>1}}" class="order-message-count">{{notice.unread>99?'99+':notice.unread}}</text></view>
+   <view class="order-message-preview no-msg-text">{{notice.preview}}</view>
   </view>
+  <view wx:if="{{notice.canReply}}" class="no-msg-reply {{replyingId===notice.id?'busy':''}}" data-id="{{notice.id}}" catchtap="quickMessage" role="button">{{replyingId===notice.id?(zh?'发送中…':'Sending…'):(zh?'收到，谢谢！':'Got it, thanks!')}}</view>
  </view>
 </template>

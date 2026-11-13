@@ -127,5 +127,5 @@ page{background:#f2f1ec}.journey-page{background:#f2f1ec;padding:30rpx 28rpx 75r
 /* 取消原因弹层：选项变多后按钮可能被挤出可视区，操作区固定在底部 */
 .cancel-sheet{background:#fff;max-height:70vh;overflow-y:auto}
 .cancel-sheet .soft{padding:14rpx 0}
-.cancel-sheet .action-row,.cancel-sheet>button.btn{position:sticky;bottom:-30rpx;background:inherit;padding:16rpx 0 4rpx}
+.cancel-sheet .action-row{position:sticky;bottom:-30rpx;background:inherit;padding:16rpx 0 4rpx}.cancel-sheet>button.btn{position:sticky;bottom:0;z-index:1}
 .page-dark .cancel-sheet{background:#242522}
