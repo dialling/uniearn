@@ -105,3 +105,4 @@
 .nav-orders{position:relative}
 .nav-unread-dot{position:absolute;top:0;left:calc(50% + 12rpx);width:15rpx;height:15rpx;border-radius:50%;background:#e5483b;border:3rpx solid #fff;box-sizing:content-box}
 .nav-dark .nav-unread-dot{border-color:#242522}
+.create-sheet .sheet-choice .sheet-icon.sheet-icon-3d{background:#fff;box-shadow:0 4rpx 12rpx rgba(22,24,28,.08),inset 0 0 0 1rpx rgba(22,24,28,.05)}.create-sheet .sheet-icon.sheet-icon-3d .nav-sheet-icon{width:60rpx;height:60rpx}.nav-dark .create-sheet .sheet-choice .sheet-icon.sheet-icon-3d,.page-dark .create-sheet .sheet-choice .sheet-icon.sheet-icon-3d{background:#2b2d29;box-shadow:none}

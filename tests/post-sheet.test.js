@@ -13,9 +13,11 @@ assert.match(nav,/为跑手/);assert.match(nav,/For runners/);
 assert.match(nav,/其他需求/);
 assert.match(nav,/Something else/);
 assert.match(nav,/class="sheet-new"/);
-assert.match(nav,/src="\/assets\/sheet-task\.svg"/);
-assert.match(nav,/src="\/assets\/sheet-yuan\.svg"/,'Start a trip uses the RMB icon at the existing image size');
-assert.match(read('assets/sheet-yuan.svg'),/M5 4l7 8 7-8M12 12v8M6\.5 12h11M6\.5 16h11/,'the icon draws a yuan sign with two diagonals, two bars and one stem');
+// 2026-11-13: the user switched the three post-sheet icons to the 3D icon set.
+assert.match(nav,/src="\/assets\/icons3d\/pickup\.svg"/,'Post a pick-up uses the 3D bag-and-box icon');
+assert.match(nav,/src="\/assets\/icons3d\/task\.svg"/,'Something else uses the 3D task icon');
+assert.match(nav,/src="\/assets\/icons3d\/trip\.svg"/,'Start a trip uses the 3D yuan coin icon');
+assert.match(read('assets/icons3d/trip.svg'),/M20\.500 15\.500l5\.500 6\.500 5\.500-6\.500M26 22v9M21\.500 23\.500h9M21\.500 27\.500h9/,'the coin draws a yuan sign with two diagonals, one stem and two bars');
 for(const word of ['枕头','课本','老师','签到']) assert.ok(nav.includes(word),`the third card should mention ${word}`);
 
 // Only the last card drops its bottom margin, so the sheet still ends flush.

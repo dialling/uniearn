@@ -4,7 +4,7 @@
 .post-page .post-tabs{display:flex;gap:0;margin-top:0;padding:5rpx;border:1rpx solid #d7d8d2;border-radius:23rpx;background:#f0efea}
 .post-page .post-tab{position:relative;z-index:1;display:block;flex:1;min-width:0;height:72rpx;line-height:72rpx;padding:0;margin:0;border-radius:19rpx;background:transparent;color:#6b6860;font-size:26rpx;font-weight:700;transition:var(--ue-transition,color .3s ease,transform .3s cubic-bezier(.34,1.5,.55,1))}
 .post-page .post-tabs.glass .post-tab.active{background:transparent;color:#16181c;box-shadow:none}
-.post-page .post-tabs .glass-thumb{pointer-events:none}
+.post-page .post-tabs .glass-thumb{pointer-events:none}.post-page .post-tab{display:flex;align-items:center;justify-content:center;gap:8rpx;white-space:nowrap}.post-page .post-tab .post-tab-icon{flex:none;width:38rpx;height:38rpx;opacity:.6;transition:var(--ue-transition,opacity .3s ease)}.post-page .post-tab.active .post-tab-icon{opacity:1}.post-page .post-tab>text{flex:none}
 .post-page .post-tab[disabled]{opacity:.65}
 .page-dark .post-page .post-tabs{border-color:#45463f}
 .post-page .flow-card,.post-page .step-card{width:100%;padding:24rpx;margin:0 0 20rpx;border:1rpx solid #e2e0d9;border-radius:24rpx;background:#fff}
@@ -120,3 +120,4 @@
 .page-dark.post-page .size-num.on,.page-dark.post-page .parcel-station-name{color:#f4a06e}
 .page-dark.post-page .private-title{color:#a9a69c}
 .page-dark.post-page .post-submit[disabled],.page-dark.post-page .btn[disabled]{background:#242522!important;color:#a9a69c!important}
+.addr-scroll .addr-chip:not(.add){flex-direction:row;align-items:center;justify-content:flex-start;gap:18rpx;max-width:440rpx}.addr-scroll .addr-chip.is-dorm{min-width:330rpx;padding:0 30rpx 0 18rpx}.addr-chip-icon{flex:none;width:76rpx;height:76rpx;padding:10rpx;box-sizing:border-box;border-radius:22rpx;background:#fff;box-shadow:0 4rpx 12rpx rgba(22,24,28,.08),inset 0 0 0 1rpx rgba(22,24,28,.05)}.addr-chip-body{flex:1;min-width:0}.addr-chip-name{display:flex;align-items:center;min-width:0}.addr-chip-title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.addr-chip-name .addr-chip-tag{flex:none}.addr-chip.selected .addr-chip-icon{box-shadow:0 4rpx 12rpx rgba(194,65,12,.18),inset 0 0 0 2rpx rgba(194,65,12,.25)}.page-dark .addr-chip-icon{background:#2b2d29;box-shadow:none}

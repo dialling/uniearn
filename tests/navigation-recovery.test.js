@@ -2,7 +2,7 @@ const assert=require('node:assert/strict');
 let stack=[{route:'pages/jobs/index',options:{}}],definition;
 global.Page=v=>definition=v;global.getCurrentPages=()=>stack;
 const calls=[],callbackCalls=[];
-global.wx={getStorageSync(){},setStorageSync(){},showToast(){},reLaunch:o=>calls.push({kind:'root',o}),redirectTo:o=>calls.push({kind:'redirect',o}),navigateTo:o=>calls.push({kind:'detail',o}),navigateBack:o=>calls.push({kind:'back',o})};
+global.wx={getStorageSync(){},setStorageSync(){},showToast(){},showModal:o=>o.success&&o.success({confirm:true}),reLaunch:o=>calls.push({kind:'root',o}),redirectTo:o=>calls.push({kind:'redirect',o}),navigateTo:o=>calls.push({kind:'detail',o}),navigateBack:o=>calls.push({kind:'back',o})};
 const nav=require('../utils/nav'),settle=()=>Promise.resolve();
 (async()=>{
  nav.reLaunch({url:'/pages/profile/index',success:()=>callbackCalls.push('ok'),fail:()=>callbackCalls.push('fail'),complete:()=>callbackCalls.push('complete')});

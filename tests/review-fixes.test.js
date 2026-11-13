@@ -21,8 +21,10 @@ assert.throws(()=>act(student,'create',{data:task(3)}),/10 open orders/);
 act(other,'create',{data:task(3)});
 state.requests.filter(r=>r.ownerId===student).forEach(r=>{r.status='cancelled';});
 for(let i=0;i<20;i++){act(student,'create',{data:task(3)});state.requests[0].status='cancelled';}
-assert.throws(()=>act(student,'create',{data:task(3)}),/30 orders a day/);
-console.log('Order board: decimal prices, price maximums, 10 open orders and 30 posts a day per student passed.');
+// Fill the rest of the student's day directly: the shared board itself holds at most 200 orders.
+while(state.requests.filter(r=>r.ownerId===student).length<200)state.requests.push({...state.requests[0],id:'fill'+state.requests.length,status:'cancelled',createdAt:Date.now()});
+assert.throws(()=>act(student,'create',{data:task(3)}),/200 orders a day/);
+console.log('Order board: decimal prices, price maximums, 10 open orders and 200 posts a day per student passed (raised from 30 for testing on 2026-11-14).');
 
 // Coupon split never makes a part negative, and abandoning restores the original discount.
 {

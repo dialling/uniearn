@@ -18,7 +18,7 @@
 .photo-entry-count{flex:none;padding:2rpx 12rpx;border-radius:12rpx;background:#e3eafb;color:#1d4ed8;font-size:21rpx;font-weight:600;line-height:1.6}
 .photo-entry-press{background:#e8eefc}
 .page-dark .photo-entry-blue{background:#1d2433;border-color:#33406b;color:#9db4ff}
-.page-dark .photo-entry-plus{background:#9db4ff;color:#16181c}
+.page-dark .photo-entry-plus{background:#3b5bdb;color:#fff}
 .page-dark .photo-entry-count{background:#232c42;color:#9db4ff}
 .page-dark .photo-entry-press{background:#233050}
 
@@ -29,4 +29,4 @@
 .page-dark .pg-add-square{background:#1d2433;border-color:#33406b;color:#9db4ff}
 .page-dark .pg-add-press{background:#233050}
 
-.task-help-selector{margin:0 0 22rpx}.task-help-label{font-size:23rpx;color:#5d6070;margin:0 0 12rpx;font-weight:650}.task-help-modes{display:flex;gap:14rpx}.task-help-mode{display:flex;align-items:center;justify-content:center;flex:1;min-width:0;min-height:44px;margin:0;padding:18rpx 12rpx;border:2rpx solid #dddfea;border-radius:16rpx;background:#f8f8fc;color:#52566a;font-size:26rpx;line-height:1.4;font-weight:650;box-sizing:border-box}.task-help-mode::after{border:0}.task-help-mode.selected{border-color:#4050ce;background:#eef0ff;color:#3042bd}.task-help-hint{margin-top:12rpx;font-size:22rpx}.page-dark .task-help-label{color:#bac2d6}.page-dark .task-help-mode{background:#252a36;border-color:#454d61;color:#d2d7e3}.page-dark .task-help-mode.selected{background:#303c62;border-color:#a7b7ff;color:#e2e8ff}
+.task-help-selector{margin:0 0 22rpx}.task-help-label{font-size:23rpx;color:#5d6070;margin:0 0 12rpx;font-weight:650}.task-help-modes{display:flex;gap:14rpx}.task-help-mode{display:flex;align-items:center;justify-content:center;flex:1;min-width:0;min-height:44px;margin:0;padding:18rpx 12rpx;border:2rpx solid #dddfea;border-radius:16rpx;background:#f8f8fc;color:#52566a;font-size:26rpx;line-height:1.4;font-weight:650;box-sizing:border-box}.task-help-mode::after{border:0}.task-help-mode{gap:12rpx}.task-help-icon{flex:none;width:44rpx;height:44rpx}.task-help-mode:not(.selected) .task-help-icon{opacity:.8}.photo-entry .photo-entry-icon{width:28rpx;height:28rpx}.task-help-mode.selected{border-color:#4050ce;background:#eef0ff;color:#3042bd}.task-help-hint{margin-top:12rpx;font-size:22rpx}.page-dark .task-help-label{color:#bac2d6}.page-dark .task-help-mode{background:#252a36;border-color:#454d61;color:#d2d7e3}.page-dark .task-help-mode.selected{background:#303c62;border-color:#a7b7ff;color:#e2e8ff}

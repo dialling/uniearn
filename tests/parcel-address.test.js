@@ -26,7 +26,7 @@ function page(name){
  assert.equal(parcel.data.pickupPoint,'Actual parcel station');
  assert.deepEqual(parcel.data.codes,['1-2-3456']);
  const takeaway=page('takeaway');takeaway.onLoad();
- takeaway.route({currentTarget:{dataset:{id:shared.id}}});
+ takeaway.chooseAddress({currentTarget:{dataset:{id:shared.id}}});
  assert.equal(takeaway.data.room,'412','takeaway can choose an address saved from parcel posting');
  assert.equal(takeaway.data.station,'North gate','switching delivery addresses does not change the takeaway pickup point');
  parcelRoutes.setDefault(shared.id);

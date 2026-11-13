@@ -31,7 +31,7 @@ function group(orders = [], language = 'zh') {
 function destination(order = {}, language = 'zh') {
   const zh = language !== 'en';
   if (order.destinationType === 'place') {
-    return order.deliveryAddress || order.deliveryLocation || order.dorm || '';
+    return [order.placeName, order.deliveryAddress || order.deliveryLocation].filter(Boolean).join(' · ') || order.dorm || '';
   }
   try {
     const loc = require('./hall-location').detail(order, language);

@@ -8,7 +8,7 @@ const clone = x => JSON.parse(JSON.stringify(x));
 const idFor = openid => crypto.createHash('sha256').update(openid).digest('hex');
 function check(ok, message) { if (!ok) throw Error(message); }
 // One shared document holds every order, so each student gets a fair share of it.
-const OPEN_STATUSES = ['waiting','taken','collected','delivered','disputed'], MAX_OPEN_PER_USER = 10, MAX_CREATES_PER_DAY = 30, MAX_TASK_PRICE = 500;
+const OPEN_STATUSES = ['waiting','taken','collected','delivered','disputed'], MAX_OPEN_PER_USER = 10, MAX_CREATES_PER_DAY = 200, MAX_TASK_PRICE = 500;
 function initial() { return { nextId: 1, requests: [], trips: [], members: {}, receipts: {}, revision: 0, loyaltyStartedAt:Date.now() }; }
 function stats(s, id) {
   const ownTrips = new Set(s.trips.filter(t => t.runnerAccountId === id).map(t => t.id));
@@ -69,7 +69,7 @@ function photo(value, actor, required = false) {
 }
 function input(data, actor) {
   data = data || {}; const out = {};
-  for (const key of ['destinationType','deliveryAddress','dormGender','recipientGender','owner','station','dorm','room','phone','note','description','pickupPoint','pickupAddress','pickupNote','dropNote','deadline','deliveryDate','arrivalTime','pickupCode','deliverBy','shop']) {
+  for (const key of ['destinationType','deliveryAddress','dormGender','recipientGender','owner','station','dorm','room','phone','note','description','pickupPoint','pickupAddress','pickupNote','dropNote','deadline','deliveryDate','arrivalTime','pickupCode','deliverBy','shop','placeName']) {
     check(data[key] === undefined || typeof data[key] === 'string', 'Invalid ' + key);
     out[key] = (data[key] || '').trim(); check(out[key].length <= 500, key + ' is too long.');
   }
@@ -81,6 +81,8 @@ function input(data, actor) {
   check(out.shop.length <= 60, 'Keep the shop name under 60 characters.');
   check(['parcel','takeout','task'].includes(data.category), 'Choose takeaway or parcel.');
   out.category = data.category;
+  // The saved place name (e.g. "Library") is display-only; dorm stays server-derived for trip matching.
+  out.placeName=out.category!=='task'&&out.destinationType==='place'&&!['Other','Other address','其他','其他地址'].includes(out.placeName)?out.placeName.slice(0,60):'';
   if(out.category!=='task'){
     check(!out.destinationType||['dorm','place'].includes(out.destinationType),'Choose a valid destination type.');
     if(out.destinationType==='place'){check(!!out.deliveryAddress,'Describe exactly where to deliver.');out.dorm=/library|图书馆/i.test(out.deliveryAddress)?'Library':/classroom|教室/i.test(out.deliveryAddress)?'Classroom':/sports|体育/i.test(out.deliveryAddress)?'Sports centre':'Campus meeting point';out.destinationKey=crypto.createHash('sha256').update(out.deliveryAddress.toLowerCase().replace(/\s+/g,' ').trim()).digest('hex');out.room='';out.dropNote='Meet at the stated location';}
@@ -314,7 +316,7 @@ function snapshot(s, actor, account, now = Date.now()) {
     }
     // Exact delivery addresses stay private until this runner accepts the order.
     const out = {};
-    const hallKeys=['destinationType','dormGender','id','campusId','universityId','category','station','dorm','small','big','reward','serviceFee','status','deadline','deliveryDate','createdAt','arrivalAt','closesAt','arrived','deliverBy','soup','lobbyPickupAllowed','fragile','night','purchaseStatus','shop','raised','tip','parcelSize'];
+    const hallKeys=['destinationType','dormGender','id','campusId','universityId','category','station','dorm','placeName','small','big','reward','serviceFee','status','deadline','deliveryDate','createdAt','arrivalAt','closesAt','arrived','deliverBy','soup','lobbyPickupAllowed','fragile','night','purchaseStatus','shop','raised','tip','parcelSize'];
     for (const k of hallKeys) if (r[k] !== undefined) out[k] = r[k];
     if (r.category === 'takeout' && r.note) out.note = r.note;
     if (r.category === 'takeout' && !r.night && r.pickupPoint) out.pickupPoint = r.pickupPoint;
@@ -328,7 +330,7 @@ function snapshot(s, actor, account, now = Date.now()) {
     runnerJobs:stats(s,t.runnerAccountId).jobsDone, departAt:t.departAt, joinUntil:t.joinUntil, phase:t.phase,
     cancelled:false, remaining:t.capacity-t.requestIds.reduce((n,id)=>n+d.boxes(s.requests.find(r=>r.id===id)),0)
   }));
-  const publicJobs=s.requests.filter(r=>inCampus(r)&&!['cancelled','refunded','disputed'].includes(r.status)).map(r=>{const o={},keys=['destinationType','dormGender','id','campusId','universityId','category','station','dorm','small','big','reward','status','arrivalAt','closesAt','deadline','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','arrived','deliverBy','soup','lobbyPickupAllowed','fragile','night','purchaseStatus','shop','raised','title','taskMode','dueAt'];for(const k of keys)if(r[k]!==undefined)o[k]=r[k];if(r.category==='takeout'&&r.note)o.note=r.note;if(r.category==='takeout'&&!r.night&&r.pickupPoint)o.pickupPoint=r.pickupPoint;return o;});
+  const publicJobs=s.requests.filter(r=>inCampus(r)&&!['cancelled','refunded','disputed'].includes(r.status)).map(r=>{const o={},keys=['destinationType','dormGender','id','campusId','universityId','category','station','dorm','placeName','small','big','reward','status','arrivalAt','closesAt','deadline','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','arrived','deliverBy','soup','lobbyPickupAllowed','fragile','night','purchaseStatus','shop','raised','title','taskMode','dueAt'];for(const k of keys)if(r[k]!==undefined)o[k]=r[k];if(r.category==='takeout'&&r.note)o.note=r.note;if(r.category==='takeout'&&!r.night&&r.pickupPoint)o.pickupPoint=r.pickupPoint;return o;});
   const supportInbox=(account&&account._admin||account&&account._reviewer)?Object.entries(s.members).flatMap(([accountId,member])=>(member.supportTickets||[]).filter(t=>t.status==='open').map(t=>({...clone(t),accountId}))).sort((a,b)=>((b.messages||[]).at(-1)?.at||b.createdAt)-((a.messages||[]).at(-1)?.at||a.createdAt)).slice(0,50):[];
   return {walletSummary:loggedIn?wallet.summary(s,actor):null,progression:loggedIn?rewards.loyaltyView(s.members[actor]||{}):null,revision:s.revision,serverTime:now,capabilities:{restoreDormGenders:loggedIn,riderPhotos:true},publicJobs,deliveredThisWeek:s.requests.filter(r=>inCampus(r)&&r.deliveredAt>now-7*86400000).length,requests,trips,publicTrips,accountId:actor,supportInbox,
     adjustments:loggedIn?(s.adjustments||[]).filter(a=>a.runnerAccountId===actor).map(({runnerAccountId,...a})=>a):[],rewards:loggedIn?rewards.view(s,actor,now):null,preferences:loggedIn?(s.members[actor]||{}).preferences||{}:{},

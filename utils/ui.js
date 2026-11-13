@@ -3,7 +3,7 @@ const images=require('./image-input');
 // survive until they are uploaded, so old copies are cleared in the background.
 const KEEP_MS=24*3600000,MAX_BYTES=6*1024*1024;
 function toast(e){wx.showToast({title:e.message||String(e),icon:'none'});}
-function confirm(title,content){return new Promise(resolve=>{const ask=left=>wx.showModal({title,content,success:r=>resolve(!!r.confirm),fail:()=>{if(left>0)return setTimeout(()=>ask(left-1),350);wx.showToast({title:'弹窗没打开，请再点一次',icon:'none'});resolve(false);}});ask(1);});}
+function confirm(title,content,buttons){return new Promise(resolve=>{const ask=left=>wx.showModal({title,content,...(buttons||{}),success:r=>resolve(!!r.confirm),fail:()=>{if(left>0)return setTimeout(()=>ask(left-1),350);wx.showToast({title:'弹窗没打开，请再点一次',icon:'none'});resolve(false);}});ask(1);});}
 function savedFiles(){return new Promise(resolve=>{if(!wx.getSavedFileList)return resolve([]);wx.getSavedFileList({success:r=>resolve(r.fileList||[]),fail:()=>resolve([])});});}
 function remove(filePath){return new Promise(resolve=>wx.removeSavedFile({filePath,complete:()=>resolve()}));}
 async function cleanSaved(now=Date.now()){

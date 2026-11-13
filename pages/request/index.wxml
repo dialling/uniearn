@@ -23,12 +23,12 @@
 <view wx:if="{{request.runnerId}}" class="flow-card row">
 <view class="contact-person"><contact-avatar name="{{runner}}"/><view class="contact-person-copy value">{{runner}}</view></view>
 <view class="contact-actions">
-<view class="contact-button" bindtap="chat">
-<image src="/assets/message.svg"/>
+<view class="contact-button contact-3d" bindtap="chat" aria-label="{{zh?'发消息':'Message'}}">
+<image mode="aspectFit" src="/assets/icons3d/chat.svg"/>
 <view wx:if="{{request.unread}}" class="chat-dot"/>
 </view>
-<view class="contact-button" bindtap="phone">
-<image src="/assets/phone.svg"/>
+<view class="contact-button contact-3d" bindtap="phone" aria-label="{{zh?'打电话':'Call'}}">
+<image mode="aspectFit" src="/assets/icons3d/phone.svg"/>
 </view>
 </view>
 </view>
@@ -96,13 +96,8 @@
 <view wx:if="{{request.isMine && request.status==='delivered'}}" class="flow-card">
 <view class="soft hint">{{zh?'模拟合计 ¥'+request.total+'。确认后，预览版将向跑手结算 ¥'+request.rewardText+'。':'Demo total ¥'+request.total+'. Confirming settles ¥'+request.rewardText+' to the runner in this preview.'}}</view>
 
-<view wx:if="{{request.isMine && (request.status==='delivered'||request.status==='disputed')}}" class="flow-card">
-<button class="btn outline" disabled="{{!request.canReport}}" bindtap="issue">{{zh?'有问题':'Something’s wrong'}}</button>
-<view class="hint">{{zh?'送达 '+request.autoHours+' 小时内可确认或投诉；未确认将在 '+request.autoTime+' 自动入账给跑手。投诉后赏金冻结，我们将在 24 小时内处理。':'Confirm or report a problem within '+request.autoHours+' '+(request.autoHours===1?'hour':'hours')+' of delivery; otherwise it auto-credits the runner at '+request.autoTime+'. A report freezes the payout and we will resolve it within 24 hours.'}}</view>
-</view>
-<button class="btn orange" bindtap="confirm">{{zh?'已收到 · 确认 ¥':'Got it · confirm ¥'}}{{request.rewardText}}</button>
-
-<view class="hint">{{zh?'送达 '+request.autoHours+' 小时内可确认或投诉；未确认将在 '+request.autoTime+' 自动入账给跑手。投诉后赏金冻结，我们将在 24 小时内处理。':'Confirm or report a problem within '+request.autoHours+' '+(request.autoHours===1?'hour':'hours')+' of delivery; otherwise it auto-credits the runner at '+request.autoTime+'. A report freezes the payout and we will resolve it within 24 hours.'}}</view>
+<view class="confirm-row"><button class="btn confirm-main" bindtap="confirm">{{zh?'已收到 · 确认 ¥':'Got it · confirm ¥'}}{{request.rewardText}}</button><view class="confirm-info" hover-class="confirm-info-press" role="button" aria-label="{{zh?'确认说明':'About confirming'}}" bindtap="confirmInfo"><image mode="aspectFit" src="/assets/icons/info-muted.svg"/></view></view>
+<view wx:if="{{request.isMine && (request.status==='delivered'||request.status==='disputed')}}" class="confirm-row"><button class="btn outline report-btn" disabled="{{!request.canReport}}" bindtap="issue">{{zh?'有问题':'Something’s wrong'}}</button><view class="confirm-info" hover-class="confirm-info-press" role="button" aria-label="{{zh?'投诉说明':'About reporting a problem'}}" bindtap="reportInfo"><image mode="aspectFit" src="/assets/icons/info-muted.svg"/></view></view>
 
 </view>
 <view wx:if="{{request.dispute}}" class="flow-card">
