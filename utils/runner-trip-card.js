@@ -20,7 +20,7 @@ function card(trip,requests,language='zh',now=Date.now()){
   else if(category==='parcel'&&['taken','collected'].includes(r.status))deadline=clean(r.deadline);
   const pickup=food?(r.night?clean(r.shop):require('./takeaway-lockers').label(r.pickupPoint,language)):task?'':unique((r.parcelItems||[]).map(p=>name(p.pickupPoint))).join(' / ')||name(r.station||trip.station);
   return {id:r.id,category,title:task?clean(r.title):'',origin:food?(r.night?(zh?'夜市代买':'Night market'):routeLabel.pickup({...r,category},language)):name(r.station||trip.station),destination:name(destination)||name(trip.dorm),gender:loc.gender,genderKey:loc.genderKey,
-   disputed:r.feedbackOpen,status,timing,deadline,deadlineLabel,pickup,pickupLabel:food?(r.night?(zh?'店名 / 摊位':'Shop / stall'):(zh?'外卖柜':'Locker')):(zh?'取件点':'Pickup'),
+   disputed:r.feedbackOpen,notice:require('./report-notice').text(r.reportNotice,false,zh),status,timing,deadline,deadlineLabel,pickup,pickupLabel:food?(r.night?(zh?'店名 / 摊位':'Shop / stall'):(zh?'外卖柜':'Locker')):(zh?'取件点':'Pickup'),
    note:clean(r.note),dropNote:runner.name(r.dropNote,language)||'',quantity:boxes(r),unit:task?(zh?'项':'tasks'):food?(zh?'袋':'bags'):(zh?'件':'parcels'),
    soup:!!r.soup,fragile:!!r.fragile,raised:Number(r.raised||0)>0,reward:Number(r.reward||0).toFixed(2)};
  });

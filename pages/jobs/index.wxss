@@ -298,3 +298,4 @@ radial-gradient(80% 42% at 92% 74%,rgba(210,196,170,.20),transparent 55%),
 .jobs-page .nj-group .btn.nj-g-take[disabled]{background:#e4e1d8;color:#8a877e;box-shadow:none}
 .page-dark.jobs-page .flow-card.group-ticket.nj-group{background:#242522;border-color:#3a3b37}
 .page-dark .nj-g-main,.page-dark.jobs-page .nj-group .nj-g-fee{color:#edebe4}
+.order-no{text-transform:uppercase;font-variant-numeric:tabular-nums;letter-spacing:.5rpx}

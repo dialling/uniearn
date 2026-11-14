@@ -119,10 +119,11 @@ function hydrateAdmin(data) {
   }
   for (const t of data.tickets) {
     if (!validId(t.id) || !ensureUser(t.accountId)) continue;
-    const thread = (t.messages || []).map(m => ({from:m.mine ? 'user' : 'staff',text:String(m.text || ''),at:m.at,by:m.mine ? '' : 'UniEarn'}));
+    const thread = (t.messages || []).filter(m => !m.contactChannel).map(m => ({from:m.mine ? 'user' : 'staff',text:String(m.text || ''),at:m.at,by:m.mine ? '' : 'UniEarn',imgs:m.photoUrl ? [{url:m.photoUrl,name:'Evidence photo'}] : []}));
     if (!thread.length) thread.push({from:'user',text:String(t.topic || 'Support request'),at:t.createdAt || NOW});
     const first = thread.find(m => m.from === 'staff');
-    TICKETS.push({id:t.id,user:t.accountId,topic:t.topic || 'Support',role:UMAP[t.accountId].certified ? 'runner' : 'student',
+    const linked = t.orderId && OMAP[t.orderId], side = linked ? (linked.customer === t.accountId ? 'Customer' : 'Runner') : '';
+    TICKETS.push({id:t.id,user:t.accountId,topic:linked ? 'Order '+t.orderId+' · '+side+' report' : (t.topic || 'Support'),side,role:side ? side.toLowerCase() === 'customer' ? 'student' : 'runner' : UMAP[t.accountId].certified ? 'runner' : 'student',
       status:t.status,createdAt:t.createdAt || NOW,firstReplyAt:first?.at || null,thread,order:t.orderId&&OMAP[t.orderId]?t.orderId:null});
   }
   for (const m of data.marks) if (ensureUser(m.accountId)) MARKS.push({id:m.id || String(m.index),runner:m.accountId,rule:String(m.reason || ''),givenAt:m.at,expiresAt:m.at+14*DAY,by:m.by || 'System'});
@@ -176,6 +177,9 @@ async function performAdminAction(action,arg,parts) {
   } else if(['send','sendResolve','reply'].includes(action)) {
     const ticket=TICKETS.find(t=>t.id===arg);name='supportReply';payload={accountId:ticket.user,ticketId:ticket.id,text:valueOf(action==='reply'?'reply-text':'s-reply')};
     if(!payload.text.trim())throw Error('请输入回复内容。');
+  } else if(action==='resolveReport') {
+    if(!confirm('Resolve this order’s reports for both sides? Both people get a closing message.'))return;
+    name='resolveReport';payload={id:arg};
   } else if(['resolve','reopen'].includes(action)) {
     const ticket=TICKETS.find(t=>t.id===arg);name='supportStatus';payload={accountId:ticket.user,ticketId:ticket.id,status:action==='resolve'?'resolved':'open'};
   } else if(['uphold','rejectDsp'].includes(action)) {
@@ -220,3 +224,19 @@ async function exportAdmin(kind) {
   const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='uniearn-'+kind+'-'+new Date().toISOString().slice(0,10)+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('已导出，联系方式已脱敏。');
 }
 document.documentElement.lang=LANG==='zh'?'zh-CN':'en';
+// 2026-11-14: in the inbox, show every report on the linked order (customer and runner side by side) and let the team
+// resolve them for both sides. Frozen (disputed) orders still go through release or refund in Disputes.
+const suppliedInboxHTML=inboxHTML;
+inboxHTML=function(){
+  const html=suppliedInboxHTML.apply(this,arguments);
+  if(adminConnection.mode!=='live')return html;
+  const t=TICKETS.find(x=>x.id===ST.support.sel),o=t&&t.order?OMAP[t.order]:null;
+  if(!o)return html;
+  const same=TICKETS.filter(x=>x.order===o.id),open=same.some(x=>x.status==='open'),frozen=o.dispute&&o.dispute.status==='open';
+  const rows=same.map(x=>{const last=x.thread.filter(m=>m.from==='user').slice(-1)[0];const pics=x.thread.reduce((n,m)=>n+(m.imgs||[]).length,0);
+    return '<button class="linkbtn" style="display:block;text-align:left;font-size:12.5px;font-weight:'+(x.id===t.id?'700':'500')+'" data-act="ssel:'+x.id+'">'+esc(x.side||'Report')+' · '+(x.status==='open'?'open':'resolved')+(pics?' · '+pics+' photo'+(pics>1?'s':''):'')+(last?'<br><span class="faint">'+esc(String(last.text).slice(0,80))+'</span>':'')+'</button>';}).join('');
+  const action=frozen?'<p class="faint" style="margin:6px 0 0;font-size:12px">Payout is frozen. Decide in Disputes (release or refund); that also closes these reports.</p>'
+    :open?'<button class="btn small" style="margin-top:8px" data-act="resolveReport:'+o.id+'">Resolve for both sides</button>':'<p class="faint" style="margin:6px 0 0;font-size:12px">All reports on this order are resolved.</p>';
+  const card='<div class="side-card"><h4>This order’s reports</h4>'+rows+action+'</div>';
+  return html.replace('<div class="ib-side">','<div class="ib-side">'+card);
+};

@@ -106,6 +106,7 @@
 </view>
 <view class="flow-card journey-details">
  <view class="journey-details-title">{{zh?'订单详情':'Order details'}}</view>
+ <view class="journey-detail-row"><view class="journey-detail-label"><text class="journey-detail-icon">#</text><text>{{zh?'订单号':'Order no.'}}</text></view><text class="journey-detail-value order-no" selectable="{{true}}">{{request.id}}</text></view>
  <view class="journey-detail-row"><view class="journey-detail-label"><text class="journey-detail-icon">▣</text><text>{{zh?'取件点':'Pickup'}}</text></view><text class="journey-detail-value">{{request.pickupDisplay||request.pickupPointDisplay||request.station}}</text></view>
  <view class="journey-detail-row"><view class="journey-detail-label"><text class="journey-detail-icon">⌖</text><text>{{zh?'送达地点':'Deliver to'}}</text></view><text class="journey-detail-value">{{request.destinationDisplay}}</text></view>
  <view wx:if="{{request.category==='takeout'}}" class="journey-detail-row"><view class="journey-detail-label"><text class="journey-detail-icon">♧</text><text>{{zh?'外卖到达':'Food arrival'}}</text></view><text class="journey-detail-value">{{request.arrivalLabel}}</text></view>
@@ -115,8 +116,10 @@
  <view wx:if="{{request.discount || request.fee!=='0.00'}}" class="journey-detail-row journey-net-total"><text>{{zh?'模拟合计':'Demo total'}}</text><text>¥{{request.total}}</text></view>
  <view wx:if="{{request.note}}" class="journey-order-note">{{request.note}}</view>
 </view>
+<view wx:if="{{request.feedbackOpen && !request.canResolveFeedback}}" class="report-contact"><view wx:if="{{request.reportNoticeText}}" class="report-nudge">{{request.reportNoticeText}}</view><button class="report-contact-btn" hover-class="report-contact-press" catchtap="issue"><view wx:if="{{request.supportUnread>0}}" class="report-dot"/><text>{{request.supportUnread>0?(zh?'Uniearn 已回复，查看':'Uniearn replied · View'):(zh?'联系 Uniearn 团队':'Contact the Uniearn team')}}</text></button></view>
+<view wx:if="{{request.isMine && request.runnerId && !request.canResolveFeedback && !request.feedbackOpen && (request.status==='collected'||request.supportUnread>0)}}" class="report-link {{request.supportUnread>0?'has-reply':''}}" hover-class="report-link-press" role="button" bindtap="issue"><view wx:if="{{request.supportUnread>0}}" class="report-dot"/><image wx:else mode="aspectFit" src="/assets/icons/flag-muted.svg"/><text>{{request.supportUnread>0?(zh?'Uniearn 已回复':'Uniearn replied'):request.canResolveFeedback?(zh?'联系 Uniearn':'Chat with Uniearn'):request.feedbackOpen?(zh?'联系 Uniearn 团队':'Contact the Uniearn team'):(zh?'报告问题':'Report a problem')}}</text></view>
 
-<order-feedback order-id="{{request.id}}" resolvable="{{request.canResolveFeedback}}" completes="{{request.feedbackResolutionCompletes}}" zh="{{zh}}" dark="{{darkClass}}"/>
+<order-feedback order-id="{{request.id}}" unread="{{request.supportUnread}}" resolvable="{{request.canResolveFeedback}}" completes="{{request.feedbackResolutionCompletes}}" zh="{{zh}}" dark="{{darkClass}}"/>
 <view wx:if="{{cancelWindow.phase!=='hidden'}}" class="flow-card cancel-window-card">
 <button class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel" disabled="{{!cancelWindow.canCancel}}">{{cancelWindow.button}}</button>
 <view class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}"><text class="{{cancelWindow.phase==='grace'?'cancel-clock':''}}">{{cancelWindow.tip}}</text></view>

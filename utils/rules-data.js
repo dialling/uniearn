@@ -25,7 +25,7 @@ module.exports={
       {
         "n": "5",
         "title": "Report problems on the order, with a photo",
-        "text": "Report a problem on the order within 2 hours of delivery. Add a photo for spilled or damaged items. The payout is then held for review, and the team resolves it within 24 hours. If it is still unresolved after 24 hours, the order confirms and credits the runner. Food arriving cold is not a report reason."
+        "text": "Report a problem on the order within 2 hours of delivery. Add a photo for spilled or damaged items. The payout is then held for review, and the team resolves it within 24 hours. The payout stays frozen until the team decides. Food arriving cold is not a report reason."
       }
     ]
   },

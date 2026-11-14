@@ -33,7 +33,7 @@
     </view>
   </view>
 </view>
-<view class="task-info-block"><view class="task-info-label">{{zh?'任务内容':'Task details'}} · {{request.taskMode==='online'?(zh?'线上帮助':'Online help'):(zh?'线下帮助':'Offline help')}}</view><view class="task-title">{{request.title}}</view></view>
+<view class="task-info-block"><view class="task-info-label">{{zh?'订单号':'Order no.'}}</view><text class="task-order-no order-no" selectable="{{true}}">#{{request.id}}</text></view><view class="task-info-block"><view class="task-info-label">{{zh?'任务内容':'Task details'}} · {{request.taskMode==='online'?(zh?'线上帮助':'Online help'):(zh?'线下帮助':'Offline help')}}</view><view class="task-title">{{request.title}}</view></view>
 <view wx:if="{{request.pictures.length}}" class="task-info-block"><view class="task-info-label">{{zh?'参考图片':'Reference photos'}}</view><image wx:for="{{request.pictures}}" wx:key="*this" class="thumb" src="{{item}}" mode="aspectFill" data-photo="{{item}}" bindtap="preview"/></view>
 <view wx:if="{{request.isRunner && request.status==='taken'}}" class="task-completion">
 <view class="strong">{{ui.whenDone}}</view>
@@ -95,7 +95,7 @@
 </view>
 <view wx:if="{{request.status==='refunded'||request.status==='cancelled'}}" class="hint">{{ui.refund}}{{request.refundAmount}}</view>
 </view>
-<order-feedback order-id="{{request.id}}" resolvable="{{request.canResolveFeedback}}" completes="{{request.feedbackResolutionCompletes}}" zh="{{zh}}" dark="{{darkClass}}"/>
+<order-feedback order-id="{{request.id}}" unread="{{request.supportUnread}}" resolvable="{{request.canResolveFeedback}}" completes="{{request.feedbackResolutionCompletes}}" zh="{{zh}}" dark="{{darkClass}}"/>
 </view>
 <view wx:else class="empty">{{ui.unavailable}}</view>
 <yuni-assistant topic=""/>

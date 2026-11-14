@@ -16,15 +16,16 @@ assert.throws(()=>act(student,'create',{data:{...food,price:51}}),/¥3–50/);
 assert.throws(()=>d.createRequest({nextId:1,requests:[],profile:{}},{category:'parcel',parcelSize:'small',small:1,big:0,codes:['1-1'],pricePerBox:2.333,station:'A',dorm:'B',room:'1',phone:'13800000000'}),/offer/);
 
 // One student cannot fill the shared order document.
-for(let i=0;i<9;i++)act(student,'create',{data:task(3)});
-assert.throws(()=>act(student,'create',{data:task(3)}),/10 open orders/);
+// 2026-11-14: open-order limit raised from 10 to 50 for testing.
+for(let i=0;i<49;i++)act(student,'create',{data:task(3)});
+assert.throws(()=>act(student,'create',{data:task(3)}),/50 open orders/);
 act(other,'create',{data:task(3)});
 state.requests.filter(r=>r.ownerId===student).forEach(r=>{r.status='cancelled';});
 for(let i=0;i<20;i++){act(student,'create',{data:task(3)});state.requests[0].status='cancelled';}
 // Fill the rest of the student's day directly: the shared board itself holds at most 200 orders.
 while(state.requests.filter(r=>r.ownerId===student).length<200)state.requests.push({...state.requests[0],id:'fill'+state.requests.length,status:'cancelled',createdAt:Date.now()});
 assert.throws(()=>act(student,'create',{data:task(3)}),/200 orders a day/);
-console.log('Order board: decimal prices, price maximums, 10 open orders and 200 posts a day per student passed (raised from 30 for testing on 2026-11-14).');
+console.log('Order board: decimal prices, price maximums, 50 open orders and 200 posts a day per student passed (raised from 30 for testing on 2026-11-14).');
 
 // Coupon split never makes a part negative, and abandoning restores the original discount.
 {

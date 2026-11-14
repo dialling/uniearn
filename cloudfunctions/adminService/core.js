@@ -6,7 +6,7 @@ const equal = (a, b) => crypto.timingSafeEqual(Buffer.from(hash(a)), Buffer.from
 const clone = value => JSON.parse(JSON.stringify(value));
 const permissions = {
   review: ['admin', 'ops'], supportReply: ['admin', 'ops', 'support'],
-  supportStatus: ['admin', 'ops', 'support'], resolveDispute: ['admin', 'ops'],
+  supportStatus: ['admin', 'ops', 'support'], resolveDispute: ['admin', 'ops'], resolveReport: ['admin', 'ops', 'support'],
   note: ['admin', 'ops', 'support'], tag: ['admin', 'ops'], markTest: ['admin'],
   addMark: ['admin', 'ops'], removeMark: ['admin', 'ops'], export: ['admin']
 };

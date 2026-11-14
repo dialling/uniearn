@@ -5,6 +5,20 @@ const {createService} = require('./core');
 const {createRepository} = require('./repository');
 const service = createService({repo: createRepository(cloud.database()), env: process.env});
 const allowedOrigins = () => String(process.env.ADMIN_ALLOWED_ORIGINS || '').split(',').map(x => x.trim()).filter(Boolean);
+// 2026-11-14: report photos are private cloud files; give the team short-lived links so evidence shows in the inbox.
+async function attachEvidence(data) {
+  const items = [];
+  for (const t of data.tickets || []) for (const m of t.messages || []) if (typeof m.photo === 'string' && m.photo.startsWith('cloud://')) items.push(m);
+  for (const r of data.requests || []) if (r.dispute && typeof r.dispute.photo === 'string' && r.dispute.photo.startsWith('cloud://')) items.push(r.dispute);
+  for (let i = 0; i < items.length; i += 50) {
+    const batch = items.slice(i, i + 50);
+    try {
+      const res = await cloud.getTempFileURL({fileList: batch.map(x => x.photo)});
+      const urls = new Map((res.fileList || []).map(f => [f.fileID, f.tempFileURL]));
+      for (const x of batch) if (urls.get(x.photo)) x.photoUrl = urls.get(x.photo);
+    } catch (_) { /* evidence links are best effort; the snapshot still loads */ }
+  }
+}
 exports.main = async event => {
   const headers = Object.fromEntries(Object.entries(event.headers || {}).map(([k, v]) => [k.toLowerCase(), v]));
   const origin = String(headers.origin || '');
@@ -22,7 +36,9 @@ exports.main = async event => {
     let input; try { input = JSON.parse(raw); } catch (_) { return reply(400, {ok: false, error: 'Invalid JSON.'}); }
     if (!input || typeof input !== 'object' || Array.isArray(input)) return reply(400, {ok: false, error: 'Invalid request.'});
     const token = String(headers.authorization || '').replace(/^Bearer\s+/i, '');
-    return reply(200, await service.run(input, token, event.requestContext?.sourceIp || ''));
+    const result = await service.run(input, token, event.requestContext?.sourceIp || '');
+    if (input.action === 'snapshot' && result && result.ok && result.data) await attachEvidence(result.data);
+    return reply(200, result);
   } catch (e) {
     if (!e.code) console.error('adminService failed', e.code || e.errCode || 'UNKNOWN');
     return reply(e.status || 500, {ok: false, code: e.code || 'SERVICE_UNAVAILABLE',

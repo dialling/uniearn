@@ -97,6 +97,8 @@
 /* Feedback 2026-11-13: completed orders only, no tinted rows */
 .requests-page .flow-card.order-history-card{background:#fff;border-color:#e2e0d9}
 .page-dark.requests-page .flow-card.order-history-card{background:#242522;border-color:#3a3b37}
+.report-nudge{margin:14rpx 0 6rpx;padding:14rpx 20rpx;border-radius:16rpx;background:#fff4e2;color:#8a4b13;font-size:24rpx;line-height:1.45}.page-dark .report-nudge{background:#3a2a1a;color:#f4c79a}
+.requests-page .no-card.no-has-issue{position:relative;padding-top:76rpx;border:2rpx solid #de9a9a}.no-issue-corner{position:absolute;left:-2rpx;top:-2rpx;z-index:2;padding:13rpx 22rpx;border-radius:25rpx 0 16rpx 0;background:#b93636;color:#fff;font-size:24rpx;font-weight:750;line-height:1.4}.requests-page .order-card .order-status.no-status.no-warn{padding:0;background:transparent;color:#b33838}.no-issue-line{margin-top:14rpx;padding:12rpx 18rpx;border-radius:14rpx;background:#fdf1f0;color:#9b2c2c;font-size:24rpx;line-height:1.45}.page-dark .no-issue-line{background:#3a2020;color:#ffb7b7}.page-dark .requests-page .order-card .order-status.no-status.no-warn{color:#ffb7b7}
 
 .order-history-card>.no-past-price{flex:none;align-self:center;padding-left:16rpx;text-align:right}
 .order-history-card .no-past-price .strong{font-size:34rpx;line-height:1.2;font-weight:700;letter-spacing:-0.5rpx}

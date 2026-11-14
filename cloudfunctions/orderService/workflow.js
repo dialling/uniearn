@@ -13,7 +13,8 @@ function expire(s,now=Date.now()){
  for(const r of s.requests){
   if(r.status==='waiting'&&r.closesAt&&now>=r.closesAt){r.status='refunded';r.refundAmount=total(r);r.refundedAt=now;event(r,'Closed · no runner · demo refund',now);changed=true;}
   if(r.status==='delivered'&&r.deliveredAt&&now>=r.deliveredAt+hours(r)*HOUR){d.confirm(s,r.id);r.confirmedAt=now;r.autoConfirmed=true;event(r,'Automatically confirmed',now);changed=true;}
-  if(r.status==='disputed'){const hold=r.settle_hold_until||(r.dispute&&r.dispute.at&&r.dispute.at+reviewHours()*HOUR);if(hold&&now>=hold){r.status='confirmed';r.confirmedAt=now;r.autoConfirmed=true;s.profile.jobsDone++;s.profile.paid=Math.round((s.profile.paid+r.reward)*100)/100;event(r,'Review window ended · automatically confirmed',now);changed=true;}}
+  // 2026-11-14: a disputed order stays frozen until the customer resolves it or the team decides; the review time only marks it overdue.
+  if(r.status==='disputed'){const hold=r.settle_hold_until||(r.dispute&&r.dispute.at&&r.dispute.at+reviewHours()*HOUR);if(hold&&now>=hold&&!r.reviewOverdue){r.reviewOverdue=true;event(r,'Review time passed · waiting for the team',now);changed=true;}}
  }
  return changed;
 }

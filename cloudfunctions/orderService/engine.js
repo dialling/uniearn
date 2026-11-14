@@ -8,7 +8,7 @@ const clone = x => JSON.parse(JSON.stringify(x));
 const idFor = openid => crypto.createHash('sha256').update(openid).digest('hex');
 function check(ok, message) { if (!ok) throw Error(message); }
 // One shared document holds every order, so each student gets a fair share of it.
-const OPEN_STATUSES = ['waiting','taken','collected','delivered','disputed'], MAX_OPEN_PER_USER = 10, MAX_CREATES_PER_DAY = 200, MAX_TASK_PRICE = 500;
+const OPEN_STATUSES = ['waiting','taken','collected','delivered','disputed'], MAX_OPEN_PER_USER = 50, MAX_CREATES_PER_DAY = 200, MAX_TASK_PRICE = 500;
 function initial() { return { nextId: 1, requests: [], trips: [], members: {}, receipts: {}, revision: 0, loyaltyStartedAt:Date.now() }; }
 function stats(s, id) {
   const ownTrips = new Set(s.trips.filter(t => t.runnerAccountId === id).map(t => t.id));
@@ -129,9 +129,8 @@ function expire(s, now) {
     }
     if (r.status === 'disputed') {
       const hold = r.settle_hold_until || (r.dispute && r.dispute.at && r.dispute.at + f.reviewHours() * 3600000);
-      if (hold && now >= hold) {
-        r.status = 'confirmed'; r.confirmedAt = now; r.autoConfirmed = true; f.event(r, 'Review window ended · automatically confirmed', now);
-      }
+      // Disputed orders stay frozen until the customer resolves them or a reviewer decides.
+      if (hold && now >= hold && !r.reviewOverdue) { r.reviewOverdue = true; f.event(r, 'Review time passed · waiting for the team', now); }
     }
   }
 }
@@ -169,25 +168,26 @@ function execute(s, actor, account, event, now = Date.now()) {
   } else if (action === 'walletWithdraw') {
     wallet.settle(s, now);
     value = wallet.withdraw(s, actor, event.amount_cents, event.operationId, now, process.env.WALLET_TEST_WITHDRAW_FAIL === '1');
-  } else if(['orderFeedbackContact','orderFeedbackSubmit','orderFeedbackResolve'].includes(action)){
+  } else if(['orderFeedbackContact','orderFeedbackSubmit','orderFeedbackResolve','orderFeedbackRead'].includes(action)){
     const feedback=require('./order-feedback');
     if(action==='orderFeedbackContact')value=feedback.contact(s,actor,event,now);
     if(action==='orderFeedbackSubmit')value=feedback.submit(s,actor,event,now,photo);
     if(action==='orderFeedbackResolve')value=feedback.resolve(s,actor,event,now);
+    if(action==='orderFeedbackRead')value=feedback.read(s,actor,event,now);
   } else if (action === 'supportRequest') {
     check(['order','payment','other','deletion'].includes(event.topic),'Choose a support topic.');
     const m=s.members[actor];m.supportTickets=m.supportTickets||[];
-    check(m.supportTickets.filter(t=>now-t.createdAt<86400000).length<10,'You can send up to 10 support requests a day.');
+    check(m.supportTickets.filter(t=>now-t.createdAt<86400000).length<100,'You can send up to 100 support requests a day.');
     const ticket={id:'support-'+s.nextId++,topic:event.topic,createdAt:now,status:'open'};
-    m.supportTickets.push(ticket);m.supportTickets=m.supportTickets.slice(-50);value={ticket};
+    m.supportTickets.push(ticket);m.supportTickets=m.supportTickets.slice(-150);value={ticket};
   } else if (action === 'supportMessage') {
     const m=s.members[actor];m.supportTickets=m.supportTickets||[];
     const text=String(event.text||'').trim().slice(0,500);
     const image=event.photo?photo(event.photo,actor,true):'';
     check((text||image)&&text.length<=500,'Enter a message or attach a photo.');
     let t=m.supportTickets.filter(x=>!x.orderId&&x.status==='open').at(-1);
-    if(!t){check(m.supportTickets.filter(x=>now-x.createdAt<86400000).length<10,'You can send up to 10 support requests a day.');t={id:'support-'+s.nextId++,topic:['order','payment','other','deletion'].includes(event.topic)?event.topic:'other',createdAt:now,status:'open'};m.supportTickets.push(t);m.supportTickets=m.supportTickets.slice(-50);}
-    check((t.messages||[]).filter(msg=>now-msg.at<86400000).length<50,'Too many messages today. Please wait for the team to reply.');
+    if(!t){check(m.supportTickets.filter(x=>now-x.createdAt<86400000).length<100,'You can send up to 100 support requests a day.');t={id:'support-'+s.nextId++,topic:['order','payment','other','deletion'].includes(event.topic)?event.topic:'other',createdAt:now,status:'open'};m.supportTickets.push(t);m.supportTickets=m.supportTickets.slice(-150);}
+    check((t.messages||[]).filter(msg=>now-msg.at<86400000).length<500,'Too many messages today. Please wait for the team to reply.');
     t.messages=t.messages||[];t.messages.push({text,at:now,mine:true,...(image?{photo:image}:{})});value={ticket:t};
   } else if (action === 'supportReply') {
     check(account._admin===true||account._reviewer===true,'Admin access required.');
@@ -274,7 +274,12 @@ function execute(s, actor, account, event, now = Date.now()) {
     t.joinUntil = now;
   } else if(action==='resolveDispute'){
     check(account._reviewer===true,'Reviewer access required.');const r=s.requests.find(x=>x.id===event.id);check(r&&r.status==='disputed','Order is not under review.');check(['release','refund'].includes(event.decision),'Choose release or refund.');
-    if(event.decision==='release'){r.status='confirmed';r.confirmedAt=now;f.event(r,'Review resolved · confirmed',now);}else{const amount=Number(event.deduction||0);check(Number.isFinite(amount)&&amount>=0&&amount<=1000,'Invalid reviewed deduction.');const note=String(event.note||'').trim();check(note.length>=10&&note.length<=500,'Explain the reviewed deduction.');r.status='refunded';r.refundAmount=f.total(r);r.refundedAt=now;r.refundReason=note;const t=s.trips.find(x=>x.id===r.runnerId);if(amount&&t)(s.adjustments||(s.adjustments=[])).push({id:'a'+s.nextId++,runnerAccountId:t.runnerAccountId,requestId:r.id,amount:Math.round(amount*100)/100,reason:r.dispute.reason,note,at:now});f.event(r,'Review resolved · simulated refund',now);}
+    if(event.decision==='release'){r.status='confirmed';r.confirmedAt=now;f.event(r,'Review resolved · confirmed',now);require('./order-feedback').teamClose(s,r.id,now,'release');}else{const amount=Number(event.deduction||0);check(Number.isFinite(amount)&&amount>=0&&amount<=1000,'Invalid reviewed deduction.');const note=String(event.note||'').trim();check(note.length>=10&&note.length<=500,'Explain the reviewed deduction.');r.status='refunded';r.refundAmount=f.total(r);r.refundedAt=now;r.refundReason=note;const t=s.trips.find(x=>x.id===r.runnerId);if(amount&&t)(s.adjustments||(s.adjustments=[])).push({id:'a'+s.nextId++,runnerAccountId:t.runnerAccountId,requestId:r.id,amount:Math.round(amount*100)/100,reason:r.dispute.reason,note,at:now});f.event(r,'Review resolved · simulated refund',now);require('./order-feedback').teamClose(s,r.id,now,'refund');}
+  } else if(action==='teamResolveReport'){
+    // 2026-11-14: the team closes an order's reports for both sides; frozen orders still need release or refund.
+    check(account._admin===true||account._reviewer===true,'Admin access required.');const r=s.requests.find(x=>x.id===event.id);check(r,'Order not found.');
+    check(r.status!=='disputed','This order is frozen. Choose release or refund instead.');
+    const closed=require('./order-feedback').teamClose(s,r.id,now,'resolved');check(closed>0,'This order has no open report.');f.event(r,'Uniearn team resolved the report',now);value={id:r.id,closed};
   } else if(action==='changeTaskDeadline'){
     const r=s.requests.find(x=>x.id===event.id);
     check(r && r.ownerId===actor && r.category==='task' && ['waiting','taken'].includes(r.status),'当前任务无法更改截止时间');
@@ -308,10 +313,12 @@ function snapshot(s, actor, account, now = Date.now()) {
   const requests = s.requests.filter(r => r.status === 'waiting' && inCampus(r) || loggedIn && (r.ownerId === actor || myTrips.has(r.runnerId) || myTripOrders.has(r.id))).map(r => {
     const isMine = loggedIn && r.ownerId === actor, isRunner = myTrips.has(r.runnerId);
     if (isMine || isRunner) {
-      const out = {...clone(r),...require('./order-feedback').state(s,r,actor)}; delete out.splitOriginal; delete out.ownerId;delete out.analytics;delete out.analyticsEvents;delete out.analyticsRunnerId;delete out.analyticsHistoryCapped;
+      const out = {...clone(r),...require('./order-feedback').state(s,r,actor),...require('./order-feedback').unread(s,actor,r.id),...require('./order-feedback').notice(s,r,actor)}; delete out.splitOriginal; delete out.ownerId;delete out.analytics;delete out.analyticsEvents;delete out.analyticsRunnerId;delete out.analyticsHistoryCapped;
       const rt=s.trips.find(t=>t.id===r.runnerId),thread=rt&&(s.threads||{})[r.id+':'+rt.id];
       out.runnerPhone=rt&&rt.runnerPhone||'';out.runnerStats=rt?(()=>{const st=stats(s,rt.runnerAccountId);return{jobsDone:st.jobsDone};})():{};out.unread=thread?thread.messages.filter(m=>m.sender!==actor&&m.at>(thread.read[actor]||0)).length:0;
       out.messages=thread?thread.messages.map(m=>({id:m.id,text:m.text,...(m.photo?{photo:m.photo}:{}),at:m.at,mine:m.sender===actor})):[];
+      // The runner sees only the reason of a customer report, never the customer's words or photos.
+      if (!isMine && out.dispute) out.dispute = {reason:out.dispute.reason,at:out.dispute.at,contactOnly:!!out.dispute.contactOnly};
       return { ...out, runnerName:rt&&rt.runnerName||r.runnerName||'', runnerAvatar:rt&&rt.runnerAvatar||'', ownerId: isMine ? actor : '', isMine, isRunner };
     }
     // Exact delivery addresses stay private until this runner accepts the order.

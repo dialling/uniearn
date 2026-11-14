@@ -77,6 +77,10 @@ function createRepository(db, engine) {
           const verification = {...v, status: p.decision === 'approve' ? 'verified' : 'rejected',
             checkedAt: now, reviewerId: actor, reviewNote: note, reason: p.decision === 'reject' ? note : ''};
           await tx.collection('uniearn_accounts').doc(p.accountId).update({data: {verification: db.command.set(verification), updatedAt: now}});
+        } else if (action === 'resolveReport') {
+          // 2026-11-14: close an order's open reports for both sides (frozen orders still need release or refund).
+          engine.execute(state, actor, {profile: {name: user.username}, _admin: true, _reviewer: true}, {id: p.id, action: 'teamResolveReport'}, now);
+          stateChanged = true;
         } else if (action === 'supportReply' || action === 'resolveDispute') {
           if (action === 'supportReply') text(p.text, 500);
           if (action === 'resolveDispute' && !['release','refund'].includes(p.decision)) throw problem('INVALID_DECISION', 'Choose release or refund.');
