@@ -22,7 +22,7 @@ function couponDate(value,zh){
   return days[date.getUTCDay()]+' '+date.getUTCDate()+' '+months[date.getUTCMonth()];
 }
 function shortDate(ts,zh){const d=new Date(ts+28800000);return zh?(d.getUTCMonth()+1)+'月'+d.getUTCDate()+'日':['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getUTCMonth()]+' '+d.getUTCDate();}
-function validity(c,zh){if(!c.issuedAt||!c.expiresAt)return '';return (zh?'有效期 ':'Valid ')+shortDate(c.issuedAt,zh)+' – '+shortDate(c.expiresAt-1,zh)+(c.stored?(zh?' · 余额 ¥':' · ¥')+Number(c.balance||0).toFixed(2)+(zh?'':' left'):'');}
+function validity(c,zh){if(!c.issuedAt||!c.expiresAt)return '';return (zh?'有效期 ':'Valid ')+shortDate(c.issuedAt,zh)+' – '+shortDate(c.expiresAt-1,zh)+(c.stored?(zh?' · 余额 ¥':' · Balance ¥')+Number(c.balance||0).toFixed(2)+(zh?'':' left'):'');}
 const examples = [
   {id: 'example-free', face: 'FREE', sub: 'delivery', title: 'Free delivery', description: 'Up to ¥8 off the delivery fee · takeaway or parcels', endLabel: 'after registration'},
   {id: 'example-two', face: '¥2', sub: 'off', title: '¥2 off any order', description: 'For your next order of any size', endLabel: 'after registration'}

@@ -6,11 +6,11 @@
  <view class="asset-card">
   <view class="ac-head"><text class="ac-head-title">{{ui.week}}</text><text class="ac-head-sub">{{weekCount}} {{ui.entries}}</text></view>
   <view class="ac-top"><view class="ac-label" bindtap="toggleHide"><text>{{ui.balance}}</text><view class="eye {{hideAmount?'off':''}}"><view class="eye-ball"/></view></view></view>
-  <view class="ac-num"><text class="ac-cur">¥</text>{{hideAmount?'****':balance}}</view>
+  <view class="ac-num"><text class="ac-cur">Balance ¥</text>{{hideAmount?'****':balance}}</view>
   <view class="wb-legend">
-   <view class="wb-item"><view class="wb-dot light"/><text>{{ui.weekIn}}</text><text class="ac-strong">{{hideAmount?'***':'¥'+weekIn}}</text></view>
-   <view class="wb-item"><view class="wb-dot warn"/><text>{{ui.weekOut}}</text><text class="ac-pending {{pendingCents>0?'has':''}}">{{hideAmount?'***':'¥'+weekOut}}</text></view>
-   <view class="wb-item"><view class="wb-dot muted"/><text>{{ui.pending}}</text><text class="ac-pending {{pendingCents>0?'has':''}}">{{hideAmount?'***':'¥'+pendingYuan}}</text></view>
+   <view class="wb-item"><view class="wb-dot light"/><text>{{ui.weekIn}}</text><text class="ac-strong">{{hideAmount?'***':'Balance ¥'+weekIn}}</text></view>
+   <view class="wb-item"><view class="wb-dot warn"/><text>{{ui.weekOut}}</text><text class="ac-pending {{pendingCents>0?'has':''}}">{{hideAmount?'***':'Balance ¥'+weekOut}}</text></view>
+   <view class="wb-item"><view class="wb-dot muted"/><text>{{ui.pending}}</text><text class="ac-pending {{pendingCents>0?'has':''}}">{{hideAmount?'***':'Balance ¥'+pendingYuan}}</text></view>
   </view>
   <view class="chart"><canvas type="2d" id="assetChart" class="chart-cv {{chartReady?'':'chart-hidden'}}"/><view wx:if="{{!chartReady&&!error}}" class="chart-loading">{{ui.loading}}</view></view>
   <view class="wb-labels"><text wx:for="{{weekLabels}}" wx:key="index" class="{{index===weekLabels.length-1?'today':''}}">{{item}}</text></view>
@@ -18,9 +18,9 @@
  <view class="wallet-test-note">{{ui.testNote}}</view>
  <button class="wd-btn" bindtap="withdraw" loading="{{motionEnabled && (withdrawing)}}" disabled="{{loading||withdrawing||!!error||balanceCents<=0}}">{{ui.withdraw}}</button>
  <view class="rules-link" bindtap="openRules"><text class="rules-link-t">{{ui.ruleHint}}</text><text class="rules-link-a">{{ui.view}} ›</text></view>
- <view wx:if="{{debtCents>0}}" class="wallet-debt"><view>{{ui.debt}} {{hideAmount?'***':'¥'+debt}}</view><text>{{ui.debtHint}}</text></view>
- <block wx:if="{{pending.length}}"><view class="sec-title">{{ui.pending}}</view><view class="list-card"><view wx:for="{{pending}}" wx:key="id" class="wallet-row"><view class="row-main"><view class="row-t">{{item.title}}</view><view class="row-time">{{item.detail}}</view></view><text class="pending-amount">{{hideAmount?'***':'¥'+item.amount}}</text></view></view></block>
- <block wx:if="{{withdrawals.length}}"><view class="sec-title">{{ui.records}}</view><view class="list-card"><view wx:for="{{withdrawals}}" wx:key="id" class="wallet-row"><view class="row-ico wd"><view class="ico-arrow"/></view><view class="row-main"><view class="row-t">{{ui.withdraw}} {{hideAmount?'***':'¥'+item.amountYuan}}</view><view class="row-time">{{item.created_at}}</view><view wx:if="{{item.reject_reason}}" class="row-reason">{{item.reject_reason}}</view></view><text class="wd-status {{item.status}}">{{item.statusText}}</text></view></view></block>
+ <view wx:if="{{debtCents>0}}" class="wallet-debt"><view>{{ui.debt}} {{hideAmount?'***':'Balance ¥'+debt}}</view><text>{{ui.debtHint}}</text></view>
+ <block wx:if="{{pending.length}}"><view class="sec-title">{{ui.pending}}</view><view class="list-card"><view wx:for="{{pending}}" wx:key="id" class="wallet-row"><view class="row-main"><view class="row-t">{{item.title}}</view><view class="row-time">{{item.detail}}</view></view><text class="pending-amount">{{hideAmount?'***':'Balance ¥'+item.amount}}</text></view></view></block>
+ <block wx:if="{{withdrawals.length}}"><view class="sec-title">{{ui.records}}</view><view class="list-card"><view wx:for="{{withdrawals}}" wx:key="id" class="wallet-row"><view class="row-ico wd"><view class="ico-arrow"/></view><view class="row-main"><view class="row-t">{{ui.withdraw}} {{hideAmount?'***':'Balance ¥'+item.amountYuan}}</view><view class="row-time">{{item.created_at}}</view><view wx:if="{{item.reject_reason}}" class="row-reason">{{item.reject_reason}}</view></view><text class="wd-status {{item.status}}">{{item.statusText}}</text></view></view></block>
  <view class="sec-title">{{ui.transactions}}</view>
  <view class="list-card"><view wx:if="{{loading}}" class="empty">{{ui.loading}}</view><view wx:elif="{{!transactions.length}}" class="empty">{{ui.empty}}</view><view wx:for="{{transactions}}" wx:key="id" class="wallet-row"><view class="row-ico {{item.positive?'in':'out'}}"><text>{{item.positive?ui.receive:ui.spend}}</text></view><view class="row-main"><view class="row-t">{{item.kindText}}</view><view class="row-time">{{item.created_at}}</view></view><view class="tx-amt {{item.positive?'pos':'neg'}}">{{hideAmount?'***':(item.positive?'+':'−')+item.amountYuan}}</view></view></view>
  <button class="earnings-link" bindtap="earnings">{{ui.earnings}} ›</button>

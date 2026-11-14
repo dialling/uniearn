@@ -79,7 +79,7 @@ Page({
     hideAmount:!!wx.getStorageSync('wallet_hide_amount:' + this._actor), chartMax:max > min ? yuan(max) : '',chartStart:res.series.length ? res.series[0].date.slice(5).replace('-', '/') : '',
     transactions:Array.from(res.transactions || [], t => ({id:t.id,kindText:ui[t.kind] || t.kind,created_at:cnTime(t.created_at),positive:t.amount_cents >= 0,amountYuan:yuan(Math.abs(t.amount_cents))})),
     withdrawals:Array.from(res.withdrawals || [], w => ({id:w.id,amountYuan:yuan(w.amount_cents),status:w.status,statusText:ui[w.status] || ui.processing,reject_reason:w.status === 'rejected' ? ui.failed : '',created_at:cnTime(w.created_at)})),
-    pending:Array.from(res.pending || [], p => ({id:p.order_id,title:p.type==='parcel'?(language==='en'?'Parcel pickup':'快递代取'):p.type==='task'?(language==='en'?'Campus task':'校园任务'):p.night?(language==='en'?'Night market':'夜市代买'):(language==='en'?'Takeaway pickup':p.title),amount:yuan(p.amount_cents),detail:p.disputed?ui.disputed:ui.auto+' '+cnTime(p.auto_settle_at)}))
+    pending:Array.from(res.pending || [], p => ({id:p.order_id,title:p.type==='parcel'?(language==='en'?'Parcel pickup':'快递代取'):p.type==='task'?(language==='en'?'Campus task':'校园任务'):p.night?(language==='en'?'Request a night market purchase':'夜市代买'):(language==='en'?'Takeaway pickup':p.title),amount:yuan(p.amount_cents),detail:p.disputed?ui.disputed:ui.auto+' '+cnTime(p.auto_settle_at)}))
    }, () => this.drawChart());
   } catch (e) { if (request === this._loadId && this._visible) { if (store.get().profile.loggedOut || this._actor && store.get().profile.accountId !== this._actor) this.clearWallet(); this.setData({loading:false,error:e.message || (language === 'en' ? 'Could not load your wallet.' : '钱包加载失败，请重试。')}); } }
  },

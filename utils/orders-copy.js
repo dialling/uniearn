@@ -10,6 +10,9 @@ const pairs={'No runner in 1 hour · cancelled':'1 小时无人接单，已自�
  'Enter an 11-digit mobile number that starts with 1.':'请输入以 1 开头的 11 位手机号。',
  'Choose where to collect.':'请选择取件点。','Describe exactly where to deliver.':'请写清楚送达地点。','Keep the delivery address under 500 characters.':'送达地址请控制在 500 字以内。','Choose your building and add a room.':'请选择楼栋并填写房间号。','Add the name on the order.':'请填写订单上的姓名。','This saved route is unavailable.':'这条常用路线已不可用。'
 };
+
+// Preserve existing lookup keys for older cached values and callers.
+
 function translate(value,language){return language==='en'||typeof value!=='string'?value:(pairs[value]||value);}
 function error(e,language){const message=e&&e.message||String(e);return language==='en'?e:{message:pairs[message]||message};}
 module.exports={translate,error};

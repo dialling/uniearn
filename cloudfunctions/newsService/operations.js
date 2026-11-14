@@ -18,7 +18,7 @@ function validatePromotions(value){
   for(const k of ['start','end'])if(c[k])check(Number.isFinite(Date.parse(c[k])),'活动时间格式不正确。');
   if(c.start&&c.end)check(Date.parse(c.start)<Date.parse(c.end),'结束时间需晚于开始时间。');
   if(c.hours)check(Array.isArray(c.hours)&&c.hours.length===2&&c.hours[0]>=0&&c.hours[1]<=24&&c.hours[0]<c.hours[1],'时段需在 0–24 点之间。');
-  const out={id:c.id,title:text(c.title,100),titleZh:text(c.titleZh||c.title,100),short:text(c.short||c.title,40),face:c.face?text(c.face,20):'¥'+c.max,sub:text(c.sub||'off',30),description:text(c.description,300),descriptionZh:text(c.descriptionZh||c.description,300),max:c.max,kind:c.kind,days:c.days,enabled:c.enabled!==false,automatic:!!c.automatic,returning:!!c.returning,count:Math.min(10,Math.max(1,Number(c.count)||1))};
+  const out={id:c.id,title:text(c.title,100),titleZh:text(c.titleZh||c.title,100),short:text(c.short||c.title,40),face:c.face?text(c.face,20):'Balance ¥'+c.max,sub:text(c.sub||'off',30),description:text(c.description,300),descriptionZh:text(c.descriptionZh||c.description,300),max:c.max,kind:c.kind,days:c.days,enabled:c.enabled!==false,automatic:!!c.automatic,returning:!!c.returning,count:Math.min(10,Math.max(1,Number(c.count)||1))};
   for(const k of ['start','end','hours','daily','event','dailyOrderLimit','bannerLabel','headline','blurb'])if(c[k]!==undefined)out[k]=c[k];
   if(out.dailyOrderLimit)check(Number.isInteger(out.dailyOrderLimit)&&out.dailyOrderLimit>0&&out.dailyOrderLimit<=10000,'每日订单上限无效。');
   for(const k of ['bannerLabel','headline','blurb'])if(out[k])out[k]=text(out[k],300);

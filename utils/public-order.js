@@ -3,7 +3,7 @@ const china=require('./china-time'),location=require('./hall-location'),rc=requi
 function view(r,language='zh'){
  if(!r)return null;
  const zh=language!=='en',food=r.category==='takeout',task=r.category==='task',loc=location.detail(r,language,false);
- const type=task?(zh?'其他任务':'Task'):food?(r.night?(zh?'夜市代买':'Night market'):(zh?'外卖代取':'Takeaway')):(zh?'快递代取':'Parcels');
+ const type=task?(zh?'其他任务':'Task'):food?(r.night?(zh?'夜市代买':'Request a night market purchase'):(zh?'外卖代取':'Takeaway')):(zh?'快递代取':'Parcels');
  const status={waiting:['待接单','Waiting for a runner'],taken:['已接单','Taken'],collected:['配送中','On the way'],delivered:['已送达 · 待确认','Delivered · awaiting confirmation'],confirmed:['已完成','Completed'],cancelled:['已取消','Cancelled'],refunded:['已退款','Refunded'],disputed:['审核中','Under review']}[r.status]||[zh?'状态已更新':'Status updated', 'Status updated'];
  const destination=loc.showDorm?[loc.area,loc.building].filter(Boolean).join(' '):(zh?'其他地址 · 接单后可见':'Other address · visible after acceptance');
  const pickup=food&&!r.night?lockers.label(r.pickupPoint,language):task?'':rc.name(r.station,language);

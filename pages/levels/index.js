@@ -53,7 +53,7 @@ Page({
   const host=this.selectComponent('#level-page-hook');if(!host)return;
   if(host.openYuniFeed())return;
   const state=store.get(),en=this.data.language==='en';
-  if(!state.profile.accountId||state.profile.loggedOut){wx.showToast({title:en?'Sign in in Me first':'请先在我的页面登录',icon:'none'});return;}
+  if(!state.profile.accountId||state.profile.loggedOut){wx.showToast({title:en?'Please sign in from the Me page first.':'请先在「我的」页面登录',icon:'none'});return;}
   this.openingFeed=true;wx.showLoading({title:en?'Syncing…':'正在同步…'});
   let message='';
   try{await require('../../utils/orders').sync();this.refreshCheckin();if(!host.openYuniFeed())message=en?'Check-in is syncing. Try again shortly.':'签到正在同步，请稍后再试';}

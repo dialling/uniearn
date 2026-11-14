@@ -34,7 +34,7 @@ const copy = {
     deliveredWeek: 'delivered on campus this week.', seeFinished: 'See the finished jobs.', pickupTitle: 'Pickup & delivery',
     manage: 'Manage', firstRoute: 'First order: choose where to collect it and add your dorm. You only do this once.',
     savedRoute: 'Tap a saved route. Add a note for the runner below if you need to.', addDorm: 'Add my dorm', newRoute: 'New route',
-    collectFrom: 'Collect from', pickupHint: 'Where the rider leaves your takeaway.', myDorm: 'My dorm', chooseBuilding: 'Choose building',
+    collectFrom: 'Collect from', pickupHint: 'Where the food delivery courier leaves your takeaway.', myDorm: 'My dorm', chooseBuilding: 'Choose building',
     room: 'Room', editOrder: 'Edit for this order', shelf: 'Delivery shelf by the gate', deliverTo: 'Deliver to',
     yourDorm: 'Your dorm', handoff: 'Handed to you there', dropOff: 'Drop-off', door: 'At my door',
     lobby: 'Lobby · I’ll come down', dropHelp: 'If the runner can’t enter your building, they leave it in the lobby and message you. A runner who lives in your building can bring it to your room.',
@@ -51,12 +51,12 @@ const copy = {
     soupHelp: 'The runner is told to keep the bag upright.', deliveryFee: 'Your delivery fee', minimum: 'Minimum ¥3',
     perBag: '/ bag', enterPrice: 'Tap the number to type your own', serviceFee: 'Service fee · ¥0.50 per order',
     serviceHelp: 'The service fee covers payment processing and UniEarn operations, while runners keep 100% of the delivery fee.', coupon: 'Coupon',
-    myCoupons: 'My coupons', retry: 'Tap to retry.', noCoupons: 'No available coupons. Collect coupons in Rewards.',
+    myCoupons: 'My coupons', retry: 'Tap to retry.', noCoupons: 'No coupons available. Collect coupons in News.',
     none: 'None', couponCoverage: 'UniEarn covers', couponRunner: 'The runner still gets the full delivery fee.',
     total: 'Total', foodPaid: 'Your food is already paid for in Meituan or Ele.me. This is the delivery from the pickup point to your door.',
     preview: 'This preview does not charge or hold money. Orders sync with your team; settlement is simulated.', agree: 'I agree to the',
     rules: 'platform rules and user agreement', join: 'Join', post: 'Post', previewPrice: 'preview', unavailable: 'This trip is unavailable.',
-    photoReplace: 'Replace the rider’s photo', photoAdd: 'Add the rider’s photo', photoLater: 'Add the rider’s photo when it arrives',
+    photoReplace: 'Replace the food drop-off photo', photoAdd: 'Add the food drop-off photo', photoLater: 'Once your food reaches the pickup point, add the drop-off photo taken by the food delivery courier.',
     couponRefreshError: 'Could not refresh coupons. Please try again.', phoneAuthorization: 'Phone authorization was not completed. You can type the number instead.', phoneHint: 'Enter an 11-digit mobile number that starts with 1.'
   }
 };

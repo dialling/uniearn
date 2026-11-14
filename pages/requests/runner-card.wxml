@@ -6,7 +6,7 @@
     <text wx:for="{{item.genders}}" wx:for-item="gender" wx:key="key" class="badge hall-gender dorm-{{gender.key}}">{{gender.label}}</text>
     <block wx:if="{{item.items.length===1}}"><text wx:if="{{item.items[0].raised}}" class="badge runner-raised">{{zh?'已加价':'Raised'}}</text><text wx:if="{{item.items[0].soup}}" class="badge runner-caution">{{zh?'含汤或饮品':'Soup / drinks'}}</text><text wx:if="{{item.items[0].fragile}}" class="badge runner-caution">{{zh?'易碎':'Fragile'}}</text></block>
    </view>
-   <text class="runner-price"><text class="runner-currency">¥</text>{{item.total}}</text>
+   <text class="runner-price"><text class="runner-currency">Balance ¥</text>{{item.total}}</text>
   </view>
   <view wx:if="{{item.items.length && item.items[0].category!=='task'}}" class="nr-from">{{zh?'取自 ':'From '}}{{item.items[0].origin}}</view>
   <view wx:for="{{item.items}}" wx:for-item="order" wx:key="id" class="runner-order nr-order {{order.disputed && item.items.length>1?'runner-order-issue':''}}">

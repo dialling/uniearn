@@ -1,5 +1,5 @@
 module.exports = function contactIdentity(order, runner, zh) {
-  const role = runner ? (zh ? '跑手' : 'Runner') : (zh ? '发布者' : 'Requester');
+  const role = runner ? (zh ? '跑手' : 'Runner') : (zh ? '发布人' : 'Requester');
   const name = (runner ? order.runnerName : order.owner) || role;
   const jobs = runner && order.runnerStats && order.runnerStats.jobsDone;
   const detail = Number.isInteger(jobs)

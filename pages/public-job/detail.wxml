@@ -1,5 +1,5 @@
 <template name="public-order-detail">
- <view class="public-order-summary"><view class="public-order-heading"><view class="public-order-type">{{job.type}}</view><view class="public-order-status status-{{job.status}}">{{job.statusLabel}}</view></view><view class="public-order-price"><text>¥</text>{{job.rewardText}}</view></view>
+ <view class="public-order-summary"><view class="public-order-heading"><view class="public-order-type">{{job.type}}</view><view class="public-order-status status-{{job.status}}">{{job.statusLabel}}</view></view><view class="public-order-price"><text>Balance ¥</text>{{job.rewardText}}</view></view>
  <view wx:if="{{job.routeTo}}" class="public-order-route"><view class="public-order-leg"><text class="public-order-kicker">{{zh?'取件':'From'}}</text><text class="public-order-place">{{job.routeFrom}}</text></view><view class="public-order-trail"></view><view class="public-order-leg"><text class="public-order-kicker">{{zh?'送达':'To'}}</text><text class="public-order-place">{{job.routeTo}}</text></view></view>
  <view wx:else class="public-order-route public-order-route-single">{{job.label}}</view>
  <view wx:if="{{job.flags.length}}" class="public-order-flags"><text wx:for="{{job.flags}}" wx:for-item="flag" wx:key="*this">{{flag}}</text></view>

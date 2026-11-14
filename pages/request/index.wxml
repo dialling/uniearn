@@ -110,7 +110,7 @@
  <view class="journey-detail-row"><view class="journey-detail-label"><text class="journey-detail-icon">⌖</text><text>{{zh?'送达地点':'Deliver to'}}</text></view><text class="journey-detail-value">{{request.destinationDisplay}}</text></view>
  <view wx:if="{{request.category==='takeout'}}" class="journey-detail-row"><view class="journey-detail-label"><text class="journey-detail-icon">♧</text><text>{{zh?'外卖到达':'Food arrival'}}</text></view><text class="journey-detail-value">{{request.arrivalLabel}}</text></view>
  <view wx:if="{{request.category==='parcel' && request.isMine}}" wx:for="{{request.parcelItems}}" wx:key="index" class="journey-parcel-detail">{{zh?'包裹 ':'Parcel '}}{{index+1}} · {{item.pickupPoint||request.station}} · {{item.code}}</view>
- <view class="journey-detail-row journey-price-row"><view class="journey-detail-label"><text class="journey-detail-icon">◉</text><text>{{zh?'赏金':'Price'}}</text></view><text class="journey-price">¥{{request.rewardText}}</text></view>
+ <view class="journey-detail-row journey-price-row"><view class="journey-detail-label"><text class="journey-detail-icon">◉</text><text>{{zh?'赏金':'Reward'}}</text></view><text class="journey-price">¥{{request.rewardText}}</text></view>
  <view wx:if="{{request.discount}}" class="journey-detail-row"><text>{{zh?'优惠券':'Coupon'}}</text><text>−¥{{request.discount}}</text></view>
  <view wx:if="{{request.discount || request.fee!=='0.00'}}" class="journey-detail-row journey-net-total"><text>{{zh?'模拟合计':'Demo total'}}</text><text>¥{{request.total}}</text></view>
  <view wx:if="{{request.note}}" class="journey-order-note">{{request.note}}</view>
