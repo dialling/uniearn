@@ -2,10 +2,10 @@ const china=require('./china-time'),location=require('./hall-location'),rc=requi
 // Construct a display model from public hall fields. Never spread a full order into it.
 function view(r,language='zh'){
  if(!r)return null;
- const zh=language!=='en',food=r.category==='takeout',task=r.category==='task',loc=location.detail(r,language,false);
+ const zh=language!=='en',food=r.category==='takeout',task=r.category==='task',loc=location.detail(r,language);
  const type=task?(zh?'其他任务':'Task'):food?(r.night?(zh?'夜市代买':'Request a night market purchase'):(zh?'外卖代取':'Takeaway')):(zh?'快递代取':'Parcels');
  const status={waiting:['待接单','Waiting for a runner'],taken:['已接单','Taken'],collected:['配送中','On the way'],delivered:['已送达 · 待确认','Delivered · awaiting confirmation'],confirmed:['已完成','Completed'],cancelled:['已取消','Cancelled'],refunded:['已退款','Refunded'],disputed:['审核中','Under review']}[r.status]||[zh?'状态已更新':'Status updated', 'Status updated'];
- const destination=loc.showDorm?[loc.area,loc.building].filter(Boolean).join(' '):(zh?'其他地址 · 接单后可见':'Other address · visible after acceptance');
+ const destination=loc.showDorm?[loc.area,loc.building,loc.room?(zh?loc.room+'室':'Room '+loc.room):''].filter(Boolean).join(' '):(zh?'其他地址 · 接单后可见':'Other address · visible after acceptance');
  const pickup=food&&!r.night?lockers.label(r.pickupPoint,language):task?'':rc.name(r.station,language);
  const count=task?1:d.boxes(r),unit=task?(zh?'个任务':'task'):food?(zh?'袋':count===1?'bag':'bags'):(zh?'件':count===1?'parcel':'parcels');
  const fields=[],add=(label,value)=>{if(value!==undefined&&value!==null&&String(value).trim())fields.push({label,value:String(value)});};

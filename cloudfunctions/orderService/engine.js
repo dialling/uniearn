@@ -316,10 +316,11 @@ function snapshot(s, actor, account, now = Date.now()) {
     }
     // Exact delivery addresses stay private until this runner accepts the order.
     const out = {};
-    const hallKeys=['destinationType','dormGender','id','campusId','universityId','category','station','dorm','placeName','small','big','reward','serviceFee','status','deadline','deliveryDate','createdAt','arrivalAt','closesAt','arrived','deliverBy','soup','lobbyPickupAllowed','fragile','night','purchaseStatus','shop','raised','tip','parcelSize'];
+    const hallKeys=['destinationType','dormGender','id','campusId','universityId','category','station','dorm','room','placeName','small','big','reward','serviceFee','status','deadline','deliveryDate','createdAt','arrivalAt','closesAt','arrived','deliverBy','soup','lobbyPickupAllowed','fragile','night','purchaseStatus','shop','raised','tip','parcelSize'];
     for (const k of hallKeys) if (r[k] !== undefined) out[k] = r[k];
     if (r.category === 'takeout' && r.note) out.note = r.note;
     if (r.category === 'takeout' && !r.night && r.pickupPoint) out.pickupPoint = r.pickupPoint;
+    if(r.category==='task'||r.destinationType==='place')delete out.room;
     const hallRequest={ ...out, owner:'Request', phone:'', codes:Array(d.boxes(r)).fill(''), collected:[], photo:'',
       parcelItems:r.parcelItems && r.parcelItems.map(p => ({size:p.size, price:p.price, code:''})), isMine:false, isRunner:false };
     return hallRequest;
@@ -330,7 +331,7 @@ function snapshot(s, actor, account, now = Date.now()) {
     runnerJobs:stats(s,t.runnerAccountId).jobsDone, departAt:t.departAt, joinUntil:t.joinUntil, phase:t.phase,
     cancelled:false, remaining:t.capacity-t.requestIds.reduce((n,id)=>n+d.boxes(s.requests.find(r=>r.id===id)),0)
   }));
-  const publicJobs=s.requests.filter(r=>inCampus(r)&&!['cancelled','refunded','disputed'].includes(r.status)).map(r=>{const o={},keys=['destinationType','dormGender','id','campusId','universityId','category','station','dorm','placeName','small','big','reward','status','arrivalAt','closesAt','deadline','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','arrived','deliverBy','soup','lobbyPickupAllowed','fragile','night','purchaseStatus','shop','raised','title','taskMode','dueAt'];for(const k of keys)if(r[k]!==undefined)o[k]=r[k];if(r.category==='takeout'&&r.note)o.note=r.note;if(r.category==='takeout'&&!r.night&&r.pickupPoint)o.pickupPoint=r.pickupPoint;return o;});
+  const publicJobs=s.requests.filter(r=>inCampus(r)&&!['cancelled','refunded','disputed'].includes(r.status)).map(r=>{const o={},keys=['destinationType','dormGender','id','campusId','universityId','category','station','dorm','room','placeName','small','big','reward','status','arrivalAt','closesAt','deadline','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','arrived','deliverBy','soup','lobbyPickupAllowed','fragile','night','purchaseStatus','shop','raised','title','taskMode','dueAt'];for(const k of keys)if(r[k]!==undefined)o[k]=r[k];if(r.category==='takeout'&&r.note)o.note=r.note;if(r.category==='takeout'&&!r.night&&r.pickupPoint)o.pickupPoint=r.pickupPoint;if(r.category==='task'||r.destinationType==='place')delete o.room;return o;});
   const supportInbox=(account&&account._admin||account&&account._reviewer)?Object.entries(s.members).flatMap(([accountId,member])=>(member.supportTickets||[]).filter(t=>t.status==='open').map(t=>({...clone(t),accountId}))).sort((a,b)=>((b.messages||[]).at(-1)?.at||b.createdAt)-((a.messages||[]).at(-1)?.at||a.createdAt)).slice(0,50):[];
   return {walletSummary:loggedIn?wallet.summary(s,actor):null,progression:loggedIn?rewards.loyaltyView(s.members[actor]||{}):null,revision:s.revision,serverTime:now,capabilities:{restoreDormGenders:loggedIn,riderPhotos:true},publicJobs,deliveredThisWeek:s.requests.filter(r=>inCampus(r)&&r.deliveredAt>now-7*86400000).length,requests,trips,publicTrips,accountId:actor,supportInbox,
     adjustments:loggedIn?(s.adjustments||[]).filter(a=>a.runnerAccountId===actor).map(({runnerAccountId,...a})=>a):[],rewards:loggedIn?rewards.view(s,actor,now):null,preferences:loggedIn?(s.members[actor]||{}).preferences||{}:{},

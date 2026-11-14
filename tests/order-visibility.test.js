@@ -5,7 +5,7 @@ const now=Date.now(),row={id:'mine',ownerId:'owner',isMine:true,campusId:'sip',c
 const p={...def,data:structuredClone(def.data),setData(v){Object.assign(this.data,v)}};
 function state(status){store.update(s=>s.requests=[{...row,status,...(status==='taken'?{takenAt:now,runnerId:'runner-trip'}:{}),...(status==='confirmed'?{confirmedAt:now,deliveredAt:now}:{})}]);p.refresh();}
 state('waiting');assert.equal(p.data.cards.length,1);assert.equal(p.data.trackedOrders.length,0);
-state('taken');assert.equal(p.data.cards.length,0);assert.equal(p.data.trackedOrders.length,1,'accepted customer order remains accessible on home');assert.equal(p.data.trackedOrders[0].id,'mine');assert.match(p.data.trackedOrders[0].title,/Locker A/);
+state('taken');assert.equal(p.data.cards.length,1,'accepted orders stay visible in the hall');assert.equal(p.data.cards[0].running,true);assert.equal(p.data.trackedOrders.length,1,'accepted customer order remains accessible on home');assert.equal(p.data.trackedOrders[0].id,'mine');assert.match(p.data.trackedOrders[0].title,/Locker A/);
 state('collected');assert.equal(p.data.trackedOrders.length,1);state('delivered');assert.equal(p.data.trackedOrders.length,1,'awaiting customer confirmation remains active');state('disputed');assert.equal(p.data.trackedOrders.length,1);
 state('confirmed');assert.equal(p.data.trackedOrders.length,0);state('cancelled');assert.equal(p.data.trackedOrders.length,0);state('refunded');assert.equal(p.data.trackedOrders.length,0);
 state('taken');store.update(s=>s.requests[0].isMine=false);p.refresh();assert.equal(p.data.trackedOrders.length,0,'private tracker only shows own orders');

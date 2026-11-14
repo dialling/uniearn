@@ -1,7 +1,7 @@
 const filters=require('./order-filters'),campus=require('./campus');
 const areaEnglish={'文缘':'Wenyuan','文星':'Wenxing','文萃':'Wencui','文荟':'Wenhui','芭菲':'Bafei'};
 const value=x=>String(x||'').trim();
-function canViewRoom(){return false;}
+function canViewRoom(){return true;}
 function detail(order,language='zh',showRoom=canViewRoom(order)){
  const zh=language!=='en',place=order.destinationType==='place',location=filters.location(order),area=campus.areaOfBuilding(location.building||order.dorm);
  const areaLabel=area?(zh?area.zh:area.en):(zh?location.area:areaEnglish[location.area])||'';

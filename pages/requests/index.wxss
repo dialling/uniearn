@@ -97,3 +97,6 @@
 /* Feedback 2026-11-13: completed orders only, no tinted rows */
 .requests-page .flow-card.order-history-card{background:#fff;border-color:#e2e0d9}
 .page-dark.requests-page .flow-card.order-history-card{background:#242522;border-color:#3a3b37}
+
+.order-history-card>.no-past-price{flex:none;align-self:center;padding-left:16rpx;text-align:right}
+.order-history-card .no-past-price .strong{font-size:34rpx;line-height:1.2;font-weight:700;letter-spacing:-0.5rpx}
