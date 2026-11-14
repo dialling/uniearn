@@ -16,7 +16,7 @@ const cfg={category:'other',station:'奶茶店',dorm:'D01',destinationType:'plac
  const template=fs.readFileSync(require.resolve('../pages/task-post/index.wxml'),'utf8');assert.match(template,/<view wx:if="\{\{!tripId\}\}" class="flow-card deadline-card">/);assert.ok(template.includes('tripId?2:3'));
  require('../pages/trip/index');const share=def.onShareAppMessage.call({data:{trip:{id:'shared',category:'other',station:'Shop',dorm:'D01'}},id:'shared'});assert.equal(share.path,'/pages/task-post/index?tripId=shared');
  const nightShare=def.onShareAppMessage.call({data:{trip:{id:'night',category:'takeout',station:'South gate',dorm:'D01'},tripNight:true,requests:[{night:true}]},id:'night'});
- assert.match(nightShare.title,/add your night market/);
+ assert.match(nightShare.title,/add your Night market/);
  assert.equal(nightShare.path,'/pages/join/index?id=night');
  store.update(s=>s.language='zh');
  const nightShareZh=def.onShareAppMessage.call({data:{trip:{id:'night',category:'takeout',station:'South gate',dorm:'D01'},tripNight:true,requests:[{night:true}]},id:'night'});

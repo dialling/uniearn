@@ -41,7 +41,7 @@ member.coupons.push(stored);
 const spend=(id,reward)=>{const r={id,ownerId:inviter,reward,serviceFee:0,status:'waiting'};s.requests.push(r);rewards.apply(s,inviter,r,stored.id,now);return r;};
 const d=spend('r5',3);
 assert.equal(d.discount,3);assert.equal(stored.balance,0.9);assert.ok(!stored.usedBy,'balance left, coupon stays usable');
-assert.equal(rewards.view(s,inviter,now).coupons.find(x=>x.id===stored.id).face,'¥0.9');
+assert.equal(rewards.view(s,inviter,now).coupons.find(x=>x.id===stored.id).face,'Balance ¥0.9');
 const e=spend('r6',4);
 assert.equal(e.discount,0.9);assert.equal(stored.balance,0);assert.equal(stored.usedBy,'r6');
 assert.throws(()=>spend('r7',4),/used|expired/);

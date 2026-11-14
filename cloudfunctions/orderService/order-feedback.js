@@ -57,7 +57,7 @@ function submit(s,actor,data,now,validatePhoto){
  const t=ticket(s,actor,r,now);if(reason!=='Report response')pause(r,owner,'team',now);
  if(owner&&r.status==='disputed'&&(data.reason||r.dispute?.contactOnly!==false))r.dispute={...(r.dispute||{}),reason,note,photo:photo||r.dispute?.photo||'',at:r.dispute?.at||now,updatedAt:now,contactOnly:false};
  t.messages.push({text:(data.reason&&data.reason!=='Something else'?'['+data.reason+'] ':'')+note,note,...(data.reason?{reason:data.reason}:{}),...(photo?{photo}:{}),at:now,mine:true});t.readAt=now;t.updatedAt=now;
- if(t.messages.filter(m=>m.mine).length===1)workflow.event(r,(owner?'Customer':'Runner')+' contacted the Uniearn team',now);
+ if(t.messages.filter(m=>m.mine).length===1)workflow.event(r,(owner?'Customer':'Runner')+' contacted the UniEarn team',now);
  return {ticketId:t.id,paused:owner&&r.status==='disputed'};
 }
 function closeTickets(s,id,now){
@@ -100,9 +100,9 @@ function notice(s,r,actor){
 // 2026-11-14: the Uniearn team can close an order's reports for both sides without asking either of them.
 // Each open conversation gets a closing message (shown as an unread team reply) before it is closed.
 const TEAM_CLOSE={
- resolved:['The Uniearn team has resolved this report.','Uniearn 团队已处理完这条反馈。'],
- release:['The Uniearn team reviewed this report and released the payout to the runner.','Uniearn 团队已审核，赏金已结算给跑手。'],
- refund:['The Uniearn team reviewed this report and refunded the order.','Uniearn 团队已审核，本单已退款。']
+ resolved:['The UniEarn team has resolved this report.','UniEarn 团队已处理完这条反馈。'],
+ release:['The UniEarn team reviewed this report and released the payout to the runner.','UniEarn 团队已审核，赏金已结算给跑手。'],
+ refund:['The UniEarn team reviewed this report and refunded the order.','UniEarn 团队已审核，本单已退款。']
 };
 function teamClose(s,id,now,outcome='resolved'){
  const [text,textZh]=TEAM_CLOSE[outcome]||TEAM_CLOSE.resolved;let closed=0;

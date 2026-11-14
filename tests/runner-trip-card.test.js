@@ -15,7 +15,7 @@ assert.equal(result.items[0].status,'待取件');
 assert.equal(result.items[0].deadline,'','acceptance deadline is irrelevant after acceptance');
 assert.equal(result.items[0].soup,true);
 assert.equal(result.total,'3.00');
-assert.equal(hall.detail(first,'zh').room,'','public hall room privacy is unchanged');
+assert.equal(hall.detail(first,'zh').room,'1111','2026-11-14: hall cards show the room to everyone; phone and pickup codes stay private');
 const second={...first,id:'b',status:'collected',dormGender:'female',room:'2222',note:'放前台',small:2,reward:5,pickupPoint:'另一个柜',collectedAt:now};
 result=card(trip,[first,second],'zh',now);
 assert.equal(result.items.length,2);

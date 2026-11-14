@@ -78,3 +78,4 @@
 .page-dark .sc-option{background:#2b2d29;border-color:#3a3b37}
 .page-dark .sc-option.on{background:#1f3329;border-color:#6fd0a8}
 .page-dark .sc-step-warn{background:#3a2a1a;color:#f4c79a}
+.order-no{text-transform:uppercase;font-variant-numeric:tabular-nums;letter-spacing:.5rpx}

@@ -10,7 +10,7 @@ const MAP={
   job:['选择快递','Choose parcels'],
   requests:['我的订单','My orders'],
   request:['订单详情','Order details'],
-  'order-feedback':['联系 Uniearn','Chat with Uniearn'],
+  'order-feedback':['联系 UniEarn','Chat with UniEarn'],
   posted:['已发布','Posted'],
   'public-job':['订单公开详情','Public order details'],
   create:['发布代取','Request a parcel pickup'],

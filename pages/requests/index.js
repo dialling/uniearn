@@ -16,7 +16,7 @@ function fallbackRow(trip,items,lang){
 }
 
 function messageNotice(r,zh){
- if(Number(r.supportUnread)>0)return {id:r.id,kind:'support',unread:Number(r.supportUnread),preview:String((zh&&r.supportPreviewZh)||r.supportPreview||'').replace(/^[[^]]*]s*/,'')||(zh?'点击查看回复':'Open the reply'),peer:'Uniearn',canReply:false};
+ if(Number(r.supportUnread)>0)return {id:r.id,kind:'support',unread:Number(r.supportUnread),preview:String((zh&&r.supportPreviewZh)||r.supportPreview||'').replace(/^[[^]]*]s*/,'')||(zh?'点击查看回复':'Open the reply'),peer:'UniEarn',canReply:false};
  const unread=Math.max(0,Number(r.unread)||0),incoming=(r.messages||[]).filter(m=>!m.mine),last=incoming[incoming.length-1];
  const text=last?(last.photo?(zh?'[图片]':'[Photo]'):/^\[\[uniearn-sticker:/.test(last.text||'')?(zh?'[贴纸]':'[Sticker]'):String(last.text||'')):(zh?'点击查看新消息':'Open new messages');
  return {id:r.id,unread,preview:text,peer:r.isMine?(zh?'跑手':'Runner'):(zh?'顾客':'Customer'),canReply:!!r.runnerId&&(!r.deliveredAt||Date.now()<r.deliveredAt+86400000)};

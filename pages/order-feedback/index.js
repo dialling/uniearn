@@ -3,7 +3,7 @@ const orders=require('../../utils/orders'),store=require('../../utils/store'),fl
 // Team replies show here and as unread on My orders.
 Page({data:{...require('../../utils/motion').data(),zh:true,request:null,ticket:null,messages:[],reason:'',note:'',photo:'',busy:false,uploading:false,error:'',canSubmit:false,reasons:[],photoRequired:false,sentAny:false},
  onLoad(o={}){this.id=o.id||'';},onShow(){orders.bind(this);},onHide(){orders.unbind(this);},onUnload(){orders.unbind(this);},
- refresh(){const s=store.get(),zh=s.language!=='en',r=s.requests.find(r=>r.id===this.id&&(r.isMine||r.isRunner));if(wx.setNavigationBarTitle)wx.setNavigationBarTitle({title:zh?'联系 Uniearn':'Chat with Uniearn'});
+ refresh(){const s=store.get(),zh=s.language!=='en',r=s.requests.find(r=>r.id===this.id&&(r.isMine||r.isRunner));if(wx.setNavigationBarTitle)wx.setNavigationBarTitle({title:zh?'联系 UniEarn':'Chat with UniEarn'});
   if(!r){this.setData({request:null,zh});return;}
   const orderTickets=(s.supportTickets||[]).filter(t=>t.orderId===r.id),ticket=orderTickets.at(-1)||null;
   const reasons=reasonCopy.list(r,!r.isMine&&!!r.isRunner,zh);

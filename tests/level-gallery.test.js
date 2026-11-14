@@ -29,7 +29,7 @@ assert.match(xml,/class="level-mascot power-\{\{currentItem\.level\}\}"/);
 assert.match(xml,/currentLevel===currentItem.level/,'current level is marked');
 assert.doesNotMatch(xml,/detail-check|>✓</,'the four content icons are not font characters');
 assert.doesNotMatch(xml,/intro-copy/,'small helper line is removed');
-assert.match(xml,/Uniearn 等级成长/,'brand casing follows the product');
+assert.match(xml,/UniEarn 等级成长/,'brand casing follows the product');
 assert.match(css,/@keyframes aura-pulse/);
 assert.match(css,/@keyframes mascot-float/);
 assert.match(css,/@keyframes mascot-power-in/,'switching levels animates the new Yuni into view');
