@@ -83,14 +83,15 @@ Component({
       moves.push('look', 'stretch', 'hum', 'cheerUp', 'peek');
       if (this.data.hasRod && play.fishing.open) moves.push('fishHint');
       if (play.bucket.length) moves.push('bucketHint');
+      // 2026-11-17: idle moves stay silent. Yuni only makes sounds when someone plays with Yuni.
       const m = pick(moves);
       if (m === 'hungry') {
-        this.act({ face: 'hungry', wings: 'belly', body: 'rumble' }, 2600); sound.growl();
+        this.act({ face: 'hungry', wings: 'belly', body: 'rumble' }, 2600);
         this.say(pick(zh ? ['好饿啊……', '肚子在咕咕叫……', '有小鱼干吗？'] : ['I\'m so hungry...', 'My tummy is rumbling...', 'Got a little fish for me?']), 2800);
         this.measure(g => { if (g) this.float({ kind: 'note', text: zh ? '咕噜…' : 'grr…', style: 'left:' + (g.cx + g.width * .18) + 'px;top:' + (g.cy + 20) + 'px' }, 1400); });
       } else if (m === 'fishTime') {
         // Excited in a good way: sparkly eyes, open beak, a drip of saliva, happy little bounces.
-        this.act({ face: 'drool', wings: 'cheer', body: 'bounce', mouth: true }, 3000); sound.slurp();
+        this.act({ face: 'drool', wings: 'cheer', body: 'bounce', mouth: true }, 3000);
         this.say(zh ? '是不是到吃鱼时间了？！' : 'Is it fish time yet?!', 3000);
         this.measure(g => { if (g) [0, 350, 700].forEach(t => setTimeout(() => this.float({ kind: 'note', text: '✦', style: 'left:' + (g.cx + (Math.random() - .5) * g.width * .7) + 'px;top:' + (g.top + 30) + 'px;color:#ffe08a' }, 1200), t)); });
       } else if (m === 'look') {
@@ -99,7 +100,7 @@ Component({
       } else if (m === 'stretch') {
         this.act({ face: 'sleep', wings: 'reach', body: 'stretch', mouth: true }, 1500); this.say(zh ? '啊——伸个懒腰。' : 'Yaaawn... big stretch.', 1800);
       } else if (m === 'hum') {
-        this.act({ face: 'happy', body: 'hum' }, 2400); sound.hum(); this.say(zh ? '啦啦啦~' : 'La la la~', 2200);
+        this.act({ face: 'happy', body: 'hum' }, 2400); this.say(zh ? '啦啦啦~' : 'La la la~', 2200);
         this.measure(g => { if (g) [0, 500, 1000].forEach(t => setTimeout(() => this.float({ kind: 'note', text: '♪', style: 'left:' + (g.cx + 30 + Math.random() * 40) + 'px;top:' + (g.top + 40) + 'px' }, 1300), t)); });
       } else if (m === 'cheerUp') {
         this.act({ face: 'happy', wings: 'wave', body: 'squash', mouth: true }, 1600); this.say(pick(zh ? ['今天有新订单吗？', '一起赚积分吧！', '摸摸我也可以哦。'] : ['Any orders today?', 'Let\'s earn some points!', 'You can pet me, you know.']), 2400);
