@@ -175,7 +175,10 @@ async function performAdminAction(action,arg,parts) {
   if(['approve','approveAny','reject'].includes(action)) {
     const application=APPS.find(a=>a.id===arg);name='review';payload={accountId:application.user,submittedAt:application.appliedAt,decision:action==='reject'?'reject':'approve',note:valueOf('admin-review-note')};
   } else if(['send','sendResolve','reply'].includes(action)) {
-    const ticket=TICKETS.find(t=>t.id===arg);name='supportReply';payload={accountId:ticket.user,ticketId:ticket.id,text:valueOf(action==='reply'?'reply-text':'s-reply')};
+    const ticket=TICKETS.find(t=>t.id===arg);
+    if(!ticket)throw Error('找不到这个会话，请刷新页面后重试。');
+    const typed=action==='reply'?valueOf('reply-text'):(valueOf('s-reply')||ST.support.draft||'');
+    name='supportReply';payload={accountId:ticket.user,ticketId:ticket.id,text:String(typed||'')};
     if(!payload.text.trim())throw Error('请输入回复内容。');
   } else if(action==='resolveReport') {
     if(!confirm('Resolve this order’s reports for both sides? Both people get a closing message.'))return;
@@ -194,7 +197,8 @@ async function performAdminAction(action,arg,parts) {
   else if(action==='rmMark') {const mark=MARKS.find(m=>m.id===arg);name='removeMark';payload={accountId:mark.runner,markId:mark.id};}
   else if(action==='export') {await exportAdmin(arg);return;}
   else throw Error('该功能尚未接入小程序，当前不会修改任何云端数据。');
-  await adminRequest(name,{...payload,operationId:crypto.randomUUID()});
+  try{await adminRequest(name,{...payload,operationId:crypto.randomUUID()});}
+  catch(error){throw Error((name==='supportReply'?'发送失败：':'操作失败：')+(error&&error.message||error));}
   if(action==='sendResolve') {const ticket=TICKETS.find(t=>t.id===arg);await adminRequest('supportStatus',{accountId:ticket.user,ticketId:ticket.id,status:'resolved',operationId:crypto.randomUUID()});}
   ST.support.draft=''; drawer=null; dstack=[]; await refreshAdmin(); toast('已保存到云开发。');
 }
@@ -204,8 +208,8 @@ document.addEventListener('click',event=>{
   const [action,...parts]=target.dataset.act.split(':'),arg=parts.join(':');
   if(navigationActions.has(action))return;
   event.preventDefault();event.stopImmediatePropagation();
-  if(adminConnection.busy)return;
-  adminConnection.busy=true;target.disabled=true;
+  if(adminConnection.busy&&Date.now()-(adminConnection.busyAt||0)<25000)return;
+  adminConnection.busy=true;adminConnection.busyAt=Date.now();target.disabled=true;
   performAdminAction(action,arg,parts).catch(e=>toast(e.message)).finally(()=>{adminConnection.busy=false;target.disabled=false;});
 },true);
 document.addEventListener('change',event=>{
