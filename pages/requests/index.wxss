@@ -102,3 +102,9 @@
 
 .order-history-card>.no-past-price{flex:none;align-self:center;padding-left:16rpx;text-align:right}
 .order-history-card .no-past-price .strong{font-size:34rpx;line-height:1.2;font-weight:700;letter-spacing:-0.5rpx}
+
+/* 2026-11-16: join requests waiting for the runner */
+.runner-card{position:relative}
+.rc-new{display:inline-flex;align-items:center;gap:10rpx;margin-bottom:14rpx;padding:6rpx 16rpx;border-radius:99rpx;background:#fde8e6;color:#c8261b;font-size:23rpx;font-weight:800}
+.rc-dot{width:14rpx;height:14rpx;border-radius:50%;background:#e5322d;box-shadow:0 0 0 4rpx #e5322d33}
+.rq-tab-dot{display:inline-block;width:14rpx;height:14rpx;margin-left:8rpx;border-radius:50%;background:#e5322d;vertical-align:top}

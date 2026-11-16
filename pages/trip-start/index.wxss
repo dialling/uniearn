@@ -1,14 +1,96 @@
 @import "../../utils/flow.wxss";
-.trip-start-bottom{position:fixed;left:0;right:0;bottom:0;z-index:20;background:#fff;border-top:1rpx solid #e2e0d9;padding:18rpx 30rpx calc(20rpx + env(safe-area-inset-bottom));box-shadow:0 -6rpx 24rpx #0000000d}.trip-start-bottom .btn{display:block;width:100%;margin:0 auto;min-height:92rpx;text-align:center}
+/* 2026-11-15 redesign of Start a trip: the route card (pick up → deliver to) carries the page; the rest stays quiet. */
+.trip-start-page.ts-page{padding:28rpx 32rpx 250rpx;background:#eeede8;color:#16181c}
+.ts-head{margin:4rpx 4rpx 30rpx}
+.ts-title{font-size:46rpx;font-weight:800;letter-spacing:-.6rpx;color:#16181c}
+.ts-lead{margin-top:8rpx;font-size:26rpx;line-height:1.5;color:#6b6860}
+.ts-label{margin:0 4rpx 16rpx;font-size:27rpx;font-weight:800;color:#1c2a54}
+.ts-label-flush{margin:0}
 
-.trip-start-page{padding:30rpx 38rpx 190rpx}.gate-label{font-size:23rpx;font-weight:750;color:#44423c;letter-spacing:1rpx;margin:24rpx 4rpx}.gate-cards{display:flex;gap:15rpx}.gate-card{flex:1;min-width:0;padding:19rpx 10rpx;border-radius:25rpx;border:1rpx solid #e2e0d9;background:#fff;text-align:center}.gate-card .strong{font-size:27rpx;line-height:1.4}.gate-card .hint{font-size:20rpx;line-height:1.4;margin:9rpx 0 0}.gate-card.selected{background:#0b7a55;border-color:#0b7a55;color:#fff}.trip-destination{display:block;box-sizing:border-box;background:#f7f6f2;border-color:#e8e4dc;padding:14rpx 18rpx;margin:14rpx 0}.destination-copy{flex:1;min-width:0}.destination-copy .hint{margin:0 0 9rpx;font-size:21rpx}.destination-copy .strong,.dorm-input{font-size:28rpx;font-weight:750}.dorm-input{height:48rpx;min-height:48rpx;padding:0;background:transparent}.capacity-control{display:flex;align-items:center;gap:9rpx;flex:none;border:1rpx solid #e2e0d9;border-radius:55rpx;padding:8rpx 13rpx;width:240rpx;justify-content:space-between}.capacity-control button{width:50rpx;min-width:50rpx;height:54rpx;min-height:54rpx;margin:0;padding:0;line-height:54rpx;background:transparent;color:#44423c;font-size:31rpx}.capacity-number{text-align:center;font-size:28rpx;font-weight:750}.capacity-number view{font-size:18rpx;line-height:1.3;font-weight:400;color:#8a877e}.waiting-card{background:#fafaf7;padding:27rpx}.waiting-card .strong{font-size:24rpx;line-height:1.5}.waiting-card .hint{font-size:24rpx;margin:17rpx 0 0}.trip-start-bottom{padding:22rpx 38rpx calc(24rpx + env(safe-area-inset-bottom))}.trip-start-bottom .btn{border-radius:24rpx;font-size:28rpx;min-height:96rpx}
-.trip-start-page .pill.dark.selected{background:#d9eee4;border-color:#0b7a55;color:#202623}
-.trip-start-page .choice-box.selected{background:#0b7a55;border-color:#0b7a55;color:#fff}
-.trip-start-page .choice-box.selected .hint,.trip-start-page .gate-card.selected .hint{color:#fff0e7}
-.trip-start-page .locker-label{margin:12rpx 4rpx 8rpx}.trip-start-page .locker-cards{flex-wrap:wrap;align-items:flex-start;gap:10rpx}.trip-start-page .locker-cards .locker-option{flex:1 1 auto;width:auto;max-width:100%;min-height:62rpx;box-sizing:border-box;display:flex;align-items:center;padding:13rpx 20rpx;border-radius:999rpx;text-align:left}.trip-start-page .locker-cards .locker-option .strong{font-size:25rpx;line-height:1.3;white-space:normal;word-break:break-all}.trip-start-page .locker-cards .locker-option-wide{flex:0 0 100%;width:100%}.trip-start-page .locker-cards .locker-option.selected{background:#0b7a55;border-color:#0b7a55;color:#fff}.trip-start-page .locker-cards .locker-option.selected .strong{color:#fff}.trip-start-page .station-manual{width:100%;margin:12rpx 0 0}
-.trip-start-page .destination-top{display:flex;align-items:center;justify-content:space-between;gap:16rpx}.destination-title{font-size:25rpx;font-weight:750;color:#44423c}.destination-pickers{display:flex;gap:10rpx;margin-top:7rpx}.trip-start-page .destination-choice{flex:1;min-width:0}.trip-start-page .destination-choice-label{font-size:18rpx;line-height:1.25;color:#6b6860;margin-bottom:2rpx}.trip-start-page .destination-picker{display:flex;align-items:center;justify-content:space-between;gap:8rpx;box-sizing:border-box;height:58rpx;padding:0 14rpx;border:1rpx solid #e2e0d9;border-radius:14rpx;background:#fff;font-size:23rpx}.destination-picker>text:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.destination-chevron{flex:none;color:#8a877e;font-size:28rpx;line-height:1}
+/* what: three tiles with the app's 3D icons */
+.ts-types{display:flex;gap:16rpx;margin-bottom:28rpx}
+.ts-type{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:8rpx;padding:22rpx 8rpx 20rpx;background:#fff;border-radius:32rpx;border:3rpx solid transparent;font-size:25rpx;font-weight:700;color:#4c5148;box-shadow:0 6rpx 0 #e2e0d9;transition:var(--ue-transition,transform .12s)}
+.ts-type image{width:76rpx;height:76rpx}
+.ts-type.on{border-color:#0b7a55;background:#f2faf6;color:#08523a;box-shadow:0 6rpx 0 #b9dcc9}
+.ts-type:active{transform:translateY(4rpx)}
 
-.trip-start-page .custom-duration-row{display:flex;align-items:center;gap:12rpx;margin:10rpx 0 4rpx;color:#44423c;font-size:23rpx}.trip-start-page .custom-duration-input{flex:1;min-width:0;height:66rpx;min-height:66rpx;padding:0 16rpx;background:#f7f6f2;border:1rpx solid #e2e0d9;border-radius:14rpx;font-size:25rpx}.trip-start-page .custom-duration-row text{color:#6b6860;flex:none}
-.order-select-head{display:flex;align-items:center;justify-content:space-between;gap:16rpx}.clear-orders{margin:0;padding:0 12rpx;min-height:48rpx;line-height:48rpx;background:transparent;color:#41775b;font-size:24rpx}.clear-orders::after,.trip-order::after{border:0}.trip-order{display:flex;align-items:center;gap:18rpx;width:100%;margin:18rpx 0 0;padding:22rpx 18rpx;border:2rpx solid #e1e3dc;border-radius:20rpx;background:#fff;text-align:left;line-height:1.5;color:inherit}.trip-order.is-selected{border-color:#527b60;background:#eef5ee}.order-check{flex:none;width:34rpx;height:34rpx;border:2rpx solid #adb6ad;border-radius:8rpx;text-align:center;line-height:34rpx;color:transparent;font-size:27rpx}.is-selected .order-check{border-color:#527b60;background:#527b60;color:#fff}.order-copy{flex:1;min-width:0}.order-route{font-size:25rpx;font-weight:700;overflow-wrap:break-word}.order-meta,.order-time{font-size:22rpx;color:#777d73;margin-top:6rpx}.order-reward{flex:none;font-size:29rpx;font-weight:750;color:#41775b}.selection-summary{border-top:1rpx solid #e1e3dc;padding-top:20rpx;margin-top:22rpx;font-size:25rpx;font-weight:700}.order-empty{padding:25rpx 0 8rpx;color:#777d73;font-size:24rpx;line-height:1.6}.page-dark .trip-order{background:#252a28;border-color:#455047;color:#f0f2ee}.page-dark .trip-order.is-selected{background:#293e30;border-color:#80ae8a}.page-dark .order-meta,.page-dark .order-time{color:#bbc3b9}.page-dark .order-reward,.page-dark .clear-orders{color:#9dceaa}
+/* route card: two stops joined by a dotted line */
+.ts-route{background:#fff;border-radius:40rpx;padding:30rpx 28rpx 26rpx;margin-bottom:24rpx}
+.ts-stop{display:flex;gap:20rpx}
+.ts-rail{flex:none;width:64rpx;display:flex;flex-direction:column;align-items:center}
+.ts-pin{width:64rpx;height:64rpx;flex:none}
+.ts-dots{flex:1;width:0;margin:8rpx 0;border-left:4rpx dotted #b9dcc9}
+.ts-stop-body{flex:1;min-width:0;padding:10rpx 0 30rpx}
+.ts-stop-last .ts-stop-body{padding-bottom:0}
+.ts-stop-title{font-size:29rpx;font-weight:800;color:#16181c;margin-bottom:16rpx}
+.ts-options{display:flex;flex-direction:column;gap:10rpx}
+.ts-option{display:flex;align-items:flex-start;gap:16rpx;padding:18rpx 20rpx;border-radius:22rpx;background:#f6f5f1;font-size:25rpx;line-height:1.4;color:#33362f}
+.ts-option.on{background:#e7f3ed;color:#08523a;font-weight:700}
+.ts-radio{flex:none;width:30rpx;height:30rpx;margin-top:3rpx;border-radius:50%;border:3rpx solid #c4c1b6;box-sizing:border-box;background:#fff}
+.ts-option.on .ts-radio{border:9rpx solid #0b7a55}
+.ts-input{box-sizing:border-box;width:100%;min-height:84rpx;margin-top:12rpx;padding:20rpx 22rpx;border-radius:22rpx;background:#f6f5f1;font-size:26rpx;line-height:1.4;color:#16181c}
+.ts-options + .ts-input{margin-top:12rpx}
+.ts-stop-title + .ts-input{margin-top:0}
+.ts-textarea{min-height:120rpx;margin-top:16rpx}
+.ts-seg{display:flex;background:#f1f0eb;border-radius:22rpx;padding:6rpx;gap:6rpx}
+.ts-seg-item{flex:1;text-align:center;padding:16rpx 10rpx;border-radius:18rpx;font-size:25rpx;font-weight:650;color:#6b6860;white-space:nowrap}
+.ts-seg-item.on{background:#fff;color:#08523a;font-weight:800;box-shadow:0 3rpx 10rpx #1c2a5414}
+.ts-pickers{display:flex;flex-direction:column;gap:10rpx;margin-top:16rpx}
+.ts-picker{display:flex;align-items:center;gap:16rpx;padding:20rpx 22rpx;border-radius:22rpx;background:#f6f5f1;font-size:26rpx}
+.ts-picker-label{flex:none;color:#6b6860;min-width:96rpx}
+.ts-picker-value{flex:1;min-width:0;font-weight:700;color:#16181c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ts-chev{flex:none;width:14rpx;height:14rpx;border-right:4rpx solid #a9a69b;border-bottom:4rpx solid #a9a69b;transform:translateY(-4rpx) rotate(45deg)}
 
-.category-choices .choice-box{min-width:0;padding:22rpx 8rpx}.category-choices .strong{font-size:27rpx}.category-choices .hint{font-size:20rpx}.custom-route-card .field,.custom-destination .field{box-sizing:border-box;background:#fafbf7;border:1rpx solid #e2e0d9;border-radius:14rpx;padding:16rpx 18rpx;min-height:76rpx;width:100%;font-size:25rpx}.route-field-label{font-size:21rpx;color:#777d73;margin:20rpx 0 8rpx}.custom-route-card .hint{font-size:21rpx}.destination-types{display:flex;background:#eeefe8;border-radius:16rpx;padding:6rpx;margin:20rpx 0 14rpx;gap:6rpx}.destination-type{flex:1;text-align:center;padding:13rpx 8rpx;border-radius:12rpx;font-size:24rpx;color:#777d73}.destination-type.selected{background:#fff;color:#41775b;font-weight:700;box-shadow:0 2rpx 8rpx #0000000b}.custom-destination textarea.field{height:145rpx}.page-dark .custom-route-card .field,.page-dark .custom-destination .field{background:#252a28;border-color:#455047;color:#f0f2ee}.page-dark .destination-types{background:#252a28}.page-dark .destination-type.selected{background:#293e30;color:#9dceaa}
+/* when + capacity */
+.ts-card{background:#fff;border-radius:40rpx;padding:28rpx;margin-bottom:34rpx}
+.ts-row{display:flex;align-items:center;justify-content:space-between;gap:20rpx}
+.ts-row-title{font-size:28rpx;font-weight:800;color:#16181c}
+.ts-seg-small{flex:none;width:auto}
+.ts-seg-small .ts-seg-item{flex:none;padding:12rpx 22rpx;font-size:24rpx}
+.ts-sub{margin:24rpx 0 12rpx;font-size:24rpx;color:#6b6860}
+.ts-chips{display:flex;gap:12rpx;flex-wrap:wrap}
+.ts-chip{padding:14rpx 26rpx;border-radius:99rpx;background:#f1f0eb;font-size:25rpx;font-weight:650;color:#4c5148}
+.ts-chip.on{background:#0b7a55;color:#fff}
+.ts-custom{display:flex;align-items:center;gap:16rpx;margin-top:14rpx;font-size:25rpx;color:#6b6860}
+.ts-input-small{width:200rpx;margin-top:0;min-height:72rpx;padding:14rpx 20rpx;text-align:center}
+.ts-time{margin-top:22rpx}
+.ts-note{margin-top:12rpx;font-size:23rpx;line-height:1.5;color:#7a776e}
+.ts-note-tight{margin-top:2rpx}
+.ts-divider{height:1rpx;background:#efede7;margin:26rpx 0}
+.ts-stepper{flex:none;display:flex;align-items:center;gap:6rpx;background:#f1f0eb;border-radius:99rpx;padding:6rpx}
+.ts-step{width:68rpx;height:68rpx;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:36rpx;font-weight:700;color:#0b7a55;box-shadow:0 3rpx 8rpx #1c2a5412}
+.ts-step.off{color:#c4c1b6}
+.ts-count{min-width:64rpx;text-align:center;font-size:34rpx;font-weight:800;color:#16181c;font-variant-numeric:tabular-nums}
+
+/* orders on the route */
+.ts-orders-head{display:flex;align-items:center;justify-content:space-between;margin:0 4rpx 16rpx}
+.ts-badge{display:inline-block;margin-left:12rpx;min-width:40rpx;padding:2rpx 12rpx;border-radius:99rpx;background:#f2b233;color:#1c2a54;font-size:22rpx;text-align:center;vertical-align:2rpx}
+.ts-clear{font-size:25rpx;font-weight:700;color:#0b7a55;padding:8rpx 4rpx}
+.ts-empty{display:flex;align-items:center;gap:22rpx;background:#fff;border-radius:40rpx;padding:26rpx 28rpx}
+.ts-empty image{width:84rpx;height:84rpx;flex:none}
+.ts-empty-title{font-size:27rpx;font-weight:800;color:#16181c}
+.ts-orders{display:flex;flex-direction:column;gap:12rpx}
+.ts-order{display:flex;align-items:center;gap:20rpx;width:100%;margin:0;padding:24rpx 24rpx;border-radius:30rpx;border:3rpx solid transparent;background:#fff;text-align:left;line-height:1.45;color:inherit;box-sizing:border-box}
+.ts-order::after{border:0}
+.ts-order.on{border-color:#0b7a55;background:#f2faf6}
+.ts-check{flex:none;width:40rpx;height:40rpx;border-radius:12rpx;border:3rpx solid #c4c1b6;box-sizing:border-box;text-align:center;line-height:34rpx;font-size:26rpx;font-weight:800;color:#fff}
+.ts-order.on .ts-check{background:#0b7a55;border-color:#0b7a55}
+.ts-order-copy{flex:1;min-width:0}
+.ts-order-route{font-size:26rpx;font-weight:800;color:#16181c;overflow-wrap:break-word}
+.ts-order-meta{margin-top:4rpx;font-size:23rpx;color:#6b6860}
+.ts-order-time{color:#9a978d}
+.ts-order-reward{flex:none;font-size:31rpx;font-weight:800;color:#0b7a55;font-variant-numeric:tabular-nums}
+.ts-error{margin-top:24rpx;padding:20rpx 24rpx;border-radius:24rpx;background:#fff4e5;color:#8a4b00;font-size:25rpx;line-height:1.5}
+
+/* bottom bar */
+.trip-start-bottom{position:fixed;left:0;right:0;bottom:0;z-index:20;background:#fff;border-top:1rpx solid #e2e0d9;padding:18rpx 32rpx calc(22rpx + env(safe-area-inset-bottom));box-shadow:0 -6rpx 24rpx #0000000d}
+.ts-sum{display:flex;justify-content:space-between;align-items:baseline;margin:0 6rpx 14rpx;font-size:25rpx;color:#4c5148}
+.ts-sum-money{font-size:30rpx;font-weight:800;color:#0b7a55;font-variant-numeric:tabular-nums}
+.trip-start-bottom .btn.ts-go{display:block;width:100%;margin:0;min-height:96rpx;border-radius:28rpx;font-size:29rpx;font-weight:800;text-align:center;box-shadow:0 8rpx 0 #085c41}
+
+/* dark pages */
+.page-dark.ts-page{background:#1b1d1a;color:#f0f2ee}
+.page-dark .ts-route,.page-dark .ts-card,.page-dark .ts-type,.page-dark .ts-empty,.page-dark .ts-order{background:#252a28;box-shadow:none}
+.page-dark .ts-option,.page-dark .ts-input,.page-dark .ts-picker,.page-dark .ts-seg,.page-dark .ts-chip,.page-dark .ts-stepper{background:#30362f;color:#f0f2ee}
+.page-dark .ts-title,.page-dark .ts-stop-title,.page-dark .ts-row-title,.page-dark .ts-order-route,.page-dark .ts-empty-title,.page-dark .ts-picker-value,.page-dark .ts-count{color:#f0f2ee}
+.page-dark .ts-label{color:#c9d3f0}

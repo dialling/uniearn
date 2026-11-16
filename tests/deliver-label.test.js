@@ -1,0 +1,13 @@
+const assert=require('node:assert/strict'),label=require('../utils/deliver-label'),time=require('../utils/china-time');
+const now=Date.parse('2026-11-15T10:00:00+08:00'),today=time.dayKey(now),tomorrow=time.dayKey(now+time.DAY);
+assert.equal(label({deadline:'13:00',deliveryDate:today},now,false),'Deliver by noon');
+assert.equal(label({deadline:'18:00',deliveryDate:today},now,false),'Deliver this afternoon');
+assert.equal(label({deadline:'23:59',deliveryDate:today},now,false),'Deliver tonight');
+assert.equal(label({deadline:'23:59',deliveryDate:tomorrow},now,false),'Deliver tomorrow');
+assert.equal(label({deadline:'23:59',deliveryDate:tomorrow},now,true),'明天送达');
+assert.equal(label({deadline:'13:00',deliveryDate:today},now,true),'中午前送达');
+assert.equal(label({deadline:'20:30',deliveryDate:today},now,false),'Deliver by 20:30');
+assert.equal(label({},now,false),'Deliver tonight');
+const create=require('node:fs').readFileSync(require('node:path').join(__dirname,'../pages/create/index.js'),'utf8');
+assert.match(create,/id:'evening',zh:'今天晚上',en:'Night'/);
+console.log('deliver-label ok');

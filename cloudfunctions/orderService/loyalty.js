@@ -19,6 +19,14 @@ function addPoints(s,id,amount,reason,now,firstCompletion=false){
  if(l.level>before){l.notices=(l.notices||[]).concat({id:'lv-'+l.level+'-'+now+'-'+reason,type:'level',level:l.level,at:now}).slice(-10);}
  l.lastReason=reason;return l;
 }
+// Points from play (feeding a caught fish): they count toward levels like any other point, outside the activity tasks.
+function bonus(s,id,amount,reason,now){
+ const l=data(member(s,id)),before=l.level||1;amount=Math.max(0,Math.floor(Number(amount)||0));
+ l.points=(Number(l.points)||0)+amount;
+ if(before>=2&&before<5&&l.points>=LEVELS[before].points)l.level=before+1;
+ if(l.level>before){l.notices=(l.notices||[]).concat({id:'lv-'+l.level+'-'+now+'-'+reason,type:'level',level:l.level,at:now}).slice(-10);}
+ l.lastReason=reason;return l;
+}
 function completeOrder(s,r,trip,now){
  if(!s.loyaltyStartedAt||!r.confirmedAt||r.confirmedAt<s.loyaltyStartedAt)return;
  r.loyaltyPointsAwarded=r.loyaltyPointsAwarded||{};
@@ -66,4 +74,4 @@ function view(m){
  const start=level.points,to=next?next.points:start,segment=Math.max(0,points-start);
  return {points,level:level.level,nameZh:level.zh,nameEn:level.en,next:next?{level:next.level,nameZh:next.zh,nameEn:next.en,points:next.points,remaining:Math.max(0,next.points-points)}:null,remaining:next?Math.max(0,next.points-points):0,progress:next?Math.min(100,Math.max(0,(segment/(to-start))*100)):100,anyCompleted:!!l.anyCompleted,loginStreak:l.loginStreak||0,checkin:l.checkin?{...l.checkin}:null,notices:(l.notices||[]).slice()};
 }
-module.exports={LEVELS,member,addPoints,completeOrder,profileCompleted,dailyLogin,invite,acknowledge,view};
+module.exports={LEVELS,member,addPoints,bonus,completeOrder,profileCompleted,dailyLogin,invite,acknowledge,view};

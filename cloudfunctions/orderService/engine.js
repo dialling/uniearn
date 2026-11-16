@@ -10,6 +10,14 @@ function check(ok, message) { if (!ok) throw Error(message); }
 // One shared document holds every order, so each student gets a fair share of it.
 const OPEN_STATUSES = ['waiting','taken','collected','delivered','disputed'], MAX_OPEN_PER_USER = 50, MAX_CREATES_PER_DAY = 200, MAX_TASK_PRICE = 500;
 function initial() { return { nextId: 1, requests: [], trips: [], members: {}, receipts: {}, revision: 0, loyaltyStartedAt:Date.now() }; }
+// A join request waits for the trip's runner for up to 15 minutes while the trip is still collecting.
+// After that (or after a decline) the order is an ordinary job-board order.
+const OFFER_MS = 15 * 60000;
+function offerOpen(s, r, now) {
+  if (!r || !r.offeredTripId || r.status !== 'waiting') return false;
+  const t = s.trips.find(x => x.id === r.offeredTripId);
+  return !!t && !t.cancelled && t.phase === 'collect' && now < (r.offeredAt || 0) + OFFER_MS;
+}
 function stats(s, id) {
   const ownTrips = new Set(s.trips.filter(t => t.runnerAccountId === id).map(t => t.id));
   const paid = s.requests.filter(r => r.status === 'confirmed' && ownTrips.has(r.runnerId));
@@ -120,6 +128,10 @@ function rejectOwn(s, ids, actor) {
   for (const id of ids) { const r = s.requests.find(x => x.id === id); check(r && r.ownerId !== actor, 'You cannot accept your own order.'); }
 }
 function expire(s, now) {
+  // A trip whose join window has closed without any orders ends by itself (2026-11-16).
+  for (const t of s.trips || []) {
+    if (!t.cancelled && t.phase === 'collect' && t.joinUntil && now >= t.joinUntil && !(t.requestIds || []).length) { t.cancelled = true; t.endedAt = now; t.endReason = 'join-timeout'; }
+  }
   for (const r of s.requests) {
     if (r.status === 'waiting' && r.closesAt && now >= r.closesAt) {
       r.status = 'refunded'; r.refundAmount = f.total(r); r.refundedAt = now; f.event(r, 'Closed · no runner · demo refund', now);
@@ -165,6 +177,10 @@ function execute(s, actor, account, event, now = Date.now()) {
     value={awarded:rewards.profileCompleted(s,actor,now)};
   } else if(action==='ackLoyaltyNotice') {
     const noticeId=String(event.noticeId||'');check(noticeId.length<=100,'Invalid reward notice.');rewards.acknowledge(s,actor,noticeId);value={acknowledged:true};
+  } else if(['yuniBuy','yuniWear','yuniFish','yuniFeed','yuniTestPoints','yuniTestRound'].includes(action)){
+    // 2026-11-15: Yuni shop, wardrobe and fishing game.
+    const play=require('./yuni-play');
+    value=action==='yuniBuy'?play.buy(s,actor,event,now):action==='yuniWear'?play.wear(s,actor,event):action==='yuniFish'?play.fish(s,actor,event,now):action==='yuniTestPoints'?play.testPoints(s,actor,now):action==='yuniTestRound'?play.testRound(s,actor,now):play.feed(s,actor,event,now);
   } else if (action === 'walletWithdraw') {
     wallet.settle(s, now);
     value = wallet.withdraw(s, actor, event.amount_cents, event.operationId, now, process.env.WALLET_TEST_WITHDRAW_FAIL === '1');
@@ -205,8 +221,8 @@ function execute(s, actor, account, event, now = Date.now()) {
     const data = input(event.data, actor);
     const displayName = String(account.profile.displayName || '').trim();
     if (displayName) data.owner = displayName;
-    let r;if(data.category==='task'){data.dorm='';data.room='';r={...data,id:'r'+s.nextId++,small:1,big:0,codes:[''],reward:Math.round(data.price*100)/100,serviceFee:0,status:'waiting',runnerId:null,collected:[],photo:'',closesAt:data.dueAt,deadline:data.dueAt?f.clock(data.dueAt):'',station:'Task',createdAt:now};s.requests.unshift(r);f.event(r,'Posted',now);}else r=data.category==='takeout'?f.createTakeaway(s,data,now):d.createRequest(s,data);
-    r.createdAt = now; r.campusId=campusId;r.universityId='xjtlu';r.ownerId = actor; r.isMine = true;
+    let r;if(data.category==='task'){data.dorm='';data.room='';/* 2026-11-16: keep a phone on tasks so the runner and the student can call each other. */if(!/^1\d{10}$/.test(String(data.phone||'')))data.phone=require('./runner-contact')(account).phone;r={...data,id:'r'+s.nextId++,small:1,big:0,codes:[''],reward:Math.round(data.price*100)/100,serviceFee:0,status:'waiting',runnerId:null,collected:[],photo:'',closesAt:data.dueAt,deadline:data.dueAt?f.clock(data.dueAt):'',station:'Task',createdAt:now};s.requests.unshift(r);f.event(r,'Posted',now);}else r=data.category==='takeout'?f.createTakeaway(s,data,now):d.createRequest(s,data);
+    r.createdAt = now; r.campusId=campusId;r.universityId='xjtlu';r.ownerId = actor; r.isMine = true;if(account.profile.avatarUrl)r.ownerAvatar=account.profile.avatarUrl;
     rewards.apply(s,actor,r,event.couponId,now);
     if (data.category === 'parcel') {const date=data.deliveryDate||new Date(now+28800000).toISOString().slice(0,10);if(data.deadline){const close=Date.parse(date+'T'+data.deadline+':00+08:00');check(Number.isFinite(close)&&close>now,'Choose a future delivery deadline.');r.closesAt=close;}f.event(r, 'Posted', now);}
     if (event.tripId) {
@@ -220,11 +236,26 @@ function execute(s, actor, account, event, now = Date.now()) {
         // Route and availability come from the shared trip, never client-supplied task fields.
         Object.assign(r,{station:t.station,pickupAddress:t.pickupAddress||'',waypoint:t.waypoint||'',dorm:t.dorm,destinationType:t.destinationType||'dorm',deliveryAddress:t.deliveryAddress||'',destinationKey:t.destinationKey||'',dueAt:0,closesAt:0,deadline:''});
       }
-      // Joining consumes the RUNNER limit, not the customer's limit.
-      const previous = s.profile; s.profile = { ...stats(s, t.runnerAccountId) };
-      d.assign(s, t, [r.id]); s.profile = previous; f.event(r, 'Runner accepted', now);
+      // Check the order fits the trip (route, capacity, runner limit) on a copy, but do not assign it:
+      // the runner accepts or declines it on the trip page.
+      { const trial = JSON.parse(JSON.stringify(s)), tt = trial.trips.find(x => x.id === t.id); trial.profile = { ...stats(s, t.runnerAccountId) }; d.assign(trial, tt, [r.id], {join:true}); }
+      r.offeredTripId = t.id; r.offeredAt = now; f.event(r, 'Sent to the runner', now);
     }
     value = { id: r.id };
+  } else if (action === 'tripOffer') {
+    const r = s.requests.find(x => x.id === event.id), t = r && s.trips.find(x => x.id === r.offeredTripId);
+    check(r && t && t.runnerAccountId === actor, 'This request is not for your trip.');
+    check(r.status === 'waiting' && !r.runnerId, 'This order is no longer waiting.');
+    if (event.decision === 'accept') {
+      check(!t.cancelled && t.phase === 'collect', 'This trip is no longer collecting orders.');
+      const previous = s.profile; s.profile = { ...stats(s, actor) };
+      try { d.assign(s, t, [r.id], {join:true}); } finally { s.profile = previous; }
+      delete r.offeredTripId; delete r.offeredAt; f.event(r, 'Runner accepted', now); value = { id: r.id, accepted: true };
+    } else {
+      check(event.decision === 'decline', 'Choose accept or decline.');
+      (r.declinedTripIds || (r.declinedTripIds = [])).push(t.id);
+      delete r.offeredTripId; delete r.offeredAt; f.event(r, 'Back on the job board', now); value = { id: r.id, accepted: false };
+    }
   } else if (action === 'accept' || action === 'acceptBoxes') {
     const ids = action === 'accept' ? event.ids : (Array.isArray(event.refs) ? event.refs.map(x => x && x.requestId) : []);
     rejectOwn(s, ids, actor);check(ids.every(id=>s.requests.find(r=>r.id===id).campusId===campusId),'Choose orders from your selected campus.');
@@ -304,7 +335,7 @@ function execute(s, actor, account, event, now = Date.now()) {
   delete s.profile; delete s.installationId; delete s.routes; delete s.agreements;
   return value;
 }
-function snapshot(s, actor, account, now = Date.now()) {
+function snapshot(s, actor, account, now = Date.now(), viewTripId = '') {
   const loggedIn = !!(account && account.profile && !account.loggedOut);
   const campusId=loggedIn&&account.profile.campusId;
   const inCampus=r=>!!campusId&&r.campusId===campusId;
@@ -323,24 +354,24 @@ function snapshot(s, actor, account, now = Date.now()) {
     }
     // Exact delivery addresses stay private until this runner accepts the order.
     const out = {};
-    const hallKeys=['destinationType','dormGender','id','campusId','universityId','category','station','dorm','room','placeName','small','big','reward','serviceFee','status','deadline','deliveryDate','createdAt','arrivalAt','closesAt','arrived','deliverBy','soup','lobbyPickupAllowed','fragile','night','purchaseStatus','shop','raised','tip','parcelSize'];
+    const hallKeys=['destinationType','dormGender','id','campusId','universityId','category','station','dorm','placeName','small','big','reward','serviceFee','status','deadline','deliveryDate','createdAt','arrivalAt','closesAt','arrived','deliverBy','soup','lobbyPickupAllowed','fragile','night','purchaseStatus','shop','raised','tip','parcelSize'];
     for (const k of hallKeys) if (r[k] !== undefined) out[k] = r[k];
-    if (r.category === 'takeout' && r.note) out.note = r.note;
     if (r.category === 'takeout' && !r.night && r.pickupPoint) out.pickupPoint = r.pickupPoint;
+    if (offerOpen(s, r, now) && myTrips.has(r.offeredTripId)) { out.offeredTripId = r.offeredTripId; out.offeredAt = r.offeredAt; if (r.category === 'task') { out.title = r.title; out.taskMode = r.taskMode; } }
     if(r.category==='task'||r.destinationType==='place')delete out.room;
     const hallRequest={ ...out, owner:'Request', phone:'', codes:Array(d.boxes(r)).fill(''), collected:[], photo:'',
       parcelItems:r.parcelItems && r.parcelItems.map(p => ({size:p.size, price:p.price, code:''})), isMine:false, isRunner:false };
     return hallRequest;
   });
   const trips = s.trips.filter(t => myTrips.has(t.id)).map(t => ({...clone(t), isRunner:true}));
-  const publicTrips = s.trips.filter(t => inCampus(t) && t.joinUntil && !t.cancelled && t.phase === 'collect' && t.joinUntil > now).map(t => ({
-    id:t.id,campusId:t.campusId,universityId:t.universityId,category:t.category,destinationKey:t.destinationKey||'',destinationType:t.destinationType||'dorm', station:t.station,pickupAddress:t.pickupAddress||'',waypoint:t.waypoint||'',deliveryAddress:t.deliveryAddress||'',routeType:t.routeType||'',dorm:t.dorm,capacity:t.capacity, runnerName:t.runnerName,
+  const publicTrips = s.trips.filter(t => (inCampus(t) || (viewTripId && t.id === viewTripId)) && t.joinUntil && !t.cancelled && t.phase === 'collect' && t.joinUntil > now).map(t => ({
+    id:t.id,campusId:t.campusId,universityId:t.universityId,category:t.category,destinationKey:t.destinationKey||'',destinationType:t.destinationType||'dorm', station:t.station,pickupAddress:t.pickupAddress||'',waypoint:t.waypoint||'',deliveryAddress:t.deliveryAddress||'',routeType:t.routeType||'',dorm:t.dorm,capacity:t.capacity, runnerName:t.runnerName, runnerAvatar:t.runnerAvatar||'',
     runnerJobs:stats(s,t.runnerAccountId).jobsDone, departAt:t.departAt, joinUntil:t.joinUntil, phase:t.phase,
     cancelled:false, remaining:t.capacity-t.requestIds.reduce((n,id)=>n+d.boxes(s.requests.find(r=>r.id===id)),0)
   }));
-  const publicJobs=s.requests.filter(r=>inCampus(r)&&!['cancelled','refunded','disputed'].includes(r.status)).map(r=>{const o={},keys=['destinationType','dormGender','id','campusId','universityId','category','station','dorm','room','placeName','small','big','reward','status','arrivalAt','closesAt','deadline','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','arrived','deliverBy','soup','lobbyPickupAllowed','fragile','night','purchaseStatus','shop','raised','title','taskMode','dueAt'];for(const k of keys)if(r[k]!==undefined)o[k]=r[k];if(r.category==='takeout'&&r.note)o.note=r.note;if(r.category==='takeout'&&!r.night&&r.pickupPoint)o.pickupPoint=r.pickupPoint;if(r.category==='task'||r.destinationType==='place')delete o.room;return o;});
+  const publicJobs=s.requests.filter(r=>inCampus(r)&&!['cancelled','refunded','disputed'].includes(r.status)).map(r=>{const o={},keys=['destinationType','dormGender','id','campusId','universityId','category','station','dorm','placeName','small','big','reward','status','arrivalAt','closesAt','deadline','createdAt','takenAt','collectedAt','deliveredAt','confirmedAt','arrived','deliverBy','soup','lobbyPickupAllowed','fragile','night','purchaseStatus','shop','raised','title','taskMode','dueAt'];for(const k of keys)if(r[k]!==undefined)o[k]=r[k];if(r.category==='takeout'&&!r.night&&r.pickupPoint)o.pickupPoint=r.pickupPoint;return o;});
   const supportInbox=(account&&account._admin||account&&account._reviewer)?Object.entries(s.members).flatMap(([accountId,member])=>(member.supportTickets||[]).filter(t=>t.status==='open').map(t=>({...clone(t),accountId}))).sort((a,b)=>((b.messages||[]).at(-1)?.at||b.createdAt)-((a.messages||[]).at(-1)?.at||a.createdAt)).slice(0,50):[];
-  return {walletSummary:loggedIn?wallet.summary(s,actor):null,progression:loggedIn?rewards.loyaltyView(s.members[actor]||{}):null,revision:s.revision,serverTime:now,capabilities:{restoreDormGenders:loggedIn,riderPhotos:true},publicJobs,deliveredThisWeek:s.requests.filter(r=>inCampus(r)&&r.deliveredAt>now-7*86400000).length,requests,trips,publicTrips,accountId:actor,supportInbox,
+  return {walletSummary:loggedIn?wallet.summary(s,actor):null,progression:loggedIn?rewards.loyaltyView(s.members[actor]||{}):null,yuni:loggedIn&&s.members[actor]?require('./yuni-play').view(s.members[actor],now):null,revision:s.revision,serverTime:now,capabilities:{restoreDormGenders:loggedIn,riderPhotos:true},publicJobs,deliveredThisWeek:s.requests.filter(r=>inCampus(r)&&r.deliveredAt>now-7*86400000).length,requests,trips,publicTrips,accountId:actor,supportInbox,
     adjustments:loggedIn?(s.adjustments||[]).filter(a=>a.runnerAccountId===actor).map(({runnerAccountId,...a})=>a):[],rewards:loggedIn?rewards.view(s,actor,now):null,preferences:loggedIn?(s.members[actor]||{}).preferences||{}:{},
     supportTickets:loggedIn?((s.members[actor]||{}).supportTickets||[]):[],stats:loggedIn ? stats(s,actor) : {jobsDone:0,paid:0,marks:[]} };
 }

@@ -1,6 +1,6 @@
 <view style="{{motionStyle}}">
-<lang-switch></lang-switch>
-<view class="page navpage me-page">
+<lang-switch id="me-lang"></lang-switch>
+<view class="page navpage me-page me-v2">
 <view wx:if="{{loading}}" class="muted">{{language==='zh'?'正在加载账户…':'Loading your account…'}}</view><view wx:if="{{error}}" class="notice-error">{{error}}</view>
  <view wx:if="{{profile.loggedOut || !profile.onboarded}}" class="card">
   <view class="route">{{language==='zh'?'欢迎来到 UniEarn':'Welcome to UniEarn'}}</view>
@@ -8,50 +8,52 @@
   <button class="btn" bindtap="login" disabled="{{loading || loggingOut}}">{{language==='zh'?'登录':'Sign in'}}</button>
  </view>
 <block wx:else>
-<!-- ① 个人资料与等级成长 -->
-<view class="me-header">
- <view class="me-header-top">
-  <view class="avatar header-avatar"><image class="rank-avatar" src="{{tierAvatar}}" mode="aspectFit" aria-label="{{tierName}}"/></view>
-  <view class="header-main">
-   <view class="header-name" bindtap="editUsername" role="button" aria-label="{{language==='zh'?'修改用户名':'Edit username'}}">{{profile.displayName||profile.name||ui.account}}<text class="header-edit-mark">✎</text></view>
-   <view class="header-badge-row"><view class="header-badge {{isRunner?'verified':''}}" bindtap="profileEntry">{{isRunner?'✓ '+ui.verified+(verifiedDate?' '+verifiedDate:''):ui.check}}</view></view>
-  </view>
-  <view wx:if="{{isRunner}}" class="header-actions">
-   <view wx:if="{{isRunner}}" class="runner-tag"><text class="runner-tag-dot"></text>{{ui.runnerTag}}</view>
-  </view>
+<!-- 2026-11-15: 按 design/me-preview 定稿：Yuni 舞台在最上方（名字与积分在场景里），下面是等级、数据、钱包与设置 -->
+<yuni-stage id="yuni-stage" name="{{profile.displayName||profile.name||ui.account}}" badge="{{badgeText}}" verified="{{isRunner}}" points="{{points||0}}" bind:editname="editUsername" bind:badge="profileEntry" bind:points="levels" bind:changed="yuniChanged" bind:dailyfeed="openDailyFeed"></yuni-stage>
+<view class="me-body">
+ <!-- 等级 -->
+ <view class="me-block me-level" bindtap="levels" hover-class="me-press">
+  <view class="me-level-top"><image class="me-level-badge" src="/assets/profile-ranks/badge-{{tierLevel}}.png" mode="aspectFit" aria-label="{{tierName}}"/><view class="me-grow"><view class="me-h2">{{levelTitle}}</view><view class="me-sub">{{levelSub}}</view></view><view class="me-chev"/></view>
+  <view class="me-track"><view class="me-track-line"/><view class="me-track-fill" style="width:{{trackFill}}%"/><view wx:for="{{levelStops}}" wx:key="n" class="me-stop {{item.state}}"/></view>
+  <view class="me-track-names"><text wx:for="{{levelStops}}" wx:key="n" class="{{item.state==='now'?'on':''}}">{{item.name}}</text></view>
+  <view wx:if="{{gearText}}" class="me-gear"><image src="/assets/yuni-play/i-sparkle.svg" mode="aspectFit"/><text>{{gearText}}</text></view>
  </view>
- <view class="level-journey" bindtap="levels" hover-class="level-journey-press">
- <view class="journey-heading">
-  <view class="journey-rank"><image class="rank-badge" src="/assets/profile-ranks/badge-{{tierLevel}}.png" mode="aspectFit" aria-label="{{tierName}}"/><view class="journey-rank-copy"><view class="journey-level">{{tierName}}</view><view class="journey-rank-number">LEVEL {{tierLevel}}</view></view></view>
-  <view class="journey-points"><text class="journey-points-number">{{points||0}}</text><text>{{language==='zh'?'积分':'pts'}}</text><text class="journey-arrow">›</text></view>
+ <!-- 数据 -->
+ <!-- 2026-11-16: stats row removed; completed orders and trips are in My orders, coupons in My coupons. -->
+ <!-- 非跑手：成为跑手 -->
+ <view wx:if="{{!isRunner}}" class="me-become" hover-class="me-become-press" role="button" bindtap="studentCheck" aria-label="{{ui.start}}"><image class="me-become-icon" src="/assets/yuni-play/i-earn.svg" mode="aspectFit"/><view class="me-become-copy"><text class="me-become-text">{{ui.start}}</text><text class="me-become-sub">{{language==='en'?'Help other students and earn money with every order.':'帮同学完成订单，每一单都有收入'}}</text></view><view class="me-become-go"><view class="me-become-arrow"/></view></view>
+ <!-- 钱包与优惠 -->
+ <view class="me-group">{{language==='en'?'Wallet & rewards':'钱包与优惠'}}</view>
+ <view class="me-list">
+  <view wx:if="{{isRunner}}" class="me-row" hover-class="me-row-press" bindtap="wallet"><image class="me-ico" src="/assets/yuni-play/i-wallet.svg" mode="aspectFit"/><view class="me-grow"><view class="me-row-title">{{language==='en'?'My wallet':'我的钱包'}}</view><view class="me-val">¥{{earnWaiting}} {{ui.waiting}}</view></view><text class="me-money">¥{{walletBalance}}</text><view class="me-chev"/></view>
+  <view class="me-row" hover-class="me-row-press" bindtap="coupons"><image class="me-ico" src="/assets/yuni-play/i-coupon.svg" mode="aspectFit"/><view class="me-grow"><view class="me-row-title">{{ui.myCoupons}}</view><view class="me-val">{{couponCount}} {{ui.ready}}</view></view><view class="me-chev"/></view>
+  <view class="me-row" hover-class="me-row-press" bindtap="inviteFriends"><image class="me-ico" src="/assets/yuni-play/i-invite.svg" mode="aspectFit"/><view class="me-grow"><view class="me-row-title">{{ui.inviteTitle}}</view><view class="me-val">{{language==='en'?'You both get 10 pts':'双方各得 10 积分'}}</view></view><view class="me-chev"/></view>
  </view>
- <view class="journey-nudge">{{nextJobsText}}</view>
- <view class="hl-track"><view class="hl-fill" style="{{'width: '+progress+'%;'}}"></view></view>
- <view class="hl-tiers"><text wx:if="{{levelStartName}}">{{levelStartName}}</text><text wx:if="{{levelEndName}}" class="hl-end">{{levelEndName}}</text></view>
+ <!-- 设置 -->
+ <view class="me-group">{{language==='en'?'Settings':'设置'}}</view>
+ <view class="me-list">
+  <view class="me-row"><image class="me-ico" src="/assets/yuni-play/i-bell.svg" mode="aspectFit"/><view class="me-grow"><view class="me-row-title">{{ui.updates}}</view><view class="me-val">{{ui.updatesHelp}} <text class="me-link" catchtap="notifyGuide">{{ui.notifyGuide}} ›</text></view></view><switch color="#0b7a55" checked="{{preferences.orderUpdates!==false}}" data-key="orderUpdates" bindchange="preference"/></view>
+  <view class="me-row" hover-class="me-row-press" bindtap="yuni"><image class="me-ico" src="/assets/yuni-play/i-yuni.svg" mode="aspectFit"/><view class="me-grow"><view class="me-row-title">Yuni</view><view class="me-val">{{language==='en'?'Sounds, tips, app guide and how to play':'音效、提示、新手引导和玩法'}}</view></view><view class="me-chev"/></view>
+  <view class="me-row" hover-class="me-row-press" bindtap="campus"><image class="me-ico" src="/assets/yuni-play/i-campus.svg" mode="aspectFit"/><view class="me-grow"><view class="me-row-title">{{ui.campusSetting}}</view></view><text class="me-val">{{profile.campusId==='sip'?'XJTLU · SIP':ui.campus}}</text><view class="me-chev"/></view>
+  <picker mode="selector" range="{{languageOptions}}" value="{{languageIndex}}" bindchange="changeLanguage"><view class="me-row" hover-class="me-row-press"><image class="me-ico" src="/assets/yuni-play/i-globe.svg" mode="aspectFit"/><view class="me-grow"><view class="me-row-title">{{ui.language}}</view></view><text class="me-val">{{language==='zh'?'中文':'English'}}</text><view class="me-chev"/></view></picker>
+  <view class="me-row" hover-class="me-row-press" bindtap="info" data-topic="rules"><image class="me-ico" src="/assets/yuni-play/i-rules.svg" mode="aspectFit"/><view class="me-grow"><view class="me-row-title">{{ui.rules}}</view><view class="me-val">{{profile.runnerRulesAccepted?ui.agreed:ui.readRules}}</view></view><view class="me-chev"/></view>
+  <view class="me-row" hover-class="me-row-press" bindtap="info" data-topic="privacy"><image class="me-ico" src="/assets/yuni-play/i-shield.svg" mode="aspectFit"/><view class="me-grow"><view class="me-row-title">{{ui.privacy}}</view></view><view class="me-chev"/></view>
+  <view class="me-row" hover-class="me-row-press" bindtap="info" data-topic="support"><image class="me-ico" src="/assets/yuni-play/i-help.svg" mode="aspectFit"/><view class="me-grow"><view class="me-row-title">{{ui.helpCenter}}</view><view class="me-val">{{ui.helpCenterSub}}</view></view><view class="me-chev"/></view>
+ </view>
+ <view class="me-version">{{ui.footer}}<view>UniEarn v{{version}}</view></view>
 </view>
-</view>
-<!-- ② 数据卡 -->
-<view class="me-stats"><view class="stat-blue" bindtap="firstStat"><text class="stats-number">{{isRunner?profile.jobsDone||0:postedCount}}</text><text>{{isRunner?ui.jobsRun:ui.orders}}</text></view><view class="stat-green" bindtap="past"><text class="stats-number">{{isRunner?postedCount:deliveredCount}}</text><text>{{isRunner?(language==='en'?'Published orders':'已发布订单'):ui.delivered}}</text></view><view class="stat-orange" bindtap="coupons"><text class="stats-number">{{couponCount}}</text><text>{{ui.coupons}}</text></view></view>
-<!-- ③ 收益卡（跑手） -->
-<block wx:if="{{isRunner}}"><view class="flow-card earnings-summary" bindtap="wallet"><view class="row card-heading"><text>{{language==='en'?'My wallet':'我的钱包'}}</text><text class="green-text" catchtap="earnings">{{ui.earnings}} ›</text></view><view class="row earnings-body"><view><view class="earnings-total">¥{{earnTotal}}</view><view class="hint"><text class="strong">¥{{earnWaiting}}</text> {{ui.waiting}}</view></view><view class="mini-bars"><view wx:for="{{earnBars}}" wx:key="index" style="height:{{item}}rpx"/></view></view><view class="earnings-note wallet-entry" catchtap="wallet"><image src="/assets/balance-outline.svg"/><text>{{language==='en'?'My wallet · test balance':'我的钱包 · 测试余额'}}</text><text class="wallet-entry-value">¥{{walletBalance}} ›</text></view></view></block>
-<!-- 非跑手：成为跑手 -->
-<block wx:if="{{!isRunner}}"><view class="become-card"><view class="become-label">{{ui.become}}</view><view class="become-title">{{ui.earnTitle}}</view><view class="become-description">{{ui.earnHelp}}</view><button bindtap="studentCheck">{{ui.start}}</button></view></block>
-<!-- ⑦ 通知与提醒（已删除考试模式） -->
-<view class="section">{{ui.notifyGroup}}</view>
-<view class="flow-card menu-card notifications-card">
- <view class="menu-row"><view><view class="strong">{{ui.updates}}</view><view class="hint">{{ui.updatesHelp}}</view><text class="link" catchtap="notifyGuide">{{ui.notifyGuide}} ›</text></view><switch color="#0b7a55" checked="{{preferences.orderUpdates!==false}}" data-key="orderUpdates" bindchange="preference"/></view>
-</view>
-<!-- ⑧ 账户 -->
-<view class="section">{{ui.accountGroup}}</view>
-<view class="flow-card menu-card">
- <view class="menu-row" bindtap="campus"><view class="settings-icon"><image src="/assets/university-outline.svg"/></view><view class="menu-copy">{{ui.campusSetting}}</view><text class="setting-value">{{profile.campusId==='sip'?'XJTLU · SIP':ui.campus}}</text><text class="setting-chevron">›</text></view>
- <picker mode="selector" class="language-picker" range="{{languageOptions}}" value="{{languageIndex}}" bindchange="changeLanguage"><view class="menu-row"><view class="settings-icon"><image src="/assets/language-outline.svg"/></view><view class="menu-copy">{{ui.language}}</view><text class="setting-value">{{language==='zh'?'中文':'English'}}</text><text class="setting-chevron">⌄</text></view></picker>
- <view class="menu-row" bindtap="info" data-topic="rules"><view class="settings-icon"><image src="/assets/rules-outline.svg"/></view><view class="menu-copy">{{ui.rules}}<view class="hint">{{profile.runnerRulesAccepted?ui.agreed:ui.readRules}}</view></view><text class="setting-chevron">›</text></view>
- <view class="menu-row" bindtap="info" data-topic="privacy"><view class="settings-icon"><image src="/assets/lock-outline.svg"/></view><view class="menu-copy">{{ui.privacy}}</view><text class="setting-chevron">›</text></view>
- <view class="menu-row" bindtap="info" data-topic="support"><view class="settings-icon"><image src="/assets/support-outline.svg"/></view><view class="menu-copy">{{ui.helpCenter}}<view class="hint">{{ui.helpCenterSub}}</view></view><text class="setting-chevron">›</text></view>
-</view>
-<view class="me-footer">{{ui.footer}}<view>Uniearn v{{version}}</view></view>
 </block></view><app-nav active="profile"></app-nav>
 <yuni-assistant id="me-yuni" topic="me" language="{{language}}"></yuni-assistant>
 
+<!-- 2026-11-16: Yuni guide, the same spotlight as the Jobs page app guide -->
+<block wx:if="{{yg>=0}}">
+ <view wx:if="{{ygFocus}}" class="guide-focus yg-focus" style="top:{{ygFocus.top}}px;left:{{ygFocus.left}}px;width:{{ygFocus.width}}px;height:{{ygFocus.height}}px;border-radius:{{ygFocus.radius}}px"><view class="yg-ring"/></view>
+ <view wx:else class="guide-shade yg-shade" catchtap="noop"/>
+ <view wx:if="{{ygFocus}}" class="yg-blocker" catchtap="noop" catchtouchmove="noop"/>
+ <view class="guide-modal yg-modal {{ygBottom?'yg-bottom':''}} {{darkClass?'yg-dark':''}}" catchtap="noop">
+  <view class="row yg-top"><view class="yg-dots"><view wx:for="{{ygDots}}" wx:key="*this" class="yg-dot {{item===yg?'on':item<yg?'past':''}}"/></view><text class="yg-skip" hover-class="me-press" bindtap="ygFinish">{{language==='en'?'Skip':'跳过'}}</text></view>
+  <view wx:for="{{[yg]}}" wx:key="*this" class="yg-step {{ygDir==='back'?'from-left':''}}"><view class="guide-body"><image class="yg-yuni" src="/assets/yuni-{{ygItem.pose}}.png" mode="aspectFit"/><view><view class="yg-name">Yuni</view><view class="guide-title">{{ygItem.title}}</view><view class="guide-text">{{ygItem.text}}</view></view></view></view>
+  <view class="yg-actions"><button wx:if="{{yg>0}}" class="yg-btn yg-back" bindtap="ygBack">{{language==='en'?'Back':'上一步'}}</button><button class="yg-btn yg-next" bindtap="ygNext">{{yg===0?(language==='en'?'Show me':'带我看看'):yg===ygLast?(language==='en'?'Let’s play':'开始玩'):(language==='en'?'Next':'下一步')}}</button></view>
+ </view>
+</block>
 </view>

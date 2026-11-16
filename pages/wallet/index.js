@@ -100,35 +100,20 @@ Page({
       ctx.scale(dpr, dpr);
       ctx.clearRect(0, 0, W, H);
 
-      // 最近 7 天的入账柱形图（与收益页同一套视觉）
-      const padT = 10, padB = 10, padX = 6, gap = 6;
-      const bars = Array.from(this._weekBars || [], v => Math.max(0, Math.min(100, Number(v) || 0)));
-      while (bars.length < 7) bars.unshift(0);
-      const slot = (W - padX * 2) / 7, barW = Math.max(6, slot - gap * 2);
-      const base = H - padB;
-
-      ctx.setLineDash([2, 4]);
-      ctx.strokeStyle = 'rgba(11,122,85,.14)';
-      ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(padX, base); ctx.lineTo(W - padX, base); ctx.stroke();
-      ctx.setLineDash([]);
-
-      const today = bars.length - 1;
-      bars.forEach((pct, i) => {
-        const x = padX + slot * i + (slot - barW) / 2;
-        const h = pct > 0 ? Math.max(4, (base - padT) * (pct / 100)) : 0;
-        if (!h) return;
-        ctx.fillStyle = i === today ? '#0b7a55' : 'rgba(11,122,85,.28)';
-        ctx.beginPath();
-        ctx.moveTo(x, base);
-        ctx.lineTo(x, base - h + Math.min(4, h));
-        ctx.quadraticCurveTo(x, base - h, x + Math.min(4, barW / 2), base - h);
-        ctx.lineTo(x + barW - Math.min(4, barW / 2), base - h);
-        ctx.quadraticCurveTo(x + barW, base - h, x + barW, base - h + Math.min(4, h));
-        ctx.lineTo(x + barW, base);
-        ctx.closePath();
-        ctx.fill();
-      });
+      // Last 7 days as a smooth line with a soft fill; today's point is the solid dot (2026-11-16).
+      const padT = 14, padB = 12, padX = 14;
+      const pts = Array.from(this._weekBars || [], v => Math.max(0, Math.min(100, Number(v) || 0)));
+      while (pts.length < 7) pts.unshift(0);
+      const base = H - padB, step = (W - padX * 2) / 6;
+      const xy = pts.map((pct, i) => [padX + step * i, base - (base - padT) * (pct / 100)]);
+      ctx.setLineDash([2, 4]); ctx.strokeStyle = 'rgba(11,122,85,.16)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padX, base); ctx.lineTo(W - padX, base); ctx.stroke(); ctx.setLineDash([]);
+      const curve = () => { ctx.moveTo(xy[0][0], xy[0][1]); for (let i = 1; i < xy.length; i++) { const [x0, y0] = xy[i - 1], [x1, y1] = xy[i], mx = (x0 + x1) / 2; ctx.bezierCurveTo(mx, y0, mx, y1, x1, y1); } };
+      const fill = ctx.createLinearGradient ? ctx.createLinearGradient(0, padT, 0, base) : null;
+      if (fill) { fill.addColorStop(0, 'rgba(11,122,85,.22)'); fill.addColorStop(1, 'rgba(11,122,85,0)'); }
+      ctx.beginPath(); curve(); ctx.lineTo(xy[xy.length - 1][0], base); ctx.lineTo(xy[0][0], base); ctx.closePath(); ctx.fillStyle = fill || 'rgba(11,122,85,.12)'; ctx.fill();
+      ctx.beginPath(); curve(); ctx.strokeStyle = '#0b7a55'; ctx.lineWidth = 2.5; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke();
+      xy.forEach(([x, y], i) => { const today = i === xy.length - 1; ctx.beginPath(); ctx.arc(x, y, today ? 5 : 3, 0, Math.PI * 2); ctx.fillStyle = today ? '#0b7a55' : '#fff'; ctx.fill(); if (!today) { ctx.lineWidth = 1.5; ctx.strokeStyle = '#0b7a55'; ctx.stroke(); } });
       this.setData({chartReady:true});
     });
   },

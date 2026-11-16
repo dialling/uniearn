@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="84" viewBox="0 0 160 84"><defs>
+<linearGradient id="gl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bff3dc" stop-opacity=".95"/><stop offset="1" stop-color="#35b884" stop-opacity=".9"/></linearGradient>
+<linearGradient id="tk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#f2b233"/></linearGradient></defs>
+<ellipse cx="82" cy="76" rx="46" ry="4.5" fill="#0b3d2c" opacity=".16"/>
+<g transform="rotate(-14 80 42)">
+<path d="M36 30c0-8 6-13 14-13h46c4 0 7-3 10-6h14c3 0 5 2 5 5v20c0 3-2 5-5 5h-14c-3-3-6-6-10-6H50c-8 0-14-5-14-13z" transform="translate(0 12)" fill="url(#gl)" stroke="#1f8a5f" stroke-width="2.4" stroke-linejoin="round"/>
+<rect x="124" y="23" width="12" height="18" rx="3" fill="#b9780a" stroke="#8a5606" stroke-width="1.6"/>
+<rect x="52" y="32" width="40" height="16" rx="4" fill="url(#tk)" stroke="#c07d0c" stroke-width="1.6"/><path d="M72 32v16" stroke="#c07d0c" stroke-width="1.4" stroke-dasharray="2.4 2"/><text x="62" y="44" font-family="Arial,sans-serif" font-size="9" font-weight="900" fill="#7a4e00" text-anchor="middle">¥</text>
+<path d="M46 34c4-3 12-4 22-4" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity=".8" fill="none"/>
+</g></svg>

@@ -1,20 +1,72 @@
 <view style="{{motionStyle}}">
 <lang-switch id="level-page-hook"></lang-switch>
-<view class="levels-page {{darkClass}}">
- <view class="levels-intro"><view class="eyebrow">{{language==='zh'?'UniEarn 等级成长':'UniEarn Level Journey'}}</view><view class="intro-title">{{language==='zh'?'我的等级':'My level'}}</view></view>
- <view class="level-checkin" bindtap="openYuniFeed" role="button" aria-label="{{language==='zh'?'打开喂 Yuni 签到':'Open Feed Yuni check-in'}}" hover-class="checkin-card-pressed">
-  <view class="checkin-heading"><view><view class="checkin-title">{{language==='zh'?'喂 Yuni':'Feed Yuni'}}</view><view class="checkin-streak">{{language==='zh'?'已连续签到':'Current streak'}} <text>{{checkin.streak}}</text> {{language==='zh'?'天':'days'}}</view></view><view class="checkin-status {{checkin.checked?'checked':''}}">{{checkin.checked?'✓ ':''}}{{checkin.status}}</view></view>
-  <view class="checkin-days"><view wx:for="{{checkin.days}}" wx:key="day" class="checkin-day {{item.done?'done':''}} {{item.today?'today':''}} {{item.day===7?'bonus-day':''}}"><view class="checkin-day-mark"><image class="checkin-day-fish" src="{{item.done?(item.today?'/assets/yuni-feed/bones-white.png':'/assets/yuni-feed/bones.png'):(item.today?'/assets/yuni-feed/fish.png':'/assets/yuni-feed/fish-grey.png')}}" mode="aspectFit"/><text wx:if="{{item.day===7}}" class="checkin-day-bonus">+10</text></view><view class="checkin-day-label">{{language==='zh'?'第 '+item.day+' 天':'Day '+item.day}}</view></view></view>
-  <view class="checkin-hint">{{checkin.hint}}</view><view class="checkin-card-foot"><view class="checkin-total">{{language==='zh'?'累计签到 '+checkin.total+' 天':'Total: '+checkin.total+' days checked in'}}</view><view class="checkin-open-feed">{{language==='zh'?'喂 Yuni ›':'Feed Yuni ›'}}</view></view>
- </view>
- <view class="level-orbit" style="--arc-move:{{arcMoveMs}}ms" bindtouchstart="onArcStart" bindtouchmove="onArcMove" bindtouchend="onArcEnd" bindtouchcancel="onArcEnd">
-  <view class="orbit-line"></view>
-  <view wx:for="{{levels}}" wx:key="level" data-index="{{index}}" bindtap="select" hover-class="orbit-press" class="orbit-level orbit-{{index}} {{current===index?'selected':''}} {{currentLevel===item.level?'is-current':''}}"><view class="orbit-dot"></view><text class="orbit-name">{{item.name}}</text></view>
-  <view class="hero-motion {{gestureActive?'dragging':''}}" style="--drag-x:{{dragX}}rpx;--drag-y:{{dragY}}rpx;--arc-release:{{arcReleaseMs}}ms"><block wx:for="{{[current]}}" wx:for-item="heroKey" wx:key="*this"><view class="mascot-aura power-{{currentItem.level}}"><view></view><view></view><view></view></view><view class="mascot-tap-layer {{mascotJumping?'mascot-jumping':''}}"><image class="level-mascot power-{{currentItem.level}}" src="{{currentItem.mascot}}" mode="aspectFit" bindtap="onMascotTap" aria-label="{{language==='zh'?'点击 Yuni，蹦一下':'Tap Yuni to hop'}}"/></view></block><view class="current-label">{{currentItem.action}}</view><view class="level-title">{{currentItem.name}}</view><view class="level-kicker">LEVEL {{currentItem.level}}</view><view wx:if="{{currentLevel===currentItem.level}}" class="current-chip">{{language==='zh'?'当前等级':'CURRENT'}}</view></view>
- </view>
- <view class="level-progress"><view><view class="progress-label">{{currentItem.conditionTitle}}</view><view class="progress-condition">{{currentItem.condition}}</view></view><view class="progress-points"><text>{{currentItem.min}}</text><text>{{language==='zh'?'积分':'PTS'}}</text></view></view>
- <view class="points-section"><view class="points-heading">{{language==='zh'?'如何获得积分':'How to earn points'}}</view><view class="points-subtitle">{{pointsStatus}} · {{language==='zh'?'日常任务，持续成长':'Everyday tasks, lasting progress'}}</view><view wx:if="{{pointsSyncError}}" class="points-sync-note">{{language==='zh'?'规则暂未同步，当前显示上次内容':'Rules could not sync. Showing the last available version.'}}</view><view wx:for="{{pointTasks}}" wx:key="id" class="points-task"><view class="points-task-copy"><view class="points-task-title">{{item.label}}</view><view class="points-task-detail">{{item.detail}}</view><view wx:if="{{item.firstLabel}}" class="points-task-first">{{item.firstLabel}}</view></view><view class="points-task-reward"><text>+{{item.points}}</text><text>{{language==='zh'?'积分':'points'}}</text></view></view><view class="points-footnote">{{language==='zh'?'订单须确认完成后计分，仅标记送达不会立即获得积分。长期等级积分持续保留。':'Points are awarded after completion is confirmed, not just marked delivered. Lifetime level points are retained.'}}</view></view>
- <view class="source-note">{{language==='zh'?'左右滑动或点击上方等级，探索你的航海旅程':'Swipe or tap a level above to explore your journey'}}</view>
-</view>
+<!-- 2026-11-16 redesign: a captain's log for the current level, the daily Feed Yuni strip, then the five levels as stops on one sea voyage. -->
+<view class="lv-page {{darkClass}}">
 
+ <!-- captain's log: where you are now -->
+ <view class="lv-log">
+  <view class="lv-log-top">
+   <view class="lv-buoy {{mascotJumping?'is-hop':''}}" bindtap="onMascotTap" aria-label="{{language==='zh'?'点击 Yuni，蹦一下':'Tap Yuni to hop'}}"><image class="lv-buoy-yuni" src="{{hero.avatar}}" mode="aspectFit"/></view>
+   <view class="lv-log-copy">
+    <view class="lv-log-level">{{language==='zh'?'等级 ':'Level '}}{{hero.levelNo}}</view>
+    <view class="lv-log-name">{{hero.levelName}}</view>
+    <view class="lv-log-pts"><text class="lv-log-num">{{hero.points}}</text>{{language==='zh'?' 等级积分':' level points'}}</view>
+   </view>
+  </view>
+  <view class="lv-rail"><view class="lv-rail-fill" style="width:{{hero.progressPct}}%"><view class="lv-rail-boat"/></view></view>
+  <view class="lv-rail-text">{{hero.nextText}}</view>
+ </view>
+
+ <!-- daily check-in -->
+ <view class="lv-feed" bindtap="openYuniFeed" role="button" aria-label="{{language==='zh'?'打开喂 Yuni 签到':'Open Feed Yuni check-in'}}" hover-class="lv-press">
+  <view class="lv-feed-head">
+   <view class="lv-feed-title">{{language==='zh'?'喂 Yuni':'Feed Yuni'}}</view>
+   <view class="lv-feed-streak"><text class="lv-feed-num">{{checkin.streak}}</text>{{language==='zh'?' 天连续':'-day streak'}}</view>
+  </view>
+  <view class="lv-days">
+   <view wx:for="{{checkin.days}}" wx:key="day" class="lv-day {{item.done?'is-done':''}} {{item.today?'is-today':''}} {{item.day===7?'is-bonus':''}}">
+    <view class="lv-day-token"><image class="lv-day-fish" src="{{item.done?(item.today?'/assets/yuni-feed/bones-white.png':'/assets/yuni-feed/bones.png'):(item.today?'/assets/yuni-feed/fish.png':'/assets/yuni-feed/fish-grey.png')}}" mode="aspectFit"/><text wx:if="{{item.day===7}}" class="lv-day-bonus">+10</text></view>
+    <view class="lv-day-label">{{item.day}}</view>
+   </view>
+  </view>
+  <view class="lv-feed-foot">
+   <view class="lv-feed-hint">{{checkin.checked?checkin.status:checkin.hint}}</view>
+   <view class="lv-feed-go">{{language==='zh'?'去喂 Yuni':'Feed Yuni'}}</view>
+  </view>
+ </view>
+
+ <!-- the voyage: five stops from Star to Captain -->
+ <view class="lv-voyage-head">{{language==='zh'?'你的航程':'Your voyage'}}</view>
+ <view class="lv-voyage">
+  <view wx:for="{{levels}}" wx:key="level" class="lv-stop {{item.level<currentLevel?'is-reached':''}} {{item.level===currentLevel?'is-here':''}} {{item.level>currentLevel?'is-ahead':''}} {{current===index?'is-open':''}}" data-index="{{index}}" bindtap="select" hover-class="lv-press">
+   <view class="lv-stop-rail"><view class="lv-stop-buoy"><view wx:if="{{item.level<currentLevel}}" class="lv-tick"/></view></view>
+   <view class="lv-stop-card">
+    <view class="lv-stop-top">
+     <image class="lv-stop-yuni" src="{{item.mascot}}" mode="aspectFit"/>
+     <view class="lv-stop-copy">
+      <view class="lv-stop-name">{{item.name}}</view>
+      <view class="lv-stop-need">{{item.need}}</view>
+     </view>
+     <view class="lv-stop-tag">{{item.level<currentLevel?(language==='zh'?'已到达':'Reached'):item.level===currentLevel?(language==='zh'?'你在这里':'Here now'):('Lv.'+item.level)}}</view>
+    </view>
+    <view wx:if="{{current===index}}" class="lv-stop-more">
+     <view class="lv-stop-action">{{item.action}}</view>
+     <view class="lv-gear-title">{{item.gearTitle}}</view>
+     <view class="lv-gear"><view wx:for="{{item.gear}}" wx:for-item="g" wx:key="id" class="lv-gear-chip"><image class="lv-gear-img" src="{{g.src}}" mode="aspectFit"/><text>{{g.name}}</text></view></view>
+    </view>
+   </view>
+  </view>
+ </view>
+
+ <!-- how to earn points -->
+ <view class="lv-earn">
+  <view class="lv-earn-head">{{language==='zh'?'怎么赚等级积分':'How to earn level points'}}</view>
+  <view wx:if="{{pointsSyncError}}" class="lv-earn-note">{{language==='zh'?'规则暂未同步，当前显示上次内容':'Rules could not sync. Showing the last available version.'}}</view>
+  <view wx:for="{{pointTasks}}" wx:key="id" class="lv-earn-row">
+   <view class="lv-earn-copy"><view class="lv-earn-title">{{item.label}}</view><view class="lv-earn-detail">{{item.detail}}</view><view wx:if="{{item.firstLabel}}" class="lv-earn-first">{{item.firstLabel}}</view></view>
+   <view class="lv-earn-pts">+{{item.points}}</view>
+  </view>
+  <view class="lv-earn-foot">{{language==='zh'?'订单确认完成后才计分，只标记送达不会立即得分。等级积分会一直保留。':'Points count once an order is confirmed complete, not just marked delivered. Level points are kept for good.'}}</view>
+ </view>
+</view>
 </view>

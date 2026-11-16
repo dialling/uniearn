@@ -9,7 +9,7 @@ const ok=async(who,action,extra={})=>{const r=await h.call(who,action,extra);ass
  let r=await ok('customer','create',{data:{...data,ownerId:id('runner'),status:'confirmed',reward:999}}),rid=r.value.id;
  assert.equal(h.state.requests[0].ownerId,id('customer'));assert.equal(h.state.requests[0].reward,4);assert.equal(h.state.requests[0].status,'waiting');
  let publicView=(await ok('stranger','sync')).snapshot;
- assert.equal(publicView.requests[0].phone,'');assert.equal(publicView.requests[0].room,'412');assert.ok(!JSON.stringify(publicView).includes('13801026092'));
+ assert.equal(publicView.requests[0].phone,'');assert.equal(publicView.requests[0].room,undefined,'strangers never get the room');assert.ok(!JSON.stringify(publicView).includes('13801026092'));
  assert.equal((await h.call('customer','accept',{ids:[rid]})).ok,false,'cannot accept own order');
  assert.equal((await h.call('stranger','accept',{ids:[rid]})).ok,false,'runner student check enforced on server');
  assert.equal((await h.call('other','raise',{id:rid,amount:1.88})).ok,false,'customer ownership checked');
@@ -51,7 +51,7 @@ const ok=async(who,action,extra={})=>{const r=await h.call(who,action,extra);ass
  const before=JSON.stringify(h.state);
  assert.equal((await h.call('customer','create',{data:{...data,station:'Other gate',bags:2},tripId:trip})).ok,false);
  assert.equal(JSON.stringify(h.state),before);
- r=await ok('customer','create',{data:{...data,station:'Other gate'},tripId:trip});
+ r=await ok('customer','create',{data:{...data,station:'Other gate'},tripId:trip});await ok(who,'tripOffer',{id:r.value.id,decision:'accept'});
  await ok(who,'pickup',{id:r.value.id});await ok(who,'leave',{id:trip});await ok(who,'deliver',{id:r.value.id,photo:cloudPhoto,location:'Downstairs',sealChecked:true});
  h.edit(s=>{s.requests.find(x=>x.id===r.value.id).deliveredAt=Date.now()-2*3600000;});
  await ok('customer','sync');assert.equal(h.state.requests.find(x=>x.id===r.value.id).status,'confirmed');

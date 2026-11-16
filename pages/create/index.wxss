@@ -63,3 +63,39 @@ image.action-icon{width:38rpx;height:38rpx;display:block;margin:0 auto 12rpx}
 .page-dark .size-btn.plus{background:#3a3b37;color:#edebe4}
 .page-dark .size-option.selected .size-price{color:#f4a06e}
 .page-dark .size-option.selected .size-btn.plus{background:#f4a06e;color:#16181c;box-shadow:0 6rpx 14rpx rgba(244,160,110,.28)}
+
+.trip-only-note{margin:14rpx 0 4rpx;padding:16rpx 20rpx;border-radius:20rpx;background:#fff7e0;color:#8a5a00;font-size:23rpx;line-height:1.45}
+
+/* joining a trip: locked trip tile + editable details (2026-11-15) */
+.jt-lock{margin:6rpx 0 0;padding:22rpx 24rpx;border-radius:26rpx;background:#f1f0eb;border:2rpx dashed #d9d6cd}
+.jt-lock-head{display:flex;align-items:center;gap:10rpx;font-size:23rpx;font-weight:700;color:#6b6860}
+.jt-lock-icon{width:30rpx;height:30rpx}
+.jt-legs{display:flex;gap:18rpx;margin-top:16rpx}
+.jt-rail{display:flex;flex-direction:column;align-items:center;padding-top:12rpx}
+.jt-dot{width:16rpx;height:16rpx;border-radius:50%;border:4rpx solid #8a877e;box-sizing:border-box}
+.jt-dot-to{background:#8a877e}
+.jt-line{flex:1;min-height:40rpx;margin:4rpx 0;border-left:3rpx dashed #c9c6bd}
+.jt-stops{flex:1;min-width:0;display:flex;flex-direction:column;gap:14rpx}
+.jt-stop{display:flex;flex-direction:column}
+.jt-k{font-size:21rpx;color:#8a877e}
+.jt-v{font-size:28rpx;font-weight:800;color:#3b3a35;line-height:1.35;overflow-wrap:anywhere}
+.jt-you{margin-top:28rpx}
+.jt-you-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:14rpx;font-size:27rpx;font-weight:800;color:#16181c}
+.jt-row{display:flex;align-items:center;gap:20rpx;min-height:92rpx;margin-bottom:12rpx;padding:0 24rpx;border-radius:22rpx;background:#f6f5f1;border:3rpx solid transparent}
+.jt-row:focus-within{border-color:#c2410c;background:#fff}
+.jt-row-label{flex:none;width:96rpx;font-size:25rpx;color:#6b6860}
+.jt-input{flex:1;min-width:0;height:92rpx;font-size:29rpx;font-weight:700;color:#16181c;text-align:right}
+.jt-hint{margin-top:4rpx;font-size:22rpx;line-height:1.5;color:#7a776e}
+.page-dark .jt-lock{background:#1f2321;border-color:#3a3f3a}
+.page-dark .jt-v,.page-dark .jt-you-title,.page-dark .jt-input{color:#edebe4}
+.page-dark .jt-row{background:#1f2321}
+
+/* 2026-11-15 Figma: 3D icon on Your details; say why Join is off */
+.jt-you-name{display:flex;align-items:center;gap:12rpx}
+.jt-you-icon{width:52rpx;height:52rpx;padding:6rpx;box-sizing:border-box;border-radius:16rpx;background:#fdeee4}
+.jt-error{margin:2rpx 0 6rpx;padding:12rpx 16rpx;border-radius:16rpx;background:#fff1ec;color:#b4501f;font-size:23rpx;font-weight:700;line-height:1.4}
+
+/* 2026-11-15: each detail row carries its own 3D icon */
+.jt-row{gap:16rpx;padding-left:18rpx}
+.jt-row-icon{flex:none;width:56rpx;height:56rpx}
+.jt-row-label{width:auto;min-width:88rpx}

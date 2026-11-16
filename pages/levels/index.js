@@ -15,6 +15,17 @@ function checkinView(state,language,now=Date.now()){
  const en=language==='en',day=require('../../utils/china-time').dayKey,record=(state.progression||{}).checkin||{},signedIn=!!state.profile.accountId&&!state.profile.loggedOut,today=day(now),yesterday=day(now-86400000),checked=signedIn&&record.day===today,ongoing=signedIn&&(checked||record.day===yesterday),streak=ongoing?Math.max(0,Number(record.streak)||0):0,cycleDay=checked?Math.max(1,Math.min(7,Number(record.cycleDay)||(streak-1)%7+1)):ongoing?(streak%7):0;
  return {checked,streak,total:signedIn?Math.max(0,Number(record.totalDays)||0):0,status:!signedIn?(en?'Sign in to check in':'登录后自动签到'):checked?(en?'Checked in today'+(record.dailyPoints?' · +2 pts':''):'今日已签到'+(record.dailyPoints?' · +2 积分':'')):(en?'Syncing today’s check-in':'正在同步今日签到'),hint:!signedIn?(en?'Your first sign-in each day checks you in automatically.':'每天首次登录，自动完成签到。'):checked&&Number(record.dailyPoints)>0?(en?'Daily +2 points added'+(record.rewardPoints?' · Streak bonus +'+record.rewardPoints:''):'今日签到 +2 积分已到账'+(record.rewardPoints?' · 连签额外 +'+record.rewardPoints+' 积分':'')):checked&&Number(record.rewardPoints)>0?(en?'7-day reward: +'+record.rewardPoints+' points added':'连续 7 天奖励 +'+record.rewardPoints+' 积分已到账'):(en?'Earn 2 points daily + 10 extra for every 7-day streak. A missed day resets the streak.':'每日签到得 2 积分，连续 7 天额外得 10 积分，断签后重新累计。'),days:Array.from({length:7},(_,i)=>({day:i+1,done:i<cycleDay,today:checked&&i+1===cycleDay}))};
 }
+// The gear Yuni gets at each level (from the Yuni catalogue), shown on the voyage route.
+function gearFor(level,en){
+ const catalog=require('../../utils/yuni-catalog'),rig=require('../../utils/yuni-rig');
+ const items=level===1?['captain','green'].map(id=>catalog.item(id)):catalog.ITEMS.filter(i=>i.level===level);
+ return items.filter(Boolean).map(i=>({id:i.id,name:en?i.en:i.zh,src:rig.thumb(i.id)}));
+}
+// Progress toward the next level for the header.
+function progressView(view,en){
+ const next=view.next;return {points:view.points,levelNo:view.level,levelName:en?view.nameEn:view.nameZh,progressPct:next?Math.max(4,Math.min(100,Math.round(view.progress||0))):100,
+  nextText:next?(en?next.remaining+' pts to '+next.en:'再得 '+next.remaining+' 积分升到'+next.zh):(en?'Top level reached':'已到最高等级'),avatar:'/assets/yuni-adventure-'+MASCOTS[Math.min(4,Math.max(0,view.level-1))]+'.png'};
+}
 function rows(language){
  const en=language==='en';
  const icons=['/assets/news-trophy.svg','/assets/shield-outline.svg','/assets/news-ticket.svg','/assets/news-growth.svg'];
@@ -37,7 +48,9 @@ function rows(language){
     ?{title:en?'Journey status':'成长状态',detail:en?'Highest confirmed level · progress complete':'当前已确认最高等级 · 进度完成',icon:icons[3]}
     :{title:en?'Next-level progress':'下一级进度',detail:en?'Points remaining to '+levelData.levels[index+1].en+' are shown':'展示距离「'+levelData.levels[index+1].zh+'」还差多少积分',icon:icons[3]}
   ],
-  conditionTitle:en?'Unlock requirement':'解锁条件',
+  gear:gearFor(level.level,en),gearTitle:index===0?(en?'Starts with':'初始装备'):(en?'Unlocks':'解锁装备'),
+   need:index===0?(en?'Where every journey starts':'每段旅程的起点'):index===1?(en?'Finish your first order':'完成第一笔订单'):(en?level.min+' level points':level.min+' 等级积分'),
+   conditionTitle:en?'Unlock requirement':'解锁条件',
   condition:index===0?(en?'Initial level · 0 level points':'初始等级 · 0 等级积分'):index===1?(en?'Complete your first order · 20 total points for the first completion':'完成首笔订单 · 首单总计 20 积分'):(en?'Reach '+level.min+' lifetime level points':'长期等级积分达到 '+level.min+' 分')
  }));
 }
@@ -47,7 +60,7 @@ Page({
  onReady(){wx.createSelectorQuery().in(this).select('.level-orbit').boundingClientRect(rect=>{this.orbitRect=rect;}).exec();},
  onShow(){this.localize(false);require('../../utils/orders').bind(this,'refreshCheckin');require('../../utils/page-title').apply(this);this.stopPointsSync();this.stopPoints=require('../../utils/activity-sync').subscribe(config=>{this.pointsConfig=activityDisplay.latest(this.pointsConfig,config);this.updatePointTasks();this.setData({pointsSyncError:false});},()=>this.setData({pointsSyncError:true}));},
  stopPointsSync(){if(this.stopPoints){this.stopPoints();this.stopPoints=null;}},
- refreshCheckin(){const state=store.get(),view=levelData.view(state.progression||{});this.setData({checkin:checkinView(state,this.data.language),currentLevel:view.level,points:view.points});},
+ refreshCheckin(){const state=store.get(),view=levelData.view(state.progression||{});this.setData({checkin:checkinView(state,this.data.language),currentLevel:view.level,points:view.points,hero:progressView(view,this.data.language==='en')});},
  async openYuniFeed(){
   if(this.openingFeed)return;
   const host=this.selectComponent('#level-page-hook');if(!host)return;
@@ -65,7 +78,7 @@ Page({
  localize(first){
   const state=store.get(),language=state.language==='en'?'en':'zh',view=levelData.view(state.progression||{}),current=first?Math.max(0,view.level-1):this.data.current;
   const levels=rows(language);
-  this.setData({checkin:checkinView(state,language),language,levels,current,currentItem:levels[current],currentLevel:view.level,points:view.points});this.updatePointTasks();
+  this.setData({checkin:checkinView(state,language),language,levels,current,currentItem:levels[current],currentLevel:view.level,points:view.points,hero:progressView(view,language==='en')});this.updatePointTasks();
  },
  onMotionChange(enabled){this.stopMascotJump();this.stopArcMotion();this.setData({gestureActive:false,dragX:0,dragY:0,arcMoveMs:enabled?ARC_MOVE_MS:0,arcReleaseMs:enabled?ARC_RELEASE_MS:0});},
  stopMascotJump(){

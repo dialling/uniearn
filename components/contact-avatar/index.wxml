@@ -1,1 +1,1 @@
-<view class="avatar" aria-hidden="true">{{initial}}</view>
+<view class="avatar" aria-hidden="true"><text wx:if="{{!src}}">{{initial}}</text><image wx:else class="avatar-img" src="{{src}}" mode="aspectFill"/></view>

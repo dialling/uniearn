@@ -11,7 +11,7 @@ assert.match(nav,/为跑手/);assert.match(nav,/For runners/);
 
 // The task card is bilingual and names the needs people actually post.
 assert.match(nav,/其他需求/);
-assert.match(nav,/Something else/);
+assert.match(nav,/Post any task/);
 assert.match(nav,/class="sheet-new"/);
 // 2026-11-13: the user switched the three post-sheet icons to the 3D icon set.
 assert.match(nav,/src="\/assets\/icons3d\/pickup\.svg"/,'Post a pick-up uses the 3D bag-and-box icon');

@@ -7,7 +7,7 @@ store.reset();store.update(s=>{s.language='zh';s.profile.accountId='me';s.profil
 p.refresh();assert.equal(p.data.cards.length,5,'every order has an independent card, including orders on the same route');
 for(const card of p.data.cards)assert.equal(card.ids.length,1,'a single accept button never hides other orders');
 assert.deepEqual(p.data.cards.find(c=>c.key==='a').ids,['a']);assert.equal(p.data.cards.find(c=>c.key==='a').total,'10.00');
-assert.deepEqual(p.data.cards.find(c=>c.key==='b').ids,['b']);assert.equal(p.data.cards.find(c=>c.key==='b').total,'4.00');assert.equal(p.data.cards.find(c=>c.key==='b').items[0].arrival,'送达截止 17:24');
+assert.deepEqual(p.data.cards.find(c=>c.key==='b').ids,['b']);assert.equal(p.data.cards.find(c=>c.key==='b').total,'4.00');assert.equal(p.data.cards.find(c=>c.key==='b').items[0].arrival,'17:24 前送达');
 assert.equal(p.data.cards.find(c=>c.key==='mine').mine,true);assert.equal(p.data.cards.find(c=>c.key==='task').route,'Help');
 for(const method of ['expand','toggleOrder','takeSelected','selectionView'])assert.equal(p[method],undefined,'removed hall grouping method: '+method);
 store.update(s=>{s.publicJobs=s.publicJobs.filter(r=>r.id!=='a');});p.refresh();assert.equal(p.data.cards.length,4);assert.equal(p.data.cards.find(c=>c.key==='b').total,'4.00','removing another order never changes the remaining price');

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="240" viewBox="0 0 200 120"><defs>
+<linearGradient id="bd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b4526"/><stop offset=".55" stop-color="#4a2e17"/><stop offset="1" stop-color="#2c1a0c"/></linearGradient>
+<radialGradient id="hd" cx=".45" cy=".35" r=".75"><stop offset="0" stop-color="#ffffff"/><stop offset=".75" stop-color="#f1efe9"/><stop offset="1" stop-color="#d6d2c8"/></radialGradient>
+<linearGradient id="tl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e9e6de"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
+<linearGradient id="bk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd760"/><stop offset="1" stop-color="#e09a12"/></linearGradient>
+<linearGradient id="wg" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#5e3b1f"/><stop offset=".6" stop-color="#3f2713"/><stop offset="1" stop-color="#22140a"/></linearGradient>
+<linearGradient id="cv" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#8a5c33"/><stop offset="1" stop-color="#5a3a1f"/></linearGradient>
+</defs>
+<path d="M62 60L30 51C25 57 25 66 30 73L64 68Z" fill="url(#tl)" stroke="#bdb8ad" stroke-width=".8" stroke-linejoin="round"/>
+<path d="M60 61L33 56M60 64L31 63M61 66L33 70" stroke="#c9c4b9" stroke-width=".9" stroke-linecap="round"/>
+<path d="M58 60C70 50 100 46 124 50C134 52 140 58 136 66C128 74 96 77 70 71C62 69 56 65 58 60Z" fill="url(#bd)" stroke="#1d1108" stroke-width=".8"/>
+<path d="M76 58C86 56 98 56 110 58M74 64C86 63 100 64 114 66M84 69C94 70 104 70 116 69" stroke="#7d5431" stroke-width="1.2" stroke-linecap="round" fill="none" opacity=".7"/>
+<path d="M98 71L95 82M108 72L109 83" stroke="#e9a91c" stroke-width="3.2" stroke-linecap="round"/>
+<path d="M95 82l-3 2M95 82l1 3M109 83l-2 2M109 83l2 2" stroke="#2b2b2b" stroke-width="1.4" stroke-linecap="round"/>
+<path d="M119 49C125 38 145 35 152 45C157 53 151 62 141 64C134 66 126 62 120 56Z" fill="url(#hd)"/>
+<path d="M120 55L124 58L126 54L129 59L131 55L134 60L136 56L139 62" stroke="#4a2e17" stroke-width="2.2" stroke-linejoin="round" fill="none"/>
+<path d="M150 45C158 43 165 48 166 54C166 59 162 61 160 58C161 55 158 52 152 53Z" fill="url(#bk)" stroke="#a86c06" stroke-width=".8" stroke-linejoin="round"/>
+<path d="M152 52.6C155 52.4 158 53 160 55" stroke="#a86c06" stroke-width=".8" fill="none"/>
+<path d="M137 42.5Q143 39.8 149 42.6" stroke="#9a968c" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+<circle cx="143.5" cy="46" r="3.1" fill="#f2b233" stroke="#7a5200" stroke-width=".6"/><circle cx="144" cy="46" r="1.7" fill="#140c05"/><circle cx="144.7" cy="45.2" r=".6" fill="#ffffff"/></svg>

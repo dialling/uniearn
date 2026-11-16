@@ -3,6 +3,7 @@
 <import src="../../utils/waiting-ticket.wxml"/>
 <view style="{{motionStyle}}">
 <lang-switch></lang-switch>
+<view wx:if="{{welcome}}" class="rq-welcome"><image class="rq-welcome-yuni" mode="aspectFit" src="/assets/yuni-wave.png"/><view class="rq-welcome-copy"><view class="rq-welcome-title">{{zh?'订单已加入！':'You’re in!'}}</view><view class="rq-welcome-text">{{zh?'在这里查看订单进度。花一分钟完成设置，下次下单更快。':'Follow your order’s progress here. Take a minute to finish setting up so next time is faster.'}}</view><view class="rq-welcome-actions"><button class="rq-welcome-go" bindtap="finishSetup">{{zh?'完成设置':'Finish setting up'}}</button><text class="rq-welcome-later" bindtap="closeWelcome">{{zh?'先看订单':'View my order'}}</text></view></view></view>
 <view class="flow-page journey-page {{darkClass}}" wx:if="{{request}}">
 <view class="flow-title">{{zh?(request.isMine?'我的订单':'订单详情'):request.isMine?'My request':'Order details'}}</view>
 <view class="flow-sub">{{request.sizeLabel}} · {{request.boxes}} {{request.unitLabel}} · {{request.destinationDisplay}}</view>
@@ -21,7 +22,7 @@
 <view class="hint">{{request.purchaseStatus==='needs_purchase'?(zh?'未下单（需跑手垫付）':'Not ordered · runner pays upfront'):(zh?'已下单':'Already ordered')}}</view>
 </view>
 <view wx:if="{{request.runnerId}}" class="flow-card row">
-<view class="contact-person"><contact-avatar name="{{runner}}"/><view class="contact-person-copy value">{{runner}}</view></view>
+<view class="contact-person"><contact-avatar name="{{runner}}" src="{{request.isMine?request.runnerAvatar:request.ownerAvatar}}"/><view class="contact-person-copy value">{{runner}}</view></view>
 <view class="contact-actions">
 <view class="contact-button contact-3d" bindtap="chat" aria-label="{{zh?'发消息':'Message'}}">
 <image mode="aspectFit" src="/assets/icons3d/chat.svg"/>

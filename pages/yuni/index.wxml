@@ -1,0 +1,38 @@
+<view style="{{motionStyle}}">
+<lang-switch></lang-switch>
+<!-- 2026-11-16: Yuni settings and help, opened from Me › Settings › Yuni -->
+<view class="yn-page {{darkClass}}">
+ <view class="yn-hero" hover-class="yn-press" bindtap="levels">
+  <view class="yn-hero-copy">
+   <view class="yn-name">Yuni</view>
+   <view class="yn-sub">{{zh?'你在 UniEarn 的企鹅船长':'Your penguin captain on UniEarn'}}</view>
+   <view class="yn-level"><text class="yn-level-no">Lv.{{levelNo}}</text><text>{{levelName}}</text></view>
+   <view class="yn-next">{{nextText}} ›</view>
+  </view>
+  <view class="yn-portrait"><view class="yn-floe"/><image class="yn-yuni" src="{{avatar}}" mode="aspectFit"/></view>
+ </view>
+
+ <view class="yn-group">{{zh?'设置':'Settings'}}</view>
+ <view class="yn-list">
+  <view class="yn-row"><image class="yn-ico" src="/assets/yuni-play/i-sound.svg" mode="aspectFit"/><view class="yn-grow"><view class="yn-title">{{zh?'音效':'Sounds'}}</view><view class="yn-val">{{zh?'和 Yuni 玩时的音乐和音效':'Music and effects when you play with Yuni'}}</view></view><switch color="#0b7a55" checked="{{soundOn}}" bindchange="sound"/></view>
+  <view class="yn-row"><image class="yn-ico" src="/assets/yuni-play/i-sparkle.svg" mode="aspectFit"/><view class="yn-grow"><view class="yn-title">{{zh?'提示和动画':'Tips and animations'}}</view><view class="yn-val">{{zh?'Yuni 弹出订单进度提示，页面上有动画':'Yuni pops up with order updates, and pages move'}}</view></view><switch color="#0b7a55" checked="{{tipsOn}}" bindchange="tips"/></view>
+ </view>
+
+ <view class="yn-group">{{zh?'帮助':'Help'}}</view>
+ <view class="yn-list">
+  <view class="yn-row" hover-class="yn-row-press" bindtap="yuniGuide"><image class="yn-ico" src="/assets/yuni-play/i-yuni.svg" mode="aspectFit"/><view class="yn-grow"><view class="yn-title">{{zh?'Yuni 新手引导':'Yuni guide'}}</view><view class="yn-val">{{zh?'Yuni 带你认识喂食、钓鱼、商店和升级':'A quick tour of feeding, fishing, the shop and levels'}}</view></view><view class="yn-chev"/></view>
+  <view class="yn-row" hover-class="yn-row-press" bindtap="guide"><image class="yn-ico" src="/assets/yuni-play/i-help.svg" mode="aspectFit"/><view class="yn-grow"><view class="yn-title">{{zh?'重看新手引导':'Replay the app guide'}}</view><view class="yn-val">{{zh?'再看一遍接单大厅，以及发单和行程的小提示':'See the job hall tour and the posting and trip tips again'}}</view></view><view class="yn-chev"/></view>
+  <view class="yn-row" hover-class="yn-row-press" bindtap="levels"><image class="yn-ico" src="/assets/yuni-play/i-rules.svg" mode="aspectFit"/><view class="yn-grow"><view class="yn-title">{{zh?'等级和奖励':'Levels and rewards'}}</view><view class="yn-val">{{zh?'怎么赚积分，每级送什么装备':'How to earn points and the gear each level unlocks'}}</view></view><view class="yn-chev"/></view>
+ </view>
+
+ <view class="yn-group">{{zh?'怎么和 Yuni 玩':'How to play with Yuni'}}</view>
+ <view class="yn-list yn-how">
+  <view class="yn-row"><image class="yn-ico yn-ico-sm" src="/assets/yuni-play/five.svg" mode="aspectFit"/><view class="yn-grow"><view class="yn-title">{{zh?'摸摸和点点':'Pet and tap'}}</view><view class="yn-val">{{zh?'摸摸头会害羞，连点会转晕。':'Stroke for love. Tap too fast and Yuni gets dizzy.'}}</view></view></view>
+  <view class="yn-row"><image class="yn-ico yn-ico-sm" src="/assets/yuni-play/rod.svg" mode="aspectFit"/><view class="yn-grow"><view class="yn-title">{{zh?'钓鱼':'Fishing'}}</view><view class="yn-val">{{zh?'停在绿色区，再连点 3 次。每次有两次机会。':'Stop in the green, then tap 3 times. Two chances each try.'}}</view></view></view>
+  <view class="yn-row"><image class="yn-ico yn-ico-sm" src="/assets/yuni-feed/fish.png" mode="aspectFit"/><view class="yn-grow"><view class="yn-title">{{zh?'喂鱼得积分':'Feed for points'}}</view><view class="yn-val">{{zh?'普通 +2，稀有 +5，超稀有 +10。还可能钓到优惠券。':'Common +2, rare +5, super rare +10. Coupons are a lucky catch.'}}</view></view></view>
+  <view class="yn-row"><image class="yn-ico yn-ico-sm" src="/assets/yuni-play/spin.svg" mode="aspectFit"/><view class="yn-grow"><view class="yn-title">{{zh?'击掌和转圈连击':'High five and spin combos'}}</view><view class="yn-val">{{zh?'快速连点，打出连击。':'Tap again fast for a combo.'}}</view></view></view>
+  <view class="yn-row"><image class="yn-ico yn-ico-sm" src="/assets/yuni-play/shop.svg" mode="aspectFit"/><view class="yn-grow"><view class="yn-title">{{zh?'商店和装扮':'Shop and outfits'}}</view><view class="yn-val">{{zh?'用积分买装扮和伙伴。海鹰会帮你钓鱼。':'Buy outfits and friends. The eagle helps you fish.'}}</view></view></view>
+ </view>
+ <button class="yn-play" bindtap="play">{{zh?'去和 Yuni 玩':'Play with Yuni'}}</button>
+</view>
+</view>

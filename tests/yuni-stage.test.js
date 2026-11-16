@@ -1,0 +1,33 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+// 2026-11-15: Yuni's stage on the Me page (design/me-preview): layered drawing, shop and fishing game.
+const root=path.join(__dirname,'..'),read=f=>fs.readFileSync(path.join(root,f),'utf8');
+global.wx=global.wx||{getStorageSync:()=>null,setStorageSync(){}};
+const rig=require('../utils/yuni-rig'),catalog=require('../utils/yuni-catalog');
+// The Me page follows design/me-preview: the scene opens the page with the name, badge and points on it.
+const me=read('pages/profile/index.wxml');
+assert.match(me,/<yuni-stage id="yuni-stage" name="[^"]+" badge="\{\{badgeText\}\}"[^>]*bind:editname="editUsername"[^>]*><\/yuni-stage>\s*<view class="me-body">/);
+for(const section of ['me-level','me-group','me-list','me-version'])assert.match(me,new RegExp('class="[^"]*'+section),section+' section is on the page');
+assert.doesNotMatch(me,/class="me-header"/,'the old green header is replaced by the scene');
+assert.doesNotMatch(me,/bindchange="soundToggle"/,'the Sounds row was removed from Settings (2026-11-15)');
+const snd=read('utils/yuni-sound.js');assert.ok(snd.includes('if (!ctx || !ctx.createOscillator) {\n    ctx = null;'),'falls back to the browser audio when WeChat audio is incomplete');assert.ok(snd.includes('function unlock()'),'a tap unlocks audio for later sounds');
+assert.doesNotMatch(me,/bindchange="tipToggle"/,'the animations switch stays off Me (removed 2026-11-07)');
+assert.match(read('app.json'),/"yuni-stage": "\/components\/yuni-stage\/index"/);
+const L=rig.layers({hat:'captain',scarf:'coral',bag:'satchel',badge:'epaulettes',back:'cape',left:'balloon',hand:'rod3'},'shy',true);
+for(const k of ['back','body','head','eyes','front','wingL','wingR','tool','line'])assert.match(L[k],/^data:image\/svg\+xml;charset=utf-8,%3Csvg/,k+' layer is an SVG image');
+assert.ok(!/['()]/.test(L.head.slice(30)),'layer URIs are safe inside url(\'...\')');
+assert.equal(rig.layers({hat:'captain',scarf:'green'}).tool,'','no tool layer without a rod');
+assert.notEqual(rig.layers({hat:'captain',scarf:'green'},'love').eyes,rig.layers({hat:'captain',scarf:'green'},'').eyes,'moods change the eyes');
+assert.ok(decodeURIComponent(L.front).includes('#e8604c'),'the scarf takes the chosen colour');
+for(const it of catalog.ITEMS)assert.ok(it.sw||rig.thumb(it.id),it.id+' has a shop picture');
+for(const f of catalog.FISH)assert.ok(rig.fish(f.id).length>500,f.id+' is drawn');
+for(const t of ['rod','rod2','rod3','trident'])assert.ok(rig.bobber(t)&&rig.thumb(t)!==rig.thumb(t==='rod'?'rod2':'rod'),t+' has its own look');
+const wxml=read('components/yuni-stage/index.wxml'),js=read('components/yuni-stage/index.js'),wxss=read('components/yuni-stage/index.wxss');
+for(const handler of [...wxml.matchAll(/(?:bind|catch)(?:tap|touch[a-z]+)="([a-zA-Z]+)"/g)].map(m=>m[1]))assert.ok(js.includes(" "+handler+"("),'handler '+handler+' exists');
+assert.match(wxml,/catchtouchmove="onMove"/,'dragging in the scene belongs to Yuni, not to page scrolling');
+assert.match(js,/orders\.act\('yuniFish', \{ landed: true, perfect: !!F\.perfect \}\)/);assert.match(js,/orders\.act\('yuniFish', \{ landed: false \}\)/,'a miss is reported so the try is used');
+assert.match(js,/F\.phase !== 'bite'\) return; F\.phase = 'landing'/,'one cast can land only one fish');
+assert.match(js,/PULLS_NEEDED/);assert.equal(catalog.PULLS_NEEDED,3);
+assert.doesNotMatch(wxss,/^#/m,'component styles use classes only');
+for(const icon of ['five','dance','spin','rod','shop','book','island'])assert.ok(fs.existsSync(path.join(root,'assets/yuni-play/'+icon+'.svg')),icon+' icon exists');
+assert.equal(catalog.item('rod2').price,200);assert.equal(catalog.item('rod3').price,400);assert.equal(catalog.item('sunset').price,60);
+console.log('Yuni stage: page hook, layered drawing, shop pictures, fish, handlers, fishing safeguards and prices passed.');

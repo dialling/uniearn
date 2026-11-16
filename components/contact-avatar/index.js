@@ -1,6 +1,7 @@
 Component({
   properties: {
-    name: { type: String, value: '', observer: 'updateInitial' }
+    name: { type: String, value: '', observer: 'updateInitial' },
+    src: { type: String, value: '' }
   },
   data: { initial: 'U' },
   methods: {

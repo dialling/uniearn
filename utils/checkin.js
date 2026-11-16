@@ -24,4 +24,6 @@ function wasCollected(token){if(!token?.key)return false;try{return collected.ha
 function markCollected(token){if(!token?.key)return;collected.add(token.key);try{wx.setStorageSync('uniearn:yuni-collected:'+token.key,true);}catch(_){} }
 function release(key){if(active!==key)return;active='';store.update(()=>{});}
 function pending(){return !!active||!!notice();}
-module.exports={notice,claim,release,pending,wasFed,markFed,wasCollected,markCollected};
+// Today's dried fish is checked in but Yuni has not eaten it yet (the Me page Feed button then opens the sheet).
+function dailyFishWaiting(){const n=currentNotice();return !!n&&!wasFed(n)&&!wasCollected(n);}
+module.exports={notice,claim,release,pending,wasFed,markFed,wasCollected,markCollected,dailyFishWaiting};

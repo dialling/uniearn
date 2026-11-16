@@ -1,18 +1,28 @@
 <view class="name-page {{dark?'dark':''}}">
-  <view class="name-preview">
-    <view class="name-avatar">{{initial}}</view>
-    <view class="name-preview-text">
-      <text class="preview-label">{{zh?'订单中显示':'Shown on orders'}}</text>
-      <text class="preview-name">{{draft|| (zh?'你的昵称':'Your display name')}}</text>
+  <view class="np-card">
+    <view class="np-hero">
+      <view class="np-avatar {{avatarBusy?'busy':''}}" role="button" aria-label="{{zh?'更换头像':'Change profile photo'}}" hover-class="np-press" bindtap="pickAvatar">
+        <text wx:if="{{!avatar}}" class="np-initial">{{initial}}</text>
+        <image wx:else class="np-avatar-img" src="{{avatar}}" mode="aspectFill"/>
+        <view class="np-cam"><image src="/assets/icons/camera-white.svg" mode="aspectFit"/></view>
+      </view>
+      <view class="np-shown">{{draft || (zh?'你的昵称':'Your display name')}}</view>
+      <view class="np-sub">{{zh?'跑手和发布人会在订单里看到你的头像和昵称':'Runners and requesters see this on your orders'}}</view>
+      <view class="np-photo-actions">
+        <view class="np-chip main {{avatarBusy?'off':''}}" role="button" hover-class="np-press" bindtap="pickAvatar">{{avatarBusy?(zh?'上传中…':'Uploading…'):avatar?(zh?'更换头像':'Change photo'):(zh?'上传头像':'Upload photo')}}</view>
+        <view wx:if="{{avatar}}" class="np-chip {{avatarBusy?'off':''}}" role="button" hover-class="np-press" bindtap="removeAvatar">{{zh?'移除':'Remove'}}</view>
+      </view>
+    </view>
+
+    <view class="np-form">
+      <label for="display-name" class="np-label">{{zh?'昵称':'Display name'}}</label>
+      <view class="np-input-row">
+        <input id="display-name" value="{{draft}}" bindinput="input" maxlength="60" disabled="{{saving}}" placeholder="{{zh?'输入昵称':'Enter a display name'}}" confirm-type="done" bindconfirm="save" />
+        <text class="np-count">{{draft.length}}/60</text>
+      </view>
+      <view wx:if="{{error}}" class="np-error">{{error}}</view>
     </view>
   </view>
-  <view class="name-form">
-    <label for="display-name" class="name-label">{{zh?'昵称':'Display name'}}</label>
-    <view class="input-row">
-      <input id="display-name" value="{{draft}}" bindinput="input" maxlength="60" disabled="{{saving}}" placeholder="{{zh?'输入昵称':'Enter a display name'}}" confirm-type="done" bindconfirm="save" />
-      <text class="name-count">{{draft.length}}/60</text>
-    </view>
-    <view wx:if="{{error}}" class="name-error">{{error}}</view>
-    <button class="name-save" bindtap="save" loading="{{saving}}" disabled="{{!canSave||saving}}">{{zh?'保存昵称':'Save name'}}</button>
-  </view>
+
+  <view class="np-bottom"><button class="np-save" bindtap="save" loading="{{saving}}" disabled="{{!canSave||saving}}">{{zh?'保存昵称':'Save name'}}</button></view>
 </view>

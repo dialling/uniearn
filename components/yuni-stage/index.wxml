@@ -1,0 +1,84 @@
+<view class="ys {{mode==='fish'?'ys-game':''}} {{mode==='shop'?'ys-shopping':''}} {{asleep?'ys-asleep':''}} {{dark?'ys-dark':''}} {{motion?'':'ys-still'}} ys-sc-{{scene}} ys-ride-{{ride}}" style="{{sceneStyle}}">
+ <view class="ys-stage {{shake?'ys-shake':''}}" id="ysStage" bindtouchstart="onStart" catchtouchmove="onMove" bindtouchend="onEnd" bindtouchcancel="onEnd">
+  <view class="ys-night"/>
+  <view class="ys-sun"/><view class="ys-cloud ys-c1"/><view class="ys-cloud ys-c2"/>
+  <view class="ys-aurora"><view class="ys-au1"/><view class="ys-au2"/></view>
+  <view class="ys-rainbow"/><view class="ys-moon"/>
+  <view class="ys-fall"><view class="ys-p ys-p1"/><view class="ys-p ys-p2"/><view class="ys-p ys-p3"/><view class="ys-p ys-p4"/><view class="ys-p ys-p5"/><view class="ys-p ys-p6"/><view class="ys-p ys-p7"/><view class="ys-p ys-p8"/><view class="ys-p ys-p9"/><view class="ys-p ys-p10"/></view>
+  <view class="ys-berg ys-b1"/><view class="ys-berg ys-b2"/>
+  <image class="ys-island" src="/assets/yuni-play/island.svg" mode="aspectFit"/>
+  <view class="ys-sea"><view class="ys-wave"/><view class="ys-wave ys-wave2"/></view>
+  <view wx:if="{{mode==='fish'}}" class="ys-swimmers"><view class="ys-swim ys-s1"><view class="ys-swim-body"/></view><view class="ys-swim ys-s2 ys-swim-left"><view class="ys-swim-body"/></view><view class="ys-swim ys-s3"><view class="ys-swim-body"/></view><view class="ys-swim ys-s4 ys-swim-left"><view class="ys-swim-body"/></view></view>
+
+  <view wx:if="{{!mode}}" class="ys-who"><view class="ys-who-main"><view class="ys-name" role="button" catchtap="editName" aria-label="{{zh?'修改用户名':'Edit your name'}}"><text class="ys-name-text">{{name}}</text><image src="/assets/edit-outline.svg" mode="aspectFit"/></view><view class="ys-check {{verified?'':'ys-check-todo'}}" catchtap="badgeTap">{{badge}}</view></view><view class="ys-pts" hover-class="ys-press" role="button" catchtap="pointsTap"><image src="/assets/yuni-feed/fish.png" mode="aspectFit"/><text>{{points}}</text><text class="ys-pts-unit">{{zh?'积分':'pts'}}</text></view></view>
+  <view class="ys-bubble {{bubbleOn?'on':''}}" role="status" aria-live="polite">{{bubble}}</view>
+  <view wx:if="{{asleep}}" class="ys-zz">Z</view>
+
+  <!-- 2026-11-16: the eagle friend soars across the sky and swoops down to play with Yuni -->
+  <view wx:if="{{friend && !friendAway}}" class="ys-friend {{friendFlap?'is-flap':''}} {{friendPerch?'is-perch':''}}" style="{{friendStyle}}" catchtap="friendTap"><view class="ys-friend-face" style="{{friendFace}}"><view class="ys-friend-tilt" style="{{friendTilt}}"><view class="ys-friend-trick {{friendLoop?'is-loop':''}}"><image class="ys-eg ys-eg-far" src="/assets/yuni-play/eagle-wing-far.svg" mode="aspectFit"/><image class="ys-eg" src="/assets/yuni-play/eagle-body.svg" mode="aspectFit"/><image class="ys-eg ys-eg-near" src="/assets/yuni-play/eagle-wing.svg" mode="aspectFit"/></view></view></view></view>
+  <view class="ys-anchor">
+   <view class="ys-ride-img" style="background-image:url('{{rideBack}}')"/>
+   <view class="ys-shadow"/>
+   <view class="ys-yuni ys-b-{{body}} ys-w-{{wings}}" id="ysYuni" role="button" aria-label="{{zh?'Yuni。点一下打招呼，摸一摸它。':'Yuni the penguin. Tap to say hi, stroke to pet.'}}">
+    <view class="ys-l" style="background-image:url('{{L.back}}')"/>
+    <view wx:if="{{L.tool}}" class="ys-l" style="background-image:url('{{L.tool}}')"/>
+    <view wx:if="{{L.line && !casting}}" class="ys-l" style="background-image:url('{{L.line}}')"/>
+    <view class="ys-l ys-bodywrap" style="background-image:url('{{L.body}}')"/>
+    <view class="ys-l ys-headwrap" style="{{headStyle}}">
+     <view class="ys-l" style="background-image:url('{{L.head}}')"/>
+     <view wx:if="{{drool}}" class="ys-drool"><view class="ys-drip"/><view class="ys-drop"/></view>
+     <view class="ys-l ys-eyes" style="{{eyeStyle}}"><view class="ys-l ys-lid {{blink?'ys-blink':''}}" style="background-image:url('{{L.eyes}}')"/></view>
+    </view>
+    <view class="ys-l" style="background-image:url('{{L.front}}')"/>
+    <view class="ys-l ys-wl" style="background-image:url('{{L.wingL}}')"/>
+    <view class="ys-l ys-wr" style="background-image:url('{{L.wingR}}')"/>
+   </view>
+   <view wx:if="{{rideFront}}" class="ys-ride-img ys-ride-front" style="background-image:url('{{rideFront}}')"/>
+  </view>
+  <view wx:if="{{eagleDive}}" class="ys-eagle-dive" style="{{eagleDive.style}}"><image class="ys-eagle-fish" src="{{eagleDive.fish}}" mode="aspectFit"/><image class="ys-eagle-bird" src="/assets/yuni-play/eagle.svg" mode="aspectFit"/></view>
+
+  <!-- fishing: shadow under the water, line, bobber -->
+  <view wx:if="{{shadowClass}}" class="ys-fishspot" style="{{shadowStyle}}"><view class="ys-fishshadow {{shadowClass}}"/></view>
+  <view wx:if="{{lineStyle}}" class="ys-line" style="{{lineStyle}}"/>
+  <view wx:if="{{bobStyle}}" class="ys-bob {{bobClass}}" style="{{bobStyle}}"><view class="ys-bob-img" style="background-image:url('{{bobSrc}}')"/><text wx:if="{{bang}}" class="ys-bang">!</text></view>
+  <view wx:if="{{splash}}" class="ys-splash" style="{{splash.style}}"><view class="ys-ring"/><view class="ys-ring ys-ring2"/><view class="ys-drop ys-d1"/><view class="ys-drop ys-d2"/><view class="ys-drop ys-d3"/><view class="ys-drop ys-d4"/></view>
+  <view wx:if="{{prize}}" class="ys-prize ys-prize-{{prize.kind}}" style="{{prize.style}}"><image src="{{prize.src}}" mode="aspectFit"/></view>
+
+  <view wx:for="{{fx}}" wx:key="id" class="ys-fx ys-fx-{{item.kind}}" style="{{item.style}}"><text wx:if="{{item.kind==='text'||item.kind==='combo'}}">{{item.text}}</text><text wx:elif="{{item.kind==='heart'}}">♥</text><text wx:elif="{{item.kind==='star'||item.kind==='spark'}}">✦</text></view>
+
+  <view wx:if="{{!mode}}" class="ys-mood" aria-label="{{zh?'Yuni 的心情':'Yuni\'s mood'}}"><text>{{zh?'Yuni 的心情':'Yuni\'s mood'}}</text><view class="ys-mood-row"><text wx:for="{{moodHearts}}" wx:key="*this" class="{{item<mood?'full':''}}">♥</text></view></view>
+  <view wx:if="{{!mode}}" id="ysShopBtn" class="ys-shop-btn" hover-class="ys-press" role="button" catchtap="openShop"><image src="/assets/yuni-play/shop.svg" mode="aspectFit"/><text>{{zh?'商店':'Shop'}}</text></view>
+
+  <!-- fishing game layer -->
+  <block wx:if="{{mode==='fish'}}">
+   <view class="ys-game-top"><view class="ys-pill ys-back" hover-class="ys-press" role="button" catchtap="leave">‹ {{zh?'返回':'Back'}}</view><view class="ys-pill ys-left">{{leftText}}</view><view wx:if="{{testRounds}}" class="ys-pill ys-test-round" hover-class="ys-press" role="button" catchtap="addTestRound">{{zh?'+ 测试次数':'+ Test tries'}}</view><view class="ys-pill ys-bal"><image src="/assets/yuni-feed/fish.png" mode="aspectFit"/>{{balance}}</view></view>
+   <view wx:if="{{meter}}" class="ys-meter ys-meter-{{meter.state}}" role="status" aria-live="polite"><view class="ys-meter-label">{{meter.label}}</view><view class="ys-meter-track"><view class="ys-meter-zone" style="{{meter.zone}}"/><view class="ys-meter-mark {{meter.state==='run'?'is-run':''}} {{meter.paused?'is-paused':''}}" style="{{meter.mark}}"><view class="ys-meter-float"/></view></view></view>
+   <view wx:if="{{card}}" class="ys-card ys-card-{{card.r}}" role="status" catchtap="noop"><view wx:if="{{card.coupon}}" class="ys-card-face">{{card.face}}</view><image src="{{card.src}}" mode="aspectFit"/><view class="ys-card-name">{{card.name}}</view><view class="ys-card-sub">{{card.sub}}</view><view class="ys-card-pts">{{card.pts}}</view><view wx:if="{{card.coupon}}" class="ys-card-actions"><view class="ys-card-share" hover-class="ys-press" role="button" catchtap="shareCoupon">{{zh?'分享给朋友':'Share'}}</view><view class="ys-card-view" hover-class="ys-press" role="button" catchtap="cardTap">{{zh?'查看优惠券':'My coupons'}}</view></view></view>
+   <view class="ys-game-bottom">
+    <view class="ys-bucket-btn {{bucketCount?'has-fish':''}} {{bucketBump?'is-bump':''}}" hover-class="ys-press" role="button" aria-label="{{zh?'鱼桶，'+bucketCount+' 条鱼，点一下去喂 Yuni':'Bucket, '+bucketCount+' fish. Tap to feed Yuni.'}}" catchtap="bucketTap"><image src="/assets/yuni-play/bucket.svg" mode="aspectFit"/><text>{{bucketCount}}/{{bucketMax}}</text></view>
+    <view class="ys-book-btn" hover-class="ys-press" role="button" catchtap="openBook"><image src="/assets/yuni-play/book.svg" mode="aspectFit"/><text>{{bookCount}}</text></view>
+    <view class="ys-cast {{castClass}}" hover-class="ys-cast-press" hover-start-time="0" role="button" catchtouchstart="castDown" catchtap="cast"><text class="ys-cast-label">{{castLabel}}</text><text wx:if="{{castSub}}" class="ys-cast-sub">{{castSub}}</text></view>
+    <view class="ys-hint">{{hint}}</view>
+   </view>
+   <view wx:if="{{bookOpen}}" class="ys-book" catchtap="noop" catchtouchmove="noop"><view class="ys-book-head"><text>{{zh?'鱼类图鉴':'Fish book'}}</text><text class="ys-done" catchtap="closeBook">{{zh?'完成':'Done'}}</text></view><scroll-view scroll-y class="ys-book-scroll"><view class="ys-book-grid"><view wx:for="{{book}}" wx:key="id" class="ys-spec ys-r-{{item.r}} {{item.known?'':'unknown'}}"><image src="{{item.src}}" mode="aspectFit"/><view class="ys-spec-name">{{item.name}}</view><view class="ys-spec-sub">{{item.sub}}</view></view></view></scroll-view></view>
+  </block>
+ </view>
+
+ <view id="ysPlayRow" class="ys-play">
+  <view id="ysFeed" class="ys-btn {{hungry?'ys-btn-hungry':''}}" hover-class="ys-press" role="button" bindtap="feed"><view wx:if="{{hungry && !bucketCount && !dailyFish}}" class="ys-hungry-dot"/><image wx:if="{{dailyFish}}" class="ys-daily-fish" src="/assets/yuni-feed/fish.png" mode="aspectFit"/><image src="/assets/yuni-feed/fish.png" mode="aspectFit"/><text>{{zh?'喂食':'Feed'}}</text><text wx:if="{{bucketCount && !dailyFish}}" class="ys-count">{{bucketCount}}</text></view>
+  <view id="ysFish" class="ys-btn {{hasRod?'':'ys-btn-gold'}}" hover-class="ys-press" role="button" bindtap="fishing"><image src="/assets/yuni-play/rod.svg" mode="aspectFit"/><text>{{zh?'钓鱼':'Fishing'}}</text><text wx:if="{{hasRod && (bucketCount || triesLeft)}}" class="ys-count">{{triesLeft}}</text></view>
+  <view id="ysPlay" class="ys-trio"><view class="ys-btn" hover-class="ys-press" role="button" bindtap="five"><image src="/assets/yuni-play/five.svg" mode="aspectFit"/><text>{{zh?'击掌':'High five'}}</text></view>
+  <view class="ys-btn" hover-class="ys-press" role="button" bindtap="dance"><image src="/assets/yuni-play/dance.svg" mode="aspectFit"/><text>{{zh?'跳舞':'Dance'}}</text></view>
+  <view class="ys-btn" hover-class="ys-press" role="button" bindtap="spin"><image src="/assets/yuni-play/spin.svg" mode="aspectFit"/><text>{{zh?'转圈':'Spin'}}</text></view></view>
+ </view>
+
+ <!-- shop -->
+ <view wx:if="{{mode==='shop'}}" class="ys-sheet" catchtouchmove="noop">
+  <view class="ys-sheet-head"><text class="ys-sheet-title">{{zh?'Yuni 的商店':'Yuni\'s shop'}}</text><view class="ys-sheet-pts"><image src="/assets/yuni-feed/fish.png" mode="aspectFit"/>{{zh?'可用 '+balance+' 积分':balance+' pts to spend'}}</view><view wx:if="{{testPoints}}" class="ys-test-pts" hover-class="ys-press" role="button" catchtap="addTestPoints">{{zh?'+200 测试积分':'+200 test pts'}}</view><text class="ys-done" catchtap="closeShop">{{zh?'完成':'Done'}}</text></view>
+  <scroll-view scroll-x class="ys-tabs" enable-flex><view wx:for="{{tabs}}" wx:key="n" class="ys-tab {{item.on?'on':''}} {{item.star?'star':''}}" role="tab" data-n="{{item.n}}" catchtap="pickTab">{{item.name}}</view></scroll-view>
+  <scroll-view scroll-y class="ys-grid-scroll"><view wx:if="{{friendNote}}" class="ys-rod-note"><text class="ys-strong">{{zh?'伙伴会帮 Yuni 钓鱼。':'Friends help Yuni fish.'}}</text>{{zh?'钓鱼时海鹰会在水面上盘旋，每次有 30% 机会多抓一条鱼，放进鱼桶。':' While Yuni fishes, the eagle circles over the water. Each time Yuni lands a fish, it has a 30% chance to catch one more for the bucket.'}}</view><view wx:if="{{rodNote}}" class="ys-rod-note"><text class="ys-strong">{{zh?'钓鱼需要一根鱼竿。':'You need a rod to go fishing.'}}</text>{{zh?'鱼竿越好，越容易钓到稀有和超稀有的鱼。':' A better rod finds rare and super rare fish more often.'}}</view>
+   <view class="ys-grid"><view wx:for="{{cards}}" wx:key="id" class="ys-item ys-tier-{{item.tier}} {{item.sel?'sel':''}} {{item.locked?'locked':''}}" hover-class="ys-press" role="button" data-id="{{item.id}}" catchtap="pickItem"><view class="ys-pic"><view wx:if="{{item.swatch}}" class="ys-swatch" style="{{item.swatch}}"/><image wx:else src="{{item.src}}" mode="aspectFit"/></view><view class="ys-item-name">{{item.name}}</view><view wx:if="{{item.odds}}" class="ys-odds">{{item.odds}}</view><view class="ys-tag {{item.tagClass}}">{{item.tag}}</view></view></view>
+  </scroll-view>
+  <view class="ys-buy"><view class="ys-buy-copy"><view class="ys-buy-name">{{buyName}}</view><view class="ys-buy-note">{{buyNote}}</view></view><view class="ys-buy-btn {{buyDisabled?'disabled':''}} {{buyPlain?'plain':''}}" hover-class="{{buyDisabled?'':'ys-press'}}" role="button" catchtap="buy">{{buyLabel}}</view></view>
+ </view>
+</view>

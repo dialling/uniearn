@@ -8,6 +8,7 @@
     "pages/earnings/index",
     "pages/wallet/index",
     "pages/profile/index",
+    "pages/yuni/index",
     "pages/profile-name/index",
     "pages/levels/index",
     "pages/request/index",
@@ -49,11 +50,13 @@
   "usingComponents": {
     "contact-avatar": "/components/contact-avatar/index",
     "app-nav": "/components/nav/index",
+    "coach-tip": "/components/coach/index",
     "yuni-tip": "/components/yuni/index",
     "yuni-assistant": "/components/yuni-assistant/index",
     "lang-switch": "/components/lang-switch/index",
     "level-up": "/components/level-up/index",
     "daily-checkin": "/components/daily-checkin/index",
+    "yuni-stage": "/components/yuni-stage/index",
     "order-feedback": "/components/order-feedback/index"
   },
   "entryPagePath": "pages/jobs/index",

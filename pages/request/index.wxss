@@ -136,3 +136,14 @@ page{background:#f2f1ec}.journey-page{background:#f2f1ec;padding:30rpx 28rpx 75r
 .report-nudge{margin:14rpx 0 6rpx;padding:14rpx 20rpx;border-radius:16rpx;background:#fff4e2;color:#8a4b13;font-size:24rpx;line-height:1.45}.page-dark .report-nudge{background:#3a2a1a;color:#f4c79a}
 .report-contact{margin:18rpx 0 8rpx}.report-contact .report-nudge{margin:0 0 12rpx}.report-contact button.report-contact-btn{display:flex;align-items:center;justify-content:center;gap:10rpx;width:100%!important;max-width:none;margin:0;padding:0;height:84rpx;line-height:84rpx;border:2rpx solid #0b7a55;border-radius:20rpx;background:#fff;color:#0b7a55;font-size:27rpx;font-weight:700}.report-contact-btn::after{border:0}.report-contact-press{background:#eef6f1!important}.page-dark .report-contact button.report-contact-btn{background:#242522;border-color:#6fd0a8;color:#6fd0a8}
 .order-no{text-transform:uppercase;font-variant-numeric:tabular-nums;letter-spacing:.5rpx}
+
+/* 2026-11-16: first order from a shared trip */
+.rq-welcome{display:flex;gap:18rpx;margin:20rpx 32rpx 0;padding:24rpx;border-radius:32rpx;background:#e3f3ea}
+.rq-welcome-yuni{flex:none;width:96rpx;height:96rpx}
+.rq-welcome-copy{flex:1;min-width:0}
+.rq-welcome-title{font-size:30rpx;font-weight:800;color:#0b5c40}
+.rq-welcome-text{margin-top:6rpx;font-size:24rpx;line-height:1.5;color:#3f5a4c}
+.rq-welcome-actions{display:flex;align-items:center;gap:24rpx;margin-top:16rpx}
+.rq-welcome-go{margin:0!important;padding:0 28rpx!important;height:68rpx;line-height:68rpx;border-radius:99rpx;background:#0b7a55;color:#fff;font-size:25rpx;font-weight:800}
+.rq-welcome-go::after{border:0}
+.rq-welcome-later{font-size:25rpx;font-weight:700;color:#0b7a55}

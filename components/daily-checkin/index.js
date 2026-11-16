@@ -59,7 +59,7 @@ Component({
    this.later(this.data.weeklyPoints?3740:3040,()=>this.setData({floating:''}));
   },
   floatReward(bonus){const points=bonus?this.data.weeklyPoints:this.data.dailyPoints;if(points)this.setData({floating:'+'+points+(bonus?' '+this.data.ui.bonus:(store.get().language==='en'?' pts':' 积分')),floatKey:bonus?'bonus':'daily'});},
-  finishFeed(keepFloating=false){if(!this.token||!this.data.open)return;checkin.markFed(this.token);this.setData({fed:true,feeding:false,collected:false,phase:'happy',pose:2,floating:keepFloating?this.data.floating:''});this.refreshCopy();this.completeReward();},
+  finishFeed(keepFloating=false){if(!this.token||!this.data.open)return;checkin.markFed(this.token);store.update(x=>{x.yuniFedAt=Date.now();});this.setData({fed:true,feeding:false,collected:false,phase:'happy',pose:2,floating:keepFloating?this.data.floating:''});this.refreshCopy();this.completeReward();},
   completeReward(){if(!this.token||this.rewardCompleting)return;this.rewardCompleting=true;checkin.markCollected(this.token);this.ackNotice(this.token);this.later(1200,()=>this.hide());},
   collectReward(){if(this.token&&this.data.collected)this.close();},
   ackNotice(token){

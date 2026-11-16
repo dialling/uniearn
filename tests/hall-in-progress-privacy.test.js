@@ -16,8 +16,8 @@ function page(){delete require.cache[require.resolve('../pages/jobs/index')];req
  assert.ok(pub,'everyone can still see an in-progress hall order');
  assert.equal(pub.status,'taken');
  assert.equal(pub.dorm,'A05');
- assert.equal(pub.room,'1111');
- assert.equal(pub.note,'门口放，电话1111');
+ assert.equal(pub.room,undefined,'in-progress public jobs omit the room');
+ assert.equal(pub.note,undefined,'notes reach only the runner who takes the order (2026-11-15)');
  for(const key of ['phone','codes','owner','ownerId','photo','orderPictures'])assert.ok(!(key in pub),'public in-progress jobs omit '+key);
  assert.equal((stranger.snapshot.requests||[]).find(r=>r.id===created.value.id),undefined,'strangers do not receive the private request after acceptance');
  const runner=await h.call('runner','sync');
@@ -33,8 +33,8 @@ function page(){delete require.cache[require.resolve('../pages/jobs/index')];req
  assert.ok(card,'in-progress orders stay visible in another student’s hall');
  assert.equal(card.running,true);
  assert.equal(card.myRun,false);
- assert.equal(card.location.room,'1111');
- assert.equal(card.items[0].note,'门口放，电话1111');
+ assert.equal(card.location.room||'','','another student never sees the room');
+ assert.equal(card.items[0].note||'','','another student never sees the note of an order they are not running');
  assert.equal(hall.data.takenCount,1);
  hall.completedOrder({currentTarget:{dataset:{ids:[created.value.id]}}});
  assert.ok(hall.data.publicDetail);
@@ -43,6 +43,14 @@ function page(){delete require.cache[require.resolve('../pages/jobs/index')];req
  const shown=JSON.stringify(hall.data.publicDetail);
  assert.ok(!shown.includes('13800000001'));
  assert.ok(!shown.includes('AB12'));
- assert.match(shown,/1111/);
- console.log('Hall in-progress privacy: everyone sees taken hall cards with room and notes; phone and pickup codes stay with the runner.');
+ assert.doesNotMatch(shown,/1111/,'the room stays with the order participants');
+ console.log('Hall in-progress privacy: everyone sees taken hall cards with the building only; room, notes, phone and pickup codes stay with the order.');
 })().catch(e=>{console.error(e);process.exitCode=1;});
+// 2026-11-15: the runner who took the order still gets the note.
+(async()=>{const h=require('./helpers/order-cloud').harness(),assert=require('node:assert/strict');
+ const made=await h.call('customer','create',{data:{category:'takeout',owner:'C',phone:'13801026092',station:'Takeaway pickup',dorm:'A05',room:'1111',dormGender:'female',pickupPoint:'文缘夜市门口外卖柜',note:'放门口',bags:1,price:3,arrived:true}});
+ if(!made.ok)return console.log('skip runner-note check:',made.error);
+ const before=(await h.call('runner','sync')).snapshot.publicJobs.find(o=>o.id===made.value.id);assert.equal(before.note,undefined);
+ const took=await h.call('runner','accept',{ids:[made.value.id]});if(!took.ok)return console.log('skip runner-note check:',took.error);
+ const mine=(await h.call('runner','sync')).snapshot.requests.find(o=>o.id===made.value.id);assert.equal(mine.note,'放门口','the runner sees the note after taking the order');
+ console.log('runner note after accept ok');})().catch(e=>{console.error(e);process.exit(1);});

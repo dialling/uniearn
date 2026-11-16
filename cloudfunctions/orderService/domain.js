@@ -47,7 +47,7 @@ function createRequest(s, data) {
 function routeStation(r){return catalog.category(r)==='takeout'?(r.pickupPoint||r.station):r.station;}
 function routeStationMatches(r,trip){return routeStation(r)===trip.station;}
 function eligible(s, trip) { return s.requests.filter(r=>r.status==='waiting' && routeStationMatches(r,trip) && tripRoute.destinationMatches(r,trip) && tripRoute.categoryMatches(r,trip) && boxes(r)<=trip.capacity); }
-function assign(s, trip, ids) {
+function assign(s, trip, ids, opts = {}) {
   if(new Set(ids).size!==ids.length||ids.some(id=>trip.requestIds.includes(id)))throw Error('Duplicate order');
   const selection=ids.map(id=>s.requests.find(r=>r.id===id));
   if (selection.some(r=>!r || r.status!=='waiting' || !routeStationMatches(r,trip) || !tripRoute.destinationMatches(r,trip) || (trip.destinationKey&&r.destinationKey!==trip.destinationKey) || !tripRoute.categoryMatches(r,trip)||r.campusId!==trip.campusId)) throw Error('Some requests are unavailable for this route');
@@ -57,7 +57,8 @@ function assign(s, trip, ids) {
   const route=existing[0]||selection[0];
   if(route&&selection.concat(existing).some(r=>(r.destinationKey||'')!==(route.destinationKey||'')))throw Error('Choose requests with the same delivery address');
   const totalBoxes=selection.concat(existing).reduce((n,r)=>n+boxes(r),0), reward=selection.concat(existing).reduce((n,r)=>n+r.reward,0);
-  if(actualCategory==='takeout'){if(totalBoxes>5)throw Error('Up to 5 bags per trip');const ats=selection.concat(existing).map(r=>r.arrivalAt||r.createdAt);if(Math.max(...ats)-Math.min(...ats)>15*60000)throw Error('Food arrival times must be within 15 minutes');}
+  if(actualCategory==='takeout'){if(totalBoxes>5)throw Error('Up to 5 bags per trip');const ats=selection.concat(existing).map(r=>r.arrivalAt||r.createdAt);// A customer joining a trip with food that has already arrived skips the 15-minute spread; the runner only has to leave after it.
+    if(!(opts.join&&selection.every(r=>r.arrived))&&Math.max(...ats)-Math.min(...ats)>15*60000)throw Error('Food arrival times must be within 15 minutes');}
   if (totalBoxes>trip.capacity) throw Error('Too many boxes for this trip');
   if(!trip.destinationKey&&selection[0]&&selection[0].destinationKey){trip.destinationKey=selection[0].destinationKey;trip.destinationType=selection[0].destinationType;}
   if(trip.category==='other'&&selection.length){trip.routeType='other';trip.category=actualCategory;if(actualCategory==='takeout')trip.capacity=Math.min(trip.capacity,5);}

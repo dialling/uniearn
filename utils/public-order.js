@@ -3,9 +3,9 @@ const china=require('./china-time'),location=require('./hall-location'),rc=requi
 function view(r,language='zh'){
  if(!r)return null;
  const zh=language!=='en',food=r.category==='takeout',task=r.category==='task',loc=location.detail(r,language);
- const type=task?(zh?'其他任务':'Task'):food?(r.night?(zh?'夜市代买':'Request a night market purchase'):(zh?'外卖代取':'Takeaway')):(zh?'快递代取':'Parcels');
+ const type=task?(zh?'其他任务':'Task'):food?(r.night?(zh?'夜市代买':'Night market'):(zh?'外卖代取':'Takeaway')):(zh?'快递代取':'Parcels');
  const status={waiting:['待接单','Waiting for a runner'],taken:['已接单','Taken'],collected:['配送中','On the way'],delivered:['已送达 · 待确认','Delivered · awaiting confirmation'],confirmed:['已完成','Completed'],cancelled:['已取消','Cancelled'],refunded:['已退款','Refunded'],disputed:['审核中','Under review']}[r.status]||[zh?'状态已更新':'Status updated', 'Status updated'];
- const destination=loc.showDorm?[loc.area,loc.building,loc.room?(zh?loc.room+'室':'Room '+loc.room):''].filter(Boolean).join(' '):(zh?'其他地址 · 接单后可见':'Other address · visible after acceptance');
+ const destination=loc.showDorm?[loc.area,loc.building].filter(Boolean).join(' '):(zh?'其他地址 · 接单后可见':'Other address · visible after acceptance');
  const pickup=food&&!r.night?lockers.label(r.pickupPoint,language):task?'':rc.name(r.station,language);
  const count=task?1:d.boxes(r),unit=task?(zh?'个任务':'task'):food?(zh?'袋':count===1?'bag':'bags'):(zh?'件':count===1?'parcel':'parcels');
  const fields=[],add=(label,value)=>{if(value!==undefined&&value!==null&&String(value).trim())fields.push({label,value:String(value)});};
@@ -25,6 +25,6 @@ function view(r,language='zh'){
  if(!task)steps.push(step('已取件','Picked up',r.collectedAt));
  steps.push(step(task?'任务已完成 · 已提交凭证':'已送达 · 已提交凭证',task?'Task completed · proof submitted':'Delivered · proof submitted',r.deliveredAt),step('已确认','Confirmed',r.confirmedAt));
  const routeFrom=task?'':((food&&r.night&&r.shop)?String(r.shop):(pickup||type));const routeTo=task?'':destination;
- return {id:String(r.id||''),category:r.category,status:r.status,statusLabel:status[zh?0:1],type,fields,flags,steps,note:food?String(r.note||'').trim():'',pickupPointDisplay:food&&!r.night?pickup:'',rewardText:Number.isFinite(Number(r.reward))?Number(r.reward).toFixed(2):'—',label:task?String(r.title||type):post.label(r.station,language)+' → '+destination,routeFrom,routeTo};
+ return {id:String(r.id||''),category:r.category,status:r.status,statusLabel:status[zh?0:1],type,fields,flags,steps,note:'',pickupPointDisplay:food&&!r.night?pickup:'',rewardText:Number.isFinite(Number(r.reward))?Number(r.reward).toFixed(2):'—',label:task?String(r.title||type):post.label(r.station,language)+' → '+destination,routeFrom,routeTo};
 }
 module.exports={view};

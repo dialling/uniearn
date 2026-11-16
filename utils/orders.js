@@ -55,7 +55,7 @@ function apply(snapshot) {
   }
   previous = {accountId:snapshot.accountId,unread:pairMap(snapshot.requests,r=>r.unread||0),tripIds:(snapshot.publicTrips||[]).map(t=>t.id),status:pairMap(snapshot.requests,r=>r.status)};
   store.update(s=>{
-    s.orderCapabilities=snapshot.capabilities||{};s.walletSummary=snapshot.walletSummary||null;s.progression=snapshot.progression||null;s.progressionAccountId=snapshot.accountId;s.serverTime=snapshot.serverTime;s.publicJobs=snapshot.publicJobs||[];s.deliveredThisWeek=snapshot.deliveredThisWeek||0;s.requests=snapshot.requests; s.trips=snapshot.trips; s.publicTrips=snapshot.publicTrips;
+    s.orderCapabilities=snapshot.capabilities||{};s.walletSummary=snapshot.walletSummary||null;s.progression=snapshot.progression||null;s.yuniPlay=snapshot.yuni||null;s.progressionAccountId=snapshot.accountId;s.serverTime=snapshot.serverTime;s.publicJobs=snapshot.publicJobs||[];s.deliveredThisWeek=snapshot.deliveredThisWeek||0;s.requests=snapshot.requests; s.trips=snapshot.trips; s.publicTrips=snapshot.publicTrips;
     s.supportTickets=snapshot.supportTickets||[];s.supportInbox=snapshot.supportInbox||[];s.adjustments=snapshot.adjustments||[];s.rewards=snapshot.rewards;s.preferences=snapshot.preferences||{};s.photoURLs=snapshot.photoURLs||{}; s.cloudRevision=snapshot.revision; s.lastSyncAt=Date.now();
     s.profile={...s.profile,...snapshot.stats,accountId:snapshot.accountId};
   });
@@ -67,7 +67,9 @@ async function call(data) {
   let timer=null;
   const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error(store.get().language==='en'?'The cloud is taking too long. Check your network and try again.':'云端响应超时，请检查网络后重试。')),CALL_TIMEOUT_MS);});
   let response;
-  try { response = await Promise.race([ensureCloud().callFunction({name:'orderService',data:{...data,checkinVersion:1}}), timeout]); }
+  // Keep a shared trip that was opened by link in every refresh until it is gone.
+  const viewing=data.action==='sync'&&!data.viewTripId&&store.get().viewTripId?{viewTripId:store.get().viewTripId}:{};
+  try { response = await Promise.race([ensureCloud().callFunction({name:'orderService',data:{...data,...viewing,checkinVersion:1}}), timeout]); }
   finally { if (timer) clearTimeout(timer); }
   const {result} = response;
   if (!result || !result.ok) {
@@ -98,6 +100,19 @@ function readMessages(id) {
   if(expectedGeneration!==generation)return;
   return call({action:'readMessages',id,operationId:'read_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2)});
  });
+}
+// A shared trip link opened before signing in: fetch just that trip.
+function viewTrip(id) { store.update(x=>{x.viewTripId=String(id||'');}); return call({action:'sync',viewTripId:String(id||'')}); }
+// Sign a guest in with WeChat when they add their first order, and use the trip's campus.
+async function guestSignIn(campusId) {
+  const p = store.get().profile || {};
+  if (p.onboarded && !p.loggedOut && p.campusId) return false;
+  const account = require('./account');
+  await account.call('sessionLogin');
+  store.update(x => { x.agreements = x.agreements || {}; x.agreements.terms = true; x.agreements.pickup = true; });
+  if (!store.get().profile.campusId) await account.call('selectCampus', {universityId:'xjtlu', campusId:campusId||'sip'});
+  invalidate();
+  return true;
 }
 function sync() {
   if (syncing) return syncing;
@@ -190,3 +205,4 @@ function stop() { foreground=false;quietResume=true;yuniEvents.suspend();stopTim
 function photoURL(path) { return store.get().photoURLs[path] || path; }
 function invalidate(){yuniEvents.reset();generation++;previous=null;uploads.clear();}
 module.exports={invalidate,sync,act,readMessages,upload,bind,unbind,subscribe,start,stop,photoURL};
+module.exports.viewTrip=viewTrip;module.exports.guestSignIn=guestSignIn;

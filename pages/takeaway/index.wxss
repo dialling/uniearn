@@ -69,3 +69,106 @@
 
 .arrival-eta-label{margin-bottom:16rpx}.arrival-time-prompt{margin-left:auto;font-size:24rpx;color:#5e5c55}.arrival-eta-hint{margin:16rpx 0 20rpx;line-height:1.6}.page-dark .arrival-at{color:#f4a06e}.page-dark .arrival-time-prompt{color:#a9a69c}
 .arrival-manual-time{position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:80rpx;border:2rpx solid #e2e0d9;border-radius:40rpx;background:#fff;overflow:hidden;transition:var(--ue-transition,border-color .14s ease,box-shadow .14s ease)}.arrival-manual-time:focus-within{border-color:#c2410c;box-shadow:0 0 0 5rpx rgba(194,65,12,.08)}.arrival-manual-time.invalid{border-color:#c2410c;animation:var(--ue-animation,arrival-shake .2s ease)}.arrival-sequence{display:flex;align-items:center;justify-content:center;gap:4rpx;font-family:monospace;font-size:36rpx;font-weight:850;color:#b5b1a7;pointer-events:none}.arrival-sequence text{width:26rpx;text-align:center}.arrival-sequence text.filled{color:#c2410c}.arrival-sequence .arrival-colon{width:22rpx;color:#c2410c}.arrival-sequence-input{position:absolute;inset:0;width:100%;height:100%;opacity:.01;color:transparent;background:transparent;caret-color:transparent}.page-dark .arrival-manual-time{background:#242522;border-color:#3a3b37}.page-dark .arrival-sequence text.filled,.page-dark .arrival-sequence .arrival-colon{color:#f4a06e}@keyframes arrival-shake{0%,100%{transform:translateX(0)}35%{transform:translateX(-7rpx)}70%{transform:translateX(7rpx)}}
+
+
+/* 2026-11-15 redesign: white rounded cards, soft fields, orange only where it means something. */
+.takeaway-page.tw-v2{padding:0 32rpx calc(270rpx + env(safe-area-inset-bottom));background:#eeede8}
+.takeaway-page.tw-v2 .flow-card{background:#fff;border:0;border-radius:40rpx;padding:30rpx 28rpx;margin:24rpx 0;box-shadow:none}
+.takeaway-page.tw-v2 .flow-head{gap:16rpx;margin-bottom:20rpx;font-size:29rpx;font-weight:800}
+.takeaway-page.tw-v2 .step,.takeaway-page.tw-v2 .step.dark{flex:none;min-width:0;width:44rpx;height:44rpx;line-height:44rpx;border-radius:50%;background:#fdeee4;color:#c2410c;font-size:24rpx;font-weight:800}
+.takeaway-page.tw-v2 .flow-head .badge{margin-left:auto;background:#fdeee4;color:#b4501f;border-radius:99rpx;padding:4rpx 16rpx;font-weight:700}
+.takeaway-page.tw-v2 .field{border:2rpx solid transparent;border-radius:22rpx;background:#f6f5f1;min-height:84rpx}
+.takeaway-page.tw-v2 .field-label{margin:28rpx 0 8rpx;font-size:26rpx;font-weight:800;color:#16181c}
+.takeaway-page.tw-v2 .hint{color:#7a776e;font-size:23rpx;line-height:1.5}
+.takeaway-page.tw-v2 .addr-label{margin:4rpx 0 14rpx;font-size:24rpx;color:#6b6860}
+.takeaway-page.tw-v2 .addr-chip{border-radius:28rpx;border:3rpx solid transparent;background:#f6f5f1}
+.takeaway-page.tw-v2 .addr-chip.selected{border-color:#c2410c;background:#fff8f3;box-shadow:none}
+.takeaway-page.tw-v2 .addr-chip.add{border:2rpx dashed #f2c9ad;background:#fffaf6}
+.takeaway-page.tw-v2 .addr-summary{margin:14rpx 0 6rpx;padding:20rpx 22rpx;border-radius:24rpx;background:#f6f5f1}
+.takeaway-page.tw-v2 .addr-send{width:52rpx;height:52rpx;line-height:52rpx;border-radius:50%;font-size:22rpx}
+.takeaway-page.tw-v2 .vis-tag{border-radius:99rpx;padding:4rpx 14rpx;font-size:20rpx;font-weight:700}
+.takeaway-page.tw-v2 .vis-tag.public{background:#eef6f1;color:#26624a}
+.takeaway-page.tw-v2 .vis-tag.private{background:#fff4ec;color:#b4501f}
+.takeaway-page.tw-v2 .soup-inline{border-radius:22rpx;background:#f6f5f1;padding:20rpx 22rpx}
+.takeaway-page.tw-v2 .check{border-radius:10rpx}
+.takeaway-page.tw-v2 .check.checked{background:#c2410c;border-color:#c2410c}
+.takeaway-page.tw-v2 .note-photo-add{border:2rpx dashed #f2c9ad;background:#fffaf6;border-radius:24rpx}
+.takeaway-page.tw-v2 .note-photo-item{border-radius:24rpx}
+/* arrival: a quiet segmented switch instead of two big pills */
+.takeaway-page.tw-v2 .arrival-switch{gap:6rpx;padding:6rpx;margin:0 0 18rpx;border-radius:22rpx;background:#f1f0eb}
+.takeaway-page.tw-v2 .arrival-opt{height:72rpx;line-height:72rpx;border:0;border-radius:18rpx;background:transparent;color:#6b6860;font-size:26rpx}
+.takeaway-page.tw-v2 .arrival-opt.on{background:#fff;color:#c2410c;font-weight:800;box-shadow:0 3rpx 10rpx #1c2a5414}
+.takeaway-page.tw-v2 .arrival-box{border-radius:24rpx;background:#f6f5f1}
+.takeaway-page.tw-v2 .arrival-manual-time{border-radius:22rpx}
+.takeaway-page.tw-v2 .purchase-option{border:3rpx solid transparent;border-radius:24rpx;background:#f6f5f1}
+.takeaway-page.tw-v2 .purchase-option.selected{border-color:#c2410c;background:#fff8f3}
+/* price: one big number between round buttons */
+.takeaway-page.tw-v2 .fee-control{justify-content:center;gap:30rpx;margin:10rpx 0 0}
+.takeaway-page.tw-v2 .fee-round{width:84rpx;height:84rpx;line-height:84rpx;font-size:40rpx;font-weight:700;color:#c2410c;background:#f1f0eb}
+.takeaway-page.tw-v2 .fee-value{flex:none;min-width:240rpx}
+.takeaway-page.tw-v2 .amount{font-size:36rpx;color:#1c2a54}
+.takeaway-page.tw-v2 .price-input{width:150rpx;height:90rpx;font-size:68rpx;color:#1c2a54}
+.takeaway-page.tw-v2 .fee-value .hint{margin-top:2rpx}
+.takeaway-page.tw-v2 .totals-card .row{margin:14rpx 0}
+.takeaway-page.tw-v2 .coupon-row{border-radius:22rpx}
+/* bottom bar */
+.takeaway-page.tw-v2 .post-footer{padding:18rpx 32rpx calc(22rpx + env(safe-area-inset-bottom));box-shadow:0 -6rpx 24rpx #0000000d}
+.takeaway-page.tw-v2 .post-submit{height:96rpx;line-height:96rpx;border-radius:28rpx;font-size:29rpx;font-weight:800;box-shadow:0 8rpx 0 #9a3412}
+.takeaway-page.tw-v2 .post-submit[disabled]{background:#e4e1d8;color:#8a877e;box-shadow:none}
+.page-dark.tw-v2{background:#1b1d1a}
+.page-dark.tw-v2 .flow-card{background:#252a28}
+.takeaway-page.tw-v2 .note-photo-header{flex-wrap:wrap;row-gap:8rpx}
+.takeaway-page.tw-v2 .note-label{white-space:nowrap}
+.takeaway-page.tw-v2 .note-photo-header .vis-tag{white-space:normal}
+
+/* Delivery summary: place icon, address, name and phone, and a small edit button (2026-11-15). */
+.takeaway-page.tw-v2 .tw-summary{gap:18rpx;padding:20rpx 20rpx 20rpx 22rpx}
+.tw-sum-icon{flex:none;width:64rpx;height:64rpx}
+.takeaway-page.tw-v2 .tw-summary .addr-summary-body{flex:1;min-width:0}
+.takeaway-page.tw-v2 .tw-summary .addr-summary-place{font-size:31rpx;font-weight:800;color:#16181c;line-height:1.3}
+.tw-who{display:flex;flex-wrap:wrap;gap:4rpx 16rpx;margin-top:4rpx;font-size:24rpx;color:#7a776e}
+.tw-phone{font-variant-numeric:tabular-nums}
+.takeaway-page.tw-v2 .tw-edit{flex:none;width:68rpx;height:68rpx;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 3rpx 10rpx #1c2a5414}
+.tw-edit image{width:34rpx;height:34rpx}
+.tw-edit-press{transform:scale(.92)}
+/* Saved address chips: lighter, smaller icon tile */
+.takeaway-page.tw-v2 .addr-chip{height:124rpx;padding:0 24rpx}
+.takeaway-page.tw-v2 .addr-chip-icon{width:64rpx;height:64rpx}
+.takeaway-page.tw-v2 .addr-chip-title{font-size:28rpx;font-weight:800}
+.takeaway-page.tw-v2 .addr-chip-place{font-size:23rpx;color:#7a776e}
+.takeaway-page.tw-v2 .addr-chip.selected .addr-chip-title{color:#9a3412}
+.takeaway-page.tw-v2 .addr-add-label{font-size:24rpx}
+
+/* joining a trip: locked trip tile + editable details (2026-11-15) */
+.jt-lock{margin:6rpx 0 0;padding:22rpx 24rpx;border-radius:26rpx;background:#f1f0eb;border:2rpx dashed #d9d6cd}
+.jt-lock-head{display:flex;align-items:center;gap:10rpx;font-size:23rpx;font-weight:700;color:#6b6860}
+.jt-lock-icon{width:30rpx;height:30rpx}
+.jt-legs{display:flex;gap:18rpx;margin-top:16rpx}
+.jt-rail{display:flex;flex-direction:column;align-items:center;padding-top:12rpx}
+.jt-dot{width:16rpx;height:16rpx;border-radius:50%;border:4rpx solid #8a877e;box-sizing:border-box}
+.jt-dot-to{background:#8a877e}
+.jt-line{flex:1;min-height:40rpx;margin:4rpx 0;border-left:3rpx dashed #c9c6bd}
+.jt-stops{flex:1;min-width:0;display:flex;flex-direction:column;gap:14rpx}
+.jt-stop{display:flex;flex-direction:column}
+.jt-k{font-size:21rpx;color:#8a877e}
+.jt-v{font-size:28rpx;font-weight:800;color:#3b3a35;line-height:1.35;overflow-wrap:anywhere}
+.jt-you{margin-top:28rpx}
+.jt-you-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:14rpx;font-size:27rpx;font-weight:800;color:#16181c}
+.jt-row{display:flex;align-items:center;gap:20rpx;min-height:92rpx;margin-bottom:12rpx;padding:0 24rpx;border-radius:22rpx;background:#f6f5f1;border:3rpx solid transparent}
+.jt-row:focus-within{border-color:#c2410c;background:#fff}
+.jt-row-label{flex:none;width:96rpx;font-size:25rpx;color:#6b6860}
+.jt-input{flex:1;min-width:0;height:92rpx;font-size:29rpx;font-weight:700;color:#16181c;text-align:right}
+.jt-hint{margin-top:4rpx;font-size:22rpx;line-height:1.5;color:#7a776e}
+.page-dark .jt-lock{background:#1f2321;border-color:#3a3f3a}
+.page-dark .jt-v,.page-dark .jt-you-title,.page-dark .jt-input{color:#edebe4}
+.page-dark .jt-row{background:#1f2321}
+
+/* 2026-11-15 Figma: 3D icon on Your details; say why Join is off */
+.jt-you-name{display:flex;align-items:center;gap:12rpx}
+.jt-you-icon{width:52rpx;height:52rpx;padding:6rpx;box-sizing:border-box;border-radius:16rpx;background:#fdeee4}
+.jt-error{margin:2rpx 0 6rpx;padding:12rpx 16rpx;border-radius:16rpx;background:#fff1ec;color:#b4501f;font-size:23rpx;font-weight:700;line-height:1.4}
+
+/* 2026-11-15: each detail row carries its own 3D icon */
+.jt-row{gap:16rpx;padding-left:18rpx}
+.jt-row-icon{flex:none;width:56rpx;height:56rpx}
+.jt-row-label{width:auto;min-width:88rpx}

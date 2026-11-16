@@ -166,3 +166,88 @@
 .me-dark .journey-heading .journey-level{color:#192d49}
 .me-dark .journey-heading .journey-points,.me-dark .journey-heading .journey-points-number,.me-dark .journey-heading .journey-arrow{color:#276c50}
 @media(max-width:350px){.header-avatar{width:128rpx;height:128rpx}.rank-badge{width:82rpx;height:82rpx}.journey-level{font-size:25rpx}.journey-points-number{font-size:36rpx}}
+
+
+/* 2026-11-15: 按 design/me-preview 定稿的「我的」页（舞台通栏，其余卡片左右留白） */
+.me-page.me-v2{padding:0 0 190rpx}
+.me-v2 .muted,.me-v2 .notice-error,.me-v2>.card{margin:24rpx 32rpx}
+.me-body{padding:0 32rpx}
+.me-block{background:#fff;border-radius:40rpx;padding:32rpx;margin-top:28rpx}
+.me-press{opacity:.92}
+.me-grow{flex:1;min-width:0}
+.me-h2{font-size:31rpx;font-weight:800;color:#16181c;line-height:1.3}
+.me-sub{font-size:25rpx;color:#6b6860;line-height:1.4;margin-top:2rpx}
+.me-chev{width:15rpx;height:15rpx;border-right:4rpx solid #b9b6ab;border-top:4rpx solid #b9b6ab;transform:rotate(45deg);flex:none;margin-left:8rpx}
+.me-level-top{display:flex;align-items:center;gap:24rpx}
+.me-level-badge{width:116rpx;height:116rpx;flex:none}
+.me-track{position:relative;display:flex;justify-content:space-between;align-items:center;margin:36rpx 12rpx 12rpx;height:32rpx}
+.me-track-line,.me-track-fill{position:absolute;left:0;top:50%;height:12rpx;margin-top:-6rpx;border-radius:12rpx}
+.me-track-line{right:0;background:#e9e7e0}
+.me-track-fill{background:linear-gradient(90deg,#0b7a55,#3fbf8d)}
+.me-stop{position:relative;width:32rpx;height:32rpx;border-radius:50%;background:#fff;border:6rpx solid #d9d6cc;box-sizing:border-box;z-index:1}
+.me-stop.done{border-color:#0b7a55;background:#0b7a55}
+.me-stop.now{border-color:#f2b233;background:#fff;box-shadow:0 0 0 8rpx #f2b23340}
+.me-track-names{display:flex;justify-content:space-between;font-size:22rpx;color:#6b6860;margin:0 -8rpx}
+.me-track-names text{width:20%;text-align:center}
+.me-track-names .on{color:#16181c;font-weight:700}
+.me-gear{display:flex;align-items:center;gap:16rpx;margin-top:24rpx;padding-top:24rpx;border-top:1rpx solid #f0eee8;font-size:25rpx;color:#6b6860}
+.me-gear image{width:52rpx;height:52rpx;flex:none}
+.me-v2 .me-stats{display:flex;gap:0;margin:28rpx 0 0;background:#fff;border-radius:40rpx}
+.me-v2 .me-stats>view{flex:1;min-width:0;text-align:center;padding:28rpx 8rpx;display:flex;flex-direction:column;gap:0;font-size:24rpx;color:#6b6860;border:0;border-radius:0;background:none}
+.me-v2 .me-stats>view+view{border-left:1rpx solid #e2e0d9}
+.me-stat-num{font-size:44rpx;font-weight:800;color:#1c2a54;font-variant-numeric:tabular-nums;line-height:1.25}
+/* 「开始赚钱」：一张图标 + 一句话的入口卡 */
+.me-v2 .me-become{position:relative;display:flex;align-items:center;gap:24rpx;margin-top:28rpx;padding:22rpx 26rpx 22rpx 22rpx;border-radius:40rpx;background:linear-gradient(110deg,#e3f5ec 0%,#f3faf5 55%,#fff6dc 100%);box-shadow:inset 0 0 0 2rpx #cfe9dc;overflow:hidden}
+.me-v2 .me-become::after{content:"";position:absolute;right:-40rpx;top:-60rpx;width:220rpx;height:220rpx;border-radius:50%;background:radial-gradient(circle,#ffe7a3 0%,rgba(255,231,163,0) 70%);pointer-events:none}
+.me-become-press{transform:scale(.985);opacity:.95}
+.me-become-icon{width:104rpx;height:104rpx;flex:none}
+.me-become-copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:4rpx;position:relative;z-index:1}
+.me-become-text{font-size:34rpx;font-weight:800;color:#08523a;letter-spacing:-.3rpx}
+.me-become-sub{font-size:24rpx;line-height:1.4;color:#4c6b5c}
+.me-become-go{position:relative;z-index:1;flex:none;width:76rpx;height:76rpx;border-radius:50%;background:#0b7a55;box-shadow:0 8rpx 0 #085c41;display:flex;align-items:center;justify-content:center}
+.me-become-arrow{width:18rpx;height:18rpx;border-right:5rpx solid #fff;border-top:5rpx solid #fff;transform:translateX(-3rpx) rotate(45deg)}
+.me-group{margin:44rpx 0 16rpx;font-size:26rpx;font-weight:700;color:#6b6860}
+.me-list{background:#fff;border-radius:40rpx;overflow:hidden}
+.me-row{display:flex;align-items:center;gap:24rpx;padding:22rpx 28rpx;min-height:100rpx;box-sizing:border-box}
+.me-list>.me-row+.me-row,.me-list>.me-row+picker .me-row,.me-list>picker+.me-row{border-top:1rpx solid #f0eee8}
+.me-row-press{background:#f7f6f2}
+.me-ico{width:76rpx;height:76rpx;flex:none}
+.me-row-title{font-size:29rpx;font-weight:650;color:#16181c}
+.me-val{font-size:25rpx;color:#6b6860;line-height:1.4}
+.me-money{font-weight:800;color:#0b7a55;font-size:29rpx;font-variant-numeric:tabular-nums}
+.me-link{color:#0b7a55;font-weight:600}
+.me-row switch{transform:scale(.85);flex:none}
+.me-version{text-align:center;color:#9a978d;font-size:23rpx;margin:44rpx 0 16rpx}
+
+/* 2026-11-16: Yuni guide (same spotlight look as the Jobs page app guide) */
+.yg-shade{z-index:100}
+.yg-focus{z-index:100;transition:top .42s cubic-bezier(.3,.9,.25,1),left .42s cubic-bezier(.3,.9,.25,1),width .42s cubic-bezier(.3,.9,.25,1),height .42s cubic-bezier(.3,.9,.25,1),border-radius .42s cubic-bezier(.3,.9,.25,1);animation:yg-spot-in .45s cubic-bezier(.3,.9,.25,1) backwards}
+.yg-ring{position:absolute;left:-4rpx;top:-4rpx;right:-4rpx;bottom:-4rpx;border:4rpx solid #fff;border-radius:inherit;animation:yg-ring 1.8s ease-out .45s infinite}
+.yg-blocker{position:fixed;left:0;top:0;right:0;bottom:0;z-index:101}
+.yg-modal{z-index:102;top:auto;bottom:calc(150rpx + env(safe-area-inset-bottom));max-height:calc(100vh - 240rpx);overflow-y:auto;box-sizing:border-box;box-shadow:0 20rpx 50rpx rgba(22,24,28,.18);animation:yg-modal-in .46s cubic-bezier(.22,.9,.3,1) backwards}
+.yg-modal.yg-bottom{top:calc(24rpx + env(safe-area-inset-top));bottom:auto}
+.yg-top{display:flex;align-items:center;justify-content:space-between}
+.yg-dots{display:flex;align-items:center;gap:8rpx}
+.yg-dot{width:12rpx;height:12rpx;border-radius:12rpx;background:#e2e0d9;transition:width .32s cubic-bezier(.3,.9,.25,1),background-color .32s ease}
+.yg-dot.past{background:#0b7a55;opacity:.4}
+.yg-dot.on{width:36rpx;background:#0b7a55}
+.yg-skip{font-size:24rpx;font-weight:700;color:#6b6860;padding:6rpx 4rpx}
+.yg-step{animation:yg-from-right .34s cubic-bezier(.22,.8,.3,1) backwards}
+.yg-step.from-left{animation-name:yg-from-left}
+.yg-yuni{flex:none;width:120rpx;height:120rpx;animation:yg-yuni-in .6s cubic-bezier(.3,1.3,.5,1) .06s backwards,yg-float 3.2s ease-in-out .7s infinite}
+.yg-name{font-size:24rpx;font-weight:800;color:#0b7a55}
+.yg-modal .guide-text{font-size:25rpx;line-height:1.6}
+.yg-actions{display:flex;gap:16rpx}
+.yg-btn{flex:1;height:88rpx;line-height:88rpx;margin:0!important;padding:0;border-radius:26rpx;font-size:28rpx;font-weight:800}
+.yg-btn::after{border:0}
+.yg-next{background:#0b7a55;color:#fff;box-shadow:0 6rpx 0 #08603f}
+.yg-back{background:#e3f3ea;color:#0b7a55}
+.yg-modal.yg-dark{background:#242522;color:#edebe4;border:1rpx solid #3a3b37}
+.yg-modal.yg-dark .guide-title,.yg-modal.yg-dark .guide-text{color:#edebe4}
+@keyframes yg-spot-in{from{transform:scale(1.35)}to{transform:scale(1)}}
+@keyframes yg-ring{0%{opacity:.85;transform:scale(1)}80%,100%{opacity:0;transform:scale(1.22)}}
+@keyframes yg-modal-in{0%{opacity:0;transform:translate3d(0,40rpx,0) scale(.96)}70%{opacity:1;transform:translate3d(0,-4rpx,0) scale(1.005)}100%{opacity:1;transform:none}}
+@keyframes yg-from-right{from{opacity:0;transform:translate3d(40rpx,0,0)}to{opacity:1;transform:none}}
+@keyframes yg-from-left{from{opacity:0;transform:translate3d(-40rpx,0,0)}to{opacity:1;transform:none}}
+@keyframes yg-yuni-in{0%{opacity:0;transform:translate3d(0,24rpx,0) scale(.7) rotate(-8deg)}60%{opacity:1;transform:translate3d(0,-6rpx,0) scale(1.08) rotate(3deg)}100%{opacity:1;transform:none}}
+@keyframes yg-float{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,-8rpx,0)}}
