@@ -17,6 +17,10 @@ const TIPS = {
   takeaway: [
     { target: '.arrival-card', pose: 'think', zh: ['外卖还没到？', '选「未送达」，填外卖平台显示的最晚送达时间。外卖到了跑手再去取；如果提前送到，可以在订单里改时间。'], en: ['Food not here yet?', 'Pick Not yet and enter the latest time your delivery app shows. The runner collects it after it arrives. If it comes early, change the time in your order.'] }
   ],
+  // 2026-11-17: Night market: what "Already ordered" and "Not ordered" mean
+  night: [
+    { target: '.purchase-status-card', pose: 'think', zh: ['已经下单了吗？', '已下单：你已在店里或 App 付好钱，跑手只需帮你取。未下单：跑手帮你买并先垫付，请在备注写清要买什么，接单后和跑手确认垫付金额。'], en: ['Already ordered or not?', 'Already ordered: you’ve paid at the stall or in the app, so the runner just collects it. Not ordered: the runner buys it and pays first. Write what to buy in your note, then agree the amount with your runner once they accept.'] }
+  ],
   parcel: [
     { target: '.notice-upload', pose: 'look', zh: ['上传截图就行', '上传驿站短信或取件 App 的截图，Yuni 会帮你识别驿站和取件码。只有接单的跑手能看到。'], en: ['Just upload a screenshot', 'Add a screenshot of the station SMS or app. Yuni reads the station and pickup codes for you. Only the runner who takes your order sees them.'] }
   ],
@@ -26,7 +30,7 @@ const TIPS = {
 };
 const who = () => { const p = store.get().profile || {}; return p.accountId || 'local'; };
 // Bump a version when a tip set changes so everyone sees the new one once.
-const VERSION = { trip: 2, takeaway: 2, parcel: 2, task: 2 }, key = n => VERSION[n] ? n + '@' + VERSION[n] : n;
+const VERSION = { night: 1, trip: 2, takeaway: 2, parcel: 2, task: 2 }, key = n => VERSION[n] ? n + '@' + VERSION[n] : n;
 function seen(name) { return ((store.get().coachSeen || {})[who()] || []).includes(key(name)); }
 function mark(name) { const k = key(name); store.update(s => { const id = who(), all = { ...(s.coachSeen || {}) }; all[id] = (all[id] || []).filter(n => n !== k).concat(k); s.coachSeen = all; }); }
 function reset() { store.update(s => { const all = { ...(s.coachSeen || {}) }; delete all[who()]; s.coachSeen = all; }); }

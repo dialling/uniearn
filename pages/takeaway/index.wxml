@@ -56,5 +56,6 @@
  <view class="post-footer"><button class="post-submit" disabled="{{!agreed||posting||photoBusy||!addressReady||(!night&&!lockerReady)}}" loading="{{posting}}" bindtap="post">{{tripId?ui.join:ui.post}} · ¥{{total}}</button></view>
 </view><view wx:else class="empty">{{ui.unavailable}}</view>
 <yuni-assistant topic="takeaway-post" intro="{{ui.tip}}" floating="{{!unavailable}}"/>
-<coach-tip name="takeaway" when="{{!tripId}}"/>
+<coach-tip name="takeaway" when="{{!tripId && !night}}"/>
+<coach-tip name="night" when="{{!tripId && night}}"/>
 </view>
