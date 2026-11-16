@@ -12,7 +12,7 @@
  <view class="ts-types" role="radiogroup">
   <view class="ts-type {{category==='takeout'?'on':''}}" role="radio" aria-checked="{{category==='takeout'}}" data-value="takeout" bindtap="changeCategory"><image src="/assets/icons3d/takeout.svg" mode="aspectFit"/><text>{{zh?'外卖代取':'Takeaway'}}</text></view>
   <view class="ts-type {{category==='parcel'?'on':''}}" role="radio" aria-checked="{{category==='parcel'}}" data-value="parcel" bindtap="changeCategory"><image src="/assets/icons3d/parcel.svg" mode="aspectFit"/><text>{{zh?'快递代取':'Parcels'}}</text></view>
-  <view class="ts-type {{category==='other'?'on':''}}" role="radio" aria-checked="{{category==='other'}}" data-value="other" bindtap="changeCategory"><image src="/assets/icons3d/task.svg" mode="aspectFit"/><text>{{zh?'其他':'Other'}}</text></view>
+  <view id="tsOther" class="ts-type {{category==='other'?'on':''}}" role="radio" aria-checked="{{category==='other'}}" data-value="other" bindtap="changeCategory"><image src="/assets/icons3d/task.svg" mode="aspectFit"/><text>{{zh?'其他':'Other'}}</text></view>
  </view>
 
  <!-- Route: pick up → deliver to -->
