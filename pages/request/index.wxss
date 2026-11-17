@@ -175,3 +175,8 @@ page{background:#f2f1ec}.journey-page{background:#f2f1ec;padding:30rpx 28rpx 75r
 .page-dark .rq-offer .rq-bill{border-top-color:#3a3b37}
 .page-dark .rq-offer .rq-total{color:#edebe4}
 .page-dark .rq-offer button.offer-cancel{background:#3a2416;color:#f4a06e}
+/* 2026-11-17: while waiting, Order details folds into one row (the route and the total are already shown above). */
+.journey-details-title.rq-fold{display:flex;align-items:center;justify-content:space-between;margin-bottom:0}
+.rq-fold-chev{flex:none;font-size:30rpx;line-height:1;color:#8a877e;transition:var(--ue-transition,transform .2s ease)}
+.rq-fold-chev.open{transform:rotate(180deg)}
+.journey-details-title.rq-fold.rq-fold-open{margin-bottom:13rpx}

@@ -61,8 +61,6 @@
 <view wx:if="{{request.isMine && request.status==='waiting'}}" class="flow-card offer-card task-offer-v2">
 <view class="offer-heading">
 <image class="tk-head-icon" mode="aspectFit" src="/assets/icons3d/bolt.svg"/><text class="strong">{{zh?'提高赏金':'Add to your offer'}}</text>
-<text class="offer-current">{{zh?'当前赏金':'Your offer'}} <text>¥{{request.rewardText}}</text>
-</text>
 </view>
 <view class="hint offer-hint">{{zh?'提高赏金，更容易被跑手接单。加价只对整笔订单计算一次。':'Higher offers get taken sooner. Added once to the whole order.'}}</view>
 <view class="offer-options">

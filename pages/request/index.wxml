@@ -18,7 +18,7 @@
 </view>
 <!-- 2026-11-17: while waiting, the offer, the total and cancel share one card under the ticket (same as the task page). -->
 <view wx:if="{{request.isMine && request.status==='waiting'}}" class="flow-card offer-card rq-offer">
-<view class="offer-heading"><image class="rq-head-icon" mode="aspectFit" src="/assets/icons3d/bolt.svg"/><text class="strong">{{zh?'提高赏金':'Add to your offer'}}</text><text class="offer-current">{{zh?'当前赏金':'Your offer'}} <text>¥{{request.rewardText}}</text></text></view>
+<view class="offer-heading"><image class="rq-head-icon" mode="aspectFit" src="/assets/icons3d/bolt.svg"/><text class="strong">{{zh?'提高赏金':'Add to your offer'}}</text></view>
 <view class="hint offer-hint">{{zh?'加价仅对整笔订单计算一次，接单后不可加价。':'Added once to the whole order. Available before acceptance only.'}}</view>
 <view class="offer-options"><button wx:for="{{offerAmounts}}" wx:key="*this" class="offer-option" hover-class="offer-option-press" data-amount="{{item}}" bindtap="raise" disabled="{{raising}}">+¥{{item}}</button><button class="offer-option offer-custom" hover-class="offer-option-press" bindtap="customRaise" disabled="{{raising}}">{{zh?'自定义':'Custom'}}</button></view>
 <view class="rq-bill"><view wx:if="{{request.discount}}" class="row hint"><text>{{zh?'优惠券':'Coupon'}}</text><text>−¥{{request.discount}}</text></view><view class="row strong rq-total"><text>{{zh?'合计（模拟）':'Total (simulated)'}}</text><text>¥{{request.total}}</text></view></view>
@@ -114,16 +114,16 @@
 <view class="hint">{{request.dispute.note}}</view>
 </view>
 <view class="flow-card journey-details">
- <view class="journey-details-title">{{zh?'订单详情':'Order details'}}</view>
+ <view class="journey-details-title {{request.isMine && request.status==='waiting'?(detailsOpen?'rq-fold rq-fold-open':'rq-fold'):''}}" bindtap="toggleDetails"><text>{{zh?'订单详情':'Order details'}}</text><text wx:if="{{request.isMine && request.status==='waiting'}}" class="rq-fold-chev {{detailsOpen?'open':''}}">⌄</text></view><block wx:if="{{!(request.isMine && request.status==='waiting') || detailsOpen}}">
  <view class="journey-detail-row"><view class="journey-detail-label"><text class="journey-detail-icon">#</text><text>{{zh?'订单号':'Order no.'}}</text></view><text class="journey-detail-value order-no" selectable="{{true}}">{{request.id}}</text></view>
  <view class="journey-detail-row"><view class="journey-detail-label"><text class="journey-detail-icon">▣</text><text>{{zh?'取件点':'Pickup'}}</text></view><text class="journey-detail-value">{{request.pickupDisplay||request.pickupPointDisplay||request.station}}</text></view>
  <view class="journey-detail-row"><view class="journey-detail-label"><text class="journey-detail-icon">⌖</text><text>{{zh?'送达地点':'Deliver to'}}</text></view><text class="journey-detail-value">{{request.destinationDisplay}}</text></view>
  <view wx:if="{{request.category==='takeout'}}" class="journey-detail-row"><view class="journey-detail-label"><text class="journey-detail-icon">♧</text><text>{{zh?'外卖到达':'Food arrival'}}</text></view><text class="journey-detail-value">{{request.arrivalLabel}}</text></view>
  <view wx:if="{{request.category==='parcel' && request.isMine}}" wx:for="{{request.parcelItems}}" wx:key="index" class="journey-parcel-detail">{{zh?'包裹 ':'Parcel '}}{{index+1}} · {{item.pickupPoint||request.station}} · {{item.code}}</view>
- <view class="journey-detail-row journey-price-row"><view class="journey-detail-label"><text class="journey-detail-icon">◉</text><text>{{zh?'赏金':'Reward'}}</text></view><text class="journey-price">¥{{request.rewardText}}</text></view>
- <view wx:if="{{request.discount}}" class="journey-detail-row"><text>{{zh?'优惠券':'Coupon'}}</text><text>−¥{{request.discount}}</text></view>
- <view wx:if="{{request.discount || request.fee!=='0.00'}}" class="journey-detail-row journey-net-total"><text>{{zh?'模拟合计':'Demo total'}}</text><text>¥{{request.total}}</text></view>
- <view wx:if="{{request.note}}" class="journey-order-note">{{request.note}}</view>
+ <view wx:if="{{!(request.isMine && request.status==='waiting')}}" class="journey-detail-row journey-price-row"><view class="journey-detail-label"><text class="journey-detail-icon">◉</text><text>{{zh?'赏金':'Reward'}}</text></view><text class="journey-price">¥{{request.rewardText}}</text></view>
+ <view wx:if="{{request.discount && !(request.isMine && request.status==='waiting')}}" class="journey-detail-row"><text>{{zh?'优惠券':'Coupon'}}</text><text>−¥{{request.discount}}</text></view>
+ <view wx:if="{{(request.discount || request.fee!=='0.00') && !(request.isMine && request.status==='waiting')}}" class="journey-detail-row journey-net-total"><text>{{zh?'模拟合计':'Demo total'}}</text><text>¥{{request.total}}</text></view>
+ <view wx:if="{{request.note}}" class="journey-order-note">{{request.note}}</view></block>
 </view>
 <view wx:if="{{request.feedbackOpen && !request.canResolveFeedback}}" class="report-contact"><view wx:if="{{request.reportNoticeText}}" class="report-nudge">{{request.reportNoticeText}}</view><button class="report-contact-btn" hover-class="report-contact-press" catchtap="issue"><view wx:if="{{request.supportUnread>0}}" class="report-dot"/><text>{{request.supportUnread>0?(zh?'UniEarn 已回复，查看':'UniEarn replied · View'):(zh?'联系 UniEarn 团队':'Contact the UniEarn team')}}</text></button></view>
 <view wx:if="{{request.isMine && request.runnerId && !request.canResolveFeedback && !request.feedbackOpen && (request.status==='collected'||request.supportUnread>0)}}" class="report-link {{request.supportUnread>0?'has-reply':''}}" hover-class="report-link-press" role="button" bindtap="issue"><view wx:if="{{request.supportUnread>0}}" class="report-dot"/><image wx:else mode="aspectFit" src="/assets/icons/flag-muted.svg"/><text>{{request.supportUnread>0?(zh?'UniEarn 已回复':'UniEarn replied'):request.canResolveFeedback?(zh?'联系 UniEarn':'Chat with UniEarn'):request.feedbackOpen?(zh?'联系 UniEarn 团队':'Contact the UniEarn team'):(zh?'报告问题':'Report a problem')}}</text></view>
