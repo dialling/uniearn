@@ -56,7 +56,8 @@ Page({
  addAddress(){if(this.data.routeLocked)return;this._addressesOpen=true;require('../../utils/nav').navigateTo({url:'/pages/address-add/index',events:{routeApplied:r=>{this.applyRoute(r);this.setData({firstRoute:false});this.totals();}}});},
  addOtherAddress(){if(this.data.routeLocked)return;this._addressesOpen=true;require('../../utils/nav').navigateTo({url:'/pages/address-add/index?type=place',events:{routeApplied:r=>{this.applyRoute(r);this.setData({firstRoute:false});this.totals();}}});},
  openSavedRoute(type){if(this.data.routeLocked)return;require('../../utils/nav').navigateTo({url:'/pages/route-edit/index?type='+type,events:{routeApplied:r=>{this.applyRoute(r);this.setData({firstRoute:false,routes:savedRoutes.list()});this.totals();}}});},
- text(e){this.setData({[e.currentTarget.dataset.field]:e.detail.value});if(e.currentTarget.dataset.field==='phone'&&this.data.phoneError)this.validatePhone();this.addressView();this.totals();this.autoSaveDorm();},
+ // 2026-11-17: quick note chips add a common instruction to the note (once).
+noteChip(e){const t=String(e.currentTarget.dataset.text||''),cur=String(this.data.note||'').trim();if(!t||cur.includes(t))return;const v=(cur?cur+(this.data.zh?'，':', '):'')+t;this.text({currentTarget:{dataset:{field:'note'}},detail:{value:v.slice(0,500)}});},text(e){this.setData({[e.currentTarget.dataset.field]:e.detail.value});if(e.currentTarget.dataset.field==='phone'&&this.data.phoneError)this.validatePhone();this.addressView();this.totals();this.autoSaveDorm();},
  validatePhone(){const valid=savedRoutes.validPhone(this.data.phone);this.setData({phoneError:valid?'':this.data.ui.phoneHint});return valid;},
  priceInput(e){this.setData({priceText:e.detail.value});const price=Number(e.detail.value);if(Number.isSafeInteger(price)&&price>=(this.data.night?4:3)&&price<=50){this.setData({price});this.totals();}},
  priceBlur(){this.setData({priceText:String(this.data.price)});},
