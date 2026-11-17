@@ -60,7 +60,7 @@
 <!-- 2026-11-17: while waiting, the offer and the price details share one card (like the post pages); cancel stays the quiet last row. -->
 <view wx:if="{{request.isMine && request.status==='waiting'}}" class="flow-card offer-card task-offer-v2">
 <view class="offer-heading">
-<image class="tk-head-icon" mode="aspectFit" src="/assets/icons3d/coin.svg"/><text class="strong">{{zh?'提高赏金':'Add to your offer'}}</text>
+<image class="tk-head-icon" mode="aspectFit" src="/assets/icons3d/bolt.svg"/><text class="strong">{{zh?'提高赏金':'Add to your offer'}}</text>
 <text class="offer-current">{{zh?'当前赏金':'Your offer'}} <text>¥{{request.rewardText}}</text>
 </text>
 </view>
@@ -71,7 +71,6 @@
 </view>
 <view class="tk-bill">
 <view wx:if="{{request.taskTip>0}}" class="row hint"><text>{{zh?'任务赏金':'Task offer'}}</text><text>¥{{request.taskBaseText}}</text></view><view wx:if="{{request.taskTip>0}}" class="row hint"><text>{{zh?'给跑手的小费':'Runner tip'}}</text><text>¥{{request.taskTipText}}</text></view>
-<view class="row hint"><text>{{ui.serviceFee}}</text><text>¥{{request.fee}}</text></view>
 <view class="row strong tk-total"><text>{{ui.totalSim}}</text><text>¥{{request.total}}</text></view>
 </view>
 <view class="offer-footer">

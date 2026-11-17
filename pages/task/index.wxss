@@ -169,3 +169,7 @@ button.task-icon::after{border:0}
 .page-dark .task-page .task-offer-v2 button.offer-option,.task-page.page-dark .task-offer-v2 button.offer-option{background:#2c2d2a;color:#7fd3a8}
 .page-dark .task-page .task-offer-v2 .tk-bill,.task-page.page-dark .task-offer-v2 .tk-bill{border-top-color:#3a3b37}
 .page-dark .task-page .task-offer-v2 .tk-total,.task-page.page-dark .task-offer-v2 .tk-total{color:#edebe4}
+/* 2026-11-17: the cancel button is orange so it reads as the stop action, apart from the green offer pills. */
+.task-page .task-offer-v2 button.offer-cancel{border:0;background:#fdeee4;color:#c2410c;font-weight:800}
+.task-page .task-offer-v2 button.offer-cancel-press{background:#f9d9c3;transform:scale(.97)}
+.page-dark .task-page .task-offer-v2 button.offer-cancel,.task-page.page-dark .task-offer-v2 button.offer-cancel{background:#3a2416;color:#f4a06e}
