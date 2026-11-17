@@ -20,7 +20,7 @@ let def; global.Page = d => { def = d; }; global.wx = global.wx || { getStorageS
 const noteChip = new Function('return ({' + js.slice(js.indexOf('noteChip(e){'), js.indexOf('text(e){')) + '})')().noteChip;
 const page = { data: { note: '', zh: false }, text(e) { this.data.note = e.detail.value; } };
 noteChip.call(page, { currentTarget: { dataset: { text: 'Knock when you arrive' } } });
-noteChip.call(page, { currentTarget: { dataset: { text: 'Call me from downstairs' } } });
+noteChip.call(page, { currentTarget: { dataset: { text: 'Call me when you arrive' } } });
 noteChip.call(page, { currentTarget: { dataset: { text: 'Knock when you arrive' } } });
-assert.equal(page.data.note, 'Knock when you arrive, Call me from downstairs');
+assert.equal(page.data.note, 'Knock when you arrive, Call me when you arrive');
 console.log('Takeaway layout: address then locker, runner card with chips, icon headings, one price card');

@@ -13,7 +13,7 @@ assert.ok(xml.indexOf('size-private') < xml.indexOf('catchtap="openParcelScreens
 assert.match(css, /\.create-page\.pc-v2 \.fragile-toggle \.check\.checked::after\{transform:translateX\(36rpx\)\}/, 'fragile is a switch');
 const noteChip = new Function('return ({' + js.slice(js.indexOf('noteChip(e){'), js.indexOf('text(e){')) + '})')().noteChip;
 const page = { data: { description: 'One box is fragile', zh: false }, text(e) { this.data[e.currentTarget.dataset.field] = e.detail.value; } };
-noteChip.call(page, { currentTarget: { dataset: { text: 'Call me from downstairs' } } });
-noteChip.call(page, { currentTarget: { dataset: { text: 'Call me from downstairs' } } });
-assert.equal(page.data.description, 'One box is fragile, Call me from downstairs');
+noteChip.call(page, { currentTarget: { dataset: { text: 'Call me when you arrive' } } });
+noteChip.call(page, { currentTarget: { dataset: { text: 'Call me when you arrive' } } });
+assert.equal(page.data.description, 'One box is fragile, Call me when you arrive');
 console.log('Parcel layout: icon headings, pin summary, note chips, fragile switch, one price card');
