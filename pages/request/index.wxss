@@ -147,3 +147,31 @@ page{background:#f2f1ec}.journey-page{background:#f2f1ec;padding:30rpx 28rpx 75r
 .rq-welcome-go{margin:0!important;padding:0 28rpx!important;height:68rpx;line-height:68rpx;border-radius:99rpx;background:#0b7a55;color:#fff;font-size:25rpx;font-weight:800}
 .rq-welcome-go::after{border:0}
 .rq-welcome-later{font-size:25rpx;font-weight:700;color:#0b7a55}
+/* 2026-11-17: waiting-for-a-runner offer card, the same as the task page: lightning heading (a raise gets it taken faster),
+   light amount pills, the total under a dashed line, and an orange cancel as the quiet last row. */
+.flow-card.offer-card.rq-offer{background:#fff;border:0;border-radius:40rpx;padding:30rpx 28rpx;box-shadow:none}
+.rq-offer .offer-heading{display:flex;align-items:center;gap:16rpx}
+.rq-offer .offer-heading>.strong{flex:1;min-width:0;font-size:29rpx;font-weight:800}
+.rq-offer .rq-head-icon{flex:none;width:52rpx;height:52rpx;margin:-4rpx 0}
+.rq-offer .offer-current{font-size:22rpx;color:#6b6860}
+.rq-offer .offer-current text{font-family:inherit;font-size:30rpx;font-weight:850;color:#0b7a55}
+.rq-offer .offer-hint{margin:14rpx 0 18rpx;font-size:23rpx;color:#7a776e}
+.rq-offer .offer-options{display:flex;flex-wrap:wrap;gap:12rpx}
+.rq-offer button.offer-option{display:inline-flex;width:auto;height:auto;min-height:0;margin:0;padding:14rpx 24rpx;border:3rpx solid transparent;border-radius:99rpx;background:#f6f5f1;color:#0b7a55;font-size:25rpx;font-weight:750;line-height:1.35}
+.rq-offer button.offer-option::after{border:0}
+.rq-offer button.offer-custom{border:2rpx dashed #9ecbb9;background:#fff}
+.rq-offer button.offer-option-press{transform:scale(.96);background:#e3f3ea}
+.rq-offer button.offer-option[disabled]{opacity:.5}
+.rq-offer .rq-bill{margin:26rpx -28rpx 0;padding:20rpx 28rpx 6rpx;border-top:2rpx dashed #e6e1d7}
+.rq-offer .rq-bill .row{display:flex;justify-content:space-between;margin:10rpx 0}
+.rq-offer .rq-total{font-size:28rpx;font-weight:800;color:#16181c}
+.rq-offer .offer-footer{display:flex;align-items:center;justify-content:space-between;gap:16rpx;margin-top:14rpx;padding-top:18rpx;border-top:1rpx solid #f0ede6}
+.rq-offer .offer-footer-copy{flex:1;min-width:0;font-size:22rpx;line-height:1.5}
+.rq-offer button.offer-cancel{flex:none;width:auto;min-height:58rpx;margin:0;padding:10rpx 22rpx;border:0;border-radius:15rpx;background:#fdeee4;color:#c2410c;font-size:22rpx;font-weight:800;line-height:1.4}
+.rq-offer button.offer-cancel::after{border:0}
+.rq-offer button.offer-cancel-press{background:#f9d9c3;transform:scale(.97)}
+.page-dark .rq-offer,.page-dark.flow-page .rq-offer{background:#242522}
+.page-dark .rq-offer button.offer-option{background:#2c2d2a;color:#7fd3a8}
+.page-dark .rq-offer .rq-bill{border-top-color:#3a3b37}
+.page-dark .rq-offer .rq-total{color:#edebe4}
+.page-dark .rq-offer button.offer-cancel{background:#3a2416;color:#f4a06e}
