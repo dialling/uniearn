@@ -15,7 +15,7 @@
 
  <!-- 1 What -->
  <view class="flow-card tp-card">
-  <view class="flow-head tp-step-head"><text class="step tp-step">1</text><text>{{ui.need}}</text></view>
+  <view class="flow-head tp-step-head"><image class="tp-head-icon" mode="aspectFit" src="/assets/icons3d/task.svg"/><text>{{ui.need}}</text></view>
   <view wx:if="{{!tripId}}" class="tp-modes" role="radiogroup" aria-label="{{ui.helpMode}}">
    <view class="tp-mode {{taskMode==='offline'?'on':''}}" role="radio" aria-checked="{{taskMode==='offline'}}" data-mode="offline" bindtap="setTaskMode"><image src="/assets/icons3d/offline.svg" mode="aspectFit"/><text>{{ui.offlineHelp}}</text></view>
    <view class="tp-mode {{taskMode==='online'?'on':''}}" role="radio" aria-checked="{{taskMode==='online'}}" data-mode="online" bindtap="setTaskMode"><image src="/assets/icons3d/online.svg" mode="aspectFit"/><text>{{ui.onlineHelp}}</text></view>
@@ -31,7 +31,7 @@
 
  <!-- 2 When -->
  <view wx:if="{{!tripId}}" class="flow-card deadline-card">
-  <view class="flow-head tp-step-head"><text class="step tp-step">2</text><text>{{ui.doneBy}}</text></view>
+  <view class="flow-head tp-step-head"><image class="tp-head-icon" mode="aspectFit" src="/assets/icons3d/clock.svg"/><text>{{ui.doneBy}}</text></view>
   <view class="tp-seg" role="radiogroup">
    <view class="tp-seg-item {{deadlineMode==='none'?'on':''}}" role="radio" aria-checked="{{deadlineMode==='none'}}" data-mode="none" bindtap="setDeadlineMode">{{ui.noDeadline}}</view>
    <view class="tp-seg-item {{deadlineMode==='timed'?'on':''}}" role="radio" aria-checked="{{deadlineMode==='timed'}}" data-mode="timed" bindtap="setDeadlineMode">{{ui.withDeadline}}</view>
@@ -49,7 +49,7 @@
 
  <!-- 3 Offer -->
  <view class="flow-card task-fee-card tp-card">
-  <view class="flow-head tp-step-head"><text class="step tp-step">{{tripId?2:3}}</text><text>{{ui.price}}</text></view>
+  <view class="flow-head tp-step-head"><image class="tp-head-icon" mode="aspectFit" src="/assets/icons3d/coin.svg"/><text>{{ui.price}}</text></view>
   <view class="tp-offer">
    <view class="tp-round" role="button" aria-label="{{zh?'减少':'Lower'}}" data-delta="-1" bindtap="changePrice">−</view>
    <view class="tp-amount"><text class="tp-yuan">¥</text><input always-embed class="tp-price" type="digit" value="{{priceText}}" bindinput="priceInput" bindblur="priceBlur" maxlength="9"/></view>

@@ -87,3 +87,5 @@
 .page-dark.tp-page{background:#1b1d1a;color:#f0f2ee}
 .page-dark .tp-card,.page-dark .deadline-card,.page-dark .tp-trip{background:#252a28}
 .page-dark .tp-text,.page-dark .tp-mode,.page-dark .tp-picker,.page-dark .tp-seg,.page-dark .tp-round{background:#30362f;color:#f0f2ee}
+/* 2026-11-17: section headings use 3D icons (task, clock, coin) like the takeaway and parcel pages, instead of numbers. */
+.tp-page .tp-head-icon{flex:none;width:52rpx;height:52rpx;margin:-4rpx 0}
