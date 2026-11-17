@@ -7,8 +7,9 @@ const at = s => { const i = xml.indexOf(s); assert.ok(i >= 0, 'missing ' + s); r
 assert.ok(at('class="addr-label"') < at("{{zh?'外卖柜':'Takeaway locker'}}"), 'address first, then the locker');
 assert.ok(at('class="tw-first-hint"') < at('<picker wx:if="{{!lockerManual}}"'), 'without an address, a hint says lockers appear after adding one');
 assert.match(xml, /wx:if="\{\{!addressReady && !tripId\}\}" class="tw-first-hint"/);
-assert.ok(at('class="flow-card tw-details"') < at('{{ui.noteLabel}}'), 'runner details have their own card');
-assert.ok(at('{{ui.noteLabel}}') < at('note-soup') && at('note-soup') < at('note-photo-area'), 'note, soup, photos keep their order');
+assert.ok(at('class="flow-card tw-details"') < at('note-photo-area'), 'runner details have their own card');
+assert.ok(at('class="flow-card arrival-card"') < at('class="flow-card tw-details"') && at('purchase-status-card') < at('class="flow-card tw-details"'), 'arrival time (or order status) comes right after the locker');
+assert.ok(at('note-photo-area') < at('note-soup') && at('note-soup') < at('{{ui.noteLabel}}'), 'runner card: photos, soup, then the note last');
 assert.match(xml, /class="tw-chip"[^>]*data-text="\{\{item\}\}" bindtap="noteChip"/, 'quick note chips');
 for (const icon of ['clock', 'coin', 'note']) { assert.match(xml, new RegExp('class="tw-head-icon" mode="aspectFit" src="/assets/icons3d/' + icon + '\\.svg"')); }
 for (const icon of ['clock', 'coin']) assert.ok(fs.existsSync(path.join(__dirname, '..', 'assets/icons3d/' + icon + '.svg')), icon + ' icon exists');
