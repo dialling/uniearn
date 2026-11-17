@@ -8,6 +8,7 @@ for (const icon of ['map', 'parcel', 'note', 'clock', 'coin']) assert.match(xml,
 assert.doesNotMatch(xml, /class="step-number[^"]*">[1-4★]</, 'no number badges left on the parcel page');
 assert.match(xml, /class="addr-summary"><view class="addr-summary-body">/, 'address summary: no badge and no extra house, only the dorm chip keeps a house');
 assert.match(xml, /class="tw-chip"[^>]*bindtap="noteChip"/, 'quick note chips');
+assert.ok(xml.indexOf('Leave it at the door with a photo') < xml.indexOf('Knock when you arrive') && xml.indexOf('Knock when you arrive') < xml.indexOf('Call me when you arrive'), 'chip order: leave it with a photo, knock, call');
 assert.ok(xml.indexOf('class="step-card pc-price"') < xml.indexOf('class="totals-card pc-bill"') && xml.indexOf('step-card totals-card') < 0, 'tip and bill in one card');
 assert.ok(xml.indexOf('size-private') < xml.indexOf('catchtap="openParcelScreenshot"'), 'the screenshot upload stays under the private heading');
 assert.match(css, /\.create-page\.pc-v2 \.fragile-toggle \.check\.checked::after\{transform:translateX\(36rpx\)\}/, 'fragile is a switch');

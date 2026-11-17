@@ -11,6 +11,7 @@ assert.ok(at('class="flow-card tw-details"') < at('note-photo-area'), 'runner de
 assert.ok(at('class="flow-card arrival-card"') < at('class="flow-card tw-details"') && at('purchase-status-card') < at('class="flow-card tw-details"'), 'arrival time (or order status) comes right after the locker');
 assert.ok(at('note-photo-area') < at('note-soup') && at('note-soup') < at('{{ui.noteLabel}}'), 'runner card: photos, soup, then the note last');
 assert.match(xml, /class="tw-chip"[^>]*data-text="\{\{item\}\}" bindtap="noteChip"/, 'quick note chips');
+assert.ok(xml.indexOf('Leave it at the door with a photo') < xml.indexOf('Knock when you arrive') && xml.indexOf('Knock when you arrive') < xml.indexOf('Call me when you arrive'), 'chip order: leave it with a photo, knock, call');
 for (const icon of ['clock', 'coin', 'note']) { assert.match(xml, new RegExp('class="tw-head-icon" mode="aspectFit" src="/assets/icons3d/' + icon + '\\.svg"')); }
 for (const icon of ['clock', 'coin']) assert.ok(fs.existsSync(path.join(__dirname, '..', 'assets/icons3d/' + icon + '.svg')), icon + ' icon exists');
 assert.match(xml, /class="flow-card arrival-card"/, 'the first-time tip still finds the arrival card');
