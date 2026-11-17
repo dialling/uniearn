@@ -5,7 +5,7 @@ Page({data:{...require('../../utils/motion').data(),zh:true,request:null,ticket:
  onLoad(o={}){this.id=o.id||'';},onShow(){orders.bind(this);},onHide(){orders.unbind(this);},onUnload(){orders.unbind(this);},
  refresh(){const s=store.get(),zh=s.language!=='en',r=s.requests.find(r=>r.id===this.id&&(r.isMine||r.isRunner));if(wx.setNavigationBarTitle)wx.setNavigationBarTitle({title:zh?'联系 UniEarn':'Chat with UniEarn'});
   if(!r){this.setData({request:null,zh});return;}
-  const orderTickets=(s.supportTickets||[]).filter(t=>t.orderId===r.id),ticket=orderTickets.at(-1)||null;
+  const orderTickets=(s.supportTickets||[]).filter(t=>t.orderId===r.id),ticket=orderTickets[orderTickets.length-1]||null;
   const reasons=reasonCopy.list(r,!r.isMine&&!!r.isRunner,zh);
   const messages=orderTickets.flatMap(t=>(t.messages||[]).map((m,i)=>({...m,recordKey:t.id+'-'+i}))).filter(m=>!m.contactChannel).map(m=>({key:m.recordKey,mine:!!m.mine,text:m.mine&&m.note!==undefined?m.note:(zh&&m.textZh?m.textZh:m.text),reasonLabel:m.mine&&m.reason&&m.reason!=='Something else'?reasonCopy.label(m.reason,zh):'',photo:m.photo?orders.photoURL(m.photo):'',time:require('../../utils/china-time').dateTime(m.at)}));
   const feedback=flow.view(r,zh?'zh':'en');

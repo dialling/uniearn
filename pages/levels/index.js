@@ -54,13 +54,19 @@ function rows(language){
   condition:index===0?(en?'Initial level · 0 level points':'初始等级 · 0 等级积分'):index===1?(en?'Complete your first order · 20 total points for the first completion':'完成首笔订单 · 首单总计 20 积分'):(en?'Reach '+level.min+' lifetime level points':'长期等级积分达到 '+level.min+' 分')
  }));
 }
+// 2026-11-17: order and runner points come as fish to feed Yuni, 5 points a fish (+10 = 2 fish). Check-in is one dried fish a day.
+const FISH_POINTS=5;
+function fishInfo(t,zh){const fish=n=>Math.ceil(n/FISH_POINTS),out={...t};
+ if(t.kind==='customer_order'||t.kind==='runner_order'){const n=fish(t.points);Object.assign(out,{fishCount:n,fishIcons:Array.from({length:n},(_,i)=>i),fishLabel:zh?n+' 条鱼':n+' fish'});if(t.firstCompletion)out.firstLabel=zh?'该角色首单共 '+t.firstCompletion.points+' 分（'+fish(t.firstCompletion.points)+' 条鱼）':'First completion in this role: '+t.firstCompletion.points+' points ('+fish(t.firstCompletion.points)+' fish)';}
+ else if(t.kind==='weekly_login')Object.assign(out,{fishCount:1,fishIcons:[0],fishLabel:zh?'每天 1 条':'1 a day'});
+ return out;}
 Page({
  data:{...require('../../utils/motion').data(),language:'zh',pointTasks:[],pointsStatus:'',pointsSyncError:false,levels:rows('zh'),current:0,currentItem:rows('zh')[0],currentLevel:1,points:0,arcMoveMs:ARC_MOVE_MS,arcReleaseMs:ARC_RELEASE_MS,gestureActive:false,dragX:0,dragY:0,mascotJumping:false},
  onLoad(){this.localize(true);},
  onReady(){wx.createSelectorQuery().in(this).select('.level-orbit').boundingClientRect(rect=>{this.orbitRect=rect;}).exec();},
  onShow(){this.localize(false);require('../../utils/orders').bind(this,'refreshCheckin');require('../../utils/page-title').apply(this);this.stopPointsSync();this.stopPoints=require('../../utils/activity-sync').subscribe(config=>{this.pointsConfig=activityDisplay.latest(this.pointsConfig,config);this.updatePointTasks();this.setData({pointsSyncError:false});},()=>this.setData({pointsSyncError:true}));},
  stopPointsSync(){if(this.stopPoints){this.stopPoints();this.stopPoints=null;}},
- refreshCheckin(){const state=store.get(),view=levelData.view(state.progression||{});this.setData({checkin:checkinView(state,this.data.language),currentLevel:view.level,points:view.points,hero:progressView(view,this.data.language==='en')});},
+ refreshCheckin(){const state=store.get(),view=levelData.view(require('../../utils/order-fish').shownProgression(state));this.setData({checkin:checkinView(state,this.data.language),currentLevel:view.level,points:view.points,hero:progressView(view,this.data.language==='en')});},
  async openYuniFeed(){
   if(this.openingFeed)return;
   const host=this.selectComponent('#level-page-hook');if(!host)return;
@@ -74,9 +80,9 @@ Page({
   finally{this.openingFeed=false;wx.hideLoading();}
   if(message)wx.showToast({title:message,icon:'none'});
  },
- updatePointTasks(){const cached=(store.get().rewards||{}).activities;this.pointsConfig=activityDisplay.latest(this.pointsConfig,cached&&cached.config);const view=activityDisplay.display(this.pointsConfig,this.data.language==='zh');this.setData({pointTasks:view.activityTasks,pointsStatus:view.activityStatusLabel});},
+ updatePointTasks(){const cached=(store.get().rewards||{}).activities;this.pointsConfig=activityDisplay.latest(this.pointsConfig,cached&&cached.config);const view=activityDisplay.display(this.pointsConfig,this.data.language==='zh');this.setData({pointTasks:view.activityTasks.map(t=>fishInfo(t,this.data.language==='zh')),pointsStatus:view.activityStatusLabel});},
  localize(first){
-  const state=store.get(),language=state.language==='en'?'en':'zh',view=levelData.view(state.progression||{}),current=first?Math.max(0,view.level-1):this.data.current;
+  const state=store.get(),language=state.language==='en'?'en':'zh',view=levelData.view(require('../../utils/order-fish').shownProgression(state)),current=first?Math.max(0,view.level-1):this.data.current;
   const levels=rows(language);
   this.setData({checkin:checkinView(state,language),language,levels,current,currentItem:levels[current],currentLevel:view.level,points:view.points,hero:progressView(view,language==='en')});this.updatePointTasks();
  },

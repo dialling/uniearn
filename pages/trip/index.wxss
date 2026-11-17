@@ -210,3 +210,7 @@ button.btn.delivery-photo-btn{display:flex;align-items:center;justify-content:ce
 .page-dark .tk-card{background:#252a28;box-shadow:none}
 .page-dark .tk-title,.page-dark .tk-name{color:#edebe4}
 .page-dark .tk-go.is-quiet{background:#333832!important;color:#edebe4!important}
+/* 2026-11-17: delivery proof: Back on the left, Send on the right, one row */
+.dl-actions{display:flex;gap:20rpx;margin-top:8rpx}
+.dl-actions .btn{flex:1;min-width:0;margin:0!important;width:auto!important;white-space:nowrap;padding-left:12rpx;padding-right:12rpx}
+.dl-actions .dl-send{flex:1.5}

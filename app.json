@@ -5,39 +5,28 @@
     "pages/jobs/index",
     "pages/requests/index",
     "pages/create/index",
-    "pages/earnings/index",
-    "pages/wallet/index",
     "pages/profile/index",
-    "pages/yuni/index",
     "pages/profile-name/index",
-    "pages/levels/index",
     "pages/request/index",
     "pages/trip/index",
     "pages/join/index",
     "pages/job/index",
-    "pages/student-check/index",
-    "pages/sms-scan/index",
     "pages/takeaway/index",
     "pages/trip-start/index",
-    "pages/rewards/index",
     "pages/chat/index",
-    "pages/support-chat/index",
-    "pages/info/index",
     "pages/task/index",
     "pages/task-post/index",
     "pages/public-job/index",
     "pages/routes/index",
     "pages/guide/index",
-    "pages/help/index",
-    "pages/route-edit/index",
     "pages/address/index",
     "pages/address-add/index",
     "pages/address-edit/index",
-    "pages/coupons/index",
     "pages/coupon-pick/index",
-    "pages/invite/index",
-    "pages/admin/index",
     "pages/notify-guide/index",
+    "pages/route-edit/index",
+    "pages/student-check/index",
+    "pages/sms-scan/index",
     "pages/terms/index"
   ],
   "window": {
@@ -96,6 +85,83 @@
       "pages": [
         "index"
       ]
+    },
+    {
+      "root": "pages/invite",
+      "name": "invite",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/rewards",
+      "name": "rewards",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/wallet",
+      "name": "wallet",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/earnings",
+      "name": "earnings",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/levels",
+      "name": "levels",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/yuni",
+      "name": "yuni-settings",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/admin",
+      "name": "admin",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/info",
+      "name": "info",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/coupons",
+      "name": "coupons",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/support-chat",
+      "name": "support-chat",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/help",
+      "name": "help",
+      "pages": [
+        "index"
+      ]
     }
   ],
   "preloadRule": {
@@ -109,6 +175,17 @@
       "network": "all",
       "packages": [
         "yuni"
+      ]
+    },
+    "pages/profile/index": {
+      "network": "all",
+      "packages": [
+        "yuni-settings",
+        "levels",
+        "wallet",
+        "rewards",
+        "invite",
+        "coupons"
       ]
     }
   }

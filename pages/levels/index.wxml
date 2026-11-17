@@ -64,7 +64,7 @@
   <view wx:if="{{pointsSyncError}}" class="lv-earn-note">{{language==='zh'?'规则暂未同步，当前显示上次内容':'Rules could not sync. Showing the last available version.'}}</view>
   <view wx:for="{{pointTasks}}" wx:key="id" class="lv-earn-row">
    <view class="lv-earn-copy"><view class="lv-earn-title">{{item.label}}</view><view class="lv-earn-detail">{{item.detail}}</view><view wx:if="{{item.firstLabel}}" class="lv-earn-first">{{item.firstLabel}}</view></view>
-   <view class="lv-earn-pts">+{{item.points}}</view>
+   <view class="lv-earn-side"><view class="lv-earn-pts">+{{item.points}}<text class="lv-earn-unit">{{language==='zh'?'分':'pts'}}</text></view><view wx:if="{{item.fishCount}}" class="lv-earn-catch"><image wx:for="{{item.fishIcons}}" wx:for-item="f" wx:key="*this" class="lv-earn-fish" src="/assets/yuni-feed/fish.png" mode="aspectFit"/><text>{{item.fishLabel}}</text></view></view>
   </view>
   <view class="lv-earn-foot">{{language==='zh'?'订单确认完成后才计分，只标记送达不会立即得分。等级积分会一直保留。':'Points count once an order is confirmed complete, not just marked delivered. Level points are kept for good.'}}</view>
  </view>

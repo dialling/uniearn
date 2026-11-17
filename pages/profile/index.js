@@ -67,7 +67,7 @@ Page({
  },
  soundToggle(e){const on=!!e.detail.value;store.update(s=>{s.yuniSounds=on;});this.setData({soundOn:on});if(on)require('../../utils/yuni-sound').coin();},
  refreshTier(){
-  const state=store.get(),language=state.language==='en'?'en':'zh',tier=require('../../utils/yuni-level').view(state.progression||{}),name=x=>x?(language==='en'?x.nameEn:x.nameZh):'';
+  const state=store.get(),language=state.language==='en'?'en':'zh',tier=require('../../utils/yuni-level').view(require('../../utils/order-fish').shownProgression(state)),name=x=>x?(language==='en'?x.nameEn:x.nameZh):'';
   const start=name(tier),end=name(tier.next);
   const message=language==='en'?'Complete one more order to level up':'再完成一单升级';
   this.setData({tierLevel:tier.level,tierAvatar:tierAvatar(tier.level),level:name(tier),tierName:name(tier),rankName:name(tier),points:tier.points,progress:tier.progress,remaining:tier.remaining,levelStartName:start,levelEndName:end,levelMessage:message,nextJobsText:message,...levelCard(tier,language)});

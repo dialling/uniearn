@@ -1,8 +1,8 @@
 /* 2026-11-16: first-time tips, the same look as the Jobs page app guide (dim, white-ringed spotlight, Yuni card). */
-.cg-shade{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000}
+.cg-shade{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(0,0,0,.6);z-index:2000}
 .cg-focus{position:fixed;z-index:2000;border:4rpx solid #fff;box-shadow:0 0 0 2000rpx rgba(0,0,0,.6);pointer-events:none;box-sizing:border-box;transition:top .42s cubic-bezier(.3,.9,.25,1),left .42s cubic-bezier(.3,.9,.25,1),width .42s cubic-bezier(.3,.9,.25,1),height .42s cubic-bezier(.3,.9,.25,1);animation:cg-spot-in .45s cubic-bezier(.3,.9,.25,1) backwards}
 .cg-ring{position:absolute;left:-4rpx;top:-4rpx;right:-4rpx;bottom:-4rpx;border:4rpx solid #fff;border-radius:inherit;animation:cg-ring 1.8s ease-out .45s infinite}
-.cg-blocker{position:fixed;inset:0;z-index:2001}
+.cg-blocker{position:fixed;top:0;right:0;bottom:0;left:0;z-index:2001}
 .cg-card{position:fixed;transition:top .38s cubic-bezier(.3,.9,.25,1);left:32rpx;right:32rpx;bottom:calc(170rpx + env(safe-area-inset-bottom));z-index:2002;padding:30rpx;border-radius:30rpx;background:#fff;color:#16181c;box-sizing:border-box;box-shadow:0 20rpx 50rpx rgba(22,24,28,.18);animation:cg-card-in .46s cubic-bezier(.22,.9,.3,1) backwards}
 .cg-head{display:flex;align-items:center;justify-content:space-between}
 .cg-dots{display:flex;align-items:center;gap:8rpx}

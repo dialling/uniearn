@@ -35,12 +35,13 @@ Component({
   },
   // Each time the Me page opens, Yuni waves and greets the member by name.
   pageLifetimes: { hide() { if (this.F) this.stopFishing(); this.clearTimers(); this.greeted = false; }, show() { this.sync(); this.rest(); this.greet(); } },
-  observers: { name() { this.greet(); } },
+  // 2026-11-17: the points pill pops when the points go up (feeding a fish adds the points shown on Me).
+  observers: { name() { this.greet(); }, points(v) { if (this.lastPts !== undefined && v > this.lastPts) { this.setData({ ptsBump: false }); setTimeout(() => this.setData({ ptsBump: true }), 20); clearTimeout(this.ptsTimer); this.ptsTimer = setTimeout(() => this.setData({ ptsBump: false }), 700); } this.lastPts = v; } },
   methods: {
     t(zh, en) { return this.data.zh ? zh : en; },
     play() { return store.get().yuniPlay || EMPTY; },
     look() { const l = { ...this.play().worn }; if (this.trying) l[this.trying.slot] = this.trying.id; return l; },
-    clearTimers() { this.friendOn = undefined; ['sleepTimer', 'chatTimer', 'bubbleTimer', 'actTimer', 'biteTimer', 'missTimer', 'cardTimer', 'chewTimer', 'friendTimer', 'friendGlide'].forEach(k => { clearTimeout(this[k]); clearInterval(this[k]); }); (this.nibbleTimers || []).forEach(clearTimeout); },
+    clearTimers() { this.friendOn = undefined; ['sleepTimer', 'chatTimer', 'bubbleTimer', 'actTimer', 'biteTimer', 'missTimer', 'cardTimer', 'chewTimer', 'friendTimer', 'friendGlide', 'tipTimer'].forEach(k => { clearTimeout(this[k]); clearInterval(this[k]); }); (this.nibbleTimers || []).forEach(clearTimeout); },
     // ── state from the store ──
     sync() {
       const s = store.get(), zh = s.language !== 'en', play = this.play(), l = this.look(), sc = SCENES[l.scene] || SCENES.morning, ride = rig.ride(l.ride, sc.a, sc.bb);
@@ -48,8 +49,13 @@ Component({
       const next = {
         zh, motion: motion.enabled(), soundOn: sound.enabled(), scene: SCENES[l.scene] ? l.scene : 'morning', dark: sc.dark, ride: l.ride || 'floe', rideBack: ride.back, rideFront: ride.front,
         sceneStyle: '--sky:' + sc.sky + ';--sea-a:' + sc.a + ';--sea-b:' + sc.b + ';--sea-c:' + sc.c + ';--berg-a:' + sc.ba + ';--berg-b:' + sc.bb + ';--wave:url(\'' + wave + '\')',
-        hungry: this.hungry ? this.hungry() : false, testPoints: !!play.testPoints, testRounds: !!play.testRounds, friend: l.friend === 'eagle', dailyFish: require('../../utils/checkin').dailyFishWaiting(), hasRod: rig.isTool(play.worn.hand), bucketCount: play.bucket.length, triesLeft: play.fishing.left || 0, balance: play.balance
+        hungry: this.hungry ? this.hungry() : false, testPoints: !!play.testPoints, testRounds: !!play.testRounds, friend: l.friend === 'eagle', dailyFish: require('../../utils/checkin').dailyFishWaiting(), orderFish: require('../../utils/order-fish').waiting().length, hasRod: rig.isTool(play.worn.hand), bucketCount: play.bucket.length, triesLeft: play.fishing.left || 0, balance: play.balance
       };
+      // One count on Feed: every fish ready to eat (today's dried fish, fish from orders, caught fish). gift = a dried or order fish is waiting.
+      next.gift = !!(next.dailyFish || next.orderFish); next.feedCount = (next.dailyFish ? 1 : 0) + next.orderFish + next.bucketCount;
+      // A fish was eaten (here or in the Feed Yuni sheet): tell the Me page so its points catch up.
+      if (this.lastFeedCount !== undefined && next.feedCount !== this.lastFeedCount) setTimeout(() => this.triggerEvent('changed'), 0);
+      this.lastFeedCount = next.feedCount;
       if (next.friend !== this.friendOn) { this.friendOn = next.friend; this.friendPlay(next.friend && next.motion); }
       this.setData(next); this.drawYuni();
       if (this.data.mode === 'shop') this.drawShop();
@@ -83,6 +89,8 @@ Component({
       moves.push('look', 'stretch', 'hum', 'cheerUp', 'peek');
       if (this.data.hasRod && play.fishing.open) moves.push('fishHint');
       if (play.bucket.length) moves.push('bucketHint');
+      moves.push('orderHint', 'orderHint'); // 2026-11-17: how points are earned
+      if (this.data.orderFish) moves.push('orderFishHint', 'orderFishHint', 'orderFishHint');
       // 2026-11-17: idle moves stay silent. Yuni only makes sounds when someone plays with Yuni.
       const m = pick(moves);
       if (m === 'hungry') {
@@ -106,6 +114,14 @@ Component({
         this.act({ face: 'happy', wings: 'wave', body: 'squash', mouth: true }, 1600); this.say(pick(zh ? ['今天有新订单吗？', '一起赚积分吧！', '摸摸我也可以哦。'] : ['Any orders today?', 'Let\'s earn some points!', 'You can pet me, you know.']), 2400);
       } else if (m === 'peek') {
         this.act({ face: 'happy', body: 'peek' }, 1800); this.lookAt(-5, 0); setTimeout(() => this.lookAt(0, 0), 1500); this.say(zh ? '躲猫猫！' : 'Peekaboo!', 1600);
+      } else if (m === 'orderFishHint') {
+        this.act({ face: 'drool', wings: 'cheer', body: 'bounce', mouth: true }, 1800); this.say(zh ? '你的订单给我带来一条鱼！' : 'Your order got me a fish!', 2200); clearTimeout(this.tipTimer); this.tipTimer = setTimeout(() => { if (!this.touch && !this.data.mode && !this.F) this.say(zh ? '点「喂食」喂给我吧！' : 'Tap Feed to give it to me!', 2400); }, 2400);
+      } else if (m === 'orderHint') {
+        // Points come from finishing an order, running one, and feeding Yuni a fish.
+        this.act({ face: 'happy', wings: 'cheer', body: 'hop', mouth: true }, 1400);
+        // The bubble is one line, so the tip comes as two short lines.
+        const pair = pick(zh ? [['完成订单或帮忙跑单，都能赚积分！', '喂我吃鱼也能赚积分哦！'], ['攒积分换更好的鱼竿！', '钓更大的鱼！']] : [['Finish or run orders for points!', 'Feed me fish for points too!'], ['Save points for a better rod!', 'Better rod, bigger fish!']]);
+        this.say(pair[0], 2200); clearTimeout(this.tipTimer); this.tipTimer = setTimeout(() => { if (!this.touch && !this.data.mode && !this.F) this.say(pair[1], 2400); }, 2400);
       } else if (m === 'fishHint') {
         this.act({ face: 'happy', wings: 'reach', body: 'hop', mouth: true }, 1200); this.say(zh ? '鱼儿正在咬钩，去钓鱼吧！' : 'The fish are biting. Let\'s go fishing!', 2600);
       } else if (m === 'bucketHint') {
@@ -151,13 +167,21 @@ Component({
       t.moved += step; this.rest();
       if (!this.lastLook || now - this.lastLook > 45) { this.lastLook = now; this.lookAt(Math.max(-1, Math.min(1, (px - g.cx) / (g.width * .5))) * 6, Math.max(-1, Math.min(1, (py - g.cy) / (g.height * .45))) * 5); }
       if (this.over(p.clientX, p.clientY)) {
+        // 2026-11-17: only rubbing counts as stroking. A finger that slides across Yuni while leading the eyes is not a stroke;
+        // rubbing = the finger turns back at least twice on Yuni within 1.5 s (compared over 12px segments, so jitter does not count).
+        const r = t.rub || (t.rub = { flips: [], sx: 0, sy: 0, px: 0, py: 0 });
+        r.sx += p.clientX - t.x; r.sy += p.clientY - t.y;
+        if (Math.hypot(r.sx, r.sy) >= 12) { if (r.px * r.sx + r.py * r.sy < 0) r.flips.push(now); r.px = r.sx; r.py = r.sy; r.sx = 0; r.sy = 0; }
+        r.flips = r.flips.filter(x => now - x < 1500);
         // Stroking: shy first, then love.
-        t.strokeDist += step;
-        if (t.strokeDist > 40 && !this.stroke) { this.stroke = 'shy'; sound.giggle(); this.lastPurr = now; this.busy = false; clearTimeout(this.actTimer); this.pose({ face: 'shy', wings: 'shy' }); this.say(pick(this.data.zh ? ['啊……好害羞！', '嘻嘻，好痒。', '别、别在大家面前……'] : ['Ah... I\'m shy!', 'Eep! That tickles.', 'N-not in front of everyone...']), 2000); }
-        if (t.strokeDist > 300 && this.stroke === 'shy') { this.stroke = 'love'; sound.coo(); this.lastPurr = now; this.pose({ face: 'love', wings: 'love', body: 'munch' }); this.say(pick(this.data.zh ? ['最喜欢摸摸头了！', '不要停……', '好温暖，好喜欢。'] : ['I love head pats!', 'Don\'t stop...', 'So warm. I love this.']), 2400); this.cheer(); }
+        if (this.stroke) t.strokeDist += step;
+        if (r.flips.length >= 2 && !this.stroke) { this.stroke = 'shy'; sound.giggle(); this.lastPurr = now; this.busy = false; clearTimeout(this.actTimer); this.pose({ face: 'shy', wings: 'shy' }); this.say(pick(this.data.zh ? ['啊……好害羞！', '嘻嘻，好痒。', '别、别在大家面前……'] : ['Ah... I\'m shy!', 'Eep! That tickles.', 'N-not in front of everyone...']), 2000); }
+        if (t.strokeDist > 260 && this.stroke === 'shy') { this.stroke = 'love'; sound.coo(); this.lastPurr = now; this.pose({ face: 'love', wings: 'love', body: 'munch' }); this.say(pick(this.data.zh ? ['最喜欢摸摸头了！', '不要停……', '好温暖，好喜欢。'] : ['I love head pats!', 'Don\'t stop...', 'So warm. I love this.']), 2400); this.cheer(); }
         if (this.stroke && now - (this.lastPurr || 0) > (this.stroke === 'love' ? 700 : 950)) { this.lastPurr = now; sound.purr(this.stroke === 'love'); }
         if (this.stroke && now - (this.lastHeart || 0) > (this.stroke === 'love' ? 150 : 420)) { this.lastHeart = now; this.heart(px, py - 10); }
-      } else if (!this.stroke && !this.F) {
+      } else {
+        t.rub = null; // left Yuni: a later rub starts counting again
+        if (this.stroke || this.F) { t.x = p.clientX; t.y = p.clientY; return; }
         // Shaking the finger side to side makes Yuni dizzy.
         if (dir && dir !== t.dir && step > 5) { t.flips.push(now); t.dir = dir; }
         t.flips = t.flips.filter(x => now - x < 1300);
@@ -247,6 +271,8 @@ Component({
       // Today's dried fish first: open the Feed Yuni sheet (its own eating animation and the check-in reward).
       if (this.data.dailyFish && !this.F) { this.triggerEvent('dailyfeed'); return; }
       this.wake(true); this.rest();
+      // Then a fish from a finished order (its points were added when the order was confirmed).
+      if (this.data.orderFish && !this.F) return this.feedOrderFish();
       const play = this.play();
       if (!play.bucket.length) { this.act({ face: this.hungry() ? 'hungry' : 'shy', wings: this.hungry() ? 'belly' : '', body: 'squash' }, 1600); this.say(this.data.hasRod ? this.t('桶里没有鱼啦，去钓一条吧！', 'The bucket is empty. Catch me a fish!') : this.t('想吃鱼！先买一根鱼竿吧。', 'I want fish! Buy a rod first.'), 2600); return; }
       this.feedCaught(0);
@@ -444,6 +470,19 @@ Component({
             this.say(f.r === 'super' ? this.t('这是我吃过最棒的鱼！', 'The best fish I ever had!') : f.r === 'rare' ? this.t('唔，稀有的美味！', 'Mmm, a rare treat!') : this.t('好吃！', 'Yum!'), 2000);
             if (f.r !== 'common') this.confetti(f.r === 'super' ? 30 : 14);
           } catch (e) { this.pose(); this.busy = false; ui.toast(e.message || e); }
+          this.feeding = false;
+        }, this.data.motion ? 760 : 0);
+      });
+    },
+    feedOrderFish() {
+      const f = require('../../utils/order-fish').waiting()[0]; if (!f || this.feeding) return; this.feeding = true;
+      this.busy = true; this.pose({ wings: 'reach', mouth: true });
+      this.measure(g => {
+        if (g) this.setData({ prize: { src: '/assets/yuni-feed/fish.png', style: '--fx:' + (g.stage.width / 2) + 'px;--fy:' + (g.stage.height - 60) + 'px;--tx:' + g.cx + 'px;--ty:' + (g.cy + 20) + 'px', kind: 'feed' } });
+        setTimeout(() => {
+          this.setData({ prize: null }); require('../../utils/order-fish').markFed(f.id); this.sync();
+          sound.eat(f.points); this.fedNow(); this.act({ face: 'love', body: 'munch' }, 1700); this.chew(); this.points('+' + f.points + this.t(' 积分', ' pts')); this.cheer();
+          this.say(f.role === 'runner' ? this.t('谢谢你帮同学跑单！', 'Thanks for running that order!') : this.t('订单完成啦，真好吃！', 'Order done. Yum!'), 2200);
           this.feeding = false;
         }, this.data.motion ? 760 : 0);
       });

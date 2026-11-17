@@ -27,18 +27,21 @@ function bonus(s,id,amount,reason,now){
  if(l.level>before){l.notices=(l.notices||[]).concat({id:'lv-'+l.level+'-'+now+'-'+reason,type:'level',level:l.level,at:now}).slice(-10);}
  l.lastReason=reason;return l;
 }
+// 2026-11-17: order points come as a fish to feed Yuni on the Me page. The points are already added; feeding only shows them.
+const FISH_POINTS=5; // one fish is worth 5 points: +10 comes as 2 fish, +15 as 3
+function fishFor(l,r,role,before,now){const points=(Number(l.points)||0)-before;if(points<=0)return;const base='fish-'+r.id+'-'+role,n=Math.ceil(points/FISH_POINTS),add=[];for(let k=0;k<n;k++)add.push({id:base+'-'+(k+1),role,points:Math.min(FISH_POINTS,points-k*FISH_POINTS),at:now});l.orderFish=(l.orderFish||[]).filter(f=>!String(f.id).startsWith(base+'-')).concat(add).slice(-40);}
 function completeOrder(s,r,trip,now){
  if(!s.loyaltyStartedAt||!r.confirmedAt||r.confirmedAt<s.loyaltyStartedAt)return;
  r.loyaltyPointsAwarded=r.loyaltyPointsAwarded||{};
  if(r.ownerId&&!r.loyaltyPointsAwarded.customer){
-  const m=member(s,r.ownerId),l=data(m),first=!l.firstCustomerOrder;
+  const m=member(s,r.ownerId),l=data(m),first=!l.firstCustomerOrder,before=Number(l.points)||0;
   addPoints(s,r.ownerId,first?activities.task(s,'customer_order').firstCompletion.points:activities.task(s,'customer_order').points,'customer-order',now,!(l.anyCompleted));
-  l.firstCustomerOrder=true;r.loyaltyPointsAwarded.customer=true;
+  fishFor(l,r,'customer',before,now);l.firstCustomerOrder=true;r.loyaltyPointsAwarded.customer=true;
  }
  if(trip&&trip.runnerAccountId&&!r.loyaltyPointsAwarded.runner){
-  const m=member(s,trip.runnerAccountId),l=data(m),first=!l.firstRunnerOrder;
+  const m=member(s,trip.runnerAccountId),l=data(m),first=!l.firstRunnerOrder,before=Number(l.points)||0;
   addPoints(s,trip.runnerAccountId,first?activities.task(s,'runner_order').firstCompletion.points:activities.task(s,'runner_order').points,'runner-order',now,!(l.anyCompleted));
-  l.firstRunnerOrder=true;r.loyaltyPointsAwarded.runner=true;
+  fishFor(l,r,'runner',before,now);l.firstRunnerOrder=true;r.loyaltyPointsAwarded.runner=true;
  }
 }
 function profileCompleted(s,id,now){
@@ -72,6 +75,6 @@ function acknowledge(s,id,noticeId){const l=data(member(s,id)),i=(l.notices||[])
 function view(m){
  const l=data(m||{}),points=Number(l.points)||0,level=LEVELS[Math.min(4,Math.max(0,(l.level||1)-1))],next=LEVELS[level.level]||null;
  const start=level.points,to=next?next.points:start,segment=Math.max(0,points-start);
- return {points,level:level.level,nameZh:level.zh,nameEn:level.en,next:next?{level:next.level,nameZh:next.zh,nameEn:next.en,points:next.points,remaining:Math.max(0,next.points-points)}:null,remaining:next?Math.max(0,next.points-points):0,progress:next?Math.min(100,Math.max(0,(segment/(to-start))*100)):100,anyCompleted:!!l.anyCompleted,loginStreak:l.loginStreak||0,checkin:l.checkin?{...l.checkin}:null,notices:(l.notices||[]).slice()};
+ return {points,level:level.level,nameZh:level.zh,nameEn:level.en,next:next?{level:next.level,nameZh:next.zh,nameEn:next.en,points:next.points,remaining:Math.max(0,next.points-points)}:null,remaining:next?Math.max(0,next.points-points):0,progress:next?Math.min(100,Math.max(0,(segment/(to-start))*100)):100,anyCompleted:!!l.anyCompleted,loginStreak:l.loginStreak||0,checkin:l.checkin?{...l.checkin}:null,notices:(l.notices||[]).slice(),orderFish:(l.orderFish||[]).slice()};
 }
-module.exports={LEVELS,member,addPoints,bonus,completeOrder,profileCompleted,dailyLogin,invite,acknowledge,view};
+module.exports={FISH_POINTS,LEVELS,member,addPoints,bonus,completeOrder,profileCompleted,dailyLogin,invite,acknowledge,view};

@@ -61,7 +61,7 @@
 .ys-b-peek{animation:ys-peek 1.7s ease-in-out}
 .ys-w-belly .ys-wl{animation:var(--ue-animation,ys-bellyL .5s ease-in-out infinite alternate)}.ys-w-belly .ys-wr{animation:var(--ue-animation,ys-bellyR .5s ease-in-out infinite alternate)}
 .ys-fx-note{color:#fff;font-weight:800;font-size:30rpx;text-shadow:0 2rpx 0 #1c2a5466;white-space:nowrap;animation:ys-float 1.3s cubic-bezier(.2,.7,.3,1) both}
-.ys-btn-hungry image{animation:var(--ue-animation,ys-wiggle-btn 1.4s ease-in-out infinite)}
+.ys-btn-hungry .ys-img{animation:var(--ue-animation,ys-wiggle-btn 1.4s ease-in-out infinite)}
 .ys-hungry-dot{position:absolute;right:10rpx;top:8rpx;width:18rpx;height:18rpx;border-radius:50%;background:#e8604c;box-shadow:0 0 0 4rpx #fff}
 .ys-b-spin{animation:ys-spin 1s ease-in-out}
 .ys-b-five{animation:ys-five 1.25s cubic-bezier(.4,0,.2,1)}
@@ -74,7 +74,7 @@
 .ys-mood-row{display:flex;gap:5rpx;margin-top:2rpx;font-size:30rpx;line-height:1;color:#ffffff55}
 .ys-mood-row .full{color:#ff8a8a}
 .ys-shop-btn{position:absolute;right:24rpx;bottom:86rpx;z-index:5;display:flex;align-items:center;gap:10rpx;background:#fff;color:var(--navy);font-weight:800;font-size:26rpx;padding:10rpx 24rpx 10rpx 12rpx;border-radius:99rpx;box-shadow:0 5rpx 0 #1c2a5422}
-.ys-shop-btn image{width:52rpx;height:52rpx}
+.ys-shop-btn .ys-img{width:52rpx;height:52rpx}
 .ys-shop-pts{background:var(--foam);color:var(--deep);border-radius:99rpx;padding:2rpx 12rpx;font-size:20rpx}
 .ys-press{transform:translateY(4rpx);opacity:.9}
 .ys-fx{position:absolute;z-index:8;pointer-events:none}
@@ -85,19 +85,19 @@
 /* play buttons */
 .ys-play{position:relative;z-index:7;display:flex;gap:14rpx;margin-top:-60rpx;padding:0 32rpx}
 .ys-btn{position:relative;flex:1;min-width:0;background:#fff;border-radius:36rpx;padding:18rpx 4rpx 16rpx;display:flex;flex-direction:column;align-items:center;gap:4rpx;font-size:24rpx;font-weight:700;color:var(--navy);box-shadow:0 8rpx 0 #cfd3c8;white-space:nowrap}
-.ys-btn image{width:76rpx;height:76rpx}
+.ys-btn .ys-img{width:76rpx;height:76rpx}
 .ys-btn-gold{background:#fff8e6;box-shadow:0 6rpx 0 #e6cf8a}
 .ys-count{position:absolute;right:8rpx;top:6rpx;min-width:34rpx;height:34rpx;border-radius:17rpx;background:var(--gold);color:var(--navy);font-size:20rpx;font-weight:800;line-height:34rpx;text-align:center;padding:0 8rpx;box-sizing:border-box}
 .ys-who{position:absolute;left:36rpx;right:36rpx;top:36rpx;display:flex;justify-content:space-between;align-items:flex-start;z-index:6}
 .ys-who-main{min-width:0;flex:1}
 .ys-name{display:flex;align-items:center;gap:12rpx;color:var(--navy)}
 .ys-name-text{font-size:42rpx;font-weight:800;letter-spacing:-.4rpx;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:400rpx}
-.ys-name image{width:30rpx;height:30rpx;opacity:.6;flex:none}
+.ys-name .ys-img{width:30rpx;height:30rpx;opacity:.6;flex:none}
 .ys-check{display:inline-block;margin-top:6rpx;font-size:25rpx;font-weight:600;color:var(--deep)}
 .ys-check-todo{background:#ffffffcc;border-radius:20rpx;padding:6rpx 16rpx;color:var(--navy);font-size:23rpx;line-height:1.35}
 .ys-asleep .ys-name,.ys-asleep .ys-check,.ys-dark .ys-name,.ys-dark .ys-check{color:#fff}
 .ys-pts{display:flex;align-items:center;gap:10rpx;background:#fff;border-radius:99rpx;padding:12rpx 24rpx 12rpx 14rpx;font-weight:800;color:var(--navy);box-shadow:0 6rpx 0 #1c2a5422;font-variant-numeric:tabular-nums;font-size:29rpx;flex:none}
-.ys-pts image{width:60rpx;height:28rpx}
+.ys-pts .ys-img{width:60rpx;height:28rpx}
 .ys-pts-unit{font-size:25rpx}
 
 /* shop */
@@ -105,7 +105,7 @@
 .ys-sheet-head{display:flex;align-items:center;gap:16rpx;padding:26rpx 28rpx 14rpx}
 .ys-sheet-title{flex:1;font-size:31rpx;font-weight:800}
 .ys-sheet-pts{display:flex;align-items:center;gap:8rpx;font-weight:800;color:var(--navy);background:var(--foam);padding:6rpx 18rpx 6rpx 10rpx;border-radius:99rpx;font-size:24rpx}
-.ys-sheet-pts image{width:46rpx;height:22rpx}
+.ys-sheet-pts .ys-img{width:46rpx;height:22rpx}
 .ys-test-pts{flex:none;padding:8rpx 16rpx;border-radius:99rpx;background:#fff3cf;color:#7a5200;font-size:21rpx;font-weight:800;box-shadow:inset 0 0 0 2rpx #f2c95c}
 .ys-done{font-weight:700;color:var(--sea);padding:6rpx 4rpx 6rpx 12rpx;font-size:26rpx}
 .ys-tabs{white-space:nowrap;padding:0 28rpx 16rpx;box-sizing:border-box;width:100%;flex:none;height:76rpx}
@@ -120,9 +120,9 @@
 .ys-item{position:relative;width:calc((100% - 28rpx) / 3);box-sizing:border-box;background:#f6f5f1;border-radius:28rpx;padding:12rpx 8rpx 14rpx;text-align:center;border:4rpx solid transparent;overflow:hidden}
 .ys-item.sel{border-color:var(--gold);background:#fff8e6}
 .ys-pic{height:116rpx;display:flex;align-items:center;justify-content:center}
-.ys-pic image{width:140rpx;height:112rpx}
+.ys-pic .ys-img{width:140rpx;height:112rpx}
 .ys-tier-1 .ys-pic,.ys-tier-2 .ys-pic,.ys-tier-3 .ys-pic,.ys-tier-4 .ys-pic{height:140rpx}
-.ys-tier-1 .ys-pic image,.ys-tier-2 .ys-pic image,.ys-tier-3 .ys-pic image,.ys-tier-4 .ys-pic image{width:140rpx;height:140rpx}
+.ys-tier-1 .ys-pic .ys-img,.ys-tier-2 .ys-pic .ys-img,.ys-tier-3 .ys-pic .ys-img,.ys-tier-4 .ys-pic .ys-img{width:140rpx;height:140rpx}
 .ys-swatch{width:124rpx;height:86rpx;border-radius:18rpx}
 .ys-item-name{font-size:22rpx;font-weight:650;line-height:1.2;margin-top:6rpx}
 .ys-odds{font-size:20rpx;font-weight:700;color:#b6790a;margin-top:4rpx}
@@ -163,10 +163,10 @@
 .ys-game-top{position:absolute;left:24rpx;right:24rpx;top:24rpx;display:flex;align-items:center;gap:12rpx;z-index:9}
 .ys-pill{background:#fff;color:var(--navy);font-weight:800;font-size:24rpx;padding:12rpx 22rpx;border-radius:99rpx;box-shadow:0 5rpx 0 #1c2a5422;display:flex;align-items:center;gap:8rpx}
 .ys-left{background:#ffffffd9;font-weight:700;font-size:22rpx;box-shadow:none;flex:1;justify-content:center}
-.ys-bal image{width:52rpx;height:24rpx}
+.ys-bal .ys-img{width:52rpx;height:24rpx}
 .ys-bucket{position:absolute;left:0;right:0;bottom:330rpx;display:flex;gap:12rpx;justify-content:center;flex-wrap:wrap;padding:0 28rpx;z-index:9}
 .ys-chip{background:#fff;border-radius:26rpx;padding:8rpx 16rpx 6rpx;box-shadow:0 6rpx 0 #04261d55;display:flex;flex-direction:column;align-items:center;font-size:20rpx;font-weight:800;color:var(--navy);animation:ys-pop .4s cubic-bezier(.3,1.6,.5,1)}
-.ys-chip image{width:110rpx;height:56rpx}
+.ys-chip .ys-img{width:110rpx;height:56rpx}
 .ys-bucket-tip{width:100%;text-align:center;color:#fff;font-size:22rpx;font-weight:650;opacity:.9}
 .ys-game-bottom{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 40rpx);height:270rpx;z-index:9}
 .ys-cast{position:absolute;left:50%;top:10rpx;margin-left:-95rpx;width:190rpx;height:190rpx;border-radius:50%;background:radial-gradient(circle at 36% 30%,#fff3c2,#f2b233);color:var(--navy);box-shadow:0 12rpx 0 #c98a12,0 0 0 14rpx #ffffff33;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15}
@@ -182,19 +182,19 @@
 .ys-cast.off .ys-cast-label,.ys-cast.off .ys-cast-sub{font-size:27rpx;font-weight:800;opacity:1}
 .ys-hint{position:absolute;left:30rpx;right:30rpx;bottom:0;text-align:center;color:#fff;font-size:22rpx;font-weight:600;opacity:.92}
 .ys-book-btn{position:absolute;left:36rpx;top:60rpx;display:flex;flex-direction:column;align-items:center;color:#fff;font-size:21rpx;font-weight:800}
-.ys-book-btn image{width:80rpx;height:80rpx}
+.ys-book-btn .ys-img{width:80rpx;height:80rpx}
 .ys-book{position:absolute;left:26rpx;right:26rpx;top:110rpx;bottom:40rpx;background:#fff;border-radius:40rpx;padding:26rpx;display:flex;flex-direction:column;box-shadow:0 20rpx 70rpx #04261d66;z-index:12;box-sizing:border-box}
 .ys-book-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18rpx;font-size:31rpx;font-weight:800}
 .ys-book-scroll{flex:1;min-height:0}
 .ys-book-grid{display:flex;flex-wrap:wrap;gap:14rpx}
 .ys-spec{width:calc((100% - 28rpx) / 3);box-sizing:border-box;background:#f6f5f1;border-radius:24rpx;padding:14rpx 6rpx 12rpx;text-align:center}
-.ys-spec image{width:140rpx;height:72rpx}
+.ys-spec .ys-img{width:140rpx;height:72rpx}
 .ys-spec-name{font-size:21rpx;font-weight:650;line-height:1.2}
 .ys-spec-sub{font-size:19rpx;color:#6b6860;font-weight:650}
-.ys-spec.unknown image{filter:brightness(0);opacity:.16}
+.ys-spec.unknown .ys-img{filter:brightness(0);opacity:.16}
 .ys-r-rare{background:#fff1e6}.ys-r-super{background:#fff7d6}
 .ys-card{position:absolute;left:50%;top:150rpx;width:380rpx;margin-left:-190rpx;background:#fff;border-radius:36rpx;padding:22rpx 24rpx 26rpx;text-align:center;z-index:11;box-shadow:0 14rpx 0 #1c2a5422;animation:ys-pop .32s cubic-bezier(.3,1.5,.5,1);box-sizing:border-box}
-.ys-card image{width:220rpx;height:114rpx}
+.ys-card .ys-img{width:220rpx;height:114rpx}
 .ys-card-name{font-size:29rpx;font-weight:800;color:var(--navy)}
 .ys-card-sub{font-size:22rpx;color:#6b6860}
 .ys-card-pts{display:inline-block;margin-top:10rpx;font-weight:800;color:var(--navy);background:#ffe9a8;border-radius:99rpx;padding:6rpx 22rpx;font-size:23rpx}
@@ -219,7 +219,7 @@
 .ys-d1{--dx:-50rpx;--dy:-70rpx}.ys-d2{--dx:44rpx;--dy:-84rpx}.ys-d3{--dx:-18rpx;--dy:-104rpx}.ys-d4{--dx:70rpx;--dy:-48rpx}
 .ys-prize{position:absolute;left:0;top:0;width:0;height:0;z-index:10;pointer-events:none;animation:ys-prize .86s cubic-bezier(.3,.1,.4,1) both}
 .ys-prize-feed{animation-name:ys-prize-feed;animation-duration:.76s}
-.ys-prize image{position:absolute;left:-80rpx;top:-42rpx;width:160rpx;height:84rpx}
+.ys-prize .ys-img{position:absolute;left:-80rpx;top:-42rpx;width:160rpx;height:84rpx}
 
 /* animations off */
 .ys-still .ys-anchor,.ys-still .ys-cloud,.ys-still .ys-wave,.ys-still .ys-yuni,.ys-still .ys-wl,.ys-still .ys-wr,.ys-still .ys-headwrap{animation:none}
@@ -340,7 +340,7 @@
 
 /* 2026-11-16: sound on/off, a round speaker above the Shop button */
 .ys-sound-btn{position:absolute;right:24rpx;bottom:172rpx;z-index:5;width:72rpx;height:72rpx;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#fff;box-shadow:0 5rpx 0 #1c2a5422}
-.ys-sound-btn image{width:46rpx;height:46rpx}
+.ys-sound-btn .ys-img{width:46rpx;height:46rpx}
 .ys-sound-btn.is-off{background:#eef0f5}
 
 /* 2026-11-16: fishing timing bar. A navy rope track, a green sweet spot, and a red-and-white float as the marker. */
@@ -362,9 +362,9 @@
 
 /* 2026-11-16: fishing bucket, opposite the fish book on the other side of Cast */
 .ys-bucket-btn{position:absolute;right:36rpx;top:60rpx;display:flex;flex-direction:column;align-items:center;color:#fff;font-size:21rpx;font-weight:800;font-variant-numeric:tabular-nums}
-.ys-bucket-btn image{width:84rpx;height:84rpx}
-.ys-bucket-btn.has-fish image{filter:drop-shadow(0 0 10rpx rgba(255,224,138,.9))}
-.ys-bucket-btn.is-bump image{animation:ys-bucketbump .42s cubic-bezier(.3,1.6,.5,1)}
+.ys-bucket-btn .ys-img{width:84rpx;height:84rpx}
+.ys-bucket-btn.has-fish .ys-img{filter:drop-shadow(0 0 10rpx rgba(255,224,138,.9))}
+.ys-bucket-btn.is-bump .ys-img{animation:ys-bucketbump .42s cubic-bezier(.3,1.6,.5,1)}
 @keyframes ys-bucketbump{0%{transform:scale(1)}35%{transform:scale(1.22,.86)}70%{transform:scale(.94,1.08)}100%{transform:scale(1)}}
 
 /* 2026-11-16: very rare coupon catch. A gold ticket card with a notched edge and the coupon face stamped big. */
@@ -372,7 +372,7 @@
 .ys-card-coupon::before,.ys-card-coupon::after{content:'';position:absolute;top:50%;width:30rpx;height:30rpx;margin-top:-15rpx;border-radius:50%;background:rgba(11,122,85,.85)}
 .ys-card-coupon::before{left:-17rpx}.ys-card-coupon::after{right:-17rpx}
 .ys-card-face{font-size:76rpx;font-weight:900;line-height:1;color:#7a4e00;letter-spacing:-2rpx;text-shadow:0 3rpx 0 #fff}
-.ys-card-coupon image{width:270rpx;height:142rpx;margin:2rpx 0 -6rpx}
+.ys-card-coupon .ys-img{width:270rpx;height:142rpx;margin:2rpx 0 -6rpx}
 .ys-card-coupon .ys-card-name{color:#5a3a00}
 .ys-card-coupon .ys-card-sub{color:#6b4a10;font-weight:700}
 .ys-card-coupon .ys-card-pts{background:#0b7a55;color:#fff}
@@ -421,9 +421,11 @@
 @keyframes ys-settle{0%{transform:translateY(-10rpx)}60%{transform:translateY(4rpx)}100%{transform:none}}
 
 /* 2026-11-16: today's dried fish waits on the Feed button; tapping opens the Feed Yuni sheet */
-.ys-daily-fish{position:absolute;top:-12rpx;right:-10rpx;width:58rpx;height:38rpx;padding:4rpx 6rpx;border-radius:99rpx;background:#fff4d6;box-shadow:0 0 0 3rpx #f2c95c,0 4rpx 0 rgba(122,78,0,.2);animation:var(--ue-animation,ys-dailyfish 1.6s ease-in-out infinite)}
-@keyframes ys-dailyfish{0%,100%{transform:rotate(-8deg) translateY(0)}50%{transform:rotate(8deg) translateY(-6rpx)}}
-.ys-still .ys-daily-fish{animation:none}
-
 /* 2026-11-16: high five, dance and spin grouped (one spotlight in the Yuni guide). Basis = 2 gaps (28rpx) + 3 buttons side padding (24rpx), so all five buttons stay the same width. */
 .ys-trio{flex-grow:3;flex-shrink:1;flex-basis:52rpx;min-width:0;display:flex;gap:14rpx}
+/* 2026-11-17: a dried fish or a fish from an order is waiting: the Feed count turns amber and gives a soft pulse (no second fish picture) */
+.ys-count-gift{background:#ff9d2e;color:#fff;box-shadow:0 0 0 4rpx #fff;animation:var(--ue-animation,ys-count-pulse 1.8s ease-in-out infinite)}
+.ys-still .ys-count-gift{animation:none}
+@keyframes ys-count-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
+.ys-pts-bump{animation:var(--ue-animation,ys-pts-pop .6s cubic-bezier(.3,1.6,.5,1))}
+@keyframes ys-pts-pop{0%{transform:scale(1)}35%{transform:scale(1.16)}100%{transform:scale(1)}}
