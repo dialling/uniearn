@@ -46,7 +46,7 @@
 
   <view wx:for="{{fx}}" wx:key="id" class="ys-fx ys-fx-{{item.kind}}" style="{{item.style}}"><text wx:if="{{item.kind==='text'||item.kind==='combo'}}">{{item.text}}</text><text wx:elif="{{item.kind==='heart'}}">♥</text><text wx:elif="{{item.kind==='star'||item.kind==='spark'}}">✦</text></view>
 
-  <view wx:if="{{!mode}}" class="ys-mood" aria-label="{{zh?'Yuni 的心情':'Yuni\'s mood'}}"><text>{{zh?'Yuni 的心情':'Yuni\'s mood'}}</text><view class="ys-mood-row"><text wx:for="{{moodHearts}}" wx:key="*this" class="{{item<mood?'full':''}}">♥</text></view></view>
+  <view wx:if="{{!mode}}" class="ys-mood" aria-label="{{zh?'Yuni 的心情':'Yuniʼs mood'}}"><text>{{zh?'Yuni 的心情':'Yuniʼs mood'}}</text><view class="ys-mood-row"><text wx:for="{{moodHearts}}" wx:key="*this" class="{{item<mood?'full':''}}">♥</text></view></view>
   <view wx:if="{{!mode}}" id="ysShopBtn" class="ys-shop-btn" hover-class="ys-press" role="button" catchtap="openShop"><image class="ys-img" src="/assets/yuni-play/shop.svg" mode="aspectFit"/><text>{{zh?'商店':'Shop'}}</text></view>
 
   <!-- fishing game layer -->
@@ -74,7 +74,7 @@
 
  <!-- shop -->
  <view wx:if="{{mode==='shop'}}" class="ys-sheet" catchtouchmove="noop">
-  <view class="ys-sheet-head"><text class="ys-sheet-title">{{zh?'Yuni 的商店':'Yuni\'s shop'}}</text><view class="ys-sheet-pts"><image class="ys-img" src="/assets/yuni-feed/fish.png" mode="aspectFit"/>{{zh?'可用 '+balance+' 积分':balance+' pts to spend'}}</view><view wx:if="{{testPoints}}" class="ys-test-pts" hover-class="ys-press" role="button" catchtap="addTestPoints">{{zh?'+200 测试积分':'+200 test pts'}}</view><text class="ys-done" catchtap="closeShop">{{zh?'完成':'Done'}}</text></view>
+  <view class="ys-sheet-head"><text class="ys-sheet-title">{{zh?'Yuni 的商店':'Yuniʼs shop'}}</text><view class="ys-sheet-pts"><image class="ys-img" src="/assets/yuni-feed/fish.png" mode="aspectFit"/>{{zh?'可用 '+balance+' 积分':balance+' pts to spend'}}</view><view wx:if="{{testPoints}}" class="ys-test-pts" hover-class="ys-press" role="button" catchtap="addTestPoints">{{zh?'+200 测试积分':'+200 test pts'}}</view><text class="ys-done" catchtap="closeShop">{{zh?'完成':'Done'}}</text></view>
   <scroll-view scroll-x class="ys-tabs" enable-flex><view wx:for="{{tabs}}" wx:key="n" class="ys-tab {{item.on?'on':''}} {{item.star?'star':''}}" role="tab" data-n="{{item.n}}" catchtap="pickTab">{{item.name}}</view></scroll-view>
   <scroll-view scroll-y class="ys-grid-scroll"><view wx:if="{{friendNote}}" class="ys-rod-note"><text class="ys-strong">{{zh?'伙伴会帮 Yuni 钓鱼。':'Friends help Yuni fish.'}}</text>{{zh?'钓鱼时海鹰会在水面上盘旋，每次有 30% 机会多抓一条鱼，放进鱼桶。':' While Yuni fishes, the eagle circles over the water. Each time Yuni lands a fish, it has a 30% chance to catch one more for the bucket.'}}</view><view wx:if="{{rodNote}}" class="ys-rod-note"><text class="ys-strong">{{zh?'钓鱼需要一根鱼竿。':'You need a rod to go fishing.'}}</text>{{zh?'鱼竿越好，越容易钓到稀有和超稀有的鱼。':' A better rod finds rare and super rare fish more often.'}}</view>
    <view class="ys-grid"><view wx:for="{{cards}}" wx:key="id" class="ys-item ys-tier-{{item.tier}} {{item.sel?'sel':''}} {{item.locked?'locked':''}}" hover-class="ys-press" role="button" data-id="{{item.id}}" catchtap="pickItem"><view class="ys-pic"><view wx:if="{{item.swatch}}" class="ys-swatch" style="{{item.swatch}}"/><image class="ys-img" wx:else src="{{item.src}}" mode="aspectFit"/></view><view class="ys-item-name">{{item.name}}</view><view wx:if="{{item.odds}}" class="ys-odds">{{item.odds}}</view><view class="ys-tag {{item.tagClass}}">{{item.tag}}</view></view></view>
