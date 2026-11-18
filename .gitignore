@@ -17,3 +17,6 @@ admin-web/.env
 
 # Local OpenAI/admin tooling; do not publish.
 admin-web/.openai/
+
+# Clickable preview: built by "npm run preview" from the mini program source.
+preview-web/dist/

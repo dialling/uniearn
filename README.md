@@ -12,6 +12,18 @@ XJTLU 校园里的「顺路帮拿」平台。同学发布 **代取快递**、**�
 | Node.js | ≥ 18（**仅**用于跑本地测试，小程序本身不需要） |
 | 规模 | 127 个 JS / 43 个 JSON，27 个页面，35 个客户端模块，4 个云函数，39 个测试文件 |
 
+## 网页预览 · Clickable preview
+
+不用微信开发者工具，也能在浏览器里点完整流程：三台手机（学生 / 跑手 / 朋友）共用一个模拟云端，跑的是同一套页面代码和订单逻辑。
+
+```bash
+npm run preview
+```
+
+然后打开 http://127.0.0.1:4180 。需要 Node.js ≥ 18，不用 npm install。数据保存在浏览器里，点「Reset demo data」可清空。
+
+Run `npm run preview` and open http://127.0.0.1:4180 to click through the app in a browser (student, runner and friend phones sharing one simulated cloud). Needs Node.js 18+, no install. Preact loads from cdn.jsdelivr.net, so the first load needs internet.
+
 ---
 
 ## 目录结构

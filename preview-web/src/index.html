@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Uniearn Preview</title>
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="app.css">
+<style>
+:root{--bg:#e9e7e1;--panel:#ffffff;--ink:#16181c;--muted:#6b6860;--line:#d9d6cd;--accent:#0b7a55;--accent-soft:#e7f3ed;--frame:#1b1c1f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17181b;--panel:#222429;--ink:#eceae4;--muted:#a19e95;--line:#34363c;--accent:#3fbf8c;--accent-soft:#1d3a2f;--frame:#000}}
+:root[data-theme="dark"]{--bg:#17181b;--panel:#222429;--ink:#eceae4;--muted:#a19e95;--line:#34363c;--accent:#3fbf8c;--accent-soft:#1d3a2f;--frame:#000}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;min-height:100vh;overflow-x:hidden}
+.top{max-width:1100px;margin:0 auto;padding:24px 16px 8px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
+.top h1{font-size:22px;margin:0 0 4px;letter-spacing:-.01em}
+.top p{margin:0;color:var(--muted);font-size:14px;max-width:640px;line-height:1.5}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.actions button{font:inherit;font-size:14px;font-weight:600;padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.actions button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.tabs{display:none;max-width:1100px;margin:8px auto 0;padding:0 16px;gap:8px}
+.tabs button{flex:1;font:inherit;font-size:14px;font-weight:600;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.tabs button[aria-selected=true]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.phones{display:flex;justify-content:center;gap:40px;padding:16px 16px 40px;flex-wrap:wrap}
+.device-wrap{display:flex;flex-direction:column;align-items:center;gap:10px}
+.share-inbox{width:340px;max-width:100%;box-sizing:border-box;padding:10px 12px;border-radius:14px;background:#fff;color:#16181c;font:13px/1.4 system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.25);display:flex;gap:10px;align-items:center}
+.share-inbox[hidden]{display:none}
+.share-inbox b{display:block;font-size:12px;color:#07c160}
+.share-inbox span{flex:1;min-width:0}
+.share-inbox button{flex:none;border:0;border-radius:10px;background:#07c160;color:#fff;font-weight:700;padding:8px 12px;cursor:pointer}
+.device-label{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.device-label span{font-weight:400;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.device-box{width:calc(399px * var(--k,1));height:calc(836px * var(--k,1))}
+.device{width:399px;height:836px;padding:12px;border-radius:56px;background:var(--frame);box-shadow:0 20px 50px rgba(0,0,0,.25);transform:scale(var(--k,1));transform-origin:0 0;position:relative}
+.device .screen-host{width:375px;height:812px;border-radius:44px;overflow:hidden;position:relative}
+.notch{position:absolute;top:12px;left:50%;width:150px;height:30px;margin-left:-75px;background:var(--frame);border-radius:0 0 18px 18px;z-index:200}
+.note{max-width:1100px;margin:0 auto;padding:0 16px 32px;color:var(--muted);font-size:13px;line-height:1.6}
+.note b{color:var(--ink)}
+.boot-error{position:absolute;inset:0;padding:60px 20px;font:13px/1.5 monospace;color:#b42318;background:#fff;white-space:pre-wrap;overflow:auto;z-index:300}
+@media (max-width:860px){.tabs{display:flex}.phones[data-one] .device-wrap:not(.on){display:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>Uniearn clickable preview</h1>
+    <p>The real mini-program pages, running in your browser with a simulated WeChat cloud. Post an order on the student phone and take it on the runner phone. No WeChat login, no real money.</p>
+  </div>
+  <div class="actions">
+    <button id="lang" type="button">App language: English</button>
+    <button id="reset" type="button">Reset demo data</button>
+  </div>
+</header>
+<nav class="tabs" role="tablist">
+  <button role="tab" aria-selected="true" data-tab="0">Student phone</button>
+  <button role="tab" aria-selected="false" data-tab="1">Runner phone</button>
+  <button role="tab" aria-selected="false" data-tab="2">Friend phone</button>
+</nav>
+<main class="phones" data-one>
+  <section class="device-wrap on">
+    <div class="device-label"><i class="dot"></i>Student <span>posts orders</span></div>
+    <div class="device-box"><div class="device"><div class="notch"></div><div class="screen-host" id="phone-0"></div></div></div>
+  </section>
+  <section class="device-wrap">
+    <div class="device-label"><i class="dot" style="background:#c2410c"></i>Runner <span>already verified, takes jobs</span></div>
+    <div class="device-box"><div class="device"><div class="notch"></div><div class="screen-host" id="phone-1"></div></div></div>
+  </section>
+  <section class="device-wrap">
+    <div class="device-label"><i class="dot" style="background:#2b59c3"></i>Friend <span>new, not signed in</span></div>
+    <div class="share-inbox" id="share-inbox" hidden></div>
+    <div class="device-box"><div class="device"><div class="notch"></div><div class="screen-host" id="phone-2"></div></div></div>
+  </section>
+</main>
+<p class="note"><b>How it works:</b> all three phones run the same page code, layouts and styles as the WeChat build, and share one simulated cloud that runs the real order and account logic. Data is kept in this browser until you press Reset. Runner applications are approved instantly. WeChat-only features (phone-number login, sharing, payments, screenshot reading, push notifications) show a message instead.</p>
+<script src="https://cdn.jsdelivr.net/npm/preact@10.22.1/dist/preact.umd.js"></script>
+<script src="bundle.js"></script>
+<script src="cloud.js"></script>
+<script src="runtime.js"></script>
+<script>
+(function () {
+  const cloud = new PreviewCloud.CloudHost();
+  const users = [{ id: 'student', openid: 'preview-student', label: 'Student' }, { id: 'runner', openid: 'preview-runner', label: 'Runner' }, { id: 'friend', openid: 'preview-friend', label: 'Friend' }];
+  const phones = window.previewPhones = [];
+  function fit() {
+    const narrow = window.innerWidth <= 860, avail = Math.min(window.innerWidth - 32, 399), byHeight = (window.innerHeight - 40) / 836;
+    const k = Math.max(0.5, Math.min(1, narrow ? avail / 399 : Math.min(1, Math.max(byHeight, 0.72))));
+    document.documentElement.style.setProperty('--k', k);
+    phones.forEach(p => p.scale = k);
+  }
+  window.addEventListener('resize', fit);
+  document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-selected', String(x === b)));
+    document.querySelectorAll('.device-wrap').forEach((w, i) => w.classList.toggle('on', String(i) === b.dataset.tab));
+  }));
+  document.getElementById('reset').addEventListener('click', () => {
+    if (!confirm('Clear all preview orders, accounts and settings on all phones?')) return;
+    cloud.reset(); location.reload();
+  });
+  const LANG = 'uniearn-preview:language';
+  let lang = 'en';
+  try { lang = localStorage.getItem(LANG) || 'en'; } catch (_) {}
+  const langButton = document.getElementById('lang');
+  const showLang = () => { langButton.textContent = lang === 'en' ? 'App language: English' : 'App language: 中文'; };
+  showLang();
+  langButton.addEventListener('click', () => {
+    lang = lang === 'en' ? 'zh' : 'en';
+    try { localStorage.setItem(LANG, lang); } catch (_) {}
+    showLang();
+    phones.forEach(p => p.setLanguage(lang, true));
+  });
+  async function seed(c) {
+    // The runner arrives already approved so jobs can be taken straight away.
+    const id = PreviewCloud.cryptoModule.createHash('sha256').update('preview-runner').digest('hex'), now = Date.now();
+    c.state.collections.uniearn_accounts = c.state.collections.uniearn_accounts || {};
+    c.state.collections.uniearn_accounts[id] = { _id: id, profile: { name: 'Leo Runner', phone: '13800000002', dorm: '', room: '', pickup: '', universityId: 'xjtlu', campusId: 'sip' }, loggedOut: true, authRevision: 1, createdAt: now, updatedAt: now, runnerRulesAcceptedAt: now, verification: { status: 'verified', method: 'preview', realName: 'Leo Runner', gender: 'male', phone: '13800000002', studentId: '2251001', submittedAt: now, checkedAt: now } };
+    if (window.PreviewSeed) await window.PreviewSeed(c);
+  }
+  // "WeChat message" on the Friend phone when someone taps Share trip in the preview.
+  window.addEventListener('preview-share', e => {
+    const box = document.getElementById('share-inbox'), d = e.detail || {};
+    if (!box || d.from === 'friend') return;
+    box.innerHTML = '';
+    const text = document.createElement('span'), who = document.createElement('b'), open = document.createElement('button');
+    who.textContent = d.label + ' shared in your dorm group';
+    text.append(who, document.createTextNode(d.title || d.path));
+    open.textContent = 'Open';
+    open.addEventListener('click', () => { const f = phones.find(p => p.id === 'friend'); if (f) f.wx.reLaunch({ url: d.path }); box.hidden = true; });
+    box.append(text, open); box.hidden = false;
+    document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-selected', String(x.dataset.tab === '2')));
+  });
+  cloud.seed(seed).then(() => {
+    users.forEach((u, i) => {
+      const host = document.getElementById('phone-' + i);
+      try {
+        const phone = new PreviewRuntime.Phone(host, { ...u, cloud });
+        phones.push(phone); fit(); phone.start(lang);
+      } catch (e) {
+        console.error(e);
+        const box = document.createElement('div'); box.className = 'boot-error'; box.textContent = 'The preview could not start:\n' + (e.stack || e.message);
+        host.append(box);
+      }
+    });
+    fit();
+  });
+})();
+</script>
+</body>
+</html>
