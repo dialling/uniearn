@@ -19,7 +19,9 @@ console.log('Order waiting: offer card under the ticket like the task page, oran
 assert.ok(!xml.includes("'Your offer'"), 'no "Your offer" price in the heading');
 assert.match(read('pages/request/index.js'), /offerAmounts:\[1\.88,3\.88,5\.88\]/); assert.match(read('pages/task/index.js'), /offerAmounts:\[1\.88,3\.88,5\.88\]/);
 assert.ok(!read('pages/task/index.wxml').includes("'Your offer'"), 'task heading has no "Your offer" either');
-assert.match(xml, /bindtap="toggleDetails"/); assert.match(xml, /<block wx:if="\{\{!\(request\.isMine && request\.status==='waiting'\) \|\| detailsOpen\}\}">/, 'details fold while waiting');
+assert.match(xml, /bindtap="toggleDetails"/); assert.match(xml, /<block wx:if="\{\{detailsOpen\}\}">/, 'Order details fold in every state');
+assert.match(xml, /class="journey-details-title rq-fold \{\{detailsOpen\?'rq-fold-open':''\}\}" bindtap="toggleDetails"><text>[^<]*<\/text><view class="rq-fold-chev/, 'chevron shown in every state');
+assert.match(read('pages/request/index.js'), /toggleDetails\(\)\{this\.setData\(\{detailsOpen:!this\.data\.detailsOpen\}\);\}/);
 assert.match(xml, /<view wx:if="\{\{!\(request\.isMine && request\.status==='waiting'\)\}\}" class="journey-detail-row journey-price-row">/, 'no reward row while waiting (the total is in the offer card)');
 // 2026-11-18: the placement photos card comes first, then the offer, then the folded Order details.
 assert.ok(xml.indexOf('rider-photo-foot') < xml.indexOf('class="flow-card offer-card rq-offer"') && xml.indexOf('class="flow-card offer-card rq-offer"') < xml.indexOf('class="flow-card journey-details"'), 'order: photos, offer, details');

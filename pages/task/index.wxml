@@ -87,7 +87,7 @@
 
 </view>
 <view wx:if="{{!(request.isMine && request.status==='waiting')}}" class="flow-card">
-<view class="strong">{{zh?'费用明细':'Price details'}}</view>
+<view class="strong tk-fold {{priceOpen?'tk-fold-open':''}}" bindtap="togglePrice"><text>{{zh?'费用明细':'Price details'}}</text><view class="tk-fold-end"><text wx:if="{{!priceOpen}}" class="tk-fold-total">¥{{request.total}}</text><view class="tk-fold-chev {{priceOpen?'open':''}}"></view></view></view><block wx:if="{{priceOpen}}">
 <view wx:if="{{request.taskTip>0}}" class="row hint"><text>{{zh?'任务赏金':'Task offer'}}</text><text>¥{{request.taskBaseText}}</text></view><view wx:if="{{request.taskTip>0}}" class="row hint"><text>{{zh?'给跑手的小费':'Runner tip'}}</text><text>¥{{request.taskTipText}}</text></view><view class="row hint">
 <text>{{ui.serviceFee}}</text>
 <text>¥{{request.fee}}</text>
@@ -96,7 +96,7 @@
 <text>{{ui.totalSim}}</text>
 <text>¥{{request.total}}</text>
 </view>
-<view wx:if="{{request.status==='refunded'||request.status==='cancelled'}}" class="hint">{{ui.refund}}{{request.refundAmount}}</view>
+<view wx:if="{{request.status==='refunded'||request.status==='cancelled'}}" class="hint">{{ui.refund}}{{request.refundAmount}}</view></block>
 </view>
 <order-feedback order-id="{{request.id}}" unread="{{request.supportUnread}}" resolvable="{{request.canResolveFeedback}}" completes="{{request.feedbackResolutionCompletes}}" zh="{{zh}}" dark="{{darkClass}}"/>
 </view>
