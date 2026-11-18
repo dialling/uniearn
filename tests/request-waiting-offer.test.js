@@ -21,3 +21,5 @@ assert.match(read('pages/request/index.js'), /offerAmounts:\[1\.88,3\.88,5\.88\]
 assert.ok(!read('pages/task/index.wxml').includes("'Your offer'"), 'task heading has no "Your offer" either');
 assert.match(xml, /bindtap="toggleDetails"/); assert.match(xml, /<block wx:if="\{\{!\(request\.isMine && request\.status==='waiting'\) \|\| detailsOpen\}\}">/, 'details fold while waiting');
 assert.match(xml, /<view wx:if="\{\{!\(request\.isMine && request\.status==='waiting'\)\}\}" class="journey-detail-row journey-price-row">/, 'no reward row while waiting (the total is in the offer card)');
+// 2026-11-18: the placement photos card comes first, then the offer, then the folded Order details.
+assert.ok(xml.indexOf('rider-photo-foot') < xml.indexOf('class="flow-card offer-card rq-offer"') && xml.indexOf('class="flow-card offer-card rq-offer"') < xml.indexOf('class="flow-card journey-details"'), 'order: photos, offer, details');
