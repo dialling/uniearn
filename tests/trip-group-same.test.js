@@ -17,6 +17,7 @@ assert.equal(groupSame([{ ...base, id: 'r1', night: true }, { ...base, id: 'r2',
 assert.match(xml, /&& !item\.groupHidden\}\}" class="flow-card \{\{item\.groupIds\?'trip-group-card':''\}\}"/);
 assert.match(xml, /data-ids="\{\{item\.groupIdsText\|\|item\.id\}\}" bindtap="collectAndDeliver"/, 'one pick-up for the group');
 assert.match(xml, /data-ids="\{\{item\.groupIdsText\|\|item\.id\}\}" bindtap="photo"/, 'one delivery photo for the group');
-assert.match(xml, /wx:for="\{\{item\.groupIds\}\}" wx:for-item="gid" wx:key="\*this" class="btn pickup-cancel pickup-cancel-small" data-id="\{\{gid\}\}" bindtap="cancel"/, 'cancel each order on its own');
 assert.match(js, /for\(const id of ids\)\{const r=store\.get\(\)\.requests\.find\(x=>x\.id===id\);if\(r&&r\.status==='collected'\)await orders\.act\('deliver',\{id,photo\}\);\}/);
-console.log('Trip groups: same person, locker, destination and step share one card; cancel stays per order');
+assert.ok(xml.includes('class="trip-group-remind"'), 'reminds how many bags'); assert.ok(xml.includes("'Picked up '+item.groupBoxes+' bags, go deliver'"), 'the button says the bag count');
+assert.ok(xml.includes('data-ids="{{item.groupIdsText}}" bindtap="cancelPick"'), 'one cancel button for the group'); assert.ok(js.includes('cancelPick(e){') && js.slice(js.indexOf('cancelPick(e){'), js.indexOf('},cancel(e){')).includes('wx.showActionSheet'), 'it asks which order');
+console.log('Trip groups: same person, locker, destination and step share one card; one Cancel that asks which order, bag-count reminder');

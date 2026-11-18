@@ -215,5 +215,7 @@ button.btn.delivery-photo-btn{display:flex;align-items:center;justify-content:ce
 .dl-actions .btn{flex:1;min-width:0;margin:0!important;width:auto!important;white-space:nowrap;padding-left:12rpx;padding-right:12rpx}
 .dl-actions .dl-send{flex:1.5}
 /* 2026-11-17: grouped orders (same person, locker and destination): one card, one pick-up and one delivery photo; each order keeps its own cancel. */
-.pickup-cancel-group{display:flex;gap:12rpx;flex-wrap:wrap}
-.pickup-cancel-group .pickup-cancel-small{flex:1;min-width:0;margin:0!important;width:auto!important}
+/* 2026-11-18: grouped card reminds how many bags to take. */
+.trip-group-remind{display:flex;align-items:center;gap:12rpx;margin:4rpx 0 16rpx;padding:16rpx 20rpx;border-radius:20rpx;background:#fff4e5;color:#9a4a00;font-size:25rpx;font-weight:800}
+.trip-group-remind-icon{flex:none;width:40rpx;height:40rpx}
+.page-dark .trip-group-remind{background:#3a2416;color:#f4a06e}
