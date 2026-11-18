@@ -10,7 +10,7 @@ const seen=async(h,who,id)=>(await h.call(who,'sync')).snapshot.requests.find(r=
  const c=await seen(h,'customer',id);assert.equal(c.reportNotice,'Customer not responding');assert.equal(c.feedbackOpen,true);
  assert.equal(notice.text(c.reportNotice,true,false),'Runner reported: Customer not responding');
  assert.equal(notice.text(c.reportNotice,true,true),'跑手反馈：顾客联系不上');
- assert.ok(!JSON.stringify(c).includes('Called twice'),'the runner’s words never reach the customer');
+ assert.ok(!JSON.stringify(c).includes('Called twice'),'the runnerʼs words never reach the customer');
  await h.call('runner','orderFeedbackSubmit',{id,note:'Still no answer',photo:''});
  assert.equal((await seen(h,'customer',id)).reportNotice,'Customer not responding','follow-up chat keeps the picked reason');
  assert.equal((await h.call('runner','orderFeedbackResolve',{id})).ok,true);

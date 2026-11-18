@@ -20,7 +20,7 @@ module.exports={
       {
         "n": "4",
         "title": "Reply to your runner within 10 minutes",
-        "text": "Once a runner takes your order, keep an eye on messages. If they can’t get into your building and you don’t reply within 10 minutes, they leave it in the lobby and it counts as delivered."
+        "text": "Once a runner takes your order, keep an eye on messages. If they canʼt get into your building and you donʼt reply within 10 minutes, they leave it in the lobby and it counts as delivered."
       },
       {
         "n": "5",
@@ -65,7 +65,7 @@ module.exports={
       {
         "n": "1",
         "title": "What we keep",
-        "text": "Your account name, phone, orders, and student verification result if you run jobs. Runner applicants can verify their phone with WeChat phone verification; the number comes from WeChat and is only used for UniEarn. Typed numbers are checked by an admin. Saved route shortcuts are kept on this device."
+        "text": "Your account name, phone, orders, and student verification result if you run jobs. Runner applicants can verify their phone with WeChat phone verification; the number comes from WeChat and is only used for Uniearn. Typed numbers are checked by an admin. Saved route shortcuts are kept on this device."
       },
       {
         "n": "2",

@@ -1,5 +1,5 @@
 const orders=require('../../utils/orders'),store=require('../../utils/store'),f=require('../../utils/workflow'),copy=require('../../utils/orders-copy'),yuni=require('../../utils/yuni'),routeLabel=require('../../utils/route-label'),stickerCatalog=require('../../utils/chat-stickers');
-const QUICK_REPLIES=[["我在路上了","I’m on my way"],["我到楼下了","I’m downstairs"],["谢谢！","Thank you!"],["已取到物品","I’ve picked up your items"],["物品已送达","Your items have been delivered"],["已放在门口","I’ve left them at your door"],["请下楼取一下","Please come downstairs to collect them"],["请稍等一下","Please give me a moment"],["收到，辛苦啦！","Got it, thank you for your help!"],["方便接电话吗？","Can you take a call?"]];
+const QUICK_REPLIES=[["我在路上了","Iʼm on my way"],["我到楼下了","Iʼm downstairs"],["谢谢！","Thank you!"],["已取到物品","Iʼve picked up your items"],["物品已送达","Your items have been delivered"],["已放在门口","Iʼve left them at your door"],["请下楼取一下","Please come downstairs to collect them"],["请稍等一下","Please give me a moment"],["收到，辛苦啦！","Got it, thank you for your help!"],["方便接电话吗？","Can you take a call?"]];
 function stickerToken(id){return '[[uniearn-sticker:'+id+']]';}
 function stickerId(text){const match=String(text||'').match(/^\[\[uniearn-sticker:([a-z0-9_-]{1,40})\]\]$/);return match&&match[1]||'';}
 function stickers(zh){return stickerCatalog.list(zh);}

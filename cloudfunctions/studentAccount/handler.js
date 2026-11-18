@@ -71,7 +71,7 @@ function createHandler({getOpenId,repo,env,now=Date.now}) {
         if(account.loggedOut||!account.profile)return fail('LOGIN_REQUIRED',zh?'请先登录。':'Sign in first.');
         // Only a picture this account uploaded itself (order-photos/<account id>/…) can become its avatar; '' removes it.
         const avatarUrl=typeof event.avatarUrl==='string'?event.avatarUrl.trim():null;
-        if(avatarUrl===null||avatarUrl.length>400||(avatarUrl&&!new RegExp('^cloud://[^\\s/]+/order-photos/'+id+'/[a-f0-9]{32}\\.jpg$').test(avatarUrl)))return fail('INVALID_AVATAR',zh?'头像无法使用，请重新选择图片。':'That picture can’t be used. Choose another one.');
+        if(avatarUrl===null||avatarUrl.length>400||(avatarUrl&&!new RegExp('^cloud://[^\\s/]+/order-photos/'+id+'/[a-f0-9]{32}\\.jpg$').test(avatarUrl)))return fail('INVALID_AVATAR',zh?'头像无法使用，请重新选择图片。':'That picture canʼt be used. Choose another one.');
         const profile={...account.profile};if(avatarUrl)profile.avatarUrl=avatarUrl;else delete profile.avatarUrl;
         const patch={profile,updatedAt:now()};
         await repo.patch(id,patch);return {ok:true,account:publicAccount({...account,...patch},id)};

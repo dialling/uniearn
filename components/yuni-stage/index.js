@@ -49,7 +49,7 @@ Component({
       const next = {
         zh, motion: motion.enabled(), soundOn: sound.enabled(), scene: SCENES[l.scene] ? l.scene : 'morning', dark: sc.dark, ride: l.ride || 'floe', rideBack: ride.back, rideFront: ride.front,
         sceneStyle: '--sky:' + sc.sky + ';--sea-a:' + sc.a + ';--sea-b:' + sc.b + ';--sea-c:' + sc.c + ';--berg-a:' + sc.ba + ';--berg-b:' + sc.bb + ';--wave:url(\'' + wave + '\')',
-        hungry: this.hungry ? this.hungry() : false, testPoints: !!play.testPoints, testRounds: !!play.testRounds, friend: l.friend === 'eagle', dailyFish: require('../../utils/checkin').dailyFishWaiting(), orderFish: require('../../utils/order-fish').waiting().length, hasRod: rig.isTool(play.worn.hand), bucketCount: play.bucket.length, triesLeft: play.fishing.left || 0, balance: play.balance
+        hungry: this.hungry ? this.hungry() : false, testPoints: !!play.testPoints, testRounds: !!play.testRounds, friend: l.friend === 'eagle', dailyFish: require('../../utils/checkin').dailyFishWaiting(), orderFish: require('../../utils/order-fish').waiting().length, hasRod: rig.isTool(play.worn.hand), bucketCount: this.holdBucket != null ? this.holdBucket : play.bucket.length, triesLeft: play.fishing.left || 0, balance: play.balance
       };
       // One count on Feed: every fish ready to eat (today's dried fish, fish from orders, caught fish). gift = a dried or order fish is waiting.
       next.gift = !!(next.dailyFish || next.orderFish); next.feedCount = (next.dailyFish ? 1 : 0) + next.orderFish + next.bucketCount;
@@ -265,6 +265,7 @@ Component({
       if (on) { sound.unlock(); sound.coin(); this.say(this.t('音效已打开', 'Sound on'), 1400); } else this.say(this.t('音效已关闭', 'Sound off'), 1400);
     },
     noop() {},
+    bumpBucket() { this.holdBucket = null; this.sync(); this.setData({ bucketBump: true }); setTimeout(() => this.setData({ bucketBump: false }), 420); },
     // ── feeding: a caught fish flies to Yuni, and the server then adds its points ──
     feed() {
       sound.unlock();
@@ -395,7 +396,7 @@ Component({
       leg(0);
     },
     // Very rare catch: a bottle with a coupon. It leaps out to Yuni, then a gold card shows the coupon.
-    landCoupon(F, c) {
+    landCoupon(F, c) { this.holdBucket = null;
       const zh = this.data.zh, g = this.geo, done = () => {
         this.F = null; sound.catchFish('super'); setTimeout(() => sound.fanfare(), 400);
         this.setData({ prize: null, casting: false, bobStyle: '', lineStyle: '', card: { r: 'coupon', coupon: true, src: '/assets/yuni-play/bottle.svg', face: c.face, title: c.title, zh: c.zh, name: zh ? '瓶子里有优惠券！' : 'A coupon in a bottle!', sub: zh ? c.zh : c.title, pts: zh ? '已放进我的优惠券 · ' + c.days + ' 天内有效' : 'Saved to My coupons · ' + c.days + ' days' } });
@@ -411,7 +412,7 @@ Component({
     async shareCoupon() {
       const c = this.data.card; if (!c || !c.coupon || this.sharing) return;
       const w = typeof wx !== 'undefined' ? wx : null;
-      if (!w || !w.showShareImageMenu || !w.createOffscreenCanvas || !w.canvasToTempFilePath) { ui.toast(this.t('请在微信里打开 UniEarn 分享', 'Open UniEarn in WeChat to share')); return; }
+      if (!w || !w.showShareImageMenu || !w.createOffscreenCanvas || !w.canvasToTempFilePath) { ui.toast(this.t('请在微信里打开 Uniearn 分享', 'Open Uniearn in WeChat to share')); return; }
       this.sharing = true; if (w.showLoading) w.showLoading({ title: this.t('正在生成图片', 'Making your picture') });
       try {
         const W = 600, H = 800, cv = w.createOffscreenCanvas({ type: '2d', width: W, height: H }), ctx = cv.getContext('2d');
@@ -424,14 +425,14 @@ Component({
       } catch (e) { if (w.hideLoading) w.hideLoading(); ui.toast(this.t('图片生成失败，请截屏分享', 'Could not make the picture. Take a screenshot to share.')); }
       this.sharing = false;
     },
-    // The share picture: mint sky, a gold coupon ticket, Yuni on the sea, and UniEarn at the bottom.
+    // The share picture: mint sky, a gold coupon ticket, Yuni on the sea, and Uniearn at the bottom.
     drawShareCard(ctx, W, H, c, img) {
       const zh = this.data.zh, round = (x, y, w, h, r) => { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); };
       let g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#d6f1e6'); g.addColorStop(.68, '#a9dcc7'); g.addColorStop(.68, '#0b7a55'); g.addColorStop(1, '#085c41');
       ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
       ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.beginPath(); ctx.arc(500, 110, 70, 0, Math.PI * 2); ctx.fill();
       ctx.textAlign = 'center'; ctx.fillStyle = '#1c2a54';
-      ctx.font = '800 26px sans-serif'; ctx.fillText(zh ? 'UniEarn · 和 Yuni 一起钓鱼' : 'UniEarn · Fishing with Yuni', W / 2, 70);
+      ctx.font = '800 26px sans-serif'; ctx.fillText(zh ? 'Uniearn · 和 Yuni 一起钓鱼' : 'Uniearn · Fishing with Yuni', W / 2, 70);
       ctx.font = '900 46px sans-serif'; ctx.fillText(zh ? '我钓到了一张优惠券！' : 'I fished up a coupon!', W / 2, 130);
       // gold ticket with notches
       const tx = 90, ty = 170, tw = 420, th = 260;
@@ -446,7 +447,7 @@ Component({
       // Yuni on the sea
       ctx.fillStyle = '#f4fbff'; ctx.beginPath(); ctx.ellipse(W / 2, 640, 170, 26, 0, 0, Math.PI * 2); ctx.fill();
       if (img) ctx.drawImage(img, W / 2 - 120, 395, 240, 240);
-      ctx.fillStyle = '#ffffff'; ctx.font = '800 30px sans-serif'; ctx.fillText(zh ? '在 UniEarn 和 Yuni 一起钓鱼' : 'Go fishing with Yuni on UniEarn', W / 2, 715);
+      ctx.fillStyle = '#ffffff'; ctx.font = '800 30px sans-serif'; ctx.fillText(zh ? '在 Uniearn 和 Yuni 一起钓鱼' : 'Go fishing with Yuni on Uniearn', W / 2, 715);
       ctx.font = '600 22px sans-serif'; ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.fillText(zh ? '运气好就能钓到优惠券' : 'With luck, you can reel in a coupon too', W / 2, 752);
     },
     // The bucket: go back to Yuni and feed a fish (the same as the Feed button).
@@ -569,7 +570,7 @@ Component({
     },
     openBook() { const zh = this.data.zh, seen = this.play().seen; this.setData({ card: null, bookOpen: true, book: catalog.FISH.map(f => { const k = seen.includes(f.id); return { id: f.id, src: rig.fish(f.id), name: k ? (zh ? f.zh : f.en) : '???', r: f.r, known: k, sub: (zh ? catalog.RARITY[f.r].zh : catalog.RARITY[f.r].en) + ' +' + catalog.RARITY[f.r].points }; }) }); },
     closeBook() { this.setData({ bookOpen: false }); },
-    stopFishing() { this.F = null; clearTimeout(this.biteTimer); clearTimeout(this.missTimer); clearTimeout(this.timingTimer); if (this.data.meter) this.setData({ meter: null }); (this.nibbleTimers || []).forEach(clearTimeout); this.setData({ casting: false, bobStyle: '', bobClass: '', lineStyle: '', shadowClass: '', bang: false, splash: null }); this.drawGame(); },
+    stopFishing() { this.holdBucket = null; this.F = null; clearTimeout(this.biteTimer); clearTimeout(this.missTimer); clearTimeout(this.timingTimer); if (this.data.meter) this.setData({ meter: null }); (this.nibbleTimers || []).forEach(clearTimeout); this.setData({ casting: false, bobStyle: '', bobClass: '', lineStyle: '', shadowClass: '', bang: false, splash: null }); this.drawGame(); },
     splashAt(x, y) { const id = ++fxId; this.setData({ splash: { id, style: 'left:' + x + 'px;top:' + y + 'px' } }); setTimeout(() => { if (this.data.splash && this.data.splash.id === id) this.setData({ splash: null }); }, 900); },
     line(tip, bx, by) { const dx = bx - tip.x, dy = by - tip.y; return 'left:' + tip.x + 'px;top:' + tip.y + 'px;width:' + Math.hypot(dx, dy).toFixed(1) + 'px;transform:rotate(' + Math.atan2(dy, dx).toFixed(4) + 'rad);background:' + (this.play().worn.hand === 'trident' ? '#ffd35c' : '#f4f6f8'); },
     // Stop! and the pulls react the moment the finger touches the button, not when it lifts (a tap waits for the lift).
@@ -674,24 +675,37 @@ Component({
       const F = this.F; if (!F || F.phase !== 'bite') return; F.phase = 'landing'; clearTimeout(this.missTimer);
       this.setData({ bang: false, shadowClass: '', bobClass: 'gone', castClass: 'waiting', castLabel: '...', castSub: '' }); this.splashAt(F.bx, F.by);
       this.act({ face: 'happy', wings: 'reach', body: 'squash', mouth: true }, 900);
-      let got;
+      // Keep the old bucket count until the fish lands in the bucket.
+      this.holdBucket = this.data.bucketCount; let got;
       try { const res = await orders.act('yuniFish', { landed: true, perfect: !!F.perfect }); got = res && (res.fish || res.coupon) ? res : res && res.value; } catch (e) { ui.toast(e.message || e); this.stopFishing(); return; }
       if (got && got.coupon) return this.landCoupon(F, got.coupon);
       if (got && got.eagle) setTimeout(() => this.eagleCatch(F, got.eagle), 1500);
       if (!got || !got.fish) { this.stopFishing(); return; }
-      const f = catalog.fish(got.fish), zh = this.data.zh, g = this.geo, done = () => {
+      const f = catalog.fish(got.fish), zh = this.data.zh, g = this.geo, done = (shown) => {
         this.F = null; sound.catchFish(f.r);
         this.setData({ prize: null, casting: false, bobStyle: '', lineStyle: '', card: { src: rig.fish(f.id), name: zh ? f.zh : f.en, sub: (zh ? catalog.RARITY[f.r].zh : catalog.RARITY[f.r].en) + (got.isNew ? (zh ? '，图鉴新发现' : ', new in your fish book') : ''), pts: zh ? '喂给 Yuni +' + catalog.RARITY[f.r].points + ' 积分' : 'Feed it for +' + catalog.RARITY[f.r].points + ' pts', r: f.r } });
-        clearTimeout(this.cardTimer); this.cardTimer = setTimeout(() => this.setData({ card: null }), 2800); this.drawGame(); this.cheer(); this.lookAt(0, 0);
+        if (!shown) { clearTimeout(this.cardTimer); this.cardTimer = setTimeout(() => this.setData({ card: null }), 2800); this.bumpBucket(); } this.drawGame(); this.cheer(); this.lookAt(0, 0);
         if (f.r === 'super') { this.act({ face: 'love', wings: 'cheer', body: 'jump', mouth: true }, 1600); this.confetti(30); this.say(this.t('超稀有！' + f.zh + '！', 'Super rare! A ' + f.en.toLowerCase() + '!'), 2800); }
         else if (f.r === 'rare') { this.act({ face: 'love', wings: 'cheer', body: 'jump', mouth: true }, 1900); this.confetti(16); this.say(this.t('哇，稀有的！', 'Wow, a rare one!'), 2400); }
         else { this.act({ face: 'happy', wings: 'cheer', body: 'jump', mouth: true }, 1500); this.say(this.t('钓到了！可以吃吗？', 'Got one! Can I eat it?'), 2200); }
       };
       if (!this.data.motion || !g) return done();
+      // 2026-11-18: show the fish first. It leaps out of the water into the card (where the fish picture sits),
+      // stays on show for a moment, then flies from the card into the bucket.
       return this.createSelectorQuery().select('#ysStage').boundingClientRect().select('.ys-bucket-btn').boundingClientRect().exec(res => {
         const st = res && res[0], bk = res && res[1], tx = st && bk ? bk.left - st.left + bk.width / 2 : g.cx, ty = st && bk ? bk.top - st.top + bk.height * .3 : g.cy + 40;
-        this.setData({ prize: { src: rig.fish(f.id), kind: 'catch', style: '--fx:' + F.bx + 'px;--fy:' + F.by + 'px;--tx:' + tx + 'px;--ty:' + ty + 'px' } });
-        setTimeout(() => { this.setData({ bucketBump: true }); setTimeout(() => this.setData({ bucketBump: false }), 420); done(); }, 880);
+        const win = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync(), rpx = (win.windowWidth || 375) / 750;
+        const sx = st ? st.width / 2 : g.cx, sy = 229 * rpx, src = rig.fish(f.id), hold = f.r === 'super' ? 2400 : f.r === 'rare' ? 2000 : 1500;
+        const style = '--fx:' + F.bx + 'px;--fy:' + F.by + 'px;--sx:' + sx + 'px;--sy:' + sy + 'px;--tx:' + tx + 'px;--ty:' + ty + 'px';
+        this.setData({ prize: { src, kind: 'leap', style } });
+        setTimeout(() => {
+          done(true);
+          clearTimeout(this.cardTimer);
+          this.cardTimer = setTimeout(() => {
+            this.setData({ prize: { src, kind: 'stash', style }, 'card.leaving': true });
+            this.cardTimer = setTimeout(() => { this.setData({ prize: null, card: null }); this.bumpBucket(); }, 700);
+          }, hold);
+        }, 560);
       });
     }
   }

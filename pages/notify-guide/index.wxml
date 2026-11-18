@@ -8,7 +8,7 @@
   <view class="hint">{{item.body}}</view>
  </view>
  <view class="flow-card">
-  <view class="strong">{{zh?'第 4 步找不到「抢单提醒」？':'Can’t find “New job alert” in step 4?'}}</view>
+  <view class="strong">{{zh?'第 4 步找不到「抢单提醒」？':'Canʼt find “New job alert” in step 4?'}}</view>
   <view class="hint">{{zh?'微信只会把你授权过的通知列在设置里。先在弹窗里点「允许」授权一次，再回到这里就能看到两项。':'WeChat only lists notifications you have already authorised. Allow one in the pop-up first, then come back and both entries will appear.'}}</view>
  </view>
  <button class="btn" bindtap="openSettings">{{zh?'打开设置':'Open settings'}}</button>

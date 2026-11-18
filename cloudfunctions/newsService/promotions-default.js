@@ -7,5 +7,5 @@ module.exports={
  {id:'return2026',title:'¥1 off × 3 orders',short:'¥1 off',face:'¥1',sub:'off',description:'Welcome back · for students who ordered last month',max:1,kind:'total',days:30,returning:true,count:3}
  ],
  weekly:{enabled:true,target:5,amount:5},rush:{enabled:true,station:'North gate',timeLabel:'11:30–13:00',hours:[11.5,13],amount:1},
- news:[{title:'South gate pick-ups are open',body:'Takeaway at South gate can now be posted and taken. Same rules as North gate.',date:'2026-10-01'},{title:'Meet us at the Clubs & Societies fair',body:'Ask the UniEarn team about upcoming campus activities.',date:'2026-09-28'}]
+ news:[{title:'South gate pick-ups are open',body:'Takeaway at South gate can now be posted and taken. Same rules as North gate.',date:'2026-10-01'},{title:'Meet us at the Clubs & Societies fair',body:'Ask the Uniearn team about upcoming campus activities.',date:'2026-09-28'}]
 };

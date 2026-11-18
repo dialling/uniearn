@@ -11,7 +11,7 @@
    <view class="ad-card">
     <view class="ad-card-head"><text class="ad-card-title">{{zh?'收件人':'Recipient'}}</text></view>
     <view class="ad-label">{{zh?'姓名':'Name'}}</view><input always-embed placeholder-class="ue-ph" class="ad-input" value="{{form.owner}}" data-field="owner" bindinput="field" maxlength="40" placeholder="{{zh?'如：张三':'e.g. Ming Li'}}"/>
-    <view class="ad-label">{{zh?'性别':'Gender'}}</view><view class="pills ad-pills"><view class="pill dorm-male {{form.dormGender==='male'?'selected':''}}" data-value="male" bindtap="chooseGender">{{zh?'男寝':'Men’s dorms'}}</view><view class="pill dorm-female {{form.dormGender==='female'?'selected':''}}" data-value="female" bindtap="chooseGender">{{zh?'女寝':'Women’s dorms'}}</view></view>
+    <view class="ad-label">{{zh?'性别':'Gender'}}</view><view class="pills ad-pills"><view class="pill dorm-male {{form.dormGender==='male'?'selected':''}}" data-value="male" bindtap="chooseGender">{{zh?'男寝':'Menʼs dorms'}}</view><view class="pill dorm-female {{form.dormGender==='female'?'selected':''}}" data-value="female" bindtap="chooseGender">{{zh?'女寝':'Womenʼs dorms'}}</view></view>
     <view class="ad-label">{{zh?'电话':'Phone'}}</view><input always-embed placeholder-class="ue-ph" class="ad-input" type="number" maxlength="11" value="{{form.phone}}" data-field="phone" bindinput="field" placeholder="{{zh?'方便跑手联系':'So the runner can reach you'}}"/>
    </view>
    <view class="ad-card">

@@ -16,7 +16,7 @@ async function teamReply(h,who,id,text){const t=ticketOf(h,who,id);const res=awa
  assert.equal((await h.call('runner','orderFeedbackSubmit',{id,reason:'Cannot find address',note:'Building 7 has two doors',photo:''})).ok,true);
  assert.equal(h.state.requests.find(r=>r.id===id).status,'collected','a runner report never changes the order');
  let c=await row(h,'customer',id);assert.equal(c.reportNotice,'Cannot find address');assert.equal(c.feedbackOpen,true,'the customer sees the order issue too');assert.equal(c.canResolveFeedback,false,'but only the reporter can close it');
- assert.equal(notice.text(c.reportNotice,true,false),'Runner reported: Can’t find the address');
+ assert.equal(notice.text(c.reportNotice,true,false),'Runner reported: Canʼt find the address');
  let r=await row(h,'runner',id);assert.equal(r.feedbackOpen,true);assert.equal(r.canResolveFeedback,true);assert.equal(r.supportUnread,0);
  await teamReply(h,'runner',id,'We asked the customer to come to the north door.');
  r=await row(h,'runner',id);assert.equal(r.supportUnread,1,'the team reply shows as unread');assert.equal(r.supportPreview,'We asked the customer to come to the north door.');
@@ -41,7 +41,7 @@ async function teamReply(h,who,id,text){const t=ticketOf(h,who,id);const res=awa
  assert.equal((await h.call('customer','orderFeedbackSubmit',{id,reason:'Not received',note:'Nothing at my door',photo:''})).ok,true);
  const frozen=h.state.requests.find(x=>x.id===id);assert.equal(frozen.status,'disputed','the payout is frozen');
  h.edit(s=>h.engine.expire(s,frozen.settle_hold_until+7*86400000));assert.equal(h.state.requests.find(x=>x.id===id).status,'disputed','still frozen a week later');
- r=await row(h,'runner',id);assert.equal(r.reportNotice,'Not received');assert.equal(r.dispute.note,undefined,'the runner never sees the customer’s words');
+ r=await row(h,'runner',id);assert.equal(r.reportNotice,'Not received');assert.equal(r.dispute.note,undefined,'the runner never sees the customerʼs words');
  assert.equal(r.feedbackOpen,true,'the runner knows the payout is on hold');
  await teamReply(h,'customer',id,'The runner left it at the lobby desk. Can you check?');
  c=await row(h,'customer',id);assert.equal(c.supportUnread,1);

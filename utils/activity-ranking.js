@@ -36,9 +36,9 @@ function view(config,snapshot,progression,registered,zh,updatedAt,now=Date.now()
  const myRank=registered&&visible&&ready&&Number.isInteger(snapshot.myRank)&&snapshot.myRank>0?snapshot.myRank:null;
  const points=registered?Number(snapshot?.points??progression?.points)||0:0,myPoints=registered&&visible&&ready?Number(snapshot.rankingPoints)||0:0;
  const personalTitle=!registered?(zh?'登录查看名次':'Log in to see your rank'):myRank?(zh?'第 '+myRank+' 名':'Rank '+myRank):clock.rankingPhase==='not_open'||clock.rankingPhase==='scheduled'?(zh?'尚未开榜':'Not started'):(zh?'暂未上榜':'Not ranked');
- const hint=!registered?(zh?'参与校园任务，积攒你的积分':'Earn points through campus tasks'):!visible?(zh?'长期积分继续累计，开榜后才计入本期':'Keep earning level points. Ranking starts when the round opens.'):!ready?(zh?'正在同步本期榜单':'Syncing this round’s leaderboard'):myRank&&rewardFor(myRank)?(zh?'当前名次奖励：':'Current rank reward: ')+rewardFor(myRank).prize:clock.rankingPhase==='ended'?(zh?'本期已结束，期待下次参与':'This round has ended. Join the next round.'):zh?'完成积分任务，争取进入前 '+maxRank+' 名':'Earn points and aim for the top '+maxRank;
+ const hint=!registered?(zh?'参与校园任务，积攒你的积分':'Earn points through campus tasks'):!visible?(zh?'长期积分继续累计，开榜后才计入本期':'Keep earning level points. Ranking starts when the round opens.'):!ready?(zh?'正在同步本期榜单':'Syncing this roundʼs leaderboard'):myRank&&rewardFor(myRank)?(zh?'当前名次奖励：':'Current rank reward: ')+rewardFor(myRank).prize:clock.rankingPhase==='ended'?(zh?'本期已结束，期待下次参与':'This round has ended. Join the next round.'):zh?'完成积分任务，争取进入前 '+maxRank+' 名':'Earn points and aim for the top '+maxRank;
  const emptyTitle=!visible?(zh?'排行榜尚未开启':'The leaderboard is not open'):!ready?(zh?'榜单同步中':'Syncing leaderboard'):zh?'本期还没有同学上榜':'No one has ranked this round yet';
- const emptyText=!visible?(zh?'先积攒日常积分，活动开启后完成任务即可参与。':'Earn level points now. Complete tasks after the round opens to rank.'):!ready?(zh?'获取本期真实排名后会显示在这里。':'This round’s rankings will appear when synced.'):clock.rankingPhase==='ended'?(zh?'本期没有积分排名记录。':'No ranking records for this round.'):(zh?'活动期间获得第一笔积分，就能进入榜单。':'Earn your first points during the round to join the board.');
+ const emptyText=!visible?(zh?'先积攒日常积分，活动开启后完成任务即可参与。':'Earn level points now. Complete tasks after the round opens to rank.'):!ready?(zh?'获取本期真实排名后会显示在这里。':'This roundʼs rankings will appear when synced.'):clock.rankingPhase==='ended'?(zh?'本期没有积分排名记录。':'No ranking records for this round.'):(zh?'活动期间获得第一笔积分，就能进入榜单。':'Earn your first points during the round to join the board.');
  return {...clock,rankingRows:rows,rankingRewards:rewards,rankingRewardSeats:maxRank,
   rankingTopPrize:rewards[0]?.prize||'',rankingTopCap:rewards[0]?.cap||'',
   rankingPrizeLabel:zh?(clock.rankingPhase==='not_open'||clock.rankingPhase==='scheduled'?'奖励预告':'本期最高奖励'):(visible?'Top reward':'Reward preview'),
@@ -46,7 +46,7 @@ function view(config,snapshot,progression,registered,zh,updatedAt,now=Date.now()
   rankingMyRank:myRank,rankingMyPoints:myPoints,rankingLevelPoints:points,rankingPersonalTitle:personalTitle,rankingPersonalHint:hint,
   rankingEmptyTitle:emptyTitle,rankingEmptyText:emptyText,
   rankingUpdated:visible&&ready&&updatedAt?(zh?'更新于 ':'Updated ')+new Date(updatedAt+CHINA).toISOString().slice(11,16):'',
-  rankingRuleText:zh?'按活动期间新增积分排名，长期积分不清零。同分时，先达到当前积分的同学优先。每月最多一期，起止时间以本期展示为准。':'Only points earned during this round count. Lifetime points stay intact. Ties go to whoever reached the score first. At most one round per month; see this round’s dates.'
+  rankingRuleText:zh?'按活动期间新增积分排名，长期积分不清零。同分时，先达到当前积分的同学优先。每月最多一期，起止时间以本期展示为准。':'Only points earned during this round count. Lifetime points stay intact. Ties go to whoever reached the score first. At most one round per month; see this roundʼs dates.'
  };
 }
 module.exports={timing,view};

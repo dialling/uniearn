@@ -28,9 +28,9 @@ const page={data:JSON.parse(JSON.stringify(global.__page.data)),setData(v){Objec
 global.__page.localize.call(page);
 assert.equal(page.data.tabs[0].label,'用户须知');
 global.__page.choose.call(page,{currentTarget:{dataset:{i:2}}});
-assert.equal(page.data.doc.title,'UniEarn · 隐私政策');
+assert.equal(page.data.doc.title,'Uniearn · 隐私政策');
 store.update(s=>s.language='en');
 global.__page.localize.call(page);
 assert.equal(page.data.tabs[2].label,'Privacy policy');
-assert.equal(page.data.doc.title,'UniEarn · Privacy policy');
+assert.equal(page.data.doc.title,'Uniearn · Privacy policy');
 console.log('Terms: 4 bilingual documents, no leftover brand, no real-payment promises, tab switching passed.');

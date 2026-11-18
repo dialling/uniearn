@@ -15,7 +15,7 @@ function normalize(a={}){
  out.recipientGender=place&&['male','female'].includes(a.recipientGender)?a.recipientGender:'';
  out.name=out.name||(place?'Other':'My dorm');out.dropMode=place?'meet':(a.dropMode?a.dropMode==="lobby"?'lobby':'door':/lobby/i.test(out.dropNote)?'lobby':'door');
  if(place){out.room='';out.dorm=/library|图书馆/i.test(out.deliveryAddress)?'Library':/classroom|教室/i.test(out.deliveryAddress)?'Classroom':/sports|体育/i.test(out.deliveryAddress)?'Sports centre':'Campus meeting point';out.dropNote='Meet at the stated location';}
- else out.dropNote=out.dropMode==='lobby'?'Lobby · I’ll come down':'At my door';
+ else out.dropNote=out.dropMode==='lobby'?'Lobby · Iʼll come down':'At my door';
  return out;
 }
 function validate(a){const x=normalize(a);if(!x.station)throw Error('Choose where to collect.');if(x.destinationType==='place'){if(!x.deliveryAddress)throw Error('Describe exactly where to deliver.');if(x.deliveryAddress.length>500)throw Error('Keep the delivery address under 500 characters.');}else if(!x.dorm||x.dorm==='Choose building'||!x.room)throw Error('Choose your building and add a room.');if(x.destinationType!=='place'&&campus.isBuilding(x.dorm)){if(x.floor&&(x.floor<1||x.floor>campus.maxFloorOf(x.dorm)))throw Error('That floor does not exist in this building.');const ar=campus.areaOfBuilding(x.dorm);if(x.area&&ar&&x.area!==ar.id)throw Error('That building is not in the chosen area.');}if(!x.owner)throw Error('Add the name on the order.');if(!validPhone(x.phone))throw Error(phoneHint);return x;}

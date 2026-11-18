@@ -3,7 +3,7 @@
 <view class="page navpage me-page me-v2">
 <view wx:if="{{loading}}" class="muted">{{language==='zh'?'正在加载账户…':'Loading your account…'}}</view><view wx:if="{{error}}" class="notice-error">{{error}}</view>
  <view wx:if="{{profile.loggedOut || !profile.onboarded}}" class="card">
-  <view class="route">{{language==='zh'?'欢迎来到 UniEarn':'Welcome to UniEarn'}}</view>
+  <view class="route">{{language==='zh'?'欢迎来到 Uniearn':'Welcome to Uniearn'}}</view>
   <view class="muted">{{language==='zh'?'你已退出登录。登录后可查看订单和已保存的账户信息。':'You are logged out. Sign in to see your orders and saved account.'}}</view>
   <button class="btn" bindtap="login" disabled="{{loading || loggingOut}}">{{language==='zh'?'登录':'Sign in'}}</button>
  </view>
@@ -40,7 +40,7 @@
   <view class="me-row" hover-class="me-row-press" bindtap="info" data-topic="privacy"><image class="me-ico" src="/assets/yuni-play/i-shield.svg" mode="aspectFit"/><view class="me-grow"><view class="me-row-title">{{ui.privacy}}</view></view><view class="me-chev"/></view>
   <view class="me-row" hover-class="me-row-press" bindtap="info" data-topic="support"><image class="me-ico" src="/assets/yuni-play/i-help.svg" mode="aspectFit"/><view class="me-grow"><view class="me-row-title">{{ui.helpCenter}}</view><view class="me-val">{{ui.helpCenterSub}}</view></view><view class="me-chev"/></view>
  </view>
- <view class="me-version">{{ui.footer}}<view>UniEarn v{{version}}</view></view>
+ <view class="me-version">{{ui.footer}}<view>Uniearn v{{version}}</view></view>
 </view>
 </block></view><app-nav active="profile"></app-nav>
 <yuni-assistant id="me-yuni" topic="me" language="{{language}}"></yuni-assistant>
@@ -53,7 +53,7 @@
  <view class="guide-modal yg-modal {{ygBottom?'yg-bottom':''}} {{darkClass?'yg-dark':''}}" catchtap="noop">
   <view class="row yg-top"><view class="yg-dots"><view wx:for="{{ygDots}}" wx:key="*this" class="yg-dot {{item===yg?'on':item<yg?'past':''}}"/></view><text class="yg-skip" hover-class="me-press" bindtap="ygFinish">{{language==='en'?'Skip':'跳过'}}</text></view>
   <view wx:for="{{[yg]}}" wx:key="*this" class="yg-step {{ygDir==='back'?'from-left':''}}"><view class="guide-body"><image class="yg-yuni" src="/assets/yuni-{{ygItem.pose}}.png" mode="aspectFit"/><view><view class="yg-name">Yuni</view><view class="guide-title">{{ygItem.title}}</view><view class="guide-text">{{ygItem.text}}</view></view></view></view>
-  <view class="yg-actions"><button wx:if="{{yg>0}}" class="yg-btn yg-back" bindtap="ygBack">{{language==='en'?'Back':'上一步'}}</button><button class="yg-btn yg-next" bindtap="ygNext">{{yg===0?(language==='en'?'Show me':'带我看看'):yg===ygLast?(language==='en'?'Let’s play':'开始玩'):(language==='en'?'Next':'下一步')}}</button></view>
+  <view class="yg-actions"><button wx:if="{{yg>0}}" class="yg-btn yg-back" bindtap="ygBack">{{language==='en'?'Back':'上一步'}}</button><button class="yg-btn yg-next" bindtap="ygNext">{{yg===0?(language==='en'?'Show me':'带我看看'):yg===ygLast?(language==='en'?'Letʼs play':'开始玩'):(language==='en'?'Next':'下一步')}}</button></view>
  </view>
 </block>
 </view>

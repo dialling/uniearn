@@ -30,7 +30,7 @@ function page(){delete require.cache[require.resolve('../pages/jobs/index')];req
  store.update(s=>{s.language='zh';s.profile={...s.profile,accountId:h.engine.idFor('stranger'),campusId:'sip',onboarded:true,studentVerified:true,runnerRulesAccepted:true};s.publicJobs=[pub];s.requests=[];});
  const hall=page();hall.refresh();
  const card=hall.data.cards.find(c=>c.ids&&c.ids.includes(created.value.id));
- assert.ok(card,'in-progress orders stay visible in another student’s hall');
+ assert.ok(card,'in-progress orders stay visible in another studentʼs hall');
  assert.equal(card.running,true);
  assert.equal(card.myRun,false);
  assert.equal(card.location.room||'','','another student never sees the room');

@@ -1,9 +1,9 @@
 <view style="{{motionStyle}}">
 <view class="iv-page">
  <view class="iv-bg">
-  <text class="iv-mark m1">UniEarn</text>
-  <text class="iv-mark m2">UniEarn</text>
-  <text class="iv-mark m3">UniEarn</text>
+  <text class="iv-mark m1">Uniearn</text>
+  <text class="iv-mark m2">Uniearn</text>
+  <text class="iv-mark m3">Uniearn</text>
   <view class="iv-streaks"></view>
   <view class="iv-glow"></view>
  </view>

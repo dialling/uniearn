@@ -1,4 +1,4 @@
-// UniEarn runs on one campus in China. Show every time in China time (UTC+8)
+// Uniearn runs on one campus in China. Show every time in China time (UTC+8)
 // even when a student's phone uses another time zone.
 const OFFSET=8*3600000,DAY=86400000;
 const pad=n=>String(n).padStart(2,'0');

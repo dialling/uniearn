@@ -70,7 +70,7 @@ Page({
   register() { wx.reLaunch({url: '/pages/profile/index'}); },
   use(e) { require('../../utils/nav').navigateTo({url: '/pages/takeaway/index?coupon=' + encodeURIComponent(e.currentTarget.dataset.id)}); },
   invite(e) { require('../../utils/nav').navigateTo({url: '/pages/invite/index' + (e && e.code ? '?invite=' + encodeURIComponent(e.code) : '')}); },
-  onShareAppMessage() { return {title: this.data.zh ? '加入 UniEarn · 校园代取' : 'Join UniEarn · campus pickups', path: '/pages/invite/index?invite=' + this.data.inviteCode}; },
+  onShareAppMessage() { return {title: this.data.zh ? '加入 Uniearn · 校园代取' : 'Join Uniearn · campus pickups', path: '/pages/invite/index?invite=' + this.data.inviteCode}; },
   onLoad(o={}) {if(o.section==='coupons'){this.couponFocus=true;this.setData({screen:'offers'});}if(o.openInvite==='1'||o.invite)this.invite({code:o.invite||''}); },
   openSection(e){const screen=e.currentTarget.dataset.screen;if(!['home','offers','university','uniearn'].includes(screen))return;this.setData({screen,selectedNews:null});wx.pageScrollTo({scrollTop:0,duration:0});measure(this);},
   backToNews(){this.setData({screen:'home',selectedNews:null});wx.pageScrollTo({scrollTop:0,duration:0});},

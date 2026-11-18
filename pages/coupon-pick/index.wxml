@@ -9,7 +9,7 @@
    <view class="cp-right"><view class="cp-name">{{item.name}}<text wx:if="{{best===item.id}}" class="cp-best">{{zh?'最优':'Best'}}</text></view><view class="cp-until">{{item.note||item.until}}</view></view>
    <view class="cp-radio"><text wx:if="{{selected===item.id}}">✓</text></view>
   </view>
-  <view class="cp-none {{!selected?'on':''}}" data-id="" bindtap="pick">{{zh?'不使用优惠券':'Don’t use a coupon'}}</view>
+  <view class="cp-none {{!selected?'on':''}}" data-id="" bindtap="pick">{{zh?'不使用优惠券':'Donʼt use a coupon'}}</view>
  </block>
  <block wx:else>
   <view wx:if="{{!expired.length}}" class="cp-empty">{{zh?'没有过期的优惠券。':'No expired coupons.'}}</view>

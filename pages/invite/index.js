@@ -31,12 +31,12 @@ Page({
   input(e){this.setData({inviteInput:e.detail.value});},
   async redeem(){
     const code=String(this.data.inviteInput||'').trim(),zh=this.data.zh;
-    if(!code){wx.showToast({title:zh?'请输入同学的邀请码':'Enter a classmate’s code',icon:'none'});return;}
+    if(!code){wx.showToast({title:zh?'请输入同学的邀请码':'Enter a classmateʼs code',icon:'none'});return;}
     if(this.data.redeeming)return;
     this.setData({redeeming:true});
     try{await orders.act('invite',{code});store.update(s=>{if(s.pendingInviteCode===code)delete s.pendingInviteCode;});this.setData({inviteInput:''});wx.showToast({title:zh?'邀请已绑定':'Invitation linked'});}
     catch(err){ui.toast(err);}
     finally{this.setData({redeeming:false});}
   },
-  onShareAppMessage(){return {title:this.data.zh?'加入 UniEarn，双方各得 10 积分':'Join UniEarn — 10 points for both of us',path:'/pages/invite/index?invite='+this.data.inviteCode};}
+  onShareAppMessage(){return {title:this.data.zh?'加入 Uniearn，双方各得 10 积分':'Join Uniearn — 10 points for both of us',path:'/pages/invite/index?invite='+this.data.inviteCode};}
 });

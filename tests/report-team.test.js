@@ -18,7 +18,7 @@ const open=(h,id)=>Object.values(h.state.members).flatMap(m=>m.supportTickets||[
  assert.equal((await h.call('runner','teamResolveReport',{id})).ok,false,'only the team can do this');
  const done=await h.call('other','teamResolveReport',{id});assert.equal(done.ok,true,done.error);assert.equal(done.value.closed,2);
  assert.equal(open(h,id).length,0,'every report on the order is closed');
- let r=await row(h,'runner',id);assert.equal(r.feedbackOpen,false);assert.equal(r.supportUnread,1,'the runner gets the team’s closing message');
+ let r=await row(h,'runner',id);assert.equal(r.feedbackOpen,false);assert.equal(r.supportUnread,1,'the runner gets the teamʼs closing message');
  c=await row(h,'customer',id);assert.equal(c.feedbackOpen,false);assert.equal(c.supportUnread,1,'so does the customer');assert.equal(c.reportNotice,'');
  assert.equal(h.state.requests.find(x=>x.id===id).status,'taken','resolving a report never changes the order itself');
 
@@ -31,7 +31,7 @@ const open=(h,id)=>Object.values(h.state.members).flatMap(m=>m.supportTickets||[
  assert.equal(h.state.requests.find(x=>x.id===id).status,'disputed');
  const refused=await h.call('other','teamResolveReport',{id});assert.equal(refused.ok,false);assert.match(refused.error,/release or refund/);
  const released=await h.call('other','resolveDispute',{id,decision:'release'});assert.equal(released.ok,true,released.error);
- assert.equal(h.state.requests.find(x=>x.id===id).status,'confirmed');assert.equal(open(h,id).length,0,'release closes both sides’ reports');
+ assert.equal(h.state.requests.find(x=>x.id===id).status,'confirmed');assert.equal(open(h,id).length,0,'release closes both sidesʼ reports');
  c=await row(h,'customer',id);assert.equal(c.feedbackOpen,false);assert.equal(c.supportUnread,1);
 
  // 3. "Customer rude or unsafe" is no longer a topic; an older report with that reason stays between the runner and the team.

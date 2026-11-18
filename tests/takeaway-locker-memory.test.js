@@ -18,7 +18,7 @@ p.customLocker(change('x'.repeat(201)));assert.equal(p.data.lockerReady,false);a
 store.update(s=>s.language='en');next=page();assert.equal(next.data.pickupPoint,'文星自填取件点');assert.equal(next.data.lockerOptions.at(-1).label,'Other (type it yourself)');
 const night=page({night:'1'});night.customLocker(change('夜市不会覆盖外卖柜'));assert.equal(page().data.pickupPoint,'文星自填取件点');
 store.update(s=>s.profile.accountId='another-student');p.syncLockers();assert.equal(p.data.pickupPoint,'','changing accounts clears the old account selection');assert.equal(page().data.lockerReady,false);
-store.update(s=>s.profile.accountId='student');next=page();assert.equal(next.data.pickupPoint,'文星自填取件点','switching back restores only this account’s selection');
+store.update(s=>s.profile.accountId='student');next=page();assert.equal(next.data.pickupPoint,'文星自填取件点','switching back restores only this accountʼs selection');
 store.update(s=>s.profile.campusId='another-campus');next.syncLockers();assert.equal(next.data.pickupPoint,'');store.update(s=>s.profile.campusId='sip');next.syncLockers();assert.equal(next.data.pickupPoint,'文星自填取件点');
 store.update(s=>{s.takeawayLockerMemory[lockers.memoryScope()].wencui={choice:'removed-locker',custom:''};});assert.equal(lockers.recall({...recipient,dorm:'C01'}),null,'removed options are not silently restored');
 store.flush();assert.ok(persisted.takeawayLockerMemory['student:sip']);delete require.cache[require.resolve('../utils/store')];const reloaded=require('../utils/store');assert.equal(reloaded.get().profile.accountId,'student');assert.equal(lockers.recall(recipient).custom,'文星自填取件点','memory survives reloading the local cache');

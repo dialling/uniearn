@@ -310,7 +310,7 @@ function execute(s, actor, account, event, now = Date.now()) {
     // 2026-11-14: the team closes an order's reports for both sides; frozen orders still need release or refund.
     check(account._admin===true||account._reviewer===true,'Admin access required.');const r=s.requests.find(x=>x.id===event.id);check(r,'Order not found.');
     check(r.status!=='disputed','This order is frozen. Choose release or refund instead.');
-    const closed=require('./order-feedback').teamClose(s,r.id,now,'resolved');check(closed>0,'This order has no open report.');f.event(r,'UniEarn team resolved the report',now);value={id:r.id,closed};
+    const closed=require('./order-feedback').teamClose(s,r.id,now,'resolved');check(closed>0,'This order has no open report.');f.event(r,'Uniearn team resolved the report',now);value={id:r.id,closed};
   } else if(action==='editTask'){
     // 2026-11-18: the customer can fix the task text until a runner accepts.
     const r=s.requests.find(x=>x.id===event.id);

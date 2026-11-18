@@ -108,3 +108,29 @@
 .rc-new{display:inline-flex;align-items:center;gap:10rpx;margin-bottom:14rpx;padding:6rpx 16rpx;border-radius:99rpx;background:#fde8e6;color:#c8261b;font-size:23rpx;font-weight:800}
 .rc-dot{width:14rpx;height:14rpx;border-radius:50%;background:#e5322d;box-shadow:0 0 0 4rpx #e5322d33}
 .rq-tab-dot{display:inline-block;width:14rpx;height:14rpx;margin-left:8rpx;border-radius:50%;background:#e5322d;vertical-align:top}
+/* 2026-11-18: role tabs with an icon; the line under them explains the chosen tab. */
+.orders-header .flow-title{margin:0 0 22rpx}
+.orders-header .service-tabs.rq-roles{padding:6rpx;border-radius:28rpx;background:#e9e7e0;border:0}
+.rq-roles .glass-thumb{left:6rpx;top:6rpx;bottom:6rpx;border-radius:22rpx}
+.rq-roles .glass-thumb.of-2{width:calc((100% - 12rpx) / 2)}
+.rq-roles .service-tab{display:flex;align-items:center;justify-content:center;gap:10rpx;min-height:92rpx;line-height:1.2;padding:0 12rpx;border-radius:22rpx;color:#77736a;font-size:26rpx;font-weight:700}
+.rq-roles .service-tab.active{color:#16181c;transform:none}
+.rq-role-icon{flex:none;width:44rpx;height:44rpx;opacity:.55;transition:var(--ue-transition,opacity .25s ease,transform .3s cubic-bezier(.34,1.5,.55,1))}
+.rq-roles .service-tab.active .rq-role-icon{opacity:1;transform:scale(1.08)}
+.rq-role-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.rq-roles .rq-tab-dot{margin-left:-4rpx;align-self:flex-start;margin-top:22rpx}
+.orders-header .flow-sub.rq-role-sub{margin:16rpx 4rpx 0;font-size:23rpx;color:#8a877c}
+.page-dark .orders-header .service-tabs.rq-roles{background:#242522}
+.page-dark .rq-roles .service-tab{color:#a9a69c}
+.page-dark .rq-roles .service-tab.active{color:#16181c}
+/* 2026-11-18: same size and alignment as the Jobs header (padding, title row height, tab track and tab height). */
+.requests-page .orders-header{padding:28rpx 42rpx 18rpx}
+.requests-page .orders-header .flow-title{display:flex;align-items:center;min-height:68rpx;margin:0;font-size:38rpx;line-height:1.4}
+.requests-page .orders-header .service-tabs.rq-roles{margin:22rpx 0 0;padding:5rpx;border-radius:23rpx;background:#f0efea}
+.requests-page .rq-roles .glass-thumb{left:5rpx;top:5rpx;bottom:5rpx;border-radius:19rpx}
+.requests-page .rq-roles .glass-thumb.of-2{width:calc((100% - 10rpx) / 2)}
+.requests-page .rq-roles .service-tab{min-height:64rpx;gap:8rpx;border-radius:19rpx;font-size:23rpx}
+.requests-page .rq-role-icon{width:34rpx;height:34rpx}
+.requests-page .rq-roles .rq-tab-dot{margin-top:16rpx}
+.requests-page .orders-header .flow-sub.rq-role-sub{margin:14rpx 4rpx 0}
+.page-dark.requests-page .orders-header .service-tabs.rq-roles{background:#242522}

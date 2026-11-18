@@ -29,5 +29,5 @@ try{if(this._submitApplication){accountState=(await account.call('apply',{applic
  if(rulesError&&accountState&&accountState.verification&&accountState.verification.status==='verified')throw rulesError;
 }catch(e){this.setData({error:require('../../utils/server-messages').message(e,this.data.zh)});}finally{this.setData({busy:false});}},startTrip(){wx.reLaunch({url:'/pages/jobs/index'});},
  refresh(){this.onShow();},profile(){require('../../utils/nav').navigateTo({url:'/pages/profile/index'});},jobs(){wx.reLaunch({url:'/pages/jobs/index'});},firstTrip(){if(this.data.suggestion)require('../../utils/nav').navigateTo({url:'/pages/job/index?ids='+this.data.suggestion.id});else this.jobs();},
- support(){const zh=this.data.zh;wx.setClipboardData({data:this.data.accountId,success:()=>wx.showModal({title:zh?'已复制账号编号':'Account reference copied',content:zh?'把这个编号发给 UniEarn 管理员，可加快审核。':'Send this reference to a UniEarn admin to speed up your review.',showCancel:false})});}
+ support(){const zh=this.data.zh;wx.setClipboardData({data:this.data.accountId,success:()=>wx.showModal({title:zh?'已复制账号编号':'Account reference copied',content:zh?'把这个编号发给 Uniearn 管理员，可加快审核。':'Send this reference to a Uniearn admin to speed up your review.',showCancel:false})});}
 });

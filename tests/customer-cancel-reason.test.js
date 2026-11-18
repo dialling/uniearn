@@ -177,7 +177,7 @@ const mainRun = (async () => {
   assert.deepEqual(page.data.cancelOptions.map(row => row.value), ['信息填错', '不需要了', '我自己取了', '跑手太慢', '没人接单', '测试', '其他']);
   assert.deepEqual(page.data.cancelOptions.map(row => row.label), ['信息填错', '不需要了', '我自己取了', '跑手太慢', '没人接单', '测试', '其他']);
   require('../utils/customer-cancel').stop(page);
-  console.log('Publisher cancel uses XP’s cancel vocabulary, sends the chosen reason from the Cancel order button, and keeps the 其他 note optional.');
+  console.log('Publisher cancel uses XPʼs cancel vocabulary, sends the chosen reason from the Cancel order button, and keeps the 其他 note optional.');
 })().catch(error => { console.error(error); process.exitCode = 1; });
 
 // Sheet: Back before a reason is chosen, Cancel order after; older servers get 其他 with the reason as the note.

@@ -429,3 +429,11 @@
 @keyframes ys-count-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
 .ys-pts-bump{animation:var(--ue-animation,ys-pts-pop .6s cubic-bezier(.3,1.6,.5,1))}
 @keyframes ys-pts-pop{0%{transform:scale(1)}35%{transform:scale(1.16)}100%{transform:scale(1)}}
+/* 2026-11-18: catch = the fish leaps into the card first, then flies from the card into the bucket. */
+.ys-prize-leap{animation:ys-prize-leap .56s cubic-bezier(.25,.8,.35,1) both}
+.ys-prize-stash{z-index:12;animation:ys-prize-stash .7s cubic-bezier(.45,0,.6,1) both}
+@keyframes ys-prize-leap{0%{transform:translate(var(--fx),var(--fy)) rotate(-70deg) scale(.6)}60%{transform:translate(calc(var(--fx) * .3 + var(--sx) * .7),calc(var(--sy) - 60rpx)) rotate(12deg) scale(1.5)}100%{transform:translate(var(--sx),var(--sy)) rotate(0) scale(1.375)}}
+@keyframes ys-prize-stash{0%{transform:translate(var(--sx),var(--sy)) rotate(0) scale(1.375)}30%{transform:translate(var(--sx),calc(var(--sy) - 34rpx)) rotate(-14deg) scale(1.45)}100%{transform:translate(var(--tx),var(--ty)) rotate(30deg) scale(.45)}}
+.ys-card.is-leaving{animation:ys-card-leave .32s ease-in both}
+.ys-card.is-leaving .ys-img{opacity:0}
+@keyframes ys-card-leave{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.92)}}

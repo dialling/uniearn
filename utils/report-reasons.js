@@ -11,7 +11,7 @@ const COPY = {
   'Food not ready': ['外卖没到或找不到', 'Food not ready or not there', '外卖柜里没有，或外卖还没送到', 'Not in the locker yet, or cannot be found'],
   'Seal broken': ['封口已破', 'Seal already broken', '取件时封口已经破损（需拍照）', 'The seal was broken at pickup (photo needed)'],
   'Customer not responding': ['顾客联系不上', 'Customer not responding', '电话、消息都没有回应', 'No reply to calls or messages'],
-  'Cannot find address': ['找不到送达地点', 'Can’t find the address', '地址不清楚或找不到', 'The address is unclear or cannot be found'],
+  'Cannot find address': ['找不到送达地点', 'Canʼt find the address', '地址不清楚或找不到', 'The address is unclear or cannot be found'],
   'Customer unsafe or rude': ['顾客行为不当', 'Customer rude or unsafe', '言语骚扰、威胁或让你感到不安全', 'Harassment, threats or feeling unsafe'],
   'Task not completed': ['任务未完成', 'Task not completed', '尚未完成，或没有收到约定的结果', 'The agreed task or result is still missing'],
   'Result differs': ['完成情况不符', 'Result differs from request', '完成结果与约定要求不符', 'The result differs from what was agreed'],

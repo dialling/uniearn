@@ -5,7 +5,7 @@
  <view class="yn-hero" hover-class="yn-press" bindtap="levels">
   <view class="yn-hero-copy">
    <view class="yn-name">Yuni</view>
-   <view class="yn-sub">{{zh?'你在 UniEarn 的企鹅船长':'Your penguin captain on UniEarn'}}</view>
+   <view class="yn-sub">{{zh?'你在 Uniearn 的企鹅船长':'Your penguin captain on Uniearn'}}</view>
    <view class="yn-level"><text class="yn-level-no">Lv.{{levelNo}}</text><text>{{levelName}}</text></view>
    <view class="yn-next">{{nextText}} ›</view>
   </view>

@@ -9,7 +9,7 @@
 
  <view wx:if="{{tripId && trip}}" class="tp-trip">
   <image src="/assets/icons3d/trip.svg" mode="aspectFit"/>
-  <view class="tp-grow"><view class="tp-trip-route">{{trip.station}} → {{trip.destinationType==='place'?(trip.deliveryAddress||trip.dorm):trip.dorm}}</view><view wx:if="{{trip.pickupAddress}}" class="tp-note">{{trip.pickupAddress}}</view><view wx:if="{{trip.waypoint}}" class="tp-note">{{zh?'途经：':'Via: '}}{{trip.waypoint}}</view><view class="tp-note">{{zh?'将加入这位跑手的行程，无需另设截止时间。':'Your task joins this runner’s route. No separate deadline is needed.'}}</view></view>
+  <view class="tp-grow"><view class="tp-trip-route">{{trip.station}} → {{trip.destinationType==='place'?(trip.deliveryAddress||trip.dorm):trip.dorm}}</view><view wx:if="{{trip.pickupAddress}}" class="tp-note">{{trip.pickupAddress}}</view><view wx:if="{{trip.waypoint}}" class="tp-note">{{zh?'途经：':'Via: '}}{{trip.waypoint}}</view><view class="tp-note">{{zh?'将加入这位跑手的行程，无需另设截止时间。':'Your task joins this runnerʼs route. No separate deadline is needed.'}}</view></view>
  </view>
  <view wx:if="{{tripId && !tripReady}}" class="tp-error">{{tripError}}</view>
 

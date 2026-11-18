@@ -46,7 +46,7 @@ function matches(order,value){
 function tabs(value={},language='zh'){
  const selected=normalize(value),en=language==='en',all={key:'',label:en?'All':'全部'};
  return {
-  genderTabs:[all,{key:'male',label:en?'Men’s dorms':'男寝'},{key:'female',label:en?'Women’s dorms':'女寝'}],
+  genderTabs:[all,{key:'male',label:en?'Menʼs dorms':'男寝'},{key:'female',label:en?'Womenʼs dorms':'女寝'}],
   areaTabs:[all,...config.areas.map(area=>({key:area,label:en?areaNames[area]:area}))],
   typeTabs:[all,...config.types.map(type=>({key:type.key,label:en?typeNames[type.key]:type.label}))],
   buildingTabs:selected.areaFilter?[all,...config.buildings[selected.areaFilter].map(building=>({key:building,label:building==='芭菲'&&en?'Bafei':building}))]:[]

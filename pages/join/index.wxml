@@ -30,8 +30,8 @@
    <view class="jn-steps-title">{{zh?'怎么运作':'How it works'}}</view>
    <view class="jn-step"><text class="jn-step-no">1</text><view class="jn-step-copy"><view class="jn-step-name">{{trip.category==='takeout'?(zh?'添加你的外卖':'Add your takeaway'):trip.category==='parcel'?(zh?'添加你的快递':'Add your parcel'):(zh?'写下你的需求':'Say what you need')}}</view><view class="jn-step-text">{{zh?'填写房间号和电话，设置赏金。':'Add your room and phone, and set your offer.'}}</view></view></view>
    <view class="jn-step"><text class="jn-step-no">2</text><view class="jn-step-copy"><view class="jn-step-name">{{zh?'跑手确认':'The runner confirms'}}</view><view class="jn-step-text">{{zh?'订单也会出现在接单大厅，其他跑手也可以接。':'Your order is also on the job board, so another runner can take it too.'}}</view></view></view>
-   <view class="jn-step"><text class="jn-step-no">3</text><view class="jn-step-copy"><view class="jn-step-name">{{zh?'送到你手上':'Delivered to you'}}</view><view class="jn-step-text">{{zh?'跑手取到和送达时都会通知你。':'You get a message when it’s picked up and delivered.'}}</view></view></view>
-   <view class="jn-private"><image class="jn-private-icon" mode="aspectFit" src="/assets/icons3d/note.svg"/><text>{{zh?'只有这趟行程的跑手能看到你的取件信息。':'Only this trip’s runner can see your pickup details.'}}</text></view>
+   <view class="jn-step"><text class="jn-step-no">3</text><view class="jn-step-copy"><view class="jn-step-name">{{zh?'送到你手上':'Delivered to you'}}</view><view class="jn-step-text">{{zh?'跑手取到和送达时都会通知你。':'You get a message when itʼs picked up and delivered.'}}</view></view></view>
+   <view class="jn-private"><image class="jn-private-icon" mode="aspectFit" src="/assets/icons3d/note.svg"/><text>{{zh?'只有这趟行程的跑手能看到你的取件信息。':'Only this tripʼs runner can see your pickup details.'}}</text></view>
   </view>
 
   <view class="flow-bottom jn-bottom">

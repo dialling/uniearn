@@ -107,7 +107,7 @@ const items=[
   {
     "id": "yuni-19",
     "name": "冲鸭",
-    "en": "Let’s go",
+    "en": "Letʼs go",
     "src": "/stickers/sticker-pack-3/19.gif",
     "pack": "sticker-pack-3"
   },
