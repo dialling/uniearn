@@ -214,3 +214,6 @@ button.btn.delivery-photo-btn{display:flex;align-items:center;justify-content:ce
 .dl-actions{display:flex;gap:20rpx;margin-top:8rpx}
 .dl-actions .btn{flex:1;min-width:0;margin:0!important;width:auto!important;white-space:nowrap;padding-left:12rpx;padding-right:12rpx}
 .dl-actions .dl-send{flex:1.5}
+/* 2026-11-17: grouped orders (same person, locker and destination): one card, one pick-up and one delivery photo; each order keeps its own cancel. */
+.pickup-cancel-group{display:flex;gap:12rpx;flex-wrap:wrap}
+.pickup-cancel-group .pickup-cancel-small{flex:1;min-width:0;margin:0!important;width:auto!important}
