@@ -38,7 +38,8 @@ function createRequest(s, data) {
     reward=Math.round(boxes(data)*Number(data.pricePerBox)*100)/100;
   }
   const areaId=data.area||(campus.areaOfBuilding(data.dorm)||{}).id||'';
-  const floor=Number(data.floor)||campus.floorOfRoom(data.room);
+  const fromRoom=campus.floorOfRoom(data.room);
+  const floor=fromRoom||Number(data.floor)||0;
   const floorSurcharge=campus.highFloor(areaId,floor,data.dorm)?1:0;
   reward=Math.round((Number(reward)+floorSurcharge)*100)/100;
   const r={...data,area:areaId,floor,floorSurcharge,id:'r'+s.nextId++,status:'waiting',runnerId:null,collected:[],photo:'',reward,createdAt:Date.now(),isMine:true,ownerId:s.profile.accountId||'local',serviceFee:serviceFee()};
