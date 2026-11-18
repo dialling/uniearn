@@ -1,5 +1,5 @@
 <view style="{{motionStyle}}"><lang-switch/><view class="feedback-page sc-page {{darkClass}}"><block wx:if="{{request}}">
- <view class="sc-order"><view class="sc-order-top"><text>{{request.sizeLabel}}</text><text class="order-no">#{{request.id}}</text></view><view class="sc-order-route">{{request.category==='task'?request.title:request.pickupDisplay+' → '+request.destinationDisplay}}</view><view class="sc-order-state">{{request.statusLabel}}</view></view>
+ <view class="sc-order"><view class="sc-order-top"><text>{{request.sizeLabel}}</text><view class="ue-orderno " data-id="{{request.id}}" catchtap="copyOrderNo" aria-label="{{zh?'复制订单号':'Copy order number'}}"><text class="order-no">{{request.id}}</text><image class="ue-copy-icon" src="/assets/icons/copy.svg" mode="aspectFit"/></view></view><view class="sc-order-route">{{request.category==='task'?request.title:request.pickupDisplay+' → '+request.destinationDisplay}}</view><view class="sc-order-state">{{request.statusLabel}}</view></view>
  <view wx:if="{{paused}}" class="sc-note">{{zh?'本单结算已暂停，直到顾客确认或团队处理完成。':'Payout is paused until the customer confirms or the team decides.'}}</view>
  <view wx:if="{{canResolve}}" class="sc-resolve"><text>{{zh?'问题解决了吗？':'Is it sorted?'}}</text><button class="sc-resolve-button" bindtap="resolve" disabled="{{busy}}">{{zh?'问题已解决':'Issue resolved'}}</button></view>
 

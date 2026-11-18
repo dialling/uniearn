@@ -115,7 +115,7 @@
 </view>
 <view class="flow-card journey-details">
  <view class="journey-details-title rq-fold {{detailsOpen?'rq-fold-open':''}}" bindtap="toggleDetails"><text>{{zh?'订单详情':'Order details'}}</text><view class="rq-fold-chev {{detailsOpen?'open':''}}"></view></view><block wx:if="{{detailsOpen}}">
- <view class="journey-detail-row"><view class="journey-detail-label"><text class="journey-detail-icon">#</text><text>{{zh?'订单号':'Order no.'}}</text></view><text class="journey-detail-value order-no" selectable="{{true}}">{{request.id}}</text></view>
+ <view class="journey-detail-row"><view class="journey-detail-label"><text class="journey-detail-icon">#</text><text>{{zh?'订单号':'Order no.'}}</text></view><view class="ue-orderno journey-detail-value ue-orderno-end" data-id="{{request.id}}" catchtap="copyOrderNo" aria-label="{{zh?'复制订单号':'Copy order number'}}"><text class="order-no">{{request.id}}</text><image class="ue-copy-icon" src="/assets/icons/copy.svg" mode="aspectFit"/></view></view>
  <view class="journey-detail-row"><view class="journey-detail-label"><text class="journey-detail-icon">▣</text><text>{{zh?'取件点':'Pickup'}}</text></view><text class="journey-detail-value">{{request.pickupDisplay||request.pickupPointDisplay||request.station}}</text></view>
  <view class="journey-detail-row"><view class="journey-detail-label"><text class="journey-detail-icon">⌖</text><text>{{zh?'送达地点':'Deliver to'}}</text></view><text class="journey-detail-value">{{request.destinationDisplay}}</text></view>
  <view wx:if="{{request.category==='takeout'}}" class="journey-detail-row"><view class="journey-detail-label"><text class="journey-detail-icon">♧</text><text>{{zh?'外卖到达':'Food arrival'}}</text></view><text class="journey-detail-value">{{request.arrivalLabel}}</text></view>

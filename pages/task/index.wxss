@@ -180,3 +180,31 @@ button.task-icon::after{border:0}
 .tk-fold.tk-fold-open{margin-bottom:12rpx}
 .tk-fold-chev{flex:none;width:14rpx;height:14rpx;margin:0 6rpx 8rpx;border-right:4rpx solid #8a877e;border-bottom:4rpx solid #8a877e;transform:rotate(45deg);transition:transform .2s ease}
 .tk-fold-chev.open{transform:rotate(-135deg);margin:8rpx 6rpx 0}
+/* 2026-11-18: the order number lives in Order details. */
+.tk-orderno-row{align-items:center}
+/* 2026-11-18: task text in a clear box on the waiting ticket, with Edit before a runner accepts. */
+.tk-brief{margin-top:4rpx;padding:20rpx 24rpx 24rpx;border-radius:20rpx;background:#fff;border:1rpx solid #ebe3d3}
+.tk-brief-head{display:flex;align-items:center;justify-content:space-between;gap:16rpx;min-height:52rpx;margin-bottom:8rpx}
+.tk-brief-label{font-size:22rpx;color:#8a877c}
+.tk-brief-edit{display:flex;align-items:center;gap:8rpx;padding:8rpx 20rpx 8rpx 16rpx;border-radius:999rpx;background:#e7f3ed;color:#0b7a55;font-size:24rpx;font-weight:700;line-height:1.4}
+.tk-brief-edit-press{background:#d3ebdf}
+.tk-brief-edit-icon{width:28rpx;height:28rpx;flex:none}
+.tk-brief-text{display:block;font-size:30rpx;line-height:1.6;font-weight:600;color:#1f2a24;white-space:pre-wrap;word-break:break-word}
+.page-dark .tk-brief{background:#242522;border-color:#3a3b37}
+.page-dark .tk-brief-text{color:#edf2e8}
+.page-dark .tk-brief-edit{background:#1f2d25;color:#8fd3b0}
+.tk-edit-sheet{background:#fff;z-index:31}
+.tk-edit-title{font-size:32rpx;margin-bottom:6rpx}
+.tk-edit-field{width:100%;box-sizing:border-box;height:300rpx;margin-top:20rpx;padding:20rpx 22rpx;border-radius:18rpx;background:#f6f5f1;font-size:28rpx;line-height:1.6}
+.tk-edit-count{margin-top:10rpx;text-align:right;font-size:22rpx;color:#8a877c}
+.tk-edit-count.short{color:#c2410c}
+.tk-edit-actions{display:flex;gap:16rpx;margin-top:22rpx}
+.tk-edit-actions button{flex:1;margin:0;border-radius:999rpx;font-size:28rpx;font-weight:700;line-height:84rpx}
+.tk-edit-actions button::after{border:0}
+.tk-edit-cancel{background:#f1efe9;color:#4a4840}
+.tk-edit-save{background:#0d7a55;color:#fff}
+.tk-edit-save.off{background:#b9d9cb!important;color:#fff!important}
+.tk-edit-press{opacity:.85}
+.page-dark .tk-edit-sheet,.tk-edit-sheet.page-dark{background:#242522}
+.tk-edit-sheet.page-dark .tk-edit-field{background:#1b1c1a;color:#edf2e8}
+.tk-edit-sheet.page-dark .tk-edit-cancel{background:#33342f;color:#d8d6ce}

@@ -8,7 +8,10 @@ assert.match(xml, /class="flow-card offer-card task-offer-v2"/);
 assert.match(xml, /class="tk-head-icon" mode="aspectFit" src="\/assets\/icons3d\/bolt\.svg"/, 'lightning heading: a faster pickup');
 assert.ok(at('class="offer-options"') < at('class="tk-bill"') && at('class="tk-bill"') < at('class="offer-footer"'), 'pills, then the bill, then cancel');
 assert.ok(xml.slice(at('class="tk-bill"'), at('class="offer-footer"')).includes('{{ui.totalSim}}'), 'the bill shows the total');
-assert.match(xml, /<view wx:if="\{\{!\(request\.isMine && request\.status==='waiting'\)\}\}" class="flow-card">\s*<view class="strong tk-fold [^"]*" bindtap="togglePrice"><text>\{\{zh\?'费用明细':'Price details'\}\}<\/text>/, 'separate price card only when not waiting, and it folds');
+// 2026-11-18: the folding card is Order details (order number with copy first); price rows only after acceptance.
+assert.match(xml, /<view class="flow-card tk-details">\s*<view class="strong tk-fold [^"]*" bindtap="togglePrice"><text>\{\{zh\?'订单详情':'Order details'\}\}<\/text>/, 'Order details card folds');
+assert.match(xml, /<view class="row hint tk-orderno-row">.*?catchtap="copyOrderNo".*?<block wx:if="\{\{!\(request\.isMine && request\.status==='waiting'\)\}\}">/, 'order number first, price rows only after acceptance');
+assert.ok(!xml.includes('task-order-no') && !xml.includes('task-ticket-no'), 'no big order number in the person card or the ticket');
 assert.match(xml, /<block wx:if="\{\{priceOpen\}\}">/, 'price rows hidden until opened');
 assert.match(fs.readFileSync(path.join(__dirname, '..', 'pages/task/index.js'), 'utf8'), /togglePrice\(\)\{this\.setData\(\{priceOpen:!this\.data\.priceOpen\}\);\}/);
 assert.match(xml, /bindtap="raise"/); assert.match(xml, /bindtap="customRaise"/); assert.match(xml, /class="offer-cancel"[^>]*bindtap="cancel"/);

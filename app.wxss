@@ -59,3 +59,10 @@ button{white-space:normal;word-break:normal;overflow-wrap:break-word;line-height
 .page-dark .pill.selected,.page-dark .pill.sel{background:#6fd0a8!important;border-color:#6fd0a8!important;color:#16181c!important}
 
 .contact-person{display:flex;align-items:center;gap:20rpx;flex:1;min-width:0}.contact-person-copy{min-width:0;overflow-wrap:break-word}.contact-person .hint{margin:0}.contact-person .value{margin:0}
+
+/* 2026-11-18: order number + copy icon (Order details rows). */
+.ue-orderno{display:inline-flex;align-items:center;gap:12rpx;min-height:48rpx;padding:8rpx 0 8rpx 16rpx;margin:-8rpx 0;color:#5e5c55;font-weight:650;font-variant-numeric:tabular-nums}
+.ue-orderno-end{justify-content:flex-end}
+.ue-copy-icon{flex:none;width:32rpx;height:32rpx;opacity:.9}
+.page-dark .ue-orderno{color:#c9c6bc}
+.page-dark .ue-copy-icon{opacity:.6;filter:invert(1)}

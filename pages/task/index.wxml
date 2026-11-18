@@ -13,7 +13,7 @@
  <view class="journey-ticket-band"><text class="journey-brand">UniEarn</text><text class="journey-band-divider">|</text><text class="journey-band-title">{{zh?'任务旅程':'Task journey'}}</text><image class="journey-anchor" src="/assets/journey-anchor.svg" mode="aspectFit"/></view>
  <view class="journey-ticket-body"><view class="journey-hero"><image class="journey-mascot" src="/assets/yuni-journey-ticket.png" mode="aspectFit"/><view class="journey-status"><view class="journey-status-title">{{zh?'等待跑手接单':'Waiting for a runner'}}</view><view class="journey-status-note">{{request.cancellation?(zh?'任务已退回大厅，正在等待新的跑手。':'Your task is back on the board, waiting for another runner.'):(zh?'任务已发布，正在等待跑手。':'Your task is on the job board.')}}</view></view></view>
  <view class="journey-progress"><view wx:for="{{taskJourneySteps}}" wx:key="name" class="journey-step {{index===0?'current':''}}"><view class="journey-step-dot">{{index===0?'✓':''}}</view><view class="journey-step-name">{{item.name}}</view><view class="journey-step-time">{{index===0?item.time:''}}</view></view></view>
- <view class="journey-route-section task-ticket-section"><view class="task-ticket-top"><view class="task-ticket-type">{{request.taskMode==='online'?(zh?'线上帮助':'Online help'):(zh?'线下帮助':'Offline help')}}</view><text class="task-ticket-no order-no" selectable="{{true}}">#{{request.id}}</text></view><view class="task-ticket-title">{{request.title}}</view><view class="task-ticket-times"><view class="task-ticket-time"><text class="task-ticket-time-label">{{zh?'发布时间':'Posted'}}</text><text class="task-ticket-time-value">{{taskPostedTime}}</text></view><view class="task-ticket-time"><text class="task-ticket-time-label">{{zh?'截止时间':'Deadline'}}</text><text class="task-ticket-time-value">{{request.dueAt?request.due:(zh?'无截止时间':'No deadline')}}</text></view></view></view>
+ <view class="journey-route-section task-ticket-section"><view class="task-ticket-top"><view class="task-ticket-type">{{request.taskMode==='online'?(zh?'线上帮助':'Online help'):(zh?'线下帮助':'Offline help')}}</view></view><view class="tk-brief"><view class="tk-brief-head"><text class="tk-brief-label">{{zh?'任务内容':'Task details'}}</text><view wx:if="{{request.isMine && request.status==='waiting'}}" class="tk-brief-edit" hover-class="tk-brief-edit-press" bindtap="openEditTask"><image class="tk-brief-edit-icon" mode="aspectFit" src="/assets/icons/edit.svg"/><text>{{zh?'编辑':'Edit'}}</text></view></view><text class="tk-brief-text" user-select="{{true}}">{{request.title}}</text></view><view class="task-ticket-times"><view class="task-ticket-time"><text class="task-ticket-time-label">{{zh?'发布时间':'Posted'}}</text><text class="task-ticket-time-value">{{taskPostedTime}}</text></view><view class="task-ticket-time"><text class="task-ticket-time-label">{{zh?'截止时间':'Deadline'}}</text><text class="task-ticket-time-value">{{request.dueAt?request.due:(zh?'无截止时间':'No deadline')}}</text></view></view></view>
  </view>
 </view>
 <view wx:elif="{{!request.feedbackOpen && !(request.isRunner && request.status==='taken')}}" class="flow-card status-card">
@@ -33,7 +33,7 @@
     </view>
   </view>
 </view>
-<block wx:if="{{!request.contactWaiting}}"><view class="task-info-block"><view class="task-info-label">{{zh?'订单号':'Order no.'}}</view><text class="task-order-no order-no" selectable="{{true}}">#{{request.id}}</text></view><view class="task-info-block"><view class="task-info-label">{{zh?'任务内容':'Task details'}} · {{request.taskMode==='online'?(zh?'线上帮助':'Online help'):(zh?'线下帮助':'Offline help')}}</view><view class="task-title">{{request.title}}</view></view></block>
+<block wx:if="{{!request.contactWaiting}}"><view class="task-info-block"><view class="task-info-label">{{zh?'任务内容':'Task details'}} · {{request.taskMode==='online'?(zh?'线上帮助':'Online help'):(zh?'线下帮助':'Offline help')}}</view><view class="task-title">{{request.title}}</view></view></block>
 <view wx:if="{{request.pictures.length}}" class="task-info-block"><view class="task-info-label">{{zh?'参考图片':'Reference photos'}}</view><image wx:for="{{request.pictures}}" wx:key="*this" class="thumb" src="{{item}}" mode="aspectFill" data-photo="{{item}}" bindtap="preview"/></view>
 <view wx:if="{{request.isRunner && request.status==='taken'}}" class="task-completion">
 <view class="strong">{{ui.whenDone}}</view>
@@ -86,8 +86,9 @@
 
 
 </view>
-<view wx:if="{{!(request.isMine && request.status==='waiting')}}" class="flow-card">
-<view class="strong tk-fold {{priceOpen?'tk-fold-open':''}}" bindtap="togglePrice"><text>{{zh?'费用明细':'Price details'}}</text><view class="tk-fold-end"><text wx:if="{{!priceOpen}}" class="tk-fold-total">¥{{request.total}}</text><view class="tk-fold-chev {{priceOpen?'open':''}}"></view></view></view><block wx:if="{{priceOpen}}">
+<view class="flow-card tk-details">
+<view class="strong tk-fold {{priceOpen?'tk-fold-open':''}}" bindtap="togglePrice"><text>{{zh?'订单详情':'Order details'}}</text><view class="tk-fold-end"><text wx:if="{{!priceOpen && !(request.isMine && request.status==='waiting')}}" class="tk-fold-total">¥{{request.total}}</text><view class="tk-fold-chev {{priceOpen?'open':''}}"></view></view></view><block wx:if="{{priceOpen}}">
+<view class="row hint tk-orderno-row"><text>{{zh?'订单号':'Order no.'}}</text><view class="ue-orderno " data-id="{{request.id}}" catchtap="copyOrderNo" aria-label="{{zh?'复制订单号':'Copy order number'}}"><text class="order-no">{{request.id}}</text><image class="ue-copy-icon" src="/assets/icons/copy.svg" mode="aspectFit"/></view></view><block wx:if="{{!(request.isMine && request.status==='waiting')}}">
 <view wx:if="{{request.taskTip>0}}" class="row hint"><text>{{zh?'任务赏金':'Task offer'}}</text><text>¥{{request.taskBaseText}}</text></view><view wx:if="{{request.taskTip>0}}" class="row hint"><text>{{zh?'给跑手的小费':'Runner tip'}}</text><text>¥{{request.taskTipText}}</text></view><view class="row hint">
 <text>{{ui.serviceFee}}</text>
 <text>¥{{request.fee}}</text>
@@ -96,7 +97,7 @@
 <text>{{ui.totalSim}}</text>
 <text>¥{{request.total}}</text>
 </view>
-<view wx:if="{{request.status==='refunded'||request.status==='cancelled'}}" class="hint">{{ui.refund}}{{request.refundAmount}}</view></block>
+<view wx:if="{{request.status==='refunded'||request.status==='cancelled'}}" class="hint">{{ui.refund}}{{request.refundAmount}}</view></block></block>
 </view>
 <order-feedback order-id="{{request.id}}" unread="{{request.supportUnread}}" resolvable="{{request.canResolveFeedback}}" completes="{{request.feedbackResolutionCompletes}}" zh="{{zh}}" dark="{{darkClass}}"/>
 </view>
@@ -104,6 +105,7 @@
 <yuni-assistant topic=""/>
 </view>
 
+<block wx:if="{{editTaskOpen && request.isMine && request.status==='waiting'}}"><view class="sheet-shade" bindtap="closeEditTask"/><view class="flow-sheet tk-edit-sheet {{darkClass}}"><view class="strong tk-edit-title">{{zh?'编辑任务内容':'Edit task details'}}</view><view class="hint">{{zh?'跑手接单前都可以修改。':'You can change this until a runner accepts.'}}</view><textarea class="field tk-edit-field" maxlength="4000" value="{{editTaskText}}" bindinput="editTaskInput" focus="{{editTaskFocus}}" placeholder="{{zh?'写清楚需要跑手做什么':'Say what the runner needs to do'}}"/><view class="tk-edit-count {{editTaskOk?'':'short'}}">{{editTaskOk?editTaskText.length+'/4000':(zh?'至少 5 个字':'At least 5 characters')}}</view><view class="tk-edit-actions"><button class="tk-edit-cancel" hover-class="tk-edit-press" bindtap="closeEditTask">{{zh?'取消':'Cancel'}}</button><button class="tk-edit-save {{savingTask || !editTaskOk?'off':''}}" hover-class="tk-edit-press" bindtap="saveEditTask" disabled="{{savingTask || !editTaskOk}}" loading="{{savingTask}}">{{zh?'保存修改':'Save changes'}}</button></view></view></block>
 <template is="customerCancelSheet" data="{{cancelOpen,cancelOptions,cancelReason,cancelNote,cancelNoteOpen,cancelReady,cancelling,zh}}"/>
 
 <view wx:if="{{request.cancelReasonLabel}}" class="flow-card"><view class="strong">{{zh?'取消原因':'Cancellation reason'}}</view><view>{{request.cancelReasonLabel}}</view></view>

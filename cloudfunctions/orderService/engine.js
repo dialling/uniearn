@@ -311,6 +311,14 @@ function execute(s, actor, account, event, now = Date.now()) {
     check(account._admin===true||account._reviewer===true,'Admin access required.');const r=s.requests.find(x=>x.id===event.id);check(r,'Order not found.');
     check(r.status!=='disputed','This order is frozen. Choose release or refund instead.');
     const closed=require('./order-feedback').teamClose(s,r.id,now,'resolved');check(closed>0,'This order has no open report.');f.event(r,'UniEarn team resolved the report',now);value={id:r.id,closed};
+  } else if(action==='editTask'){
+    // 2026-11-18: the customer can fix the task text until a runner accepts.
+    const r=s.requests.find(x=>x.id===event.id);
+    check(r && r.ownerId===actor && r.category==='task','Task not found.');
+    check(r.status==='waiting','A runner has accepted. The task can no longer be edited.');
+    const title=String(event.title||'').trim();
+    check(title.length>=5&&title.length<=4000,'Describe your task (5–4000 characters).');
+    if(title!==r.title){r.title=title;r.titleEditedAt=now;f.event(r,'Task details edited',now);}
   } else if(action==='changeTaskDeadline'){
     const r=s.requests.find(x=>x.id===event.id);
     check(r && r.ownerId===actor && r.category==='task' && ['waiting','taken'].includes(r.status),'当前任务无法更改截止时间');
