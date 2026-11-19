@@ -1,18 +1,18 @@
+// 2026-11-18: the daily check-in popup is gone. Feed Yuni on the Levels page opens the Me page (feed=1 while today's fish waits).
 const assert=require('node:assert/strict'),fs=require('node:fs');
-let pageDef,hookDef,syncCalls=0,opened=false,toasts=[],loading=0;
-global.Page=x=>pageDef=x;global.Component=x=>hookDef=x;
-global.wx={getStorageSync:()=>null,setStorageSync(){},showToast:x=>toasts.push(x.title),showLoading(){loading++;},hideLoading(){loading--;}};
-const ordersPath=require.resolve('../utils/orders');require.cache[ordersPath]={id:ordersPath,filename:ordersPath,loaded:true,exports:{sync:async()=>{syncCalls++;opened=true;}}};
-const store=require('../utils/store');
-require('../components/lang-switch/index');
-const bridge={selectComponent:id=>{assert.equal(id,'#daily-checkin');return {openFromJourney:()=>opened};},...hookDef.methods};
+let pageDef,toasts=[],launched=[];
+global.Page=x=>pageDef=x;global.Component=()=>{};
+global.wx={getStorageSync:()=>null,setStorageSync(){},showToast:x=>toasts.push(x.title),reLaunch:o=>launched.push(o.url)};
+const navPath=require.resolve('../utils/nav');require.cache[navPath]={id:navPath,filename:navPath,loaded:true,exports:{reLaunch:o=>launched.push(o.url),navigateTo(){}}};
+const store=require('../utils/store'),china=require('../utils/china-time');
 require('../pages/levels/index');
-const page={data:{language:'zh'},...pageDef,selectComponent:id=>{assert.equal(id,'#level-page-hook');return bridge;},refreshCheckin(){},setData(v){Object.assign(this.data,v)}};
-(async()=>{
- store.reset();store.update(s=>s.profile={...s.profile,accountId:'member',loggedOut:false});
- opened=true;await page.openYuniFeed();assert.equal(syncCalls,0,'ready entry reuses the same popup without another request');
- opened=false;await page.openYuniFeed();assert.equal(syncCalls,1);assert.equal(opened,true);assert.equal(loading,0);
- opened=false;store.update(s=>s.profile.loggedOut=true);await page.openYuniFeed();assert.match(toasts.at(-1),/登录/);assert.equal(syncCalls,1);
- const xml=fs.readFileSync(require.resolve('../pages/levels/index.wxml'),'utf8');assert.match(xml,/bindtap="openYuniFeed"/);assert.match(xml,/bones-white\.png/);assert.match(xml,/bones\.png/);assert.match(xml,/fish-grey\.png/);assert.match(xml,/id="level-page-hook"/);
- console.log('Level journey feed entry: nested shared component, sync fallback, login guard, no duplicate ready-state request and dried-fish/bone progress passed.');
-})().catch(e=>{console.error(e);process.exitCode=1});
+const page={data:{language:'zh'},...pageDef,setData(v){Object.assign(this.data,v)}};
+store.reset();const today=china.dayKey(Date.now());
+store.update(s=>{s.profile={...s.profile,accountId:'member',onboarded:true,campusId:'sip',loggedOut:false};s.progressionAccountId='member';s.serverTime=Date.now();s.progression={checkin:{day:today,streak:2,cycleDay:2,dailyPoints:2,rewardPoints:0},notices:[]};});
+page.openYuniFeed();assert.equal(launched.at(-1),'/pages/profile/index?feed=1','today\'s fish waits: go to Me and feed it there');
+store.update(s=>{s.progression.checkin.day='2000-01-01';});page.openYuniFeed();assert.equal(launched.at(-1),'/pages/profile/index','nothing waiting: just open Me');
+store.update(s=>s.profile.loggedOut=true);page.openYuniFeed();assert.match(toasts.at(-1),/登录/);assert.equal(launched.length,2,'signed out: no navigation');
+const xml=fs.readFileSync(require.resolve('../pages/levels/index.wxml'),'utf8');assert.match(xml,/bindtap="openYuniFeed"/);assert.match(xml,/bones-white\.png/);assert.match(xml,/bones\.png/);assert.match(xml,/fish-grey\.png/);
+assert.ok(!fs.existsSync(require('path').join(__dirname,'../components/daily-checkin')),'the popup component is removed');
+assert.doesNotMatch(fs.readFileSync(require.resolve('../app.json'),'utf8'),/daily-checkin/);
+console.log('Levels Feed Yuni: opens the Me page to feed today\'s fish; no check-in popup');

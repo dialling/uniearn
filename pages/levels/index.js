@@ -67,18 +67,11 @@ Page({
  onShow(){this.localize(false);require('../../utils/orders').bind(this,'refreshCheckin');require('../../utils/page-title').apply(this);this.stopPointsSync();this.stopPoints=require('../../utils/activity-sync').subscribe(config=>{this.pointsConfig=activityDisplay.latest(this.pointsConfig,config);this.updatePointTasks();this.setData({pointsSyncError:false});},()=>this.setData({pointsSyncError:true}));},
  stopPointsSync(){if(this.stopPoints){this.stopPoints();this.stopPoints=null;}},
  refreshCheckin(){const state=store.get(),view=levelData.view(require('../../utils/order-fish').shownProgression(state));this.setData({checkin:checkinView(state,this.data.language),currentLevel:view.level,points:view.points,hero:progressView(view,this.data.language==='en')});},
- async openYuniFeed(){
-  if(this.openingFeed)return;
-  const host=this.selectComponent('#level-page-hook');if(!host)return;
-  if(host.openYuniFeed())return;
+ // 2026-11-18: Feed Yuni opens the Me page, where Yuni eats today's dried fish (no popup any more).
+ openYuniFeed(){
   const state=store.get(),en=this.data.language==='en';
   if(!state.profile.accountId||state.profile.loggedOut){wx.showToast({title:en?'Please sign in from the Me page first.':'请先在「我的」页面登录',icon:'none'});return;}
-  this.openingFeed=true;wx.showLoading({title:en?'Syncing…':'正在同步…'});
-  let message='';
-  try{await require('../../utils/orders').sync();this.refreshCheckin();if(!host.openYuniFeed())message=en?'Check-in is syncing. Try again shortly.':'签到正在同步，请稍后再试';}
-  catch(_){message=en?'Could not sync. Please try again.':'同步失败，请稍后重试';}
-  finally{this.openingFeed=false;wx.hideLoading();}
-  if(message)wx.showToast({title:message,icon:'none'});
+  require('../../utils/nav').reLaunch({url:'/pages/profile/index'+(require('../../utils/checkin').dailyFishWaiting()?'?feed=1':'')});
  },
  updatePointTasks(){const cached=(store.get().rewards||{}).activities;this.pointsConfig=activityDisplay.latest(this.pointsConfig,cached&&cached.config);const view=activityDisplay.display(this.pointsConfig,this.data.language==='zh');this.setData({pointTasks:view.activityTasks.map(t=>fishInfo(t,this.data.language==='zh')),pointsStatus:view.activityStatusLabel});},
  localize(first){

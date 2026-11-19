@@ -163,3 +163,6 @@
 @keyframes cs-drift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 @keyframes cs-twinkle{0%{opacity:0;transform:translateY(8rpx) scale(.4)}35%{opacity:1;transform:translateY(0) scale(1)}70%{opacity:.6;transform:translateY(-10rpx) scale(.8)}100%{opacity:0;transform:translateY(-18rpx) scale(.3)}}
 .nav-dark .cs-v2 .sheet-choice.trip{background:linear-gradient(120deg,#2aa874 0%,#178a5c 50%,#25a06d 100%);background-size:220% 220%}
+/* 2026-11-18: today's dried fish is waiting on the Me page. */
+.nav-fish-dot{position:absolute;top:0;left:calc(50% + 12rpx);width:15rpx;height:15rpx;border-radius:50%;background:#f2a60c;border:3rpx solid #fff;box-sizing:content-box}
+.nav-me{position:relative}

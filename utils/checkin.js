@@ -25,5 +25,7 @@ function markCollected(token){if(!token?.key)return;collected.add(token.key);try
 function release(key){if(active!==key)return;active='';store.update(()=>{});}
 function pending(){return !!active||!!notice();}
 // Today's dried fish is checked in but Yuni has not eaten it yet (the Me page Feed button then opens the sheet).
+// 2026-11-18: today's dried fish to feed in Yuni's scene on the Me page (the check-in popup is gone).
+function todayFish(){const n=currentNotice();return n&&!wasFed(n)&&!wasCollected(n)?n:null;}
 function dailyFishWaiting(){const n=currentNotice();return !!n&&!wasFed(n)&&!wasCollected(n);}
-module.exports={notice,claim,release,pending,wasFed,markFed,wasCollected,markCollected,dailyFishWaiting};
+module.exports={notice,claim,release,pending,wasFed,markFed,wasCollected,markCollected,dailyFishWaiting,todayFish};

@@ -44,7 +44,6 @@
     "yuni-assistant": "/components/yuni-assistant/index",
     "lang-switch": "/components/lang-switch/index",
     "level-up": "/components/level-up/index",
-    "daily-checkin": "/components/daily-checkin/index",
     "yuni-stage": "/components/yuni-stage/index",
     "order-feedback": "/components/order-feedback/index"
   },

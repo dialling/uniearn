@@ -146,6 +146,10 @@ Component({
     points(text) { const c = this.geo; this.float({ kind: 'text', text, style: 'left:' + (c ? c.cx : 160) + 'px;top:' + (c ? c.top + 10 : 120) + 'px' }, 1300); },
     confetti(n = 16) { if (!this.data.motion) return; const c = this.geo || { cx: 160, cy: 200 }, colors = ['#f2b233', '#ff8a8a', '#fff', '#7fe0b0', '#7f97e6']; const list = []; for (let i = 0; i < n; i++) list.push({ id: ++fxId, kind: 'bit', style: 'left:' + c.cx + 'px;top:' + (c.cy - 30) + 'px;background:' + colors[i % 5] + ';--dx:' + Math.round((Math.random() - .5) * 300) + 'px;--dy:' + Math.round(-40 - Math.random() * 190) + 'px;--rot:' + Math.round(Math.random() * 540) + 'deg' }); const ids = list.map(f => f.id); this.setData({ fx: this.data.fx.concat(list) }); setTimeout(() => this.setData({ fx: this.data.fx.filter(f => !ids.includes(f.id)) }), 1700); },
     // ── where things are on screen (px, relative to the stage) ──
+    // Used when the screen cannot be measured (seen on a phone): the game stage fills the window, Yuni is centred.
+    fallbackGeo() { let w = 375, h = 667; try { const i = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync(); w = i.windowWidth || w; h = i.windowHeight || h; } catch (_) {} const yw = w * .42, yh = yw * 1.1, left = (w - yw) / 2, top = h * .32; return { stage: { left: 0, top: 0, width: w, height: h }, left, top, width: yw, height: yh, cx: left + yw / 2, cy: top + yh * .42, sl: 0, st: 0 }; },
+    // measure(), but never wait more than 0.7 s for the screen (null = use the fallback layout).
+    measureOr(done) { let called = false; const once = g => { if (called) return; called = true; done(g); }; this.measure(once); setTimeout(() => once(null), 700); },
     measure(done) {
       this.createSelectorQuery().select('#ysStage').boundingClientRect().select('#ysYuni').boundingClientRect().exec(res => {
         const s = res && res[0], y = res && res[1]; if (!s || !y) return done && done(null);
@@ -269,9 +273,9 @@ Component({
     // ── feeding: a caught fish flies to Yuni, and the server then adds its points ──
     feed() {
       sound.unlock();
-      // Today's dried fish first: open the Feed Yuni sheet (its own eating animation and the check-in reward).
-      if (this.data.dailyFish && !this.F) { this.triggerEvent('dailyfeed'); return; }
       this.wake(true); this.rest();
+      // Today's dried fish first (the daily check-in; its points were added at sign-in).
+      if (this.data.dailyFish && !this.F) return this.feedDailyFish();
       // Then a fish from a finished order (its points were added when the order was confirmed).
       if (this.data.orderFish && !this.F) return this.feedOrderFish();
       const play = this.play();
@@ -475,6 +479,24 @@ Component({
         }, this.data.motion ? 760 : 0);
       });
     },
+    // 2026-11-18: the daily check-in popup is gone; today's dried fish is eaten here, then the check-in notice is closed.
+    feedDailyFish() {
+      const checkin = require('../../utils/checkin'), n = checkin.todayFish(); if (!n || this.feeding) return; this.feeding = true;
+      this.busy = true; this.pose({ wings: 'reach', mouth: true });
+      this.measureOr(found => {
+        const g = found || this.geo || this.fallbackGeo();
+        if (g && this.data.motion) this.setData({ prize: { src: '/assets/yuni-feed/fish.png', style: '--fx:' + (g.stage.width / 2) + 'px;--fy:' + (g.stage.height - 60) + 'px;--tx:' + g.cx + 'px;--ty:' + (g.cy + 20) + 'px', kind: 'feed' } });
+        setTimeout(() => {
+          this.setData({ prize: null }); checkin.markFed(n); checkin.markCollected(n);
+          if (n.id && !n.acknowledged && !n.preview) orders.act('ackLoyaltyNotice', { noticeId: n.id }).catch(() => {});
+          const pts = Number(n.points) || 0, bonus = Number(n.weeklyPoints) || 0;
+          sound.eat(pts || 2); this.fedNow(); this.act({ face: 'love', body: 'munch' }, 1700); this.chew(); this.cheer(); this.sync();
+          if (pts) this.points('+' + pts + this.t(' 积分', ' pts'));
+          this.say(bonus ? this.t('连续 7 天！额外 +' + bonus + ' 积分！', '7 days in a row! +' + bonus + ' bonus!') : this.t('今天的小鱼干，真好吃！', 'Todayʼs dried fish. Yum!'), 2400);
+          this.feeding = false;
+        }, this.data.motion ? 760 : 0);
+      });
+    },
     feedOrderFish() {
       const f = require('../../utils/order-fish').waiting()[0]; if (!f || this.feeding) return; this.feeding = true;
       this.busy = true; this.pose({ wings: 'reach', mouth: true });
@@ -578,15 +600,21 @@ Component({
       const F = this.F; if (!F || (F.phase !== 'timing' && F.phase !== 'bite')) return;
       this.downAt = Date.now(); if (F.phase === 'timing') this.stopTiming(false); else this.pull();
     },
+    // 2026-11-18: on a phone, Cast did nothing. Errors now show in the hint line, and a cast that never landed stops blocking the button.
     cast() {
+      try { this.castInner(); } catch (e) { this.F = null; this.setData({ casting: false, castClass: '', castLabel: this.t('抛竿', 'Cast'), castSub: '', hint: this.t('出错了：', 'Something went wrong: ') + ((e && e.message) || e) }); console.error('cast', e); }
+    },
+    castInner() {
+      if (this.F && this.F.phase === 'cast' && this.F.at && Date.now() - this.F.at > 4000) this.F = null;
       if (this.downAt && Date.now() - this.downAt < 800) { this.downAt = 0; return; } // the lift after castDown already acted
       if (this.F) { if (this.F.phase === 'timing') this.stopTiming(false); else if (this.F.phase === 'bite') this.pull(); else if (this.F.phase === 'wait') this.miss(this.t('太早啦！', 'Too soon!')); return; }
       const f = this.play().fishing;
       if (!f.open) { this.act({ body: 'squash' }, 900); this.say(f.window && f.used[f.window] ? (f.nextFrom ? this.t('每餐只能钓一次，' + f.nextFrom + ':00 再来。', 'One try per meal. Next at ' + f.nextFrom + ':00.') : this.t('今天钓完啦，明天见！', 'No tries left today. More tomorrow!')) : this.t('鱼只在午餐和晚餐时间咬钩。', 'Fish only bite at lunch and dinner.'), 3000); return; }
-      this.measure(g => {
-        if (!g) return;
+      this.measureOr(found => {
+        try {
+        const g = found || this.geo || this.fallbackGeo(); if (!g) return;
         const tip = { x: g.left + g.width * (152 - rig.BOX.x) / rig.BOX.w, y: g.top + g.height * (34 - rig.BOX.y) / rig.BOX.h }, bx = g.stage.width * .8, by = g.stage.height * .5 + g.stage.width * .075;
-        this.F = { phase: 'cast', tip, bx, by, pulls: 0 }; sound.cast();
+        this.F = { phase: 'cast', tip, bx, by, pulls: 0, at: Date.now() }; sound.cast();
         this.act({ wings: 'five', body: 'five' }, 1200); this.lookAt(6, 3);
         this.setData({ casting: true, card: null, castClass: 'waiting', castLabel: this.t('等待', 'Wait...'), castSub: '', bobSrc: rig.bobber(this.play().worn.hand), bobClass: '', bobStyle: 'left:' + tip.x + 'px;top:' + tip.y + 'px;transition:none', lineStyle: '', shadowClass: '', bang: false });
         setTimeout(() => { if (this.F) this.setData({ bobStyle: 'left:' + bx + 'px;top:' + by + 'px' }); }, 40);
@@ -598,6 +626,7 @@ Component({
           this.nibbleTimers = [.42, .7].map(k => setTimeout(() => { if (this.F && this.F.phase === 'wait') { sound.nibble(); this.setData({ bobClass: 'nibble' }); setTimeout(() => { if (this.F && this.F.phase === 'wait') this.setData({ bobClass: 'bobbing' }); }, 300); } }, biteAt * k));
           this.biteTimer = setTimeout(() => this.bite(), biteAt);
         }, this.data.motion ? 720 : 60);
+        } catch (e) { this.F = null; this.setData({ casting: false, castClass: '', castLabel: this.t('抛竿', 'Cast'), castSub: '', hint: this.t('出错了：', 'Something went wrong: ') + ((e && e.message) || e) }); console.error('cast', e); }
       });
     },
     // The bite starts the timing bar: the marker goes there and back twice (4 legs). Stop it in the green.
