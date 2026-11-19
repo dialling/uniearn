@@ -169,7 +169,7 @@
 .ys-chip .ys-img{width:110rpx;height:56rpx}
 .ys-bucket-tip{width:100%;text-align:center;color:#fff;font-size:22rpx;font-weight:650;opacity:.9}
 .ys-game-bottom{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 40rpx);height:270rpx;z-index:9}
-.ys-cast{position:absolute;left:50%;top:10rpx;margin-left:-95rpx;width:190rpx;height:190rpx;border-radius:50%;background:radial-gradient(circle at 36% 30%,#fff3c2,#f2b233);color:var(--navy);box-shadow:0 12rpx 0 #c98a12,0 0 0 14rpx #ffffff33;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15}
+.ys-cast{position:absolute;left:50%;top:10rpx;margin-left:-95rpx;width:190rpx;height:190rpx;z-index:1;border-radius:50%;background:radial-gradient(circle at 36% 30%,#fff3c2,#f2b233);color:var(--navy);box-shadow:0 12rpx 0 #c98a12,0 0 0 14rpx #ffffff33;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15}
 .ys-cast-label{font-size:36rpx;font-weight:900}
 .ys-cast-sub{font-size:26rpx;font-weight:800;opacity:.85}
 .ys-cast-press{transform:translateY(8rpx);box-shadow:0 4rpx 0 #c98a12,0 0 0 14rpx #ffffff33}
@@ -180,7 +180,7 @@
 .ys-cast.tug{animation:ys-tug .18s ease-out}
 .ys-cast.off{background:#ffffff40;color:#fff;box-shadow:0 0 0 4rpx #ffffff55}
 .ys-cast.off .ys-cast-label,.ys-cast.off .ys-cast-sub{font-size:27rpx;font-weight:800;opacity:1}
-.ys-hint{position:absolute;left:30rpx;right:30rpx;bottom:0;text-align:center;color:#fff;font-size:22rpx;font-weight:600;opacity:.92}
+.ys-hint{position:absolute;left:30rpx;right:30rpx;bottom:0;text-align:center;color:#fff;font-size:22rpx;font-weight:600;opacity:.92;pointer-events:none}
 .ys-book-btn{position:absolute;left:36rpx;top:60rpx;display:flex;flex-direction:column;align-items:center;color:#fff;font-size:21rpx;font-weight:800}
 .ys-book-btn .ys-img{width:80rpx;height:80rpx}
 .ys-book{position:absolute;left:26rpx;right:26rpx;top:110rpx;bottom:40rpx;background:#fff;border-radius:40rpx;padding:26rpx;display:flex;flex-direction:column;box-shadow:0 20rpx 70rpx #04261d66;z-index:12;box-sizing:border-box}

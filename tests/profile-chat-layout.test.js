@@ -1,11 +1,20 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const root=path.resolve(__dirname,'..');
+function loadCss(rel,seen=new Set()){
+  if(seen.has(rel))return '';
+  seen.add(rel);
+  const file=path.join(root,rel);
+  return fs.readFileSync(file,'utf8').replace(/@import\s+["']([^"']+)["']\s*;?/g,(_,spec)=>{
+    const target=path.relative(root,path.resolve(path.dirname(file),spec)).split(path.sep).join('/');
+    return loadCss(target,seen);
+  });
+}
 const profileXml=fs.readFileSync(path.join(root,'pages/profile/index.wxml'),'utf8');
 const profileCss=fs.readFileSync(path.join(root,'pages/profile/index.wxss'),'utf8');
 const chatXml=fs.readFileSync(path.join(root,'pages/chat/index.wxml'),'utf8');
-const chatCss=fs.readFileSync(path.join(root,'pages/chat/index.wxss'),'utf8');
+const chatCss=loadCss('pages/chat/index.wxss');
 const supportXml=fs.readFileSync(path.join(root,'pages/support-chat/index.wxml'),'utf8');
-const supportCss=fs.readFileSync(path.join(root,'pages/support-chat/index.wxss'),'utf8');
+const supportCss=loadCss('pages/support-chat/index.wxss');
 assert.doesNotMatch(profileXml,/class="(?:profile-editor|edit-button)"/);
 assert.doesNotMatch(profileXml,/bindtap="dormDetails"|\{\{ui\.tools\}\}/);
 assert.doesNotMatch(profileXml,/ui\.near|data-key="newJobs"/,'the nearby-jobs notification row is removed');
@@ -19,7 +28,8 @@ assert.match(chatXml,/class="send-button(?:\s|")/);
 assert.match(chatXml,/class="sticker-toggle/);
 assert.match(chatXml,/bindtap="sendSticker"/);
 assert.match(chatXml,/bindconfirm="send" confirm-type="send"/);
-assert.match(chatCss,/@import "\.\.\/support-chat\/index\.wxss"/);
+assert.match(fs.readFileSync(path.join(root,'pages/chat/index.wxss'),'utf8'),/@import "..\/..\/utils\/chat-thread.wxss"/);
+assert.match(fs.readFileSync(path.join(root,'pages/support-chat/index.wxss'),'utf8'),/@import "..\/..\/utils\/chat-thread.wxss"/);
 assert.match(supportCss,/\.compose-input\{flex:1;min-width:0/);
 assert.match(supportCss,/\.send-button\{flex:none;width:68rpx;height:68rpx/);
 assert.match(chatCss,/\.sticker-toggle\{flex:none;width:68rpx;height:68rpx/);

@@ -19,7 +19,7 @@ Page({
       if(!this._autoBinding){this._autoBinding=true;this.setData({redeeming:true});orders.sync().then(()=>{
         if(store.get().rewards?.hasInvitedBy){store.update(s=>{if(s.pendingInviteCode===String(this.data.inviteInput||'').trim())delete s.pendingInviteCode;});this.setData({inviteInput:''});return null;}
         return orders.act('invite',{code:String(this.data.inviteInput||'').trim()});
-      }).then(result=>{if(result){store.update(s=>{if(s.pendingInviteCode===String(this.data.inviteInput||'').trim())delete s.pendingInviteCode;});this.setData({inviteInput:''});wx.showToast({title:this.data.zh?'邀请绑定成功，双方各得 10 积分':'Invitation linked · 10 points each'});}}).catch(err=>{ui.toast(err);}).finally(()=>{this._autoBinding=false;this.setData({redeeming:false});});}
+      }).then(result=>{if(result){store.update(s=>{if(s.pendingInviteCode===String(this.data.inviteInput||'').trim())delete s.pendingInviteCode;});this.setData({inviteInput:''});wx.showToast({title:this.data.zh?'邀请绑定成功，双方各得 20 积分':'Invitation linked · 20 points each'});}}).catch(err=>{ui.toast(err);}).finally(()=>{this._autoBinding=false;this.setData({redeeming:false});});}
     }else if(store.get().profile.onboarded)orders.act('rewardsInit').catch(()=>{});
   },
   onHide(){orders.unbind(this);},
@@ -34,9 +34,9 @@ Page({
     if(!code){wx.showToast({title:zh?'请输入同学的邀请码':'Enter a classmateʼs code',icon:'none'});return;}
     if(this.data.redeeming)return;
     this.setData({redeeming:true});
-    try{await orders.act('invite',{code});store.update(s=>{if(s.pendingInviteCode===code)delete s.pendingInviteCode;});this.setData({inviteInput:''});wx.showToast({title:zh?'邀请已绑定':'Invitation linked'});}
+    try{await orders.act('invite',{code});store.update(s=>{if(s.pendingInviteCode===code)delete s.pendingInviteCode;});this.setData({inviteInput:''});wx.showToast({title:zh?'邀请绑定成功，双方各得 20 积分':'Invitation linked · 20 points each'});}
     catch(err){ui.toast(err);}
     finally{this.setData({redeeming:false});}
   },
-  onShareAppMessage(){return {title:this.data.zh?'加入 Uniearn，双方各得 10 积分':'Join Uniearn — 10 points for both of us',path:'/pages/invite/index?invite='+this.data.inviteCode};}
+  onShareAppMessage(){return {title:this.data.zh?'加入 Uniearn，双方各得 20 积分':'Join Uniearn — 20 points for both of us',path:'/pages/invite/index?invite='+this.data.inviteCode};}
 });

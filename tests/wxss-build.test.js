@@ -34,6 +34,29 @@ for(const sheet of sheets){
   }
 }
 
+// Main-package WXSS cannot @import a subpackage file (WeChat reports it as "not found"
+// and the page stays blank). Subpackages may import the main package; they may not
+// import another subpackage's styles.
+const app=JSON.parse(read('app.json'));
+const subroots=(app.subpackages||app.subPackages||[]).map(s=>String(s.root||'').replace(/\/$/,'')).sort((a,b)=>b.length-a.length);
+const pkg=rel=>{
+  const name=rel.split(path.sep).join('/');
+  return subroots.find(r=>name===r||name.startsWith(r+'/'))||'';
+};
+const shipped=sheets.filter(s=>{
+  const name=s.split(path.sep).join('/');
+  return name==='app.wxss'||name.startsWith('utils/')||name.startsWith('pages/')||name.startsWith('components/')||name.startsWith('stickers/');
+});
+for(const sheet of shipped){
+  const text=read(sheet),from=pkg(sheet);
+  for(const m of text.matchAll(/@import\s+["']([^"']+)["']/g)){
+    const target=path.relative(root,path.resolve(path.dirname(path.join(root,sheet)),m[1])).split(path.sep).join('/');
+    const to=pkg(target);
+    assert.ok(!from||!to||from===to,`${sheet} in subpackage ${from} cannot @import ${target} from subpackage ${to}`);
+    assert.ok(from||!to,`${sheet} is in the main package and cannot @import subpackage file ${target}`);
+  }
+}
+
 // The invite page keeps its cover fonts inline for the same reason.
 const invite=read('pages/invite/index.wxss');
 assert.match(invite,/@font-face\{font-family:"Invite Serif";font-style:normal;font-weight:700;/);

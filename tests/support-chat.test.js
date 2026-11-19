@@ -1,8 +1,19 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const root=path.resolve(__dirname,'..');
+function loadCss(rel,seen=new Set()){
+  if(seen.has(rel))return '';
+  seen.add(rel);
+  const file=path.join(root,rel);
+  return fs.readFileSync(file,'utf8').replace(/@import\s+["']([^"']+)["']\s*;?/g,(_,spec)=>{
+    const target=path.relative(root,path.resolve(path.dirname(file),spec)).split(path.sep).join('/');
+    return loadCss(target,seen);
+  });
+}
 const xml=fs.readFileSync(path.join(root,'pages/support-chat/index.wxml'),'utf8');
-const css=fs.readFileSync(path.join(root,'pages/support-chat/index.wxss'),'utf8');
+const pageCss=fs.readFileSync(path.join(root,'pages/support-chat/index.wxss'),'utf8');
+const css=loadCss('pages/support-chat/index.wxss');
 const js=fs.readFileSync(path.join(root,'pages/support-chat/index.js'),'utf8');
+assert.match(pageCss,/@import "\.\.\/\.\.\/utils\/chat-thread\.wxss"/);
 assert.match(js,/topic:''/);
 assert.doesNotMatch(js,/data:\{[^}]*topic:'other'/);
 assert.match(xml,/bindtap="sendPhoto"/);

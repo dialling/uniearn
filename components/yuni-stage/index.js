@@ -592,13 +592,20 @@ Component({
     },
     openBook() { const zh = this.data.zh, seen = this.play().seen; this.setData({ card: null, bookOpen: true, book: catalog.FISH.map(f => { const k = seen.includes(f.id); return { id: f.id, src: rig.fish(f.id), name: k ? (zh ? f.zh : f.en) : '???', r: f.r, known: k, sub: (zh ? catalog.RARITY[f.r].zh : catalog.RARITY[f.r].en) + ' +' + catalog.RARITY[f.r].points }; }) }); },
     closeBook() { this.setData({ bookOpen: false }); },
-    stopFishing() { this.holdBucket = null; this.F = null; clearTimeout(this.biteTimer); clearTimeout(this.missTimer); clearTimeout(this.timingTimer); if (this.data.meter) this.setData({ meter: null }); (this.nibbleTimers || []).forEach(clearTimeout); this.setData({ casting: false, bobStyle: '', bobClass: '', lineStyle: '', shadowClass: '', bang: false, splash: null }); this.drawGame(); },
+    stopFishing() { this.holdBucket = null; this.F = null; this.castLock = false; this.castSeq = (this.castSeq || 0) + 1; (this.castTimers || []).forEach(clearTimeout); this.castTimers = []; clearTimeout(this.biteTimer); clearTimeout(this.missTimer); clearTimeout(this.timingTimer); if (this.data.meter) this.setData({ meter: null }); (this.nibbleTimers || []).forEach(clearTimeout); this.setData({ casting: false, bobStyle: '', bobClass: '', lineStyle: '', shadowClass: '', bang: false, splash: null }); this.drawGame(); },
     splashAt(x, y) { const id = ++fxId; this.setData({ splash: { id, style: 'left:' + x + 'px;top:' + y + 'px' } }); setTimeout(() => { if (this.data.splash && this.data.splash.id === id) this.setData({ splash: null }); }, 900); },
     line(tip, bx, by) { const dx = bx - tip.x, dy = by - tip.y; return 'left:' + tip.x + 'px;top:' + tip.y + 'px;width:' + Math.hypot(dx, dy).toFixed(1) + 'px;transform:rotate(' + Math.atan2(dy, dx).toFixed(4) + 'rad);background:' + (this.play().worn.hand === 'trident' ? '#ffd35c' : '#f4f6f8'); },
-    // Stop! and the pulls react the moment the finger touches the button, not when it lifts (a tap waits for the lift).
+    // Stop!, Pull and Cast all react on finger-down. A tap waits for the lift, and
+    // 2026-11-19: WeChat often never fires that tap — the button sits inside #ysStage,
+    // which catchtouchmove's the drag so the page does not scroll. Cast used to wait
+    // for catchtap only, so 抛竿 looked like it did nothing.
     castDown() {
-      const F = this.F; if (!F || (F.phase !== 'timing' && F.phase !== 'bite')) return;
-      this.downAt = Date.now(); if (F.phase === 'timing') this.stopTiming(false); else this.pull();
+      sound.unlock();
+      const F = this.F;
+      if (!F) { this.downAt = Date.now(); this.beginCast(); return; }
+      if (F.phase === 'timing') { this.downAt = Date.now(); this.stopTiming(false); return; }
+      if (F.phase === 'bite') { this.downAt = Date.now(); this.pull(); return; }
+      if (F.phase === 'wait') { this.downAt = Date.now(); this.miss(this.t('太早啦！', 'Too soon!')); }
     },
     // 2026-11-18: on a phone, Cast did nothing. Errors now show in the hint line, and a cast that never landed stops blocking the button.
     cast() {
@@ -608,27 +615,42 @@ Component({
       if (this.F && this.F.phase === 'cast' && this.F.at && Date.now() - this.F.at > 4000) this.F = null;
       if (this.downAt && Date.now() - this.downAt < 800) { this.downAt = 0; return; } // the lift after castDown already acted
       if (this.F) { if (this.F.phase === 'timing') this.stopTiming(false); else if (this.F.phase === 'bite') this.pull(); else if (this.F.phase === 'wait') this.miss(this.t('太早啦！', 'Too soon!')); return; }
+      this.beginCast();
+    },
+    beginCast() {
+      if (this.F || this.castLock) return;
       const f = this.play().fishing;
       if (!f.open) { this.act({ body: 'squash' }, 900); this.say(f.window && f.used[f.window] ? (f.nextFrom ? this.t('每餐只能钓一次，' + f.nextFrom + ':00 再来。', 'One try per meal. Next at ' + f.nextFrom + ':00.') : this.t('今天钓完啦，明天见！', 'No tries left today. More tomorrow!')) : this.t('鱼只在午餐和晚餐时间咬钩。', 'Fish only bite at lunch and dinner.'), 3000); return; }
+      this.castSeq = (this.castSeq || 0) + 1; const seq = this.castSeq; this.castLock = true;
       this.measureOr(found => {
+        if (seq !== this.castSeq) return;
+        this.castLock = false;
+        if (this.F || this.data.mode !== 'fish') return;
         try {
-        const g = found || this.geo || this.fallbackGeo(); if (!g) return;
-        const tip = { x: g.left + g.width * (152 - rig.BOX.x) / rig.BOX.w, y: g.top + g.height * (34 - rig.BOX.y) / rig.BOX.h }, bx = g.stage.width * .8, by = g.stage.height * .5 + g.stage.width * .075;
-        this.F = { phase: 'cast', tip, bx, by, pulls: 0, at: Date.now() }; sound.cast();
-        this.act({ wings: 'five', body: 'five' }, 1200); this.lookAt(6, 3);
-        this.setData({ casting: true, card: null, castClass: 'waiting', castLabel: this.t('等待', 'Wait...'), castSub: '', bobSrc: rig.bobber(this.play().worn.hand), bobClass: '', bobStyle: 'left:' + tip.x + 'px;top:' + tip.y + 'px;transition:none', lineStyle: '', shadowClass: '', bang: false });
-        setTimeout(() => { if (this.F) this.setData({ bobStyle: 'left:' + bx + 'px;top:' + by + 'px' }); }, 40);
-        setTimeout(() => {
-          if (!this.F) return; this.F.phase = 'wait'; sound.plop(); this.splashAt(bx, by);
-          const biteAt = 2800 + Math.random() * 2800;
-          this.setData({ bobClass: 'bobbing', lineStyle: this.line(tip, bx, by - 8), shadowClass: 'circling', shadowStyle: 'left:' + bx + 'px;top:' + by + 'px;--circle:' + Math.round(biteAt) + 'ms', hint: this.t('等浮标沉下去……', 'Wait for the bobber to go under...') });
-          this.say(this.t('嘘……它来了。', 'Shh... here it comes.'), 2400);
-          this.nibbleTimers = [.42, .7].map(k => setTimeout(() => { if (this.F && this.F.phase === 'wait') { sound.nibble(); this.setData({ bobClass: 'nibble' }); setTimeout(() => { if (this.F && this.F.phase === 'wait') this.setData({ bobClass: 'bobbing' }); }, 300); } }, biteAt * k));
-          this.biteTimer = setTimeout(() => this.bite(), biteAt);
-        }, this.data.motion ? 720 : 60);
-        } catch (e) { this.F = null; this.setData({ casting: false, castClass: '', castLabel: this.t('抛竿', 'Cast'), castSub: '', hint: this.t('出错了：', 'Something went wrong: ') + ((e && e.message) || e) }); console.error('cast', e); }
+          const box = found || this.geo || this.fallbackGeo(); if (!box || !box.stage) return;
+          if (!found) this.geo = box;
+          const tip = { x: box.left + box.width * (152 - rig.BOX.x) / rig.BOX.w, y: box.top + box.height * (34 - rig.BOX.y) / rig.BOX.h }, bx = box.stage.width * .8, by = box.stage.height * .5 + box.stage.width * .075;
+          this.F = { phase: 'cast', tip, bx, by, pulls: 0, at: Date.now() }; sound.cast();
+          this.act({ wings: 'five', body: 'five' }, 1200); this.lookAt(6, 3);
+          this.setData({ casting: true, card: null, castClass: 'waiting', castLabel: this.t('等待', 'Wait...'), castSub: '', bobSrc: rig.bobber(this.play().worn.hand), bobClass: '', bobStyle: 'left:' + tip.x + 'px;top:' + tip.y + 'px;transition:none', lineStyle: '', shadowClass: '', bang: false });
+          const later = (ms, fn) => { const id = setTimeout(fn, ms); (this.castTimers || (this.castTimers = [])).push(id); return id; };
+          later(40, () => { if (this.F) this.setData({ bobStyle: 'left:' + bx + 'px;top:' + by + 'px' }); });
+          later(this.data.motion ? 720 : 60, () => {
+            if (!this.F) return; this.F.phase = 'wait'; sound.plop(); this.splashAt(bx, by);
+            const biteAt = 2800 + Math.random() * 2800;
+            this.setData({ bobClass: 'bobbing', lineStyle: this.line(tip, bx, by - 8), shadowClass: 'circling', shadowStyle: 'left:' + bx + 'px;top:' + by + 'px;--circle:' + Math.round(biteAt) + 'ms', hint: this.t('等浮标沉下去……', 'Wait for the bobber to go under...') });
+            this.say(this.t('嘘……它来了。', 'Shh... here it comes.'), 2400);
+            this.nibbleTimers = [.42, .7].map(k => setTimeout(() => { if (this.F && this.F.phase === 'wait') { sound.nibble(); this.setData({ bobClass: 'nibble' }); setTimeout(() => { if (this.F && this.F.phase === 'wait') this.setData({ bobClass: 'bobbing' }); }, 300); } }, biteAt * k));
+            this.biteTimer = setTimeout(() => this.bite(), biteAt);
+          });
+        } catch (e) {
+          this.F = null; this.castLock = false;
+          this.setData({ casting: false, castClass: '', castLabel: this.t('抛竿', 'Cast'), castSub: '', hint: this.t('出错了：', 'Something went wrong: ') + ((e && e.message) || e) });
+          console.error('cast', e);
+        }
       });
     },
+
     // The bite starts the timing bar: the marker goes there and back twice (4 legs). Stop it in the green.
     // Two chances: the first miss runs the bar again with a new green zone; a second miss lets the fish go.
     bite() {

@@ -220,6 +220,170 @@
       {
         "type": "file",
         "value": "project.private.config.json"
+      },
+      {
+        "type": "file",
+        "value": "assets/balance-outline.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/coupon-outline.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/help-outline.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/invite-classmate.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/invite/uniearn-print.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/invite/gift.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/jobs-active.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/jobs-green.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/jobs.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/language-outline.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/message-active.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/message-green.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/moon-outline.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/news-tag.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/phone-active.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/phone-green.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/phone-outline.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/phone.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/photo-active.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/photo-blue.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/photo-orange.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/profile-active.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/profile-active.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/profile-white.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/profile.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/receipt-outline.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/rewards-active.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/rewards-active.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/rewards-green.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/rewards.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/rules-outline.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/sheet-pickup.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/sheet-task.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/sheet-trip.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/sheet-yuan.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/sms-active.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/sms-green.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/sms.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/support-outline.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/university-outline.svg"
+      },
+      {
+        "type": "file",
+        "value": "assets/yuni-play/i-sound-off.svg"
       }
     ],
     "include": []

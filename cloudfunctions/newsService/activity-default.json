@@ -101,7 +101,7 @@
       "id": "invite",
       "kind": "referral",
       "enabled": true,
-      "points": 10,
+      "points": 20,
       "title": {
         "zh": "邀请新同学",
         "en": "Invite a new classmate"
