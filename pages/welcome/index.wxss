@@ -14,3 +14,5 @@
 .feature+.feature{animation-delay:.14s}.feature+.feature+.feature{animation-delay:.18s}
 
 .welcome-check{display:inline-flex;align-items:center;justify-content:center;flex:none;width:32rpx;height:32rpx;border:2rpx solid #c9c5b8;border-radius:8rpx;background:#fff;color:#fff;font-size:24rpx;line-height:1}.welcome-check.checked{background:#0b7a55;border-color:#0b7a55}
+/* 2026-11-18: the real reason under a failed login, so testers can report it. */
+.notice-error-detail{margin-top:8rpx;font-size:21rpx;line-height:1.5;color:#8a877c;word-break:break-all}
