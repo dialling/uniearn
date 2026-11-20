@@ -1,7 +1,7 @@
 <view style="{{motionStyle}}">
 <lang-switch></lang-switch>
 <view class="post-page addr-page {{darkClass}}">
- <view class="addr-list-head"><text>{{zh?'我的常用地址':'My addresses'}}</text><text class="addr-count">{{list.length}}</text><text wx:if="{{pick && list.length}}" class="hint addr-pick-hint">{{zh?'点选一个用于本单':'Tap one to use it'}}</text></view>
+ <view class="addr-list-head"><text>{{zh?'我的常用地址':'My addresses'}}</text><text class="addr-count">{{list.length}}</text><text wx:if="{{pick && list.length}}" class="hint addr-pick-hint">{{zh?'选择本单的收货地址':'Tap one to use it'}}</text></view>
  <view wx:if="{{!list.length}}" class="addr-empty">{{zh?'还没有常用地址，可以在下方添加。':'No saved addresses yet. Add one below.'}}</view>
  <view wx:for="{{list}}" wx:key="id" class="addr-item {{selectedId===item.id?'selected':''}} {{flash===item.id?'flash':''}}" style="animation-delay:{{index*40}}ms" data-id="{{item.id}}" bindtap="choose" hover-class="{{pick?'addr-press':''}}" hover-stay-time="80">
   <view class="addr-row"><text class="addr-name">{{item.displayName}}</text><text wx:if="{{item.default}}" class="addr-badge">{{zh?'默认':'Default'}}</text><text wx:if="{{selectedId===item.id}}" class="addr-tick">✓</text></view>

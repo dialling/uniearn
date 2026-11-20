@@ -1,4 +1,4 @@
-const fallback=require('./news-activity');
+const fallback=require('../../utils/news-activity');
 const revision=c=>{const m=/^admin-(\d+)$/.exec(c&&c.revision||'');return m?Number(m[1]):0;};
 function latest(current,incoming){if(!incoming)return current||fallback;if(!current||revision(incoming)>=revision(current))return incoming;return current;}
 function display(config,zh,now=Date.now()){

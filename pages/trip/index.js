@@ -48,7 +48,7 @@ Page({data:{...require('../../utils/motion').data(),trip:null,requests:[],reward
    if(updated&&!updated.cancelled&&updated.phase==='collect'){
     const remaining=updated.requestIds.filter(key=>current.requests.find(r=>r.id===key)?.status!=='collected');
     if(!remaining.length)await orders.act('leave',{id:this.id});
-    else ui.toast(zh()?'本单已取物，请先取齐其余订单。':'Picked up. Collect the remaining orders before delivery.');
+    else ui.toast(zh()?'本单已取件，请先完成其余订单的取件。':'Picked up. Collect the remaining orders before delivery.');
    }
   }catch(error){ui.toast(error);}finally{this.setData({collectingId:''});this.refresh();}
  },

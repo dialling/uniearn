@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
-const {display,latest}=require('../utils/activity-display');
+const {display,latest}=require('../pages/levels/activity-display');
 const config=require('../cloudfunctions/newsService/activity-default.json');
 const {handleOperations}=require('../cloudfunctions/newsService/operations');
 const loyalty=require('../cloudfunctions/orderService/loyalty');
@@ -27,7 +27,7 @@ const {harness}=require('./helpers/order-cloud');
  const h=harness();h.documents['uniearn_news:activity-config']={value:response.value,revision:1};const sync=await h.call('customer','sync');assert(sync.ok,sync.error);assert.equal(sync.snapshot.rewards.activities.config.tasks.find(t=>t.kind==='customer_order').points,35,'Mini Program sync reads the shared cloud record');
  const pending=[],timers=[];let errors=0;
  const context={module:{exports:{}},require:()=>({call:action=>{assert.equal(action,'activityConfig');return new Promise((resolve,reject)=>pending.push({resolve,reject}));}}),setTimeout:fn=>(timers.push(fn),timers.length),clearTimeout(){}};
- vm.runInNewContext(fs.readFileSync(require.resolve('../utils/activity-sync'),'utf8'),context);
+ vm.runInNewContext(fs.readFileSync(require.resolve('../pages/levels/activity-sync'),'utf8'),context);
  const seen=[],stop=context.module.exports.subscribe(c=>seen.push(c),()=>errors++);
  pending.shift().resolve({config:response.value});await new Promise(setImmediate);assert.equal(seen.length,1);assert.equal(timers.length,1);
  timers.shift()();stop();pending.shift().resolve({config:{...response.value,revision:'admin-2'}});await new Promise(setImmediate);assert.equal(seen.length,1);assert.equal(timers.length,0,'hidden page stops polling and ignores late responses');

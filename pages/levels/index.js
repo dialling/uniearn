@@ -1,6 +1,6 @@
 'use strict';
 const store=require('../../utils/store'),levelData=require('../../utils/yuni-level');
-const activityDisplay=require('../../utils/activity-display');
+const activityDisplay=require('./activity-display');
 const THEMES=['star','helper','pro','ace','captain'];
 const MASCOTS=['star','helper','pro','ace','captain'];
 const ACTIONS_ZH=['展开地图，准备出发','挥旗回应，一起同行','放眼远方，发现方向','乘风破浪，勇往直前','稳稳掌舵，带领同行'];
@@ -45,7 +45,7 @@ function rows(language){
     ?{title:en?'Growth record':'成长记录',detail:en?'Level points start from 0':'长期等级积分从 0 分开始记录',icon:icons[2]}
     :{title:en?'Level-up moment':'升级时刻',detail:en?'Yuni level-up animation and milestone record':'Yuni 升级动画与等级里程碑记录',icon:icons[2]},
    index===levelData.levels.length-1
-    ?{title:en?'Journey status':'成长状态',detail:en?'Highest confirmed level · progress complete':'当前已确认最高等级 · 进度完成',icon:icons[3]}
+    ?{title:en?'Journey status':'成长状态',detail:en?'Highest confirmed level · progress complete':'已达到最高等级',icon:icons[3]}
     :{title:en?'Next-level progress':'下一级进度',detail:en?'Points remaining to '+levelData.levels[index+1].en+' are shown':'展示距离「'+levelData.levels[index+1].zh+'」还差多少积分',icon:icons[3]}
   ],
   gear:gearFor(level.level,en),gearTitle:index===0?(en?'Starts with':'初始装备'):(en?'Unlocks':'解锁装备'),
@@ -64,7 +64,7 @@ Page({
  data:{...require('../../utils/motion').data(),language:'zh',pointTasks:[],pointsStatus:'',pointsSyncError:false,levels:rows('zh'),current:0,currentItem:rows('zh')[0],currentLevel:1,points:0,arcMoveMs:ARC_MOVE_MS,arcReleaseMs:ARC_RELEASE_MS,gestureActive:false,dragX:0,dragY:0,mascotJumping:false},
  onLoad(){this.localize(true);},
  onReady(){wx.createSelectorQuery().in(this).select('.level-orbit').boundingClientRect(rect=>{this.orbitRect=rect;}).exec();},
- onShow(){this.localize(false);require('../../utils/orders').bind(this,'refreshCheckin');require('../../utils/page-title').apply(this);this.stopPointsSync();this.stopPoints=require('../../utils/activity-sync').subscribe(config=>{this.pointsConfig=activityDisplay.latest(this.pointsConfig,config);this.updatePointTasks();this.setData({pointsSyncError:false});},()=>this.setData({pointsSyncError:true}));},
+ onShow(){this.localize(false);require('../../utils/orders').bind(this,'refreshCheckin');require('../../utils/page-title').apply(this);this.stopPointsSync();this.stopPoints=require('./activity-sync').subscribe(config=>{this.pointsConfig=activityDisplay.latest(this.pointsConfig,config);this.updatePointTasks();this.setData({pointsSyncError:false});},()=>this.setData({pointsSyncError:true}));},
  stopPointsSync(){if(this.stopPoints){this.stopPoints();this.stopPoints=null;}},
  refreshCheckin(){const state=store.get(),view=levelData.view(require('../../utils/order-fish').shownProgression(state));this.setData({checkin:checkinView(state,this.data.language),currentLevel:view.level,points:view.points,hero:progressView(view,this.data.language==='en')});},
  // 2026-11-18: Feed Yuni opens the Me page, where Yuni eats today's dried fish (no popup any more).

@@ -1,4 +1,4 @@
-const {call}=require('./news');
+const {call}=require('../../utils/news');
 function subscribe(onData,onError){
  let stopped=false,timer;
  async function pull(){
