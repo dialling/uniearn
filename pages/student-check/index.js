@@ -22,8 +22,11 @@ const stage=!a.profile&&!a.hasProfile?'profile':this._submitApplication?'rules':
  rule(e){if(this.data.busy)return;const i=Number(e.currentTarget.dataset.index),checks=this.data.ruleChecks.slice(),count=this.data.rules.length;if(i===-1)checks.fill(this.data.ruleCount!==count);else if(Number.isInteger(i)&&i>=0&&i<count)checks[i]=!checks[i];else return;this.setData({ruleChecks:checks,ruleCount:checks.filter(Boolean).length});},
  async finish(){if(this.data.ruleCount!==this.data.rules.length||this.data.busy)return;this.setData({busy:true,error:''});
 let accountState=null,rulesError=null;
-try{if(this._submitApplication){accountState=(await account.call('apply',{application:this.data.form})).account;this._submitApplication=false;}
+try{
+ // 2026-11-21: record the rules first. The cloud only accepts an application after the rules are agreed (RULES_REQUIRED),
+ // so sending the application first blocked every new runner.
  try{await account.call('agreeRules',{accepted:true});}catch(e){rulesError=e;store.update(s=>{s.runnerRulesPending=true;});}
+ if(this._submitApplication){if(rulesError)throw rulesError;accountState=(await account.call('apply',{application:this.data.form})).account;this._submitApplication=false;}
  if(!accountState)accountState=(await account.call('status')).account;
  this.apply(accountState);
  if(rulesError&&accountState&&accountState.verification&&accountState.verification.status==='verified')throw rulesError;
