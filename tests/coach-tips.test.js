@@ -4,7 +4,9 @@ global.wx={getStorageSync:()=>null,setStorageSync(){}};
 const read0=f=>fs.readFileSync(path.join(__dirname,'..',f),'utf8');const store=require('../utils/store'),coach=require('../utils/coach');store.reset();store.update(s=>{s.profile={...s.profile,accountId:'a1',onboarded:true};});
 assert.deepEqual(coach.names.sort(),['night','parcel','post','takeaway','task','trip']);
 for(const n of coach.names){const en=coach.steps(n,'en'),zh=coach.steps(n,'zh');assert.ok(en.length>=1&&en.length<=3,n+' stays short');assert.ok(zh.every(s=>s.title&&s.text),n+' has Chinese');}
-assert.deepEqual(coach.steps('post','en').map(s=>s.title),['Post a pick-up','Post any task','Start a trip']);
+// 2026-11-21: Post sheet tip titles are the cards' own names
+assert.deepEqual(coach.steps('post','en').map(s=>s.title),['Post a pick-up','Post any task','Start a trip!']);
+assert.deepEqual(coach.steps('post','zh').map(s=>s.title),['我需要！发布代取','其他需求','我顺路！发起行程']);
 // 2026-11-17: the form tips point only at the confusing part, never at the post button
 for(const n of ['trip','takeaway','parcel','task'])assert.ok(!coach.steps(n,'en').some(s=>/post-submit|tp-go/.test(s.target)),n+' skips the post button');
 assert.deepEqual(['takeaway','parcel','task'].map(n=>coach.steps(n,'en')[0].target),['.arrival-card','.notice-upload','.deadline-card']);

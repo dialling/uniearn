@@ -16,11 +16,16 @@ Component({
     start() {
       const zh = store.get().language !== 'en', list = coach.steps(this.data.name, zh ? 'zh' : 'en');
       if (!list.length) return;
-      this.list = list; this.setData({ i: 0, zh, dir: 'next', focus: null, last: list.length - 1, dots: list.map((_, k) => k) }); this.show(0);
+      this.list = list; this.savedScroll = undefined; this.setData({ i: 0, zh, dir: 'next', focus: null, last: list.length - 1, dots: list.map((_, k) => k) }); this.show(0);
     },
     next() { const k = this.data.i + 1; if (k > this.data.last) return this.finish(); this.setData({ i: k, dir: 'next' }); this.show(k); },
     back() { const k = Math.max(0, this.data.i - 1); this.setData({ i: k, dir: 'back' }); this.show(k); },
-    finish() { clearTimeout(this.timer); coach.mark(this.data.name); this.setData({ i: -1, focus: null }); this.triggerEvent('done'); },
+    finish() {
+      clearTimeout(this.timer); coach.mark(this.data.name); this.setData({ i: -1, focus: null });
+      // 2026-11-20: put the page back where it was before the tip scrolled to its section, so nobody has to scroll up to the top of the form again.
+      if (this.savedScroll !== undefined && wx.pageScrollTo) wx.pageScrollTo({ scrollTop: this.savedScroll, duration: 300 });
+      this.savedScroll = undefined; this.triggerEvent('done');
+    },
     noop() {},
     // Measure the target in the screen that holds this tip; scroll it into view first if it is off screen.
     show(k, scrolled) {
@@ -34,6 +39,7 @@ Component({
         if (!rect) return this.setData({ focus: null, cardStyle: '' });
         // in-page targets: bring the top of the target near the top of the screen so the card fits below it
         if (!item.fixed && !scrolled && split.length === 1 && (rect.top < 60 || rect.top > 150) && wx.pageScrollTo) {
+          if (this.savedScroll === undefined) this.savedScroll = (view && view.scrollTop) || 0;
           wx.pageScrollTo({ selector: item.target, offsetTop: -90, duration: 0 });
           this.timer = setTimeout(() => this.show(k, true), 260); return;
         }

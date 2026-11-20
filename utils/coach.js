@@ -1,13 +1,14 @@
 'use strict';
+// 2026-11-21: Post sheet tip titles use the cards' own names (我需要！发布代取 / 其他需求 / 我顺路！发起行程).
 // 2026-11-16: first-time tips. One short spotlight (1–3 steps) the first time someone uses a screen, then never again.
 // Same look as the Jobs page app guide. "Replay the app guide" (Me › Yuni) resets them.
 // target: an element in the screen that holds the tip; "component >>> element" looks inside a component.
 const store = require('./store');
 const TIPS = {
   post: [
-    { target: '#csPickup', pose: 'go', fixed: true, zh: ['发布代取', '门口的外卖、驿站的快递，跑手帮你送到宿舍。'], en: ['Post a pick-up', 'Food at the gate or a parcel at the station. A runner brings it to your door.'] },
-    { target: '#csTask', pose: 'think', fixed: true, zh: ['发布任何任务', '其他校园小事也可以，时间和价格你来定。'], en: ['Post any task', 'Anything else on campus. You set the time and the price.'] },
-    { target: '#csTrip', pose: 'party', fixed: true, zh: ['发起顺路行程', '本来就要去？分享路线，顺路帮同学带东西赚零花钱。'], en: ['Start a trip', 'Going anyway? Share your route and earn by bringing classmatesʼ orders.'] }
+    { target: '#csPickup', pose: 'go', fixed: true, zh: ['我需要！发布代取', '门口的外卖、驿站的快递，跑手帮你送到宿舍。'], en: ['Post a pick-up', 'Food at the gate or a parcel at the station. A runner brings it to your door.'] },
+    { target: '#csTask', pose: 'think', fixed: true, zh: ['其他需求', '其他校园小事也可以，时间和价格你来定。'], en: ['Post any task', 'Anything else on campus. You set the time and the price.'] },
+    { target: '#csTrip', pose: 'party', fixed: true, zh: ['我顺路！发起行程', '本来就要去？分享路线，顺路帮同学带东西赚零花钱。'], en: ['Start a trip!', 'Going anyway? Share your route and earn by bringing classmatesʼ orders.'] }
   ],
   // 2026-11-17: only the parts people get wrong. Posting is obvious, so no step points at the post button.
   trip: [

@@ -1,5 +1,41 @@
 <view style="{{motionStyle}}">
 <lang-switch></lang-switch>
-<view wx:if="{{!skipping}}" class="welcome {{darkClass}}"><view class="welcome-header"><view class="brand"><view class="logo">U<text>●</text></view><text>Uni<text class="green-word">earn</text></text></view><button class="language-switch" bindtap="toggleLanguage">{{copy.toggle}}</button></view><view class="welcome-yuni"><image src="/assets/yuni-wave.png" mode="aspectFit"/><view class="hello"><view class="yuni-name">Yuni</view>{{copy.hello}}</view></view><view class="headline">{{copy.headline}}</view><view class="intro">{{copy.intro}}</view><view class="feature"><text class="feature-icon orange">♧</text><view><view class="strong">{{copy.pickup}}</view><view class="hint">{{copy.pickupSub}}</view></view></view><view class="feature"><text class="feature-icon gold">▤</text><view><view class="strong">{{copy.anything}}</view><view class="hint">{{copy.anythingSub}}</view></view></view><view class="feature"><text class="feature-icon green">➜</text><view><view class="strong">{{copy.earn}}</view><view class="hint">{{copy.earnSub}}</view></view></view><view class="welcome-footer"><view class="hint">{{copy.footer}}</view><view wx:if="{{error}}" class="notice-error">{{error}}<view wx:if="{{errorDetail}}" class="notice-error-detail">{{errorDetail}}</view></view><button class="btn welcome-enter" bindtap="enter" loading="{{motionEnabled && (busy)}}" disabled="{{busy}}">{{copy.enter}}</button><view class="welcome-agreement" bindtap="agree"><text class="welcome-check {{agreed?'checked':''}}">{{agreed?'✓':''}}</text><text>{{copy.terms}} <text class="link" catchtap="terms">{{copy.termsName}}</text> {{copy.and}} <text class="link" catchtap="privacy">{{copy.privacyName}}</text></text></view></view></view><yuni-assistant topic=""/>
+<view wx:if="{{!skipping}}" class="welcome {{darkClass}} {{error?'has-error':''}}">
+  <!-- Top: brand row and Yuni greeting the student -->
+  <view class="hero">
+    <view class="welcome-header">
+      <view class="brand"><view class="logo">U<text>●</text></view><text>Uni<text class="green-word">earn</text></text></view>
+      <button class="language-switch" bindtap="toggleLanguage">{{copy.toggle}}</button>
+    </view>
+    <view class="welcome-yuni">
+      <image class="yuni-pic" src="{{errorDetail?'/assets/yuni-oops.png':'/assets/yuni-wave.png'}}" mode="aspectFit"/>
+      <view class="hello"><view class="yuni-name">Yuni</view>{{copy.hello}}</view>
+    </view>
+  </view>
+
+  <!-- Message and what Uniearn does: centred in the space between Yuni and the sign-in bar -->
+  <view class="welcome-body">
+  <view class="headline">{{copy.headline}}</view>
+  <view class="intro">{{copy.intro}}</view>
+
+  <view class="features">
+    <view class="feature"><image class="feature-icon" src="/assets/icons3d/pickup.svg" mode="aspectFit"/><view class="feature-text"><view class="feature-title">{{copy.pickup}}</view><view class="feature-sub">{{copy.pickupSub}}</view></view></view>
+    <view class="feature"><image class="feature-icon" src="/assets/icons3d/task.svg" mode="aspectFit"/><view class="feature-text"><view class="feature-title">{{copy.anything}}</view><view class="feature-sub">{{copy.anythingSub}}</view></view></view>
+    <view class="feature"><image class="feature-icon" src="/assets/icons3d/trip.svg" mode="aspectFit"/><view class="feature-text"><view class="feature-title">{{copy.earn}}</view><view class="feature-sub">{{copy.earnSub}}</view></view></view>
+  </view>
+  </view>
+
+  <!-- Always-visible sign-in bar: agreement first, then the button -->
+  <view class="welcome-footer">
+    <view wx:if="{{error}}" class="notice-error">
+      <view class="notice-error-title">{{error}}</view>
+      <view wx:if="{{errorDetail}}" class="notice-error-detail">{{errorDetail}}</view>
+      <view wx:if="{{errorDetail}}" class="notice-error-copy" bindtap="copyDetail">{{copyLabel}}</view>
+    </view>
+    <view class="welcome-agreement" bindtap="agree"><text class="welcome-check {{agreed?'checked':''}}">{{agreed?'✓':''}}</text><text class="agreement-text">{{copy.terms}} <text class="link" catchtap="terms">{{copy.termsName}}</text> {{copy.and}} <text class="link" catchtap="privacy">{{copy.privacyName}}</text></text></view>
+    <button class="welcome-enter" bindtap="enter" loading="{{motionEnabled && (busy)}}" disabled="{{busy}}">{{copy.enter}}</button>
+  </view>
+</view>
+<yuni-assistant topic=""/>
 
 </view>
