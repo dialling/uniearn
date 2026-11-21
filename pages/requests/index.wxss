@@ -163,3 +163,17 @@
 .page-dark .oe-title,.page-dark .oe-name{color:#edebe4}
 .page-dark .oe-row+.oe-row{border-top-color:#3a3b37}
 .page-dark .oe-tile{background:linear-gradient(160deg,#34362f,#2a2c26)}
+
+/* 2026-11-21: Chat button next to "Got it, thanks!" so people see they can open the conversation */
+.no-msg-chat{flex:none;display:flex;align-items:center;gap:8rpx;padding:10rpx 20rpx 10rpx 14rpx;border:2rpx solid #0b7a55;border-radius:18rpx;background:#fff;color:#0b7a55;font-size:25rpx;font-weight:700;line-height:1.5;white-space:nowrap}
+.no-msg-chat-icon{width:36rpx;height:36rpx}
+.no-msg-press{opacity:.7}
+.page-dark .no-msg-chat{background:#242522;border-color:#6fd0a8;color:#6fd0a8}
+/* 2026-11-21: chat + phone in the order card's top right once a runner has the order (same round 3D buttons as the trip page);
+   a red dot on chat when there are unread messages. */
+.no-contacts{flex:none;display:flex;align-items:center;gap:14rpx}
+.no-contact{position:relative;display:flex;align-items:center;justify-content:center;width:68rpx;height:68rpx;border-radius:50%;background:#fff;border:1rpx solid #e2e0d9;box-shadow:0 4rpx 12rpx rgba(22,24,28,.06)}
+.no-contact image{width:40rpx;height:40rpx}
+.no-contact-dot{position:absolute;top:2rpx;right:2rpx;width:18rpx;height:18rpx;border-radius:50%;background:#e5383b;border:3rpx solid #fff;box-sizing:border-box}
+.no-contact-press{opacity:.7}
+.page-dark .no-contact{background:#242522;border-color:#3a3b37}
