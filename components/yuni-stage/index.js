@@ -465,8 +465,9 @@ Component({
       const id = this.play().bucket[n], f = catalog.fish(id); if (!f || this.feeding) return; this.feeding = true;
       const pts = catalog.RARITY[f.r].points;
       this.busy = true; this.pose({ wings: 'reach', mouth: true });
-      this.measure(g => {
-        if (g) this.setData({ prize: { src: rig.fish(id), style: '--fx:' + (g.stage.width / 2) + 'px;--fy:' + (g.stage.height - 60) + 'px;--tx:' + g.cx + 'px;--ty:' + (g.cy + 20) + 'px', kind: 'feed' } });
+      this.measureOr(found => { // 2026-11-21: same phone-safe measure as the dried and order fish
+        const g = found || this.geo || this.fallbackGeo();
+        if (g && g.stage) this.setData({ prize: { src: rig.fish(id), style: '--fx:' + (g.stage.width / 2) + 'px;--fy:' + (g.stage.height - 60) + 'px;--tx:' + g.cx + 'px;--ty:' + (g.cy + 20) + 'px', kind: 'feed' } });
         setTimeout(async () => {
           this.setData({ prize: null });
           try {
@@ -500,13 +501,17 @@ Component({
     feedOrderFish() {
       const f = require('../../utils/order-fish').waiting()[0]; if (!f || this.feeding) return; this.feeding = true;
       this.busy = true; this.pose({ wings: 'reach', mouth: true });
-      this.measure(g => {
-        if (g) this.setData({ prize: { src: '/assets/yuni-feed/fish.png', style: '--fx:' + (g.stage.width / 2) + 'px;--fy:' + (g.stage.height - 60) + 'px;--tx:' + g.cx + 'px;--ty:' + (g.cy + 20) + 'px', kind: 'feed' } });
+      // 2026-11-21: measureOr (like the dried fish). On phones the plain measure() may never call back, which left the
+      // order fish uneaten, its points hidden and `feeding` stuck so every later tap on Feed did nothing.
+      this.measureOr(found => {
+        const g = found || this.geo || this.fallbackGeo();
+        if (g && g.stage) this.setData({ prize: { src: '/assets/yuni-feed/fish.png', style: '--fx:' + (g.stage.width / 2) + 'px;--fy:' + (g.stage.height - 60) + 'px;--tx:' + g.cx + 'px;--ty:' + (g.cy + 20) + 'px', kind: 'feed' } });
         setTimeout(() => {
-          this.setData({ prize: null }); require('../../utils/order-fish').markFed(f.id); this.sync();
-          sound.eat(f.points); this.fedNow(); this.act({ face: 'love', body: 'munch' }, 1700); this.chew(); this.points('+' + f.points + this.t(' 积分', ' pts')); this.cheer();
-          this.say(f.role === 'runner' ? this.t('谢谢你帮同学跑单！', 'Thanks for running that order!') : this.t('订单完成啦，真好吃！', 'Order done. Yum!'), 2200);
-          this.feeding = false;
+          try {
+            this.setData({ prize: null }); require('../../utils/order-fish').markFed(f.id); this.sync();
+            sound.eat(f.points); this.fedNow(); this.act({ face: 'love', body: 'munch' }, 1700); this.chew(); this.points('+' + f.points + this.t(' 积分', ' pts')); this.cheer();
+            this.say(f.role === 'runner' ? this.t('谢谢你帮同学跑单！', 'Thanks for running that order!') : this.t('订单完成啦，真好吃！', 'Order done. Yum!'), 2200);
+          } finally { this.feeding = false; }
         }, this.data.motion ? 760 : 0);
       });
     },
