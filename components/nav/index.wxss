@@ -166,3 +166,9 @@
 /* 2026-11-18: today's dried fish is waiting on the Me page. */
 .nav-fish-dot{position:absolute;top:0;left:calc(50% + 12rpx);width:15rpx;height:15rpx;border-radius:50%;background:#f2a60c;border:3rpx solid #fff;box-sizing:content-box}
 .nav-me{position:relative}
+/* 2026-11-21: tab icons are the app's own 3D icons (assets/icons3d). Grey until the tab is selected, then full colour. */
+.nav .item .nav-icon.nav-icon-3d{width:60rpx;height:60rpx;margin:-6rpx auto 0}
+.nav .item .nav-icon.nav-icon-3d{filter:grayscale(1);opacity:.5}
+.nav .item.selected .nav-icon.nav-icon-3d,.nav.nav-dark .item.selected .nav-icon.nav-icon-3d{filter:none;opacity:1}
+.nav .nav-unread-dot,.nav .nav-fish-dot{left:calc(50% + 18rpx);top:-4rpx}
+.nav .item.nav-rewards.selected .nav-icon.nav-icon-3d{filter:hue-rotate(62deg) saturate(.9)}
