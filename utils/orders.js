@@ -48,7 +48,7 @@ function apply(snapshot) {
       const realCancel=changes.some(r=>r.status==='cancelled');
       const returned=changes.length&&changes.every(r=>r.status==='waiting'&&r.cancellation);
       if(state.yuniTips===false)tell(state.language==='en'?(realCancel?'Order cancelled':returned?'Order still active · see My orders':'Order progress updated · open My orders'):(realCancel?'订单已取消':returned?'订单仍在进行，请查看我的订单':'订单进度已更新，请查看我的订单。'));
-      else changes.forEach(r=>{try{yuniEvents.status(r,snapshot.revision);}catch(e){console.warn('Order notification failed',e);}});
+      else changes.forEach(r=>{try{yuniEvents.status(r,snapshot.revision,previous.status[r.id]);}catch(e){console.warn('Order notification failed',e);}});
     }
     else if(joined&&state.preferences?.orderUpdates!==false)tell('A customer joined your trip');
     else if (state.profile.studentVerified && newJobs.length && state.preferences?.newJobs!==false) tell('New pickup jobs available');
