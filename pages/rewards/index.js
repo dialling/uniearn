@@ -33,7 +33,7 @@ const examplesZh = [
 ];
 
 Page({
-  data: {...require('../../utils/motion').data(),screen:'home',activeOffers:[],latestOffer:null,selectedNews:null,roadshow:null,articleFrom:'home',showCampusNotices:false,coupons: [], campaigns: [], weekly: {segments: []}, news: [], ready: 0, toCollect: 0, examples, registered: false, zh: false},
+  data: {...require('../../utils/motion').data(),screen:'home',activeOffers:[],latestOffer:null,selectedNews:null,roadshow:null,showCampusNotices:false,coupons: [], campaigns: [], weekly: {segments: []}, news: [], ready: 0, toCollect: 0, examples, registered: false, zh: false},
   onShow() {
     const zh = store.get().language !== 'en';
     this.setData({zh, examples: zh ? examplesZh : examples, roadshow:require('../../utils/wenyuan-roadshow')(zh)});
@@ -74,9 +74,8 @@ Page({
   onLoad(o={}) {if(o.section==='coupons'){this.couponFocus=true;this.setData({screen:'offers'});}if(o.openInvite==='1'||o.invite)this.invite({code:o.invite||''}); },
   openSection(e){const screen=e.currentTarget.dataset.screen;if(!['home','offers','university','uniearn'].includes(screen))return;this.setData({screen,selectedNews:null});wx.pageScrollTo({scrollTop:0,duration:0});measure(this);},
   backToNews(){this.setData({screen:'home',selectedNews:null});wx.pageScrollTo({scrollTop:0,duration:0});},
-  openArticle(e){const item=this.data.news.find(n=>n._id===e.currentTarget.dataset.id);if(item){this.setData({selectedNews:item,articleFrom:this.data.screen,screen:'article'});wx.pageScrollTo({scrollTop:0,duration:0});}},
-  openRoadshow(){const item=this.data.roadshow;if(!item)return;this.setData({selectedNews:{_id:item.id,kind:'roadshow',title:item.title,date:item.date,body:item.body},articleFrom:this.data.screen==='article'?this.data.articleFrom:this.data.screen,screen:'article'});wx.pageScrollTo({scrollTop:0,duration:0});},
-  closeArticle(){const screen=this.data.selectedNews&&this.data.selectedNews.kind==='roadshow'?(this.data.articleFrom||'home'):'uniearn';this.setData({selectedNews:null,screen});},
+  openArticle(e){const item=this.data.news.find(n=>n._id===e.currentTarget.dataset.id);if(item){this.setData({selectedNews:item,screen:'article'});wx.pageScrollTo({scrollTop:0,duration:0});}},
+  closeArticle(){this.setData({selectedNews:null,screen:'uniearn'});},
   openCoupons(){require('../../utils/nav').navigateTo({url:'/pages/coupons/index'});},
   jobs() { wx.reLaunch({url: '/pages/jobs/index'}); }
 });
