@@ -1,4 +1,17 @@
 const assert=require('node:assert/strict');
+// The XP Express build replaces cloud functions with a REST adapter; OCR stays intentionally off there.
+const xpBuild=/xp-backend/.test(require('fs').readFileSync(require.resolve('../utils/cloud'),'utf8'));
+if(xpBuild){
+  global.wx={getStorageSync(){return null;},setStorageSync(){}};
+  global.App=definition=>definition.onLaunch();
+  require('../app');
+  (async()=>{
+    await assert.rejects(require('../utils/ocr').recognize('/sample.png'),/截图识别暂不可用|not available/);
+    console.log('XP backend: screenshot OCR reports unavailable without cloud functions.');
+  })().catch(error=>{console.error(error);process.exitCode=1;});
+}
+// A top-level return is not valid for scripts/check.js, which compiles every file as a plain script.
+if(!xpBuild){
 const calls=[];
 global.wx={
   cloud:{
@@ -29,3 +42,4 @@ const {call}=require('../utils/account');
   assert.equal(calls.at(-1)[0],'init');
   console.log('Cloud initialized before OCR and account calls, including after SDK replacement');
 })().catch(error=>{console.error(error);process.exitCode=1;});
+}

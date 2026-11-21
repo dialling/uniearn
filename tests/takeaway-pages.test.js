@@ -4,10 +4,13 @@ const assert=require('node:assert/strict');
 const {harness}=require('./helpers/order-cloud');
 const h=harness();let def,navigation='',notices=[],failAfterCommit=false;
 global.Page=x=>def=x;
-global.wx={getStorageSync:()=>null,setStorageSync:()=>{},showToast:x=>notices.push(x.title),showModal:x=>x.success&&x.success({confirm:true}),navigateTo:x=>navigation=x.url,redirectTo:x=>navigation=x.url,reLaunch:x=>navigation=x.url,saveFile:x=>x.success({savedFilePath:'saved-proof'}),chooseMedia:x=>x.success({tempFiles:[{tempFilePath:'temporary-proof'}]}),cloud:{init(){},
+global.wx={getStorageSync:()=>null,setStorageSync:()=>{},showToast:x=>notices.push(x.title),showModal:x=>x.success&&x.success({confirm:true}),navigateTo:x=>navigation=x.url,redirectTo:x=>navigation=x.url,reLaunch:x=>navigation=x.url,saveFile:x=>x.success({savedFilePath:'saved-proof'}),chooseMedia:x=>x.success({tempFiles:[{tempFilePath:'temporary-proof'}]})};
+// Mock the cloud module itself so the test runs against both the wx.cloud and XP adapter builds.
+const cloud=require('../utils/cloud');
+cloud.ensureCloud=()=>({
  async callFunction({name,data}){if(name==='studentAccount'&&data.action==='saveDorm'){const id=h.engine.idFor(h.user),a=h.accounts[id];a.profile={...a.profile,dorm:data.dorm,room:data.room,pickup:data.pickup};return{result:{ok:true,account:{id,profile:a.profile,verification:a.verification}}};}assert.equal(name,'orderService');const result=await h.client(data);if(failAfterCommit&&data.action==='create'){failAfterCommit=false;throw Error('network lost after commit');}return{result};},
  async uploadFile({cloudPath}){return{fileID:'cloud://test/'+cloudPath};}
-}};
+});
 const store=require('../utils/store'),account=require('../utils/account'),orders=require('../utils/orders');account.requireRunner=async()=>true;
 function load(n,args={}){delete require.cache[require.resolve('../pages/'+n+'/index')];require('../pages/'+n+'/index');const p={...def,data:structuredClone(def.data)};p.setData=x=>Object.assign(p.data,x);if(p.onLoad)p.onLoad(args);return p;}
 const e=data=>({currentTarget:{dataset:data}});

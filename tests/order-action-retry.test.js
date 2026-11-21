@@ -1,12 +1,15 @@
 const assert=require('node:assert/strict');
 let mode='recover',calls=[];
-global.wx={getStorageSync(){},setStorageSync(){},showToast(){},getDeviceInfo:()=>({platform:'devtools'}),cloud:{init(){},async callFunction({data}){
+global.wx={getStorageSync(){},setStorageSync(){},showToast(){},getDeviceInfo:()=>({platform:'devtools'})};
+// Mock the cloud module itself so the test runs against both the wx.cloud and XP adapter builds.
+const cloud=require('../utils/cloud');
+cloud.ensureCloud=()=>({async callFunction({data}){
  calls.push(data);
  if(mode==='login')throw {errMsg:'cloud.callFunction:fail access_token missing'};
  if(mode==='business')return {result:{ok:false,error:'Cancel window ended'}};
  if(mode==='offline'||(mode==='recover'&&calls.length===1))throw Error('network timeout');
  return {result:{ok:true,value:{id:'saved-order'}}};
-}}};
+}});
 const store=require('../utils/store'),orders=require('../utils/orders');
 (async()=>{
  store.reset();store.update(s=>{s.language='zh';});

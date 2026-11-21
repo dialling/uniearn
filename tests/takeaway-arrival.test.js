@@ -3,7 +3,10 @@ const now=Date.parse('2030-01-02T18:00:00+08:00');Date.now=()=>now;
 const {harness}=require('./helpers/order-cloud');
 const h=harness();let definition,notices=[];
 global.Page=value=>definition=value;
-global.wx={getStorageSync:()=>null,setStorageSync(){},showToast:value=>notices.push(value.title),redirectTo(){},cloud:{init(){},async callFunction({data}){return{result:await h.client(data)};}}};
+global.wx={getStorageSync:()=>null,setStorageSync(){},showToast:value=>notices.push(value.title),redirectTo(){}};
+// Mock the cloud module itself so the test runs against both the wx.cloud and XP adapter builds.
+const cloud=require('../utils/cloud');
+cloud.ensureCloud=()=>({async callFunction({data}){return{result:await h.client(data)};}});
 const store=require('../utils/store'),orders=require('../utils/orders'),f=require('../utils/workflow');
 function page(name,args={}){delete require.cache[require.resolve('../pages/'+name+'/index')];require('../pages/'+name+'/index');const p={...definition,data:structuredClone(definition.data)};p.setData=value=>Object.assign(p.data,value);p.onLoad(args);return p;}
 const input=(p,part,value)=>p.inputArrival({currentTarget:{dataset:{part}},detail:{value}});

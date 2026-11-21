@@ -1,9 +1,12 @@
 const assert=require('node:assert/strict');
 let calls=0,broken=false;
-global.wx={getStorageSync(){},setStorageSync(){},showToast(){},cloud:{init(){},async callFunction(){
+global.wx={getStorageSync(){},setStorageSync(){},showToast(){}};
+// Mock the cloud module itself so the test runs against both the wx.cloud and XP adapter builds.
+const cloud=require('../utils/cloud');
+cloud.ensureCloud=()=>({async callFunction(){
  calls++;
  return {result:{ok:true,value:{id:'trip-confirmed'},snapshot:{accountId:'student',revision:calls,requests:broken?null:[{id:'r1',status:'taken',isRunner:true,runnerId:'trip-confirmed'}],trips:[],publicTrips:[],stats:{},preferences:{}}}};
-}}};
+}});
 const store=require('../utils/store'),orders=require('../utils/orders'),events=require('../utils/yuni-events');
 (async()=>{
  store.reset();store.update(s=>{s.language='zh';});

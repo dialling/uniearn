@@ -2,8 +2,12 @@ const assert=require('node:assert/strict');
 const {repairs}=require('../utils/dorm-gender-memory');
 const {harness}=require('./helpers/order-cloud');
 global.wx={getStorageSync:()=>null,setStorageSync(){},showToast(){}};
-const store=require('../utils/store'),orders=require('../utils/orders');
 const h=harness(),actor=h.engine.idFor('customer');
+let repairCalls=0;
+// Mock the cloud module itself so the test runs against both the wx.cloud and XP adapter builds.
+const cloud=require('../utils/cloud');
+cloud.ensureCloud=()=>({async callFunction({data}){if(data.action==='restoreDormGenders')repairCalls++;return {result:await h.client(data)};}});
+const store=require('../utils/store'),orders=require('../utils/orders');
 const route={accountId:actor,dorm:'A05',room:'1111',owner:'Customer',phone:'13801026092',dormGender:'female'};
 const request={...route,id:'r1',isMine:true,status:'waiting',category:'takeout',campusId:'sip',dormGender:''};
 const state={profile:{accountId:actor,campusId:'sip'},orderCapabilities:{restoreDormGenders:true},routes:[route],requests:[request]};
@@ -22,7 +26,6 @@ assert.deepEqual(repairs({...state,profile:{...state.profile,loggedOut:true}}),[
  const denied=await h.call('runner','restoreDormGenders',{repairs:[payload]});assert.equal(denied.ok,false);assert.equal(h.state.requests.find(r=>r.id===id).dormGender,undefined);
  const moved=await h.call('customer','restoreDormGenders',{repairs:[{...payload,room:'1112'}]});assert.equal(moved.ok,false);assert.equal(h.state.requests.find(r=>r.id===id).dormGender,undefined);
  store.reset();store.update(s=>{s.profile={...s.profile,accountId:actor,campusId:'sip',onboarded:true};s.routes=[route];});
- let repairCalls=0;global.wx.cloud={init(){},async callFunction({data}){if(data.action==='restoreDormGenders')repairCalls++;return {result:await h.client(data)};}};
  await orders.sync();assert.equal(repairCalls,1);assert.equal(h.state.requests.find(r=>r.id===id).dormGender,'female');assert.equal(store.get().requests.find(r=>r.id===id).dormGender,'female');
  await orders.sync();assert.equal(repairCalls,1,'a repaired order is not submitted again');
  const retry=await h.call('customer','restoreDormGenders',{repairs:[{...payload,gender:'male'}]});assert.equal(retry.ok,true,retry.error);assert.equal(retry.value.updated,0);assert.equal(h.state.requests.find(r=>r.id===id).dormGender,'female','existing choices cannot be overwritten');
