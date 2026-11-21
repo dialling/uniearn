@@ -35,7 +35,8 @@ function destination(order = {}, language = 'zh') {
   }
   try {
     const loc = require('./hall-location').detail(order, language);
-    const label = [loc.area, loc.building].filter(Boolean).join(' ');
+    // 芭菲 building names already include an area name ("文缘芭菲"), so the area is not repeated.
+    const label = loc.area && loc.building && loc.building.includes(loc.area) ? loc.building : [loc.area, loc.building].filter(Boolean).join(' ');
     if (label) return label;
   } catch (_) { /* fall back to the stored dorm code */ }
   return order.dorm || '';

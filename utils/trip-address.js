@@ -13,7 +13,7 @@ function pick(routes, trip) {
   return ok.find(r => r.default) || ok[0] || null;
 }
 function mismatch(trip, zh) {
-  const where = trip && (trip.destinationType === 'place' ? trip.deliveryAddress : trip.dorm) || '';
+  const where = trip && (trip.destinationType === 'place' ? trip.deliveryAddress : require('./campus').buildingLabel(trip.dorm, zh ? 'zh' : 'en')) || '';
   return zh ? '这趟行程只送到 ' + where + '，请选择或添加该地址' : 'This trip only delivers to ' + where + '. Choose or add an address there.';
 }
 module.exports = {fits, pick, mismatch};

@@ -1,6 +1,6 @@
 const assert=require('node:assert/strict'),c=require('../utils/campus'),r=require('../utils/saved-routes');
-assert.equal(c.buildings().length,31,'4 areas x 31 buildings');
-assert.equal(r.dorms.length,31,'route picker uses the real building list');
+assert.equal(c.buildings().length,35,'5 areas x 35 buildings');
+assert.equal(r.dorms.length,35,'route picker uses the real building list');
 assert.equal(r.dorms[0],'D01');
 assert.equal(c.areaOfBuilding('A05').zh,'文星');
 assert.equal(c.buildingLabel('D01','zh'),'D01');
@@ -75,4 +75,4 @@ assert.equal(rl.tier(20).zh,'黄金');
 assert.equal(rl.tier(50).zh,'铂金');
 assert.equal(rl.tier(100).zh,'钻石');assert.equal(rl.tier(100).next,null);
 for(const [jobs,progress] of [[0,0],[4,80],[5,0],[10,100/3],[20,0],[25,100/6],[50,0],[75,50],[100,100]])assert.ok(Math.abs(rl.level({jobsDone:jobs}).progress-progress)<1e-9,'progress uses the current display tier for '+jobs+' jobs');
-console.log('Campus data: 31 real buildings, floors, lift rule and bilingual pickup points passed.');
+console.log('Campus data: 35 real buildings, floors, lift rule and bilingual pickup points passed.');

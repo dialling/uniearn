@@ -2,7 +2,8 @@ const store=require('../../utils/store'),account=require('../../utils/account'),
 function displayDate(value,language){if(!value||!Number.isFinite(Number(value)))return '';const p=require('../../utils/china-time').parts(value);return language==='en'?p.day+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][p.month-1]:p.month+'月'+p.day+'日';}
 function dormSummary(s){
  const p=s.profile||{},routes=(s.routes||[]).filter(r=>(!r.accountId||r.accountId===p.accountId)&&r.destinationType!=='place'&&r.dorm&&r.room),address=routes.find(r=>r.default)||routes[0];
- return address?address.dorm+' · '+address.room:p.dorm&&p.room?p.dorm+' · '+p.room:'';
+ const dorm=code=>require('../../utils/campus').buildingLabel(code,s.language==='en'?'en':'zh');
+ return address?dorm(address.dorm)+' · '+address.room:p.dorm&&p.room?dorm(p.dorm)+' · '+p.room:'';
 }
 const AVATAR_NAMES=['star','helper','pro','ace','captain'];
 function tierAvatar(level){return '/assets/yuni-adventure-'+AVATAR_NAMES[level-1]+'.png';}

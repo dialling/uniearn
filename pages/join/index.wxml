@@ -1,3 +1,4 @@
+<wxs src="../../utils/dorm-label.wxs" module="dl"/>
 <view style="{{motionStyle}}">
 <lang-switch></lang-switch>
 <!-- 2026-11-15 redesign: the trip as a ticket, then three steps to add and pay, one full-width button. -->
@@ -13,7 +14,7 @@
     <view class="jn-rail"><view class="jn-dot jn-dot-from"/><view class="jn-line"/><view class="jn-dot jn-dot-to"/></view>
     <view class="jn-stops">
      <view class="jn-stop"><text class="jn-stop-label">{{zh?'跑手去这里取':'Runner picks up at'}}</text><text class="jn-stop-place">{{tripStationLabel||names[trip.station]||trip.station}}</text></view>
-     <view class="jn-stop"><text class="jn-stop-label">{{zh?'送到这里':'And brings it to'}}</text><text class="jn-stop-place">{{trip.destinationType==='place'?(trip.deliveryAddress||trip.dorm):trip.dorm}}</text></view>
+     <view class="jn-stop"><text class="jn-stop-label">{{zh?'送到这里':'And brings it to'}}</text><text class="jn-stop-place">{{trip.destinationType==='place'?(trip.deliveryAddress||trip.dorm):dl.label(trip.dorm,zh)}}</text></view>
     </view>
    </view>
    <view wx:if="{{trip.waypoint}}" class="jn-via">{{zh?'途经：':'Via: '}}{{trip.waypoint}}</view>

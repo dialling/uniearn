@@ -29,7 +29,7 @@ module.exports=function addressForm(editing=false){return {
  },
  onUnload(){this.contactClosed=true;},
  onShow(){const zh=store.get().language!=='en';this.setData({zh,areaLabels:campus.AREAS.map(a=>zh?a.zh:a.en)});if(wx.setNavigationBarTitle)wx.setNavigationBarTitle({title:this.orderMode?(zh?'仅修改本单':'Edit for this order'):editing?(zh?'编辑常用地址':'Edit address'):(this.data.form.destinationType==='place'?(zh?'添加其他地址':'Add another address'):(zh?'新增常用地址':'New address'))});this.syncBuildings();},
- syncBuildings(){const a=campus.AREAS[this.data.form.area],b=a?a.buildings:campus.buildings(),lang=this.data.zh?'zh':'en';this.setData({buildings:b,buildingLabels:a?b.slice():b.map(x=>campus.buildingLabel(x,lang))});},
+ syncBuildings(){const a=campus.AREAS[this.data.form.area],b=a?a.buildings:campus.buildings(),lang=this.data.zh?'zh':'en';this.setData({buildings:b,buildingLabels:b.map(x=>campus.buildingLabel(x,lang))});},
  field(e){this.setData({['form.'+e.currentTarget.dataset.field]:e.detail.value});},
  chooseType(e){const value=e.currentTarget.dataset.value;if(this.data.saving||!['dorm','place'].includes(value)||value===this.data.form.destinationType)return;const patch={'form.destinationType':value};if(value==='place'&&!editing){patch['form.owner']=this.autoContact.owner;patch['form.phone']=this.autoContact.phone;patch['form.recipientGender']=this.autoContact.gender;patch.phoneText=routes.formatPhone(this.autoContact.phone);}this.setData(patch);},
  chooseGender(e){const value=e.currentTarget.dataset.value;if(['male','female'].includes(value))this.setData({[this.data.form.destinationType==='place'?'form.recipientGender':'form.dormGender']:value});},

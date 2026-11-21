@@ -4,8 +4,11 @@ const AREAS=[
   {id:'wenyuan',zh:'文缘',en:'Wenyuan',floors:23,buildings:['D01','D02','D03','D04','D05','D06']},
   {id:'wenxing',zh:'文星',en:'Wenxing',floors:6,buildings:['A01','A02','A03','A04','A05']},
   {id:'wencui',zh:'文萃',en:'Wencui',floors:23,buildings:['C01','C02','C03','C04','C05','C06','C07','C08','C09','C10']},
-  {id:'wenhui',zh:'文荟',en:'Wenhui',floors:23,buildings:['B01','B02','B03','B04','B05','B06','B07','B08','B09','B10']}
+  {id:'wenhui',zh:'文荟',en:'Wenhui',floors:23,buildings:['B01','B02','B03','B04','B05','B06','B07','B08','B09','B10']},
+  {id:'bafei',zh:'芭菲',en:'Bafei',floors:6,buildings:['文缘芭菲','文萃芭菲','文星芭菲','文荟芭菲']}
 ];
+// 芭菲 has no lettered building codes, so its names need English labels. Plain "芭菲" is the older single-building value.
+const BUILDING_EN={'文缘芭菲':'Wenyuan Bafei','文萃芭菲':'Wencui Bafei','文星芭菲':'Wenxing Bafei','文荟芭菲':'Wenhui Bafei','芭菲':'Bafei'};
 // 文缘 D01–D06、文萃 C01–C10、文荟 B01–B10 每栋 23 层；文星 A05 20 层，其余默认 6 层。
 const FLOORS={D01:23,D02:23,D03:23,D04:23,D05:23,D06:23,C01:23,C02:23,C03:23,C04:23,C05:23,C06:23,C07:23,C08:23,C09:23,C10:23,B01:23,B02:23,B03:23,B04:23,B05:23,B06:23,B07:23,B08:23,B09:23,B10:23,A05:20};
 const FLOOR_MAX=6;
@@ -28,7 +31,7 @@ function buildingsOf(areaId){const a=AREAS.find(x=>x.id===areaId);return a?a.bui
 function areaOfBuilding(code){const b=String(code||'').trim().toUpperCase();return AREAS.find(a=>a.buildings.indexOf(b)>=0)||null;}
 function isBuilding(code){return !!areaOfBuilding(code);}
 function areaLabel(areaId,lang){const a=AREAS.find(x=>x.id===areaId);return a?(lang==='en'?a.en:a.zh):'';}
-function buildingLabel(code,lang){const raw=String(code||'').trim();if(!raw||raw==='Choose building')return lang==='en'?'Choose building':'选择楼栋';const b=raw.toUpperCase(),a=areaOfBuilding(b);return a?(lang==='en'?a.en+' '+b:a.zh+' '+b):b;}
+function buildingLabel(code,lang){const raw=String(code||'').trim();if(!raw||raw==='Choose building')return lang==='en'?'Choose building':'选择楼栋';if(BUILDING_EN[raw])return lang==='en'?BUILDING_EN[raw]:raw;const b=raw.toUpperCase(),a=areaOfBuilding(b);return a?(lang==='en'?a.en+' '+b:a.zh+' '+b):b;}
 function maxFloorOf(code){const b=String(code||'').trim().toUpperCase();if(b&&FLOORS[b])return FLOORS[b];return b?FLOOR_MAX:Math.max(FLOOR_MAX,...Object.values(FLOORS));}
 function floorsOf(code){const out=[];for(let i=1;i<=maxFloorOf(code);i++)out.push(i);return out;}
 // Room numbers like 1201 sit on floor 12; 401 on 4. Unknown formats return 0.

@@ -1,3 +1,4 @@
+<wxs src="../../utils/dorm-label.wxs" module="dl"/>
 <import src="../../utils/customer-cancel-sheet.wxml"/>
 <import src="../../utils/contact-identity.wxml"/>
 <import src="../../utils/waiting-ticket.wxml"/>
@@ -12,7 +13,7 @@
  <view class="journey-ticket-body">
   <view class="journey-hero"><image class="journey-mascot" src="{{journey.mascot}}" mode="aspectFit"/><view class="journey-status"><view class="journey-status-title">{{journey.title}}</view><view class="journey-status-note">{{journey.note}}</view></view></view>
   <view class="journey-progress" aria-label="{{zh?'订单进度':'Order progress'}}"><view wx:for="{{steps}}" wx:key="name" class="journey-step {{item.done?'done':''}} {{item.current?'current':''}}"><view class="journey-step-dot">{{item.done||item.current?'✓':''}}</view><view class="journey-step-name">{{item.name}}</view><view class="journey-step-time">{{item.current?item.time:''}}</view></view></view>
-  <view class="journey-route-section"><view class="journey-route"><view class="journey-route-point"><image class="journey-pin" src="/assets/journey-location.svg" mode="aspectFit"/><text aria-label="{{request.pickupDisplay||request.pickupPointDisplay||request.station}}">{{journey.pickupShort}}</text></view><text class="journey-route-arrow">→</text><view class="journey-route-point journey-destination"><image class="journey-pin" src="/assets/journey-location.svg" mode="aspectFit"/><text>{{request.destinationType==='place'?request.deliveryAddress:request.dorm}}</text></view></view><view class="journey-times"><view><text>{{zh?'发布：':'Posted: '}}</text><text>{{journey.posted}}</text></view><view wx:if="{{request.closesAt}}"><text>{{zh?'截止：':'Deadline: '}}</text><text>{{request.closeTime}}</text></view></view></view>
+  <view class="journey-route-section"><view class="journey-route"><view class="journey-route-point"><image class="journey-pin" src="/assets/journey-location.svg" mode="aspectFit"/><text aria-label="{{request.pickupDisplay||request.pickupPointDisplay||request.station}}">{{journey.pickupShort}}</text></view><text class="journey-route-arrow">→</text><view class="journey-route-point journey-destination"><image class="journey-pin" src="/assets/journey-location.svg" mode="aspectFit"/><text>{{request.destinationType==='place'?request.deliveryAddress:dl.label(request.dorm,zh)}}</text></view></view><view class="journey-times"><view><text>{{zh?'发布：':'Posted: '}}</text><text>{{journey.posted}}</text></view><view wx:if="{{request.closesAt}}"><text>{{zh?'截止：':'Deadline: '}}</text><text>{{request.closeTime}}</text></view></view></view>
    <view wx:if="{{request.isMine && request.status!=='waiting' && (request.status==='taken'||request.status==='collected'||cancelWindow.phase!=='hidden')}}" class="journey-ticket-footer"><view class="journey-cancel-copy"><view wx:if="{{cancelWindow.phase!=='hidden'}}" class="cancel-tip {{cancelWindow.phase==='grace'?'cancel-tip-live':''}}"><text class="journey-bullet">•</text><text>{{cancelWindow.tip}}</text></view></view></view>
  </view>
 </view>
@@ -152,7 +153,7 @@
 </view>
 <view class="yuni-foot">
 <view class="yuni-foot-main">
-<view class="yuni-route">{{request.pickupDisplay||successUI.labels[request.station]||request.station}} → {{successUI.labels[request.dorm]||request.dorm}}</view>
+<view class="yuni-route">{{request.pickupDisplay||successUI.labels[request.station]||request.station}} → {{successUI.labels[request.dorm]||dl.label(request.dorm,zh)}}</view>
 <view class="yuni-meta">{{request.night?successUI.typeNight:request.category==='takeout'?successUI.typeTakeout:successUI.typeParcel}} · {{request.boxes}}{{request.category==='takeout'?successUI.bagUnit:successUI.parcelUnit}} · ¥{{request.total}}</view>
 </view>
 <view class="yuni-pill">{{successUI.pending}}</view>

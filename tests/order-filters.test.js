@@ -33,7 +33,7 @@ assert.equal(filters.matches({destinationType:'place',dormGender:'male'},{gender
 assert.deepEqual(filters.tabs().buildingTabs,[]);
 assert.equal(filters.tabs({areaFilter:'文缘'}).buildingTabs.length,7);
 assert.equal(filters.tabs({areaFilter:'文萃'}).buildingTabs.at(-1).key,'C10');
-assert.equal(filters.tabs({areaFilter:'芭菲'}).buildingTabs[1].key,'芭菲');
+assert.deepEqual(filters.tabs({areaFilter:'芭菲'}).buildingTabs.slice(1).map(x=>x.key),['文缘芭菲','文萃芭菲','文星芭菲','文荟芭菲']);
 
 // Existing cloud snapshots use dorm; the reuse package uses delivery_location.
 for(const [order,area,building] of [
@@ -41,7 +41,8 @@ for(const [order,area,building] of [
  [{dorm:'Wenxing A05'},'文星','A05'],
  [{delivery_location:'文萃 C10 5 楼'},'文萃','C10'],
  [{deliveryLocation:'文荟 B01'},'文荟','B01'],
- [{deliveryAddress:'芭菲'},'芭菲','芭菲'],
+ [{deliveryAddress:'芭菲'},'芭菲',''],
+ [{deliveryAddress:'芭菲 文缘芭菲 301'},'芭菲','文缘芭菲'],
  [{area:'wenyuan'},'文缘',''],
  [{building:'c01',deliveryAddress:'文缘 D02'},'文萃','C01'],
  [{dorm:'B02',deliveryAddress:'文缘 D02'},'文荟','B02']

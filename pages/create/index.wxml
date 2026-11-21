@@ -1,3 +1,4 @@
+<wxs src="../../utils/dorm-label.wxs" module="dl"/>
 <view style="{{motionStyle}}">
 <lang-switch></lang-switch>
 <view class="post-page create-page {{darkClass}} {{mode==='request'&&category==='parcel'?'pc-v2':''}}">
@@ -54,7 +55,7 @@
   </block>
 
   <block wx:elif="{{mode==='request'}}">
-   <view class="saved-section"><view class="field-label">{{ui['Saved location']}}</view><view class="field saved" bindtap="useSaved">{{savedAddress?savedAddress.pickup+' → '+savedAddress.dorm+(zh?' · 房间 ':' · Room ')+savedAddress.room:ui['Save your usual address in Me']}}　›</view></view>
+   <view class="saved-section"><view class="field-label">{{ui['Saved location']}}</view><view class="field saved" bindtap="useSaved">{{savedAddress?savedAddress.pickup+' → '+dl.label(savedAddress.dorm,zh)+(zh?' · 房间 ':' · Room ')+savedAddress.room:ui['Save your usual address in Me']}}　›</view></view>
    <input always-embed placeholder-class="ue-ph" class="field description" placeholder="{{ui['Describe your order (optional)']}}" value="{{description}}" data-field="description" bindinput="text" maxlength="100"/>
    <view class="row"><view class="half"><view class="field-label">{{ui['Collect from']}}</view><picker range="{{stationLabels}}" value="{{stationIndex}}" bindchange="station" disabled="{{categoryLocked}}"><view class="field">{{stationLabels[stationIndex]}}　›</view></picker></view><view class="half"><view class="field-label">{{ui['Deliver to']}}</view><picker range="{{dormLabels}}" value="{{dormIndex}}" bindchange="dorm" disabled="{{categoryLocked}}"><view class="field">{{dormLabels[dormIndex]}}　›</view></picker></view></view>
    <input always-embed placeholder-class="ue-ph" class="field" placeholder="{{ui['Room number']}}" value="{{room}}" data-field="room" bindinput="text"/><input always-embed placeholder-class="ue-ph" class="field" placeholder="{{ui['Leave at the desk (optional)']}}" value="{{note}}" data-field="note" bindinput="text"/><text class="link tiny" bindtap="saveAddress">{{ui['Save as my usual address']}}</text>

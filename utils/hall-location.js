@@ -7,7 +7,7 @@ function detail(order,language='zh',showRoom=canViewRoom(order)){
  const areaLabel=area?(zh?area.zh:area.en):(zh?location.area:areaEnglish[location.area])||'';
  return {genderKey:['male','female'].includes(order.dormGender)?order.dormGender:'',showDorm:order.category!=='task'&&!place,
   gender:order.dormGender==='male'?(zh?'男寝':'Menʼs dorm'):order.dormGender==='female'?(zh?'女寝':'Womenʼs dorm'):'',
-  area:areaLabel,building:location.building||value(order.dorm),room:showRoom&&!place?value(order.room):''};
+  area:areaLabel,building:campus.buildingLabel(location.building||value(order.dorm),language).replace(/^(Choose building|选择楼栋)$/,''),room:showRoom&&!place?value(order.room):''};
 }
 function group(orders,language='zh',showRoom){
  const rows=orders.map(r=>detail(r,language,showRoom===undefined?canViewRoom(r):showRoom)),join=key=>[...new Set(rows.map(r=>r[key]).filter(Boolean))].join(' / ');

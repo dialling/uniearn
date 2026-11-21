@@ -6,7 +6,7 @@ const store=require('../utils/store');
 function page(name,args){delete require.cache[require.resolve('../pages/'+name+'/index')];require('../pages/'+name+'/index');const p={...definition,data:structuredClone(definition.data)};p.setData=function(v){for(const k of Object.keys(v)){const parts=k.split('.');let o=this.data;for(let i=0;i<parts.length-1;i++){o=o[parts[i]]=o[parts[i]]||{};}o[parts[parts.length-1]]=v[k];}};if(p.onLoad)p.onLoad(args||{});return p;}
 store.reset();store.update(s=>{s.language='zh';s.profile={...s.profile,name:'Ming Li',accountId:'a',onboarded:true};});
 const editor=page('route-edit',{service:'takeaway',type:'dorm'});
-assert.equal(editor.data.areaLabels.length,4);
+assert.equal(editor.data.areaLabels.length,5);
 assert.equal(editor.data.areaLabels[0],'文缘');
 assert.equal(editor.data.dormLabels.length,6,'building picker is filtered by the chosen area');
 assert.equal(editor.data.dormLabels[0],'D01','building list inside a chosen area shows bare codes');

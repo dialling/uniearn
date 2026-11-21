@@ -1,6 +1,6 @@
 // Area/building/type data comes from 订单筛选系统-复用包/data/config.json.
 // Adapt its filters to both the package's orders and this app's cloud order fields.
-const config=require('./order-filter-config');
+const config=require('./order-filter-config'),campus=require('./campus');
 const areaNames={'文缘':'Wenyuan','文星':'Wenxing','文萃':'Wencui','文荟':'Wenhui','芭菲':'Bafei'};
 const areaIds={wenyuan:'文缘',wenxing:'文星',wencui:'文萃',wenhui:'文荟',bafei:'芭菲'};
 const typeNames={food:'Takeaway',express:'Parcels',night:'Night market',other:'Any task'};
@@ -21,7 +21,7 @@ function location(order){
  const addresses=[order.building,order.dorm,order.delivery_location,order.deliveryLocation,order.deliveryAddress].map(value=>text(value).toUpperCase());
  let building='';
  // Structured destination fields take precedence over legacy address text.
- for(const address of addresses){building=buildings.find(b=>b==='芭菲'?address.includes(b):new RegExp('(^|[^A-Z0-9])'+b+'([^A-Z0-9]|$)').test(address))||'';if(building)break;}
+ for(const address of addresses){building=buildings.find(b=>!/^[A-Z]\d/.test(b)?address.includes(b):new RegExp('(^|[^A-Z0-9])'+b+'([^A-Z0-9]|$)').test(address))||'';if(building)break;}
  const address=addresses.join(' ');
  const area=building?config.areas.find(a=>config.buildings[a].includes(building)):
   areaIds[order.area]||(config.areas.includes(order.area)?order.area:config.areas.find(a=>address.includes(a)))||'';
@@ -49,7 +49,7 @@ function tabs(value={},language='zh'){
   genderTabs:[all,{key:'male',label:en?'Menʼs dorms':'男寝'},{key:'female',label:en?'Womenʼs dorms':'女寝'}],
   areaTabs:[all,...config.areas.map(area=>({key:area,label:en?areaNames[area]:area}))],
   typeTabs:[all,...config.types.map(type=>({key:type.key,label:en?typeNames[type.key]:type.label}))],
-  buildingTabs:selected.areaFilter?[all,...config.buildings[selected.areaFilter].map(building=>({key:building,label:building==='芭菲'&&en?'Bafei':building}))]:[]
+  buildingTabs:selected.areaFilter?[all,...config.buildings[selected.areaFilter].map(building=>({key:building,label:campus.buildingLabel(building,language)}))]:[]
  };
 }
 
