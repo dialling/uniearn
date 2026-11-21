@@ -3,19 +3,21 @@ const STATUS={zh:{waiting:'待接单',taken:'已接单',collected:'已取件',de
 const CATEGORY={zh:{takeout:'外卖',parcel:'快递',task:'任务'},en:{takeout:'Takeaway',parcel:'Parcel',task:'Task'}};
 const time=require('../../utils/china-time').short;
 Page({
- data:{...require('../../utils/motion').data(),zh:true,checking:true,admin:false,busy:false,error:'',username:'',password:'',stats:null,cards:[],bucket:'all',bucketLabel:'',orders:[],ordersLoading:false,applications:[],reviewing:'',supportInbox:[],supportDraft:{},replying:''},
- onLoad(){this.setData({zh:store.get().language!=='en'});wx.setNavigationBarTitle({title:this.data.zh?'管理后台':'Admin'});},
+ data:{...require('../../utils/motion').data(),zh:true,checking:true,admin:false,busy:false,error:'',username:'',password:'',stats:null,cards:[],bucket:'all',bucketLabel:'',orders:[],ordersLoading:false,applications:[],reviewing:'',supportInbox:[],supportDraft:{},replying:'',openTicket:'',navTop:20,navHeight:32},
+ onLoad(){let navTop=20,navHeight=32;try{const m=wx.getMenuButtonBoundingClientRect();if(m&&m.top){navTop=m.top;navHeight=m.height;}}catch(_){}this.setData({zh:store.get().language!=='en',navTop,navHeight});wx.setNavigationBarTitle({title:this.data.zh?'管理后台':'Admin'});},
+ home(){wx.reLaunch({url:'/pages/jobs/index'});},
+ toggleTicket(e){const id=e.currentTarget.dataset.id;this.setData({openTicket:this.data.openTicket===id?'':id});},
  async onShow(){this.setData({checking:true,error:''});try{const r=await account.call('adminStatus');this.setData({admin:!!r.admin});if(r.admin)await this.load();}catch(e){this.setData({error:e.message});}finally{this.setData({checking:false});}},
  async onPullDownRefresh(){try{if(this.data.admin)await this.load();}catch(e){this.setData({error:e.message});}finally{wx.stopPullDownRefresh();}},
  field(e){this.setData({[e.currentTarget.dataset.field]:e.detail.value});},
  async login(){if(this.data.busy)return;const zh=this.data.zh;if(!this.data.username.trim()||!this.data.password){this.setData({error:zh?'请输入管理员账号和密码。':'Enter the admin username and password.'});return;}this.setData({busy:true,error:''});try{await account.call('adminLogin',{username:this.data.username.trim(),password:this.data.password});this.setData({admin:true,password:''});await this.load();}catch(e){this.setData({error:e.message});}finally{this.setData({busy:false});}},
- async logout(){try{await account.call('adminLogout');}catch(_){}this.setData({admin:false,stats:null,cards:[],orders:[],applications:[],username:'',password:''});},
+ async logout(){try{await account.call('adminLogout');}catch(_){}this.setData({admin:false,stats:null,cards:[],orders:[],applications:[],supportInbox:[],openTicket:'',username:'',password:''});},
  async load(){
   const zh=this.data.zh,r=await account.call('adminDashboard'),s=r.stats;
   const cards=[{key:'all',label:zh?'总订单':'Total orders',value:s.total,tap:true},{key:'waiting',label:zh?'待接单':'Waiting',value:s.waiting,tap:true},{key:'unpaid',label:zh?'未付款':'Unpaid',value:s.unpaid,tap:true},{key:'completed',label:zh?'已完成':'Completed',value:s.completed,tap:true},{key:'users',label:zh?'平台用户':'Users',value:s.users},{key:'runners',label:zh?'跑手':'Runners',value:s.runners}];
   await orders.sync();
   const topics={order:zh?'订单问题':'Order issue',payment:zh?'付款或退款':'Payment / refund',other:zh?'其他问题':'Other',deletion:zh?'删除账户与数据':'Account deletion'};
-  const supportInbox=(store.get().supportInbox||[]).map(t=>({...t,accountLabel:t.accountId.slice(0,8),topicLabel:topics[t.topic]||t.topic,time:time((t.messages||[]).slice(-1)[0]?.at||t.createdAt),messages:(t.messages||[]).map(m=>({...m,photo:m.photo?orders.photoURL(m.photo):'',time:time(m.at)}))}));
+  const supportInbox=(store.get().supportInbox||[]).map(t=>({...t,accountLabel:t.accountId.slice(0,8),topicLabel:topics[t.topic]||t.topic,lastText:(t.messages||[]).slice(-1)[0]?.text||'',time:time((t.messages||[]).slice(-1)[0]?.at||t.createdAt),messages:(t.messages||[]).map(m=>({...m,photo:m.photo?orders.photoURL(m.photo):'',time:time(m.at)}))}));
   this.setData({stats:s,cards,supportInbox,applications:(r.applications||[]).map(a=>({...a,time:time(a.submittedAt)}))});
   await this.loadOrders(this.data.bucket);
  },
