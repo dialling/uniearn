@@ -94,3 +94,17 @@
 .page-dark .ts-option,.page-dark .ts-input,.page-dark .ts-picker,.page-dark .ts-seg,.page-dark .ts-chip,.page-dark .ts-stepper{background:#30362f;color:#f0f2ee}
 .page-dark .ts-title,.page-dark .ts-stop-title,.page-dark .ts-row-title,.page-dark .ts-order-route,.page-dark .ts-empty-title,.page-dark .ts-picker-value,.page-dark .ts-count{color:#f0f2ee}
 .page-dark .ts-label{color:#c9d3f0}
+
+/* 2026-11-21: Deliver to: choose one or more buildings in the area (same grey field as the Area picker, chips like the
+   station choices: chosen = green tint with a tick). */
+.ts-bld{padding:20rpx 22rpx 22rpx;border-radius:22rpx;background:#f6f5f1}
+.ts-bld-head{display:flex;align-items:center;justify-content:space-between;gap:16rpx;font-size:26rpx}
+.ts-bld-hint{font-size:22rpx;color:#8a877c;white-space:nowrap}
+.ts-bld-grid{display:flex;flex-wrap:wrap;gap:12rpx;margin-top:18rpx}
+.ts-bld-chip{display:flex;align-items:center;justify-content:center;gap:6rpx;min-width:104rpx;box-sizing:border-box;padding:14rpx 20rpx;border-radius:18rpx;border:2rpx solid #e6e4dd;background:#fff;font-size:26rpx;font-weight:700;color:#3b3e37}
+.ts-bld-chip.on{border-color:#0b7a55;background:#e7f3ed;color:#08523a}
+.ts-bld-tick{font-size:22rpx;color:#0b7a55}
+.ts-bld-press{opacity:.7}
+.page-dark .ts-bld{background:#2a2c26}
+.page-dark .ts-bld-chip{background:#242522;border-color:#3a3b37;color:#c8c7bd}
+.page-dark .ts-bld-chip.on{background:#1d2f28;border-color:#6fd0a8;color:#6fd0a8}

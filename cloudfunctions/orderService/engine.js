@@ -264,15 +264,17 @@ function execute(s, actor, account, event, now = Date.now()) {
     t.requestIds.forEach(id => {const row=s.requests.find(r => r.id === id);if(row)row.runnerName=contact.name;f.event(row, 'Runner accepted', now);}); value = { id: t.id };
   } else if (action === 'startTrip') {
     const cfg = event.data || {};
-    if(cfg.selfRequestId){const own=ownRequest(s,cfg.selfRequestId,actor);check(own.status==='waiting'&&own.campusId===campusId&&own.category==='parcel'&&own.station===cfg.station&&own.dorm===cfg.dorm,'Your parcel request changed. Refresh before starting.');d.cancelRequest(s,own.id);own.refundAmount=f.total(own);f.event(own,'Collecting it myself',now);}
+    if(cfg.selfRequestId){const own=ownRequest(s,cfg.selfRequestId,actor);check(own.status==='waiting'&&own.campusId===campusId&&own.category==='parcel'&&own.station===cfg.station&&(Array.isArray(cfg.dorms)&&cfg.dorms.length?cfg.dorms:[cfg.dorm]).includes(own.dorm),'Your parcel request changed. Refresh before starting.');d.cancelRequest(s,own.id);own.refundAmount=f.total(own);f.event(own,'Collecting it myself',now);}
     check(['takeout','parcel','other'].includes(cfg.category) && ['now','later'].includes(cfg.when), 'Invalid trip.');
     check(typeof cfg.station === 'string' && cfg.station.length <= (cfg.category === 'takeout' ? 200 : 100) && typeof cfg.dorm === 'string' && cfg.dorm.length <= 100, 'Invalid route.');
+    // 2026-11-21: several dorm buildings per trip (same list rules as workflow.plan)
+    if (cfg.dorms !== undefined) check(Array.isArray(cfg.dorms) && cfg.dorms.length >= 1 && cfg.dorms.length <= 10 && cfg.dorms.every(x => typeof x === 'string' && x.trim() && x.length <= 100), 'Invalid route.');
     if(Object.prototype.hasOwnProperty.call(cfg,'requestIds')){
       check(Array.isArray(cfg.requestIds)&&cfg.requestIds.length<=12,'Select up to 12 orders.');
       if(cfg.requestIds.length)rejectOwn(s,cfg.requestIds,actor);
     }
     const tripState={...s,requests:s.requests.filter(r=>r.campusId===campusId)};
-    const t = f.startTrip(tripState, { category: cfg.category, when: cfg.when, time: cfg.time, duration: cfg.duration, station: cfg.station, pickupAddress:cfg.pickupAddress,waypoint:cfg.waypoint,destinationType:cfg.destinationType,deliveryAddress:cfg.deliveryAddress,dorm: cfg.dorm, capacity: cfg.capacity, ...(Object.prototype.hasOwnProperty.call(cfg,'requestIds')?{requestIds:cfg.requestIds}:{}) }, now);s.nextId=tripState.nextId;
+    const t = f.startTrip(tripState, { category: cfg.category, when: cfg.when, time: cfg.time, duration: cfg.duration, station: cfg.station, pickupAddress:cfg.pickupAddress,waypoint:cfg.waypoint,destinationType:cfg.destinationType,deliveryAddress:cfg.deliveryAddress,dorm: cfg.dorm, ...(Array.isArray(cfg.dorms) ? { dorms: cfg.dorms } : {}), capacity: cfg.capacity, ...(Object.prototype.hasOwnProperty.call(cfg,'requestIds')?{requestIds:cfg.requestIds}:{}) }, now);s.nextId=tripState.nextId;
     t.campusId=campusId;t.universityId='xjtlu';t.runnerAccountId = actor; t.runnerName=contact.name; t.runnerPhone=contact.phone; t.runnerAvatar=account.profile.avatarUrl||''; t.createdAt = now;
     t.requestIds.forEach(id => {const row=s.requests.find(r => r.id === id);if(row)row.runnerName=contact.name;f.event(row, 'Runner accepted', now);}); value = { id: t.id };
   } else if (['taskTip','raise','cancel','confirm','report','riderPhoto','foodArrived'].includes(action)) {
@@ -373,7 +375,7 @@ function snapshot(s, actor, account, now = Date.now(), viewTripId = '') {
   });
   const trips = s.trips.filter(t => myTrips.has(t.id)).map(t => ({...clone(t), isRunner:true}));
   const publicTrips = s.trips.filter(t => (inCampus(t) || (viewTripId && t.id === viewTripId)) && t.joinUntil && !t.cancelled && t.phase === 'collect' && t.joinUntil > now).map(t => ({
-    id:t.id,campusId:t.campusId,universityId:t.universityId,category:t.category,destinationKey:t.destinationKey||'',destinationType:t.destinationType||'dorm', station:t.station,pickupAddress:t.pickupAddress||'',waypoint:t.waypoint||'',deliveryAddress:t.deliveryAddress||'',routeType:t.routeType||'',dorm:t.dorm,capacity:t.capacity, runnerName:t.runnerName, runnerAvatar:t.runnerAvatar||'',
+    id:t.id,campusId:t.campusId,universityId:t.universityId,category:t.category,destinationKey:t.destinationKey||'',destinationType:t.destinationType||'dorm', station:t.station,pickupAddress:t.pickupAddress||'',waypoint:t.waypoint||'',deliveryAddress:t.deliveryAddress||'',routeType:t.routeType||'',dorm:t.dorm,dorms:require('./trip-route').tripDorms(t),capacity:t.capacity, runnerName:t.runnerName, runnerAvatar:t.runnerAvatar||'',
     runnerJobs:stats(s,t.runnerAccountId).jobsDone, departAt:t.departAt, joinUntil:t.joinUntil, phase:t.phase,
     cancelled:false, remaining:t.capacity-t.requestIds.reduce((n,id)=>n+d.boxes(s.requests.find(r=>r.id===id)),0)
   }));

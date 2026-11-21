@@ -140,3 +140,11 @@ image.action-icon{width:38rpx;height:38rpx;display:block;margin:0 auto 12rpx}
 .page-dark.create-page.pc-v2 .tw-chip,.page-dark.create-page.pc-v2 .pill,.page-dark.create-page.pc-v2 .size-option,.page-dark.create-page.pc-v2 .fragile-toggle,.page-dark.create-page.pc-v2 .addr-summary,.page-dark.create-page.pc-v2 .field,.page-dark.create-page.pc-v2 .parcel-pickup-row{background:#2c2d2a;color:#d8d5cc}
 .page-dark.create-page.pc-v2 .pill.chosen,.page-dark.create-page.pc-v2 .size-option.selected{background:#3a2416;border-color:#f4a06e;color:#f4a06e}
 .page-dark.create-page.pc-v2 .pc-bill,.page-dark.create-page.pc-v2 .size-private{border-top-color:#3a3b37}
+
+/* 2026-11-21: a trip to several buildings: the customer picks theirs here (one-building trips stay locked text) */
+.jt-bld{display:flex;flex-wrap:wrap;gap:12rpx;margin-top:10rpx}
+.jt-bld-chip{min-width:96rpx;box-sizing:border-box;padding:12rpx 22rpx;border-radius:18rpx;border:2rpx solid #e2e0d9;background:#fff;text-align:center;font-size:27rpx;font-weight:800;color:#3b3a35}
+.jt-bld-chip.on{border-color:#0b7a55;background:#e7f3ed;color:#08523a}
+.jt-bld-press{opacity:.7}
+.page-dark .jt-bld-chip{background:#242522;border-color:#3a3b37;color:#c8c7bd}
+.page-dark .jt-bld-chip.on{background:#1d2f28;border-color:#6fd0a8;color:#6fd0a8}

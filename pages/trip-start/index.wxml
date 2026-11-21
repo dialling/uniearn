@@ -45,7 +45,13 @@
     <textarea wx:if="{{destinationType==='place'}}" class="ts-input ts-textarea" value="{{deliveryAddress}}" data-field="deliveryAddress" bindinput="text" maxlength="500" auto-height placeholder="{{zh?'地点和交接位置，如图书馆南门前台旁':'Place and meeting spot, e.g. library south entrance by reception'}}"/>
     <view wx:else class="ts-pickers">
      <picker range="{{areaLabels}}" value="{{areaIndex}}" bindchange="destinationArea"><view class="ts-picker"><text class="ts-picker-label">{{zh?'区域':'Area'}}</text><text class="ts-picker-value">{{areaLabels[areaIndex]}}</text><view class="ts-chev"/></view></picker>
-     <picker range="{{buildingLabels}}" value="{{buildingIndex}}" bindchange="destinationBuilding"><view class="ts-picker"><text class="ts-picker-label">{{zh?'楼栋':'Building'}}</text><text class="ts-picker-value">{{buildingLabels[buildingIndex]}}</text><view class="ts-chev"/></view></picker>
+     <!-- 2026-11-21: choose one or more buildings in this area -->
+     <view class="ts-bld">
+      <view class="ts-bld-head"><text class="ts-picker-label">{{zh?'楼栋':'Buildings'}}</text><text class="ts-bld-hint">{{zh?'可多选 · 已选 '+dorms.length+' 栋':'Choose one or more · '+dorms.length+' chosen'}}</text></view>
+      <view class="ts-bld-grid" role="group">
+       <view wx:for="{{buildingChips}}" wx:key="code" class="ts-bld-chip {{item.on?'on':''}}" role="checkbox" aria-checked="{{item.on}}" hover-class="ts-bld-press" data-code="{{item.code}}" bindtap="toggleBuilding"><text wx:if="{{item.on}}" class="ts-bld-tick">✓</text>{{item.label}}</view>
+      </view>
+     </view>
     </view>
    </view>
   </view>

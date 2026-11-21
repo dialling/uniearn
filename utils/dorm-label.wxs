@@ -1,4 +1,6 @@
 // English names for building values that are not lettered codes (keep in sync with utils/campus.js).
 var EN={'文缘芭菲':'Wenyuan Bafei','文萃芭菲':'Wencui Bafei','文星芭菲':'Wenxing Bafei','文荟芭菲':'Wenhui Bafei','芭菲':'Bafei'};
 function label(code,zh){if(!code)return '';return !zh&&EN[code]?EN[code]:code;}
-module.exports={label:label};
+// 2026-11-21: a trip can go to several buildings (trip.dorms); older trips only have trip.dorm.
+function labels(trip,zh){if(!trip)return '';var list=trip.dorms&&trip.dorms.length?trip.dorms:[trip.dorm];var out=[];for(var i=0;i<list.length;i++){if(list[i])out.push(label(list[i],zh));}return out.join(zh?'、':', ');}
+module.exports={label:label,labels:labels};

@@ -66,7 +66,7 @@ function assign(s, trip, ids, opts = {}) {
   trip.requestIds.push(...ids); return trip;
 }
 function startTrip(s, cfg) {
-  const trip={id:'t'+s.nextId++,campusId:cfg.campusId,universityId:cfg.universityId,category:catalog.category(cfg),station:cfg.station,dorm:cfg.dorm,capacity:Number(cfg.capacity),depart:cfg.depart||'Now',phase:'collect',requestIds:[],cancelled:false};
+  const trip={id:'t'+s.nextId++,campusId:cfg.campusId,universityId:cfg.universityId,category:catalog.category(cfg),station:cfg.station,dorm:cfg.dorm,...(Array.isArray(cfg.dorms)&&cfg.dorms.length?{dorms:cfg.dorms}:{}),capacity:Number(cfg.capacity),depart:cfg.depart||'Now',phase:'collect',requestIds:[],cancelled:false};
   s.trips.unshift(trip);
   const waiting=(cfg.requestIds ? cfg.requestIds.map(id=>s.requests.find(r=>r.id===id)) : eligible(s,trip).sort((a,b)=>a.deadline.localeCompare(b.deadline)));
   for (const r of waiting) { try {assign(s,trip,[r.id]);} catch(e) { /* Remaining requests stay in queue. */ } }

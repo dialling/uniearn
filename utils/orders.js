@@ -38,7 +38,7 @@ function apply(snapshot) {
   try{yuniEvents.reconcile(snapshot);}catch(e){console.warn('Order notification cleanup failed',e);}
   if(!previous && state.cloudRevision>=0 && state.profile.accountId===snapshot.accountId)previous={accountId:snapshot.accountId,unread:pairMap(state.requests,r=>r.unread||0),tripIds:(state.publicTrips||[]).map(t=>t.id),status:pairMap(state.requests,r=>r.status)};
   if (previous && previous.accountId === snapshot.accountId && foreground && !quietResume) {
-    const prefs=state.preferences||{},newMessage=snapshot.requests.some(r=>r.unread>(previous.unread?.[r.id]||0)),newRoute=(snapshot.publicTrips||[]).some(t=>!previous.tripIds?.includes(t.id)&&snapshot.requests.some(r=>r.isMine&&r.status==='waiting'&&r.station===t.station&&r.dorm===t.dorm));
+    const prefs=state.preferences||{},newMessage=snapshot.requests.some(r=>r.unread>(previous.unread?.[r.id]||0)),newRoute=(snapshot.publicTrips||[]).some(t=>!previous.tripIds?.includes(t.id)&&snapshot.requests.some(r=>r.isMine&&r.status==='waiting'&&r.station===t.station&&require('./trip-route').tripDorms(t).includes(r.dorm)));
     if(newMessage&&prefs.orderUpdates!==false)tell('New order message · open My orders');
     if(newRoute&&prefs.nearbyTrip)tell('A runner opened a trip on your route');
     const changes = snapshot.requests.filter(r => (r.isMine||r.isRunner) && previous.status[r.id] && previous.status[r.id] !== r.status && (r.status!=='delivered'||prefs.deliveredUpdates!==false));

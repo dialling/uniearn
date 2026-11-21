@@ -28,7 +28,7 @@ function card(trip,requests,language='zh',now=Date.now()){
  const genders=items.filter((r,i)=>r.genderKey&&items.findIndex(x=>x.genderKey===r.genderKey)===i).map(r=>({key:r.genderKey,label:r.gender}));
  const taskId=trip.category==='task'&&requests[0]?requests[0].id:'';
  return {...trip,taskId,done,hasDispute,items,genders,type:trip.category==='task'?(zh?'任务':'Task'):trip.category==='takeout'?(requests.some(r=>r.night)?(zh?'夜市代买':'Night market'):(zh?'外卖代取':'Takeaway')):(zh?'快递代取':'Parcels'),
-  route:trip.category==='task'?(items[0]?.title||(zh?'任务':'Task')):(trip.category==='takeout'?(routeLabel.group(requests,language)||routeLabel.place(trip.station,language)):name(trip.station))+' → '+name(trip.dorm),
+  route:trip.category==='task'?(items[0]?.title||(zh?'任务':'Task')):(trip.category==='takeout'?(routeLabel.group(requests,language)||routeLabel.place(trip.station,language)):name(trip.station))+' → '+(trip.destinationType==='place'?name(trip.dorm):require('./trip-dorms').label(trip,language)),
   total:requests.reduce((sum,r)=>sum+Number(r.reward||0),0).toFixed(2),quantity:items.reduce((sum,r)=>sum+r.quantity,0)};
 }
 module.exports={card};

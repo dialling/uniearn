@@ -57,13 +57,16 @@ function plan(s,cfg,now=Date.now()){
  const station=String(cfg.station||'').trim(),destinationType=cfg.destinationType==='place'?'place':cfg.destinationType==='dorm'?'dorm':undefined,deliveryAddress=String(cfg.deliveryAddress||'').trim(),pickupAddress=String(cfg.pickupAddress||'').trim(),waypoint=String(cfg.waypoint||'').trim();
  if(!station||station.length>200||pickupAddress.length>200||waypoint.length>200)throw Error('Add a pickup location under 200 characters');
  if(destinationType==='place'&&(!deliveryAddress||deliveryAddress.length>500))throw Error('Add a delivery address under 500 characters');
- const dorm=destinationType==='place'?route.placeDorm(deliveryAddress):String(cfg.dorm||'').trim();
+ // 2026-11-21: a dorm trip may go to several buildings (cfg.dorms); the first one is kept as trip.dorm for older clients.
+ const wanted=destinationType==='place'?[]:(Array.isArray(cfg.dorms)&&cfg.dorms.length?cfg.dorms:[cfg.dorm]).map(x=>String(x||'').trim()).filter(Boolean),dorms=Array.from(new Set(wanted));
+ if(dorms.length>10||dorms.some(x=>x.length>100))throw Error('Choose up to 10 buildings');
+ const dorm=destinationType==='place'?route.placeDorm(deliveryAddress):(dorms[0]||'');
  const capacity=Number(cfg.capacity);if(!Number.isInteger(capacity)||capacity<1||capacity>(cfg.category==='takeout'?5:12))throw Error('Choose a capacity between 1 and 12');
  if(!station||!dorm||dorm.length>100)throw Error('Choose a pickup point and destination');
  const later=cfg.when==='later',duration=cfg.duration===undefined||cfg.duration===null||cfg.duration===''?10:Number(cfg.duration);if(!later&&(!Number.isInteger(duration)||duration<1||duration>30))throw Error('Choose a duration between 1 and 30 minutes');
  const departAt=later?todayAt(cfg.time,now):now+duration*MIN;
  if(later&&departAt<=now+10*MIN)throw Error('Choose a departure more than 10 minutes from now');
- return {campusId:s.profile.campusId,universityId:s.profile.universityId,category:cfg.category||'takeout',station,pickupAddress,waypoint,dorm,destinationType,deliveryAddress:destinationType==='place'?deliveryAddress:'',capacity,departAt,depart:clock(departAt),joinUntil:later?departAt-10*MIN:departAt,remindAt:later?departAt-15*MIN:0,phase:'collect',requestIds:[],cancelled:false,runnerName:s.profile.name||'You',runnerJobs:s.profile.jobsDone||0};
+ return {campusId:s.profile.campusId,universityId:s.profile.universityId,category:cfg.category||'takeout',station,pickupAddress,waypoint,dorm,...(destinationType==='place'?{}:{dorms:dorms.length?dorms:[dorm]}),destinationType,deliveryAddress:destinationType==='place'?deliveryAddress:'',capacity,departAt,depart:clock(departAt),joinUntil:later?departAt-10*MIN:departAt,remindAt:later?departAt-15*MIN:0,phase:'collect',requestIds:[],cancelled:false,runnerName:s.profile.name||'You',runnerJobs:s.profile.jobsDone||0};
 }
 function matchingTripOrders(s,cfg,now=Date.now()){
  const t=plan(s,cfg,now);
