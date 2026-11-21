@@ -2,6 +2,7 @@
 // Design: design/me-preview/index.html. Server rules: cloudfunctions/orderService/yuni-play.js.
 const store = require('../../utils/store'), orders = require('../../utils/orders'), motion = require('../../utils/motion');
 const rig = require('../../utils/yuni-rig'), catalog = require('../../utils/yuni-catalog'), sound = require('../../utils/yuni-sound'), ui = require('../../utils/ui');
+const { dayKey } = require('../../utils/china-time');
 
 const SCENES = {
   morning: { sky: 'linear-gradient(#a9dfc9 0%,#cdeedd 46%,#e9f7ee 62%)', a: '#2fa37a', b: '#0b7a55', c: '#085c41', ba: '#ffffff', bb: '#d4efe2', dark: false },
@@ -49,7 +50,7 @@ Component({
       const next = {
         zh, motion: motion.enabled(), soundOn: sound.enabled(), scene: SCENES[l.scene] ? l.scene : 'morning', dark: sc.dark, ride: l.ride || 'floe', rideBack: ride.back, rideFront: ride.front,
         sceneStyle: '--sky:' + sc.sky + ';--sea-a:' + sc.a + ';--sea-b:' + sc.b + ';--sea-c:' + sc.c + ';--berg-a:' + sc.ba + ';--berg-b:' + sc.bb + ';--wave:url(\'' + wave + '\')',
-        hungry: this.hungry ? this.hungry() : false, testPoints: !!play.testPoints, testRounds: !!play.testRounds, friend: l.friend === 'eagle', dailyFish: require('../../utils/checkin').dailyFishWaiting(), orderFish: require('../../utils/order-fish').waiting().length, hasRod: rig.isTool(play.worn.hand), bucketCount: this.holdBucket != null ? this.holdBucket : play.bucket.length, triesLeft: play.fishing.left || 0, balance: play.balance
+        hungry: this.hungry ? this.hungry() : false, testPoints: !!play.testPoints, testRounds: !!play.testRounds, friend: l.friend === 'eagle', dailyFish: require('../../utils/checkin').dailyFishWaiting(), orderFish: require('../../utils/order-fish').waiting().length, mood: this.moodToday(), hasRod: rig.isTool(play.worn.hand), bucketCount: this.holdBucket != null ? this.holdBucket : play.bucket.length, triesLeft: play.fishing.left || 0, balance: play.balance
       };
       // One count on Feed: every fish ready to eat (today's dried fish, fish from orders, caught fish). gift = a dried or order fish is waiting.
       next.gift = !!(next.dailyFish || next.orderFish); next.feedCount = (next.dailyFish ? 1 : 0) + next.orderFish + next.bucketCount;
@@ -139,7 +140,9 @@ Component({
     },
     // A sleeping Yuni wakes on any touch. Buttons pass quiet=true so their own action still runs (no swallowed taps).
     wake(quiet) { if (!this.data.asleep) return false; this.setData({ asleep: false }); if (quiet) { this.pose(); this.rest(); return false; } this.act({ body: 'squash', mouth: true }, 1300); this.say(this.t('啊！你回来啦。', 'Oh! You\'re back.')); this.rest(); return true; },
-    cheer() { if (this.data.mood >= 5) return; const mood = this.data.mood + 1; this.setData({ mood }); if (mood === 5) setTimeout(() => { sound.fanfare(); this.act({ face: 'love', wings: 'cheer', body: 'jump', mouth: true }, 1600); this.confetti(); this.say(this.t('今天最开心！', 'Best day ever!'), 2600); }, 1100); },
+    // The hearts last for the day (China time), so leaving the Me page no longer empties them.
+    moodToday() { const m = store.get().yuniMood; return m && m.day === dayKey(Date.now()) ? Math.min(5, Number(m.value) || 0) : 0; },
+    cheer() { const now = this.moodToday(); if (now >= 5) return; const mood = now + 1; store.update(x => { x.yuniMood = { day: dayKey(Date.now()), value: mood }; }); this.setData({ mood }); if (mood === 5) setTimeout(() => { sound.fanfare(); this.act({ face: 'love', wings: 'cheer', body: 'jump', mouth: true }, 1600); this.confetti(); this.say(this.t('今天最开心！', 'Best day ever!'), 2600); }, 1100); },
     // ── floating effects ──
     float(item, ms = 1200) { const id = ++fxId; this.setData({ fx: this.data.fx.concat({ id, ...item }) }); setTimeout(() => this.setData({ fx: this.data.fx.filter(f => f.id !== id) }), ms); },
     heart(x, y) { if (this.data.motion) this.float({ kind: 'heart', style: 'left:' + x + 'px;top:' + y + 'px;--dx:' + Math.round((Math.random() - .5) * 60) + 'px' }, 1100); },
