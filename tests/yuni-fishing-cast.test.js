@@ -155,10 +155,15 @@ try {
   inst.castDown();
   assert.equal(inst.F, undefined, 'no try is started');
   assert.match(inst.data.bubble, /今天钓完啦/);
-  inst = makeInst({ play: playState({ fishing: { open: false, left: 1, used: { lunch: true }, window: 'lunch', nextFrom: 17 } }) });
+  inst = makeInst({ play: playState({ fishing: { open: false, left: 1, used: { lunch: true, free: true }, window: 'lunch', nextFrom: 17 } }) });
   inst.castDown();
   assert.equal(inst.F, undefined);
-  assert.match(inst.data.bubble, /17:00 再来/);
+  assert.match(inst.data.bubble, /晚餐 17:00–20:00 还能再钓一次/, '2026-11-22: says when the next bonus try is');
+  // The hint names the try a cast will use.
+  inst = makeInst({ play: playState({ fishing: { open: true, left: 3, used: {}, window: 'free', nextFrom: 0, mealUntil: 0 } }) });
+  inst.drawGame(); assert.match(inst.data.hint, /^今天的免费机会/);
+  inst = makeInst({ play: playState({ fishing: { open: true, left: 2, used: {}, window: 'lunch', nextFrom: 0, mealUntil: 14 } }) });
+  inst.drawGame(); assert.match(inst.data.hint, /^午餐加场（到 14:00）/);
 
   // 5-7 are async because land() awaits the order call.
   // Invoked as an IIFE (no CJS-style return) so scripts/check.js vm.Script can parse this file.

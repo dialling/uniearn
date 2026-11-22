@@ -8,10 +8,11 @@ const play=require('../cloudfunctions/orderService/yuni-play'),catalog=require('
  await h.call('customer','sync');
  {const b=await h.call('customer','yuniBuy',{item:'rod'});assert.equal(b.ok,true,b.error);}
  const fishOnce=()=>h.call('customer','yuniFish',{landed:false});
- for(let i=0;i<catalog.WINDOWS.length;i++){const r=await fishOnce();assert.equal(r.ok,true,r.error);}
+ const perDay=catalog.WINDOWS.length+1; // a free try plus one per meal (2026-11-22)
+ for(let i=0;i<perDay;i++){const r=await fishOnce();assert.equal(r.ok,true,r.error);}
  assert.equal((await fishOnce()).ok,false,'no tries left today');
  const t=await h.call('customer','yuniTestRound',{});assert.equal(t.ok,true,t.error);
- assert.equal(t.snapshot.yuni.testRounds,true);assert.equal(t.snapshot.yuni.fishing.left,catalog.WINDOWS.length,'tries are back');
+ assert.equal(t.snapshot.yuni.testRounds,true);assert.equal(t.snapshot.yuni.fishing.left,perDay,'tries are back');
  assert.equal((await fishOnce()).ok,true,'can fish again');
  play.setTestRounds(false);
  assert.equal((await h.call('customer','yuniTestRound',{})).ok,false,'switched off before launch');

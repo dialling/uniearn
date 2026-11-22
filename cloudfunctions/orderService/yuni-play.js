@@ -5,7 +5,7 @@
 const catalog = require('./yuni-catalog');
 const loyalty = require('./loyalty');
 
-// 2026-11-15 team test: fishing is open at any hour (still one try per half-day, two a day) so it can be
+// 2026-11-15 team test: the meal bonus tries are open at any hour (still three tries a day: free + lunch + dinner) so it can be
 // tried outside lunch and dinner. Set to false before launch. See the testing-limits note.
 let FISH_ANY_TIME_FOR_TESTING = true;
 // 2026-11-15 team test: the shop shows a "+200 test points" button so every item and level reward can be tried.
@@ -47,17 +47,24 @@ function worn(m) {
   for (const it of catalog.ITEMS) if (it.level && level(m) >= it.level && !y.granted.includes(it.id)) { y.granted.push(it.id); y.worn[it.slot] = it.id; out[it.slot] = it.id; }
   return out;
 }
-// used: the windows already fished today. While testing, any hour counts as the next unused window.
-function windowAt(now, used = {}) {
-  const h = chinaHour(now), real = catalog.WINDOWS.find(w => h >= w.from && h < w.to);
-  if (!FISH_ANY_TIME_FOR_TESTING) return real || null;
-  return (real && !used[real.id] ? real : catalog.WINDOWS.find(w => !used[w.id])) || real || catalog.WINDOWS[catalog.WINDOWS.length - 1];
+// 2026-11-22: one free try a day at any hour (used.free; it does not stack), plus one bonus try at lunch and
+// one at dinner (used.lunch / used.dinner). Inside a meal window the bonus is used first, so the free try is kept.
+// While testing, any hour also counts as the next unused meal window.
+const FREE = 'free';
+const mealAt = now => { const h = chinaHour(now); return catalog.WINDOWS.find(w => h >= w.from && h < w.to) || null; };
+function pickTry(now, used = {}) {
+  const real = mealAt(now);
+  if (real && !used[real.id]) return real.id;
+  if (FISH_ANY_TIME_FOR_TESTING) { const any = catalog.WINDOWS.find(w => !used[w.id]); if (any) return any.id; }
+  return used[FREE] ? '' : FREE;
 }
 function fishingView(m, now) {
-  const y = state(m), today = dayKey(now), used = y.fishing.day === today ? y.fishing.used || {} : {}, h = chinaHour(now), w = windowAt(now, used);
-  const left = FISH_ANY_TIME_FOR_TESTING ? catalog.WINDOWS.filter(x => !used[x.id]).length : catalog.WINDOWS.filter(x => !used[x.id] && h < x.to).length;
+  const y = state(m), today = dayKey(now), used = y.fishing.day === today ? y.fishing.used || {} : {}, h = chinaHour(now), real = mealAt(now), pick = pickTry(now, used);
+  const meals = FISH_ANY_TIME_FOR_TESTING ? catalog.WINDOWS.filter(x => !used[x.id]).length : catalog.WINDOWS.filter(x => !used[x.id] && h < x.to).length;
   const next = FISH_ANY_TIME_FOR_TESTING ? null : catalog.WINDOWS.find(x => !used[x.id] && h < x.from) || null;
-  return { window: w ? w.id : '', open: !!w && !used[w.id], used: { ...used }, left, nextFrom: next ? next.from : 0, anyTime: FISH_ANY_TIME_FOR_TESTING };
+  const meal = pick && pick !== FREE ? catalog.WINDOWS.find(x => x.id === pick) : null;
+  // window: the try the next cast uses ('free', 'lunch', 'dinner'); when closed, the meal window we are in (if any).
+  return { window: pick || (real ? real.id : ''), open: !!pick, used: { ...used }, left: meals + (used[FREE] ? 0 : 1), free: !used[FREE], mealUntil: meal ? meal.to : 0, nextFrom: next ? next.from : 0, anyTime: FISH_ANY_TIME_FOR_TESTING };
 }
 function view(m, now) {
   if (!m) return null;
@@ -84,16 +91,15 @@ function wear(s, id, event) {
   check(has(m, it), 'You do not have this item yet.');
   y.worn[slot] = it.id; return { slot, item: it.id };
 }
-// One try per window. A missed pull uses the try and lands nothing.
+// One free try a day plus one per meal window. A missed pull uses the try and lands nothing.
 function fish(s, id, event, now, random = Math.random) {
   const m = loyalty.member(s, id), y = state(m), tool = catalog.item(worn(m).hand);
   check(tool && tool.odds, 'Yuni needs a fishing rod first.');
   const today = dayKey(now);
   if (y.fishing.day !== today) y.fishing = { day: today, used: {} };
-  const w = windowAt(now, y.fishing.used);
-  check(w, 'Fish only bite at lunch and dinner.');
-  check(!y.fishing.used[w.id], 'One try per meal. Come back later.');
-  y.fishing.used[w.id] = true;
+  const pick = pickTry(now, y.fishing.used), real = mealAt(now);
+  check(pick, real && y.fishing.used[real.id] ? 'One try per meal. Come back later.' : 'Today\'s free try is used. Fish bite again at lunch and dinner.');
+  y.fishing.used[pick] = true;
   // 2026-11-16: a fish only bites after a stop in the green on the timing bar; otherwise the try is used and nothing lands.
   if (event.landed !== true || event.perfect !== true) return { missed: true };
   // Very rare: a bottle with a coupon instead of a fish, at most once every COUPON_COOLDOWN_DAYS.
@@ -143,7 +149,7 @@ function testRound(s, id, now) {
   check(TEST_ROUNDS_FOR_TESTING, 'Test fishing tries are switched off.');
   const y = state(loyalty.member(s, id));
   y.fishing = { day: dayKey(now), used: {} };
-  return { left: catalog.WINDOWS.length };
+  return { left: catalog.WINDOWS.length + 1 };
 }
 // Tests switch the testing flag off to check the real lunch and dinner windows.
 module.exports = { view, buy, wear, fish, feed, worn, testPoints, testRound, setTestPoints: on => { TEST_POINTS_FOR_TESTING = !!on; }, setTestRounds: on => { TEST_ROUNDS_FOR_TESTING = !!on; }, anyTime: () => FISH_ANY_TIME_FOR_TESTING, setAnyTime: on => { FISH_ANY_TIME_FOR_TESTING = !!on; } };

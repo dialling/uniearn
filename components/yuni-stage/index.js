@@ -1,6 +1,18 @@
 // Yuni's stage on the Me page (2026-11-15): play with Yuni, dress Yuni from the points shop, and fish.
 // Design: design/me-preview/index.html. Server rules: cloudfunctions/orderService/yuni-play.js.
 const store = require('../../utils/store'), orders = require('../../utils/orders'), motion = require('../../utils/motion');
+// 2026-11-22: say the exact fishing hours (from catalog.WINDOWS), not just lunch and dinner.
+const fishSpan = id => { const w = catalog.WINDOWS.find(x => x.id === id); return w ? w.from + ':00–' + w.to + ':00' : ''; };
+// 2026-11-22: one free try a day at any hour, plus a bonus try at lunch and at dinner (server: yuni-play.js).
+const mealName = (id, zh) => { const w = catalog.WINDOWS.find(x => x.id === id); return w ? (zh ? w.zh : w.en) : ''; };
+// Which try this cast uses, shown before the how-to in the hint.
+const tryName = (f, zh) => f.window === 'free' ? (zh ? '今天的免费机会。' : 'Your free try for today. ') : f.mealUntil ? (zh ? mealName(f.window, true) + '加场（到 ' + f.mealUntil + ':00）。' : mealName(f.window, false).replace(/^./, c => c.toUpperCase()) + ' bonus (until ' + f.mealUntil + ':00). ') : '';
+// What to say when there is no try left right now.
+const closedNote = (f, zh) => {
+  const nx = f.nextFrom && catalog.WINDOWS.find(x => x.from === f.nextFrom);
+  if (!nx) return zh ? '今天钓完啦。明天又有一次免费机会！' : 'No tries left today. A new free try tomorrow!';
+  return zh ? '今天的免费机会用完了。' + nx.zh + ' ' + fishSpan(nx.id) + ' 还能再钓一次。' : 'Todayʼs free try is used. Another try at ' + nx.en + ' (' + fishSpan(nx.id) + ').';
+};
 const rig = require('../../utils/yuni-rig'), catalog = require('../../utils/yuni-catalog'), sound = require('../../utils/yuni-sound'), ui = require('../../utils/ui');
 const { dayKey } = require('../../utils/china-time');
 
@@ -592,10 +604,10 @@ Component({
     leave() { if (this.F) this.stopFishing(); this.setData({ mode: '', bookOpen: false, card: null }); this.lookAt(0, 0); this.rest(); this.sync(); },
     drawGame() {
       const zh = this.data.zh, play = this.play(), f = play.fishing, left = f.left || 0;
-      const patch = { leftText: zh ? (left ? '今天还能钓 ' + left + ' 次' : '今天的次数用完了') : (left === 2 ? '2 tries left today' : left === 1 ? '1 try left today' : 'No tries left today'), bookCount: play.seen.length + '/' + catalog.FISH.length,
+      const patch = { leftText: zh ? (left ? '今天还能钓 ' + left + ' 次' : '今天的次数用完了') : (left > 1 ? left + ' tries left today' : left === 1 ? '1 try left today' : 'No tries left today'), bookCount: play.seen.length + '/' + catalog.FISH.length,
         bucket: play.bucket.map((id, n) => { const x = catalog.fish(id) || {}; return { n, id, src: rig.fish(id), pts: '+' + (catalog.RARITY[x.r] || { points: 0 }).points + (zh ? ' 积分' : ' pts') }; }) };
       if (!this.F) Object.assign(patch, { castClass: f.open ? '' : 'off', castLabel: f.open ? (zh ? '抛竿' : 'Cast') : f.nextFrom ? (zh ? f.nextFrom + ':00' : 'Back at') : (zh ? '明天' : 'Back'), castSub: f.open ? '' : f.nextFrom ? (zh ? '再来' : f.nextFrom + ':00') : (zh ? '再来' : 'tomorrow'),
-        hint: f.open ? (zh ? '只有一次机会。浮标沉下去时，先在绿色区停下，再连点 ' + catalog.PULLS_NEEDED + ' 次「' + this.verb() + '」。' : 'One try. When the bobber goes under, stop the marker in the green, then tap ' + this.verb() + ' ' + catalog.PULLS_NEEDED + ' times.') : play.bucket.length ? (zh ? '钓到的鱼在桶里。点鱼桶去喂 Yuni。' : 'Your fish are in the bucket. Tap it to feed Yuni.') : (zh ? '午餐和晚餐时间各能钓一次。' : 'One try at lunch and one at dinner.') });
+        hint: f.open ? tryName(f, zh) + (zh ? '浮标沉下去时，先在绿色区停下，再连点 ' + catalog.PULLS_NEEDED + ' 次「' + this.verb() + '」。' : 'When the bobber goes under, stop the marker in the green, then tap ' + this.verb() + ' ' + catalog.PULLS_NEEDED + ' times.') : play.bucket.length ? (zh ? '钓到的鱼在桶里。点鱼桶去喂 Yuni。' : 'Your fish are in the bucket. Tap it to feed Yuni.') : closedNote(f, zh) });
       this.setData(patch);
     },
     openBook() { const zh = this.data.zh, seen = this.play().seen; this.setData({ card: null, bookOpen: true, book: catalog.FISH.map(f => { const k = seen.includes(f.id); return { id: f.id, src: rig.fish(f.id), name: k ? (zh ? f.zh : f.en) : '???', r: f.r, known: k, sub: (zh ? catalog.RARITY[f.r].zh : catalog.RARITY[f.r].en) + ' +' + catalog.RARITY[f.r].points }; }) }); },
@@ -628,7 +640,7 @@ Component({
     beginCast() {
       if (this.F || this.castLock) return;
       const f = this.play().fishing;
-      if (!f.open) { this.act({ body: 'squash' }, 900); this.say(f.window && f.used[f.window] ? (f.nextFrom ? this.t('每餐只能钓一次，' + f.nextFrom + ':00 再来。', 'One try per meal. Next at ' + f.nextFrom + ':00.') : this.t('今天钓完啦，明天见！', 'No tries left today. More tomorrow!')) : this.t('鱼只在午餐和晚餐时间咬钩。', 'Fish only bite at lunch and dinner.'), 3000); return; }
+      if (!f.open) { this.act({ body: 'squash' }, 900); this.say(closedNote(f, this.data.zh), 3000); return; }
       this.castSeq = (this.castSeq || 0) + 1; const seq = this.castSeq; this.castLock = true;
       this.measureOr(found => {
         if (seq !== this.castSeq) return;
