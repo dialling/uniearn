@@ -12,7 +12,7 @@ for(const n of ['trip','takeaway','parcel','task'])assert.ok(!coach.steps(n,'en'
 assert.deepEqual(['takeaway','parcel','task'].map(n=>coach.steps(n,'en')[0].target),['.arrival-card','.notice-upload','.deadline-card']);
 assert.equal(coach.steps('night','en')[0].target,'.purchase-status-card');assert.ok(read0('pages/takeaway/index.wxml').includes('<coach-tip name="night" when="{{!tripId && night}}"/>'),'night market has its own tip');
 assert.deepEqual(coach.steps('trip','en').map(s=>s.target),['#tsOther','.ts-go']);
-assert.match(coach.steps('task','en')[0].text,/not when the task must be done/);
+assert.match(coach.steps('task','en')[0].text,/completed by a specific time, please include that time in the task description/);
 assert.match(read0('pages/trip-start/index.wxml'),/id="tsOther"/);
 assert.match(read0('pages/jobs/index.js'),/placeGuideCard/,'the job hall guide card moves off its target');
 assert.equal(coach.seen('trip'),false);coach.mark('trip');assert.equal(coach.seen('trip'),true,'shown once');

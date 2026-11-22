@@ -545,12 +545,12 @@ Component({
       const zh = this.data.zh, play = this.play(), tab = catalog.TABS[this.data.tab] || catalog.TABS[0], sel = this.trying ? this.trying.id : '';
       const cards = catalog.ITEMS.filter(i => tab.slots.includes(i.slot)).map(i => {
         const have = this.owns(i), wearing = play.worn[i.slot] === i.id;
-        return { id: i.id, name: zh ? i.zh : i.en, tier: i.tier || 0, src: rig.thumb(i.id), swatch: i.sw ? 'background:linear-gradient(' + i.sw[0] + ' 58%,' + i.sw[1] + ' 58%)' : '', odds: i.odds ? (zh ? '超稀有 ' : 'Super rare ') + i.odds[2] + '%' : i.helper ? (zh ? '帮钓 ' : 'Extra fish ') + i.helper.chance + '%' : '', locked: !!i.level && !have, sel: sel === i.id,
+        return { id: i.id, name: zh ? i.zh : i.en, tier: i.tier || 0, src: rig.thumb(i.id), swatch: i.sw ? 'background:linear-gradient(' + i.sw[0] + ' 58%,' + i.sw[1] + ' 58%)' : '', odds: i.odds ? (zh ? '稀有度 ' : 'Rarity ') + i.odds[2] + '%' : i.helper ? (zh ? '帮钓 ' : 'Extra fish ') + i.helper.chance + '%' : '', locked: !!i.level && !have, sel: sel === i.id,
           tag: wearing ? (zh ? '使用中' : 'Wearing') : have ? (zh ? '已拥有' : 'Owned') : i.level ? this.levelName(i.level) : i.price + (zh ? ' 积分' : ' pts'), tagClass: wearing ? 'worn' : have ? '' : i.level ? '' : 'price' };
       });
       const patch = { tabs: catalog.TABS.map((x, n) => ({ n, name: zh ? x.zh : x.en, on: n === this.data.tab, star: n === 0 })), cards, sel, balance: play.balance, rodNote: this.data.tab === 0, friendNote: (catalog.TABS[this.data.tab] || {}).slots && catalog.TABS[this.data.tab].slots.includes('friend') };
       const i = this.trying ? catalog.item(this.trying.id) : null;
-      if (!i) Object.assign(patch, { buyName: zh ? '点一下就能试穿' : 'Tap anything to try it on', buyNote: zh ? '试穿免费。' : 'Trying is free.', buyLabel: zh ? '选择物品' : 'Pick an item', buyDisabled: true, buyPlain: false });
+      if (!i) Object.assign(patch, { buyName: zh ? '点击物品预览效果' : 'Tap an item to preview', buyNote: zh ? '预览不消耗积分。' : 'Previewing costs no points.', buyLabel: zh ? '选择物品' : 'Pick an item', buyDisabled: true, buyPlain: false });
       else {
         const have = this.owns(i), wearing = play.worn[i.slot] === i.id, required = catalog.REQUIRED.includes(i.slot);
         let label, disabled = false, plain = false, note = i.odds ? (zh ? '稀有 ' + i.odds[1] + '%，超稀有 ' + i.odds[2] + '%' : 'Rare ' + i.odds[1] + '%, super rare ' + i.odds[2] + '%') : i.helper ? (zh ? '钓鱼时在水面盘旋；每次钓到鱼，有 ' + i.helper.chance + '% 机会再帮你抓一条' : 'Circles over the water while you fish; ' + i.helper.chance + '% chance to catch one more each time') : i.level ? (zh ? '等级奖励' : 'A level reward') : have ? (zh ? '已属于你' : 'Yours to keep') : (zh ? 'Yuni 正在试穿' : 'Yuni is trying it on');

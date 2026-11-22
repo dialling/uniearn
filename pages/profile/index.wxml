@@ -53,7 +53,7 @@
  <view class="guide-modal yg-modal {{ygBottom?'yg-bottom':''}} {{darkClass?'yg-dark':''}}" catchtap="noop">
   <view class="row yg-top"><view class="yg-dots"><view wx:for="{{ygDots}}" wx:key="*this" class="yg-dot {{item===yg?'on':item<yg?'past':''}}"/></view><text class="yg-skip" hover-class="me-press" bindtap="ygFinish">{{language==='en'?'Skip':'跳过'}}</text></view>
   <view wx:for="{{[yg]}}" wx:key="*this" class="yg-step {{ygDir==='back'?'from-left':''}}"><view class="guide-body"><image class="yg-yuni" src="/assets/yuni-{{ygItem.pose}}.png" mode="aspectFit"/><view><view class="yg-name">Yuni</view><view class="guide-title">{{ygItem.title}}</view><view class="guide-text">{{ygItem.text}}</view></view></view></view>
-  <view class="yg-actions"><button wx:if="{{yg>0}}" class="yg-btn yg-back" bindtap="ygBack">{{language==='en'?'Back':'上一步'}}</button><button class="yg-btn yg-next" bindtap="ygNext">{{yg===0?(language==='en'?'Show me':'带我看看'):yg===ygLast?(language==='en'?'Letʼs play':'开始玩'):(language==='en'?'Next':'下一步')}}</button></view>
+  <view class="yg-actions"><button wx:if="{{yg>0}}" class="yg-btn yg-back" bindtap="ygBack">{{language==='en'?'Back':'上一步'}}</button><button class="yg-btn yg-next" bindtap="ygNext">{{yg===0?(language==='en'?'Show me':'带我看看'):yg===ygLast?(language==='en'?'Got it':'知道了'):(language==='en'?'Next':'下一步')}}</button></view>
  </view>
 </block>
 </view>

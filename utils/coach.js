@@ -12,7 +12,7 @@ const TIPS = {
   ],
   // 2026-11-17: only the parts people get wrong. Posting is obvious, so no step points at the post button.
   trip: [
-    { target: '#tsOther', pose: 'look', zh: ['去其他地方？', '选「其他」，自己填路线：从哪里出发、途经哪里、最后去哪里。'], en: ['Going somewhere else?', 'Pick Other and type your own route: where you start, a stop on the way, and where youʼre heading.'] },
+    { target: '#tsOther', pose: 'look', zh: ['还想去哪里？', '去超市、便利店或其他商店？选择「其他」，填写出发地、途经地点和目的地，让同路的同学把订单加入你的行程。'], en: ['Where else are you heading?', 'Heading to a supermarket, convenience store or another shop? Choose Other and enter your starting point, stops and destination so classmates along your route can add their orders.'] },
     { target: '.ts-go', pose: 'party', fixed: true, zh: ['分享行程', '发到宿舍群。顺路的同学把订单加进来，由你决定接哪一单。'], en: ['Share your trip', 'Send it to your dorm group. Classmates on your route add their orders, and you choose which to take.'] }
   ],
   takeaway: [
@@ -26,7 +26,7 @@ const TIPS = {
     { target: '.notice-upload', pose: 'look', zh: ['上传截图就行', '上传驿站短信或取件 App 的截图，Yuni 会帮你识别驿站和取件码。只有接单的跑手能看到。'], en: ['Just upload a screenshot', 'Add a screenshot of the station SMS or app. Yuni reads the station and pickup codes for you. Only the runner who takes your order sees them.'] }
   ],
   task: [
-    { target: '.deadline-card', pose: 'think', zh: ['这是接单截止时间', '指跑手可以接单的时间，不是任务要完成的时间。什么时候做，请写在任务描述里。到时没人接单，任务会自动关闭并全额退款。'], en: ['A deadline to take your order', 'Itʼs how long runners can take your post, not when the task must be done. Put that time in your description. If nobody takes it in time, it closes with a full refund.'] }
+    { target: '.deadline-card', pose: 'think', zh: ['订单会展示到什么时候？', '到截止时间仍无人接单，订单会从接单大厅移除，并自动关闭、全额退款。如果你要求跑手在指定时间前完成任务，请在任务描述中写明。'], en: ['How long will your order stay listed?', 'If no runner accepts by the deadline, your order will be removed from the order hall and closed automatically with a full refund. If the task needs to be completed by a specific time, please include that time in the task description.'] }
   ]
 };
 const who = () => { const p = store.get().profile || {}; return p.accountId || 'local'; };

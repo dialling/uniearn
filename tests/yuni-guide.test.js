@@ -3,7 +3,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const g=require('../utils/yuni-guide');
 assert.equal(g.count,7);
 const en=g.steps('en'),zh=g.steps('zh');
-assert.deepEqual(en.map(s=>s.title),['Meet Yuni','Pet and tap','Feed Yuni','Go fishing','Play together','Shop and friends','Level up']);
+assert.deepEqual(en.map(s=>s.title),['Meet Yuni','Interact with Yuni','Feed and check in','Go fishing','Play together','Shop and friends','Level up']);
 assert.ok(zh.every(s=>s.title&&s.text),'every step has Chinese text');
 assert.equal(en[0].target,'','the first step is the welcome');
 const stage=fs.readFileSync(path.join(__dirname,'../components/yuni-stage/index.wxml'),'utf8');

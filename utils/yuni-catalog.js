@@ -5,7 +5,7 @@
 // odds: a fishing tool; chances in % of a [common, rare, super rare] catch.
 const ITEMS = [
   { id: 'rod', slot: 'hand', zh: '竹制鱼竿', en: 'Bamboo rod', price: 120, tier: 1, odds: [70, 25, 5] },
-  { id: 'rod2', slot: 'hand', zh: '碳素鱼竿', en: 'Carbon rod', price: 200, tier: 2, odds: [55, 33, 12] },
+  { id: 'rod2', slot: 'hand', zh: '碳素鱼竿', en: 'Carbon rod', price: 200, tier: 2, odds: [47, 33, 20] },
   { id: 'rod3', slot: 'hand', zh: '黄金鱼竿', en: 'Golden rod', price: 400, tier: 3, odds: [40, 38, 22] },
   { id: 'trident', slot: 'hand', zh: '船长三叉戟', en: 'Captain\'s trident', level: 5, tier: 4, odds: [30, 40, 30], strike: true },
   { id: 'captain', slot: 'hat', zh: '船长帽', en: 'Captain\'s hat', price: 0 },
