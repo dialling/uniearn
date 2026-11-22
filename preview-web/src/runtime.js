@@ -359,6 +359,7 @@
           for (const f of files) {
             const url = await shrink(f), path = 'wxfile://tmp_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7) + '.jpg';
             this.files.set(path, url);
+            try { window.PreviewOCR && window.PreviewOCR.keep(url, f); } catch (_) {}
             tempFiles.push({ tempFilePath: path, path, size: Math.round(url.length * 0.75), fileType: 'image', width: 800, height: 800 });
           }
           resolve({ tempFiles, type: 'image', tempFilePaths: tempFiles.map(f => f.tempFilePath) });

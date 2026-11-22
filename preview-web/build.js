@@ -229,7 +229,7 @@ for (const [p, c] of Object.entries(components)) css += scopeCss(units(loadCss(p
 
 // Every JS/JSON file the pages can require, plus the cloud functions the preview cloud runs.
 const modules = [], jsonFiles = {};
-const CLOUD = ['orderService', 'studentAccount', 'newsService'];
+const CLOUD = ['orderService', 'studentAccount', 'newsService', 'parseSmsScreenshot', 'parseParcelScreenshot'];
 function addCode(file, list) {
   const key = rel(file);
   if (key.endsWith('.json')) { try { jsonFiles[key] = JSON.parse(fs.readFileSync(file, 'utf8').replace(/^﻿/, '')); } catch (_) {} return; }
@@ -257,6 +257,6 @@ const bundle = 'window.PREVIEW={app:' + JSON.stringify(appJson) + ',globalUsing:
   ',modules:{\n' + modules.join(',\n') + '\n}};\n';
 fs.writeFileSync(path.join(out, 'bundle.js'), bundle);
 fs.writeFileSync(path.join(out, 'app.css'), css);
-for (const f of ['index.html', 'runtime.js', 'cloud.js', 'base.css']) fs.copyFileSync(path.join(__dirname, 'src', f), path.join(out, f));
+for (const f of ['index.html', 'runtime.js', 'cloud.js', 'ocr.js', 'base.css']) fs.copyFileSync(path.join(__dirname, 'src', f), path.join(out, f));
 console.log('Preview built: ' + pages.length + ' pages, ' + Object.keys(components).length + ' components, ' + modules.length + ' modules -> ' + rel(out));
 if (warnings.length) console.log(warnings.map(w => '  warn: ' + w).join('\n'));

@@ -22,6 +22,8 @@ exports.main=async(event={})=>{
   const result=await client.GeneralBasicOCR({ImageBase64:base64,LanguageType:'zh'});
   const detections=result.TextDetections||[],sms=parseSms(detections,Date.now()),parcel=require('./parcel-parser').parseText(detections);const candidates=sms.candidates||[];
   for(const c of (parcel.candidates||[])){const old=candidates.find(x=>x.code===c.code);if(old){if(!old.point)old.point=c.point;if(!old.address)old.address=c.address;}else candidates.push(c);}
+  // A pending-parcel list with a single station header: every code on it belongs to that station.
+  const onlyStation=(parcel.stations||[]).length===1?parcel.stations[0]:'';if(onlyStation)candidates.forEach(c=>{if(!c.point)c.point=onlyStation;});
   return{ok:true,fields:{...sms,candidates:candidates.map((c,i)=>({...c,id:String(i)})),note:'Review the codes and select parcels from one pickup point.'}};
  }catch(e){const code=String(e.code||e.errCode||'UnknownError').replace(/[^A-Za-z0-9_.-]/g,'').slice(0,100);return{ok:false,error:'SMS OCR failed: '+code};}finally{try{await cloud.deleteFile({fileList:[fileID]});}catch(_){}}
 };

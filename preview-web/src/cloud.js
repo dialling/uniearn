@@ -229,7 +229,7 @@
         async getTempFileURL({ fileList }) { return { fileList: fileList.map(x => { const id = typeof x === 'string' ? x : x.fileID; return { fileID: id, tempFileURL: host.state.files[id] || '', status: host.state.files[id] ? 0 : -1 }; }) }; },
         async deleteFile({ fileList }) { return { fileList: fileList.map(id => { delete host.state.files[id]; return { fileID: id, status: 0 }; }) }; },
         async uploadFile({ cloudPath, fileContent }) { const id = 'cloud://preview-env/' + cloudPath; host.state.files[id] = String(fileContent || ''); return { fileID: id }; },
-        async downloadFile() { return { fileContent: Buf.from('') }; },
+        async downloadFile({ fileID } = {}) { const m = /^data:[^;,]*;base64,(.*)$/.exec(host.state.files[fileID] || ''); return { fileContent: m ? Buf.from(m[1], 'base64') : Buf.from('') }; },
         async callFunction({ name, data }) { return { result: await host.invoke(name, data) }; },
         openapi
       };
@@ -238,10 +238,15 @@
         'wx-server-sdk': sdk, crypto: cryptoModule, buffer: { Buffer: Buf },
         util: { promisify: fn => (...a) => new Promise((res, rej) => fn(...a, (e, v) => e ? rej(e) : res(v))), inspect: x => JSON.stringify(x), format: (...a) => a.join(' '), TextEncoder, TextDecoder, types: {} },
         nodemailer: { createTransport: () => ({ sendMail: async () => { throw Error('Email sending is turned off in the preview.'); }, verify: async () => true }) },
+        // Screenshot reading: Tesseract in the browser stands in for Tencent Cloud OCR (see ocr.js).
+        'tencentcloud-sdk-nodejs-ocr': { ocr: { v20181119: { Client: class { async GeneralBasicOCR({ ImageBase64 }) {
+          if (!window.PreviewOCR) throw Object.assign(Error('Screenshot reading is not available in this preview.'), { code: 'PreviewOCRMissing' });
+          return { TextDetections: await window.PreviewOCR.read(ImageBase64) };
+        } } } } },
         https: unavailable('https'), http: unavailable('http'), fs: unavailable('fs'), path: { join: (...a) => a.join('/'), basename: p => p.split('/').pop() }
       };
       const g = Object.create(null);
-      g.process = { env: { REVIEWER_OPENIDS: 'preview-reviewer' }, version: 'v18.0.0', nextTick: f => Promise.resolve().then(f) };
+      g.process = { env: { REVIEWER_OPENIDS: 'preview-reviewer', TENCENT_SECRET_ID: 'preview', TENCENT_SECRET_KEY: 'preview' }, version: 'v18.0.0', nextTick: f => Promise.resolve().then(f) };
       g.Buffer = Buf;
       g.global = globalThis;
       this.loader = createLoader(g, builtins);

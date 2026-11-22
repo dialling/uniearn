@@ -1,5 +1,5 @@
 function clean(s){return String(s||'').replace(/[—–－−]/g,'-').replace(/\s+/g,' ').trim();}
-const {normalizePoint:cleanPoint}=require('./pickup-point');
+const {normalizePoint:cleanPoint,APP_TEXT}=require('./pickup-point');
 function parseText(detections){
  const input=(detections||[]).slice();
  if(input.length&&input.every(x=>typeof x==='object'&&x.ItemPolygon))input.sort((a,b)=>a.ItemPolygon.Y-b.ItemPolygon.Y||a.ItemPolygon.X-b.ItemPolygon.X);
@@ -11,7 +11,7 @@ function parseText(detections){
  const narrative=/^(?:already|your parcel|please|to be picked|out for delivery|in transit|您的|您有|已到|今日到)/i;
  const addressRx=/路|街|巷|广场|小区|校区|宿舍|栋|号|大道|\blane\b|\bstreet\b|\broad\b|\bavenue\b|\bplaza\b|\bsquare\b|\bbuilding\b|\bcampus\b/i;
  const headers=[];
- lines.forEach((line,i)=>{if(pointRx.test(line)&&!narrative.test(line)&&!contextRx.test(line))headers.push({i,point:cleanPoint(line)});});
+ lines.forEach((line,i)=>{if(pointRx.test(line)&&!narrative.test(line)&&!contextRx.test(line)&&!APP_TEXT.test(line))headers.push({i,point:cleanPoint(line)});});
  let pickupPoint=headers.length?headers[0].point:'';
  let pickupAddress='';
  if(headers.length){
@@ -45,6 +45,6 @@ function parseText(detections){
  });
  const pickupCodes=candidates.map(x=>x.code);
  if(new Set(candidates.map(x=>x.point)).size>1){pickupPoint='';pickupAddress='';}
- return{pickupCode:pickupCodes[0]||'',pickupCodes,pickupPoint,pickupAddress,candidates,needsReview:[...(!pickupCodes.length?['pickupCode']:[]),...(!pickupPoint?['pickupPoint']:[])]};
+ return{pickupCode:pickupCodes[0]||'',pickupCodes,pickupPoint,pickupAddress,candidates,stations:[...new Set(headers.map(h=>h.point).filter(Boolean))],needsReview:[...(!pickupCodes.length?['pickupCode']:[]),...(!pickupPoint?['pickupPoint']:[])]};
 }
 module.exports={parseText};

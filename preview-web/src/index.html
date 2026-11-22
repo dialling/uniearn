@@ -73,10 +73,11 @@ body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSys
     <div class="device-box"><div class="device"><div class="notch"></div><div class="screen-host" id="phone-2"></div></div></div>
   </section>
 </main>
-<p class="note"><b>How it works:</b> all three phones run the same page code, layouts and styles as the WeChat build, and share one simulated cloud that runs the real order and account logic. Data is kept in this browser until you press Reset. Runner applications are approved instantly. WeChat-only features (phone-number login, sharing, payments, screenshot reading, push notifications) show a message instead.</p>
+<p class="note"><b>How it works:</b> all three phones run the same page code, layouts and styles as the WeChat build, and share one simulated cloud that runs the real order and account logic. Data is kept in this browser until you press Reset. Runner applications are approved instantly. Screenshot reading uses a text reader in your browser (downloaded on the first scan) instead of WeChat's cloud OCR, so it is slower and a little less accurate. Other WeChat-only features (phone-number login, sharing, payments, push notifications) show a message instead.</p>
 <script src="https://cdn.jsdelivr.net/npm/preact@10.22.1/dist/preact.umd.js"></script>
 <script src="bundle.js"></script>
 <script src="cloud.js"></script>
+<script src="ocr.js"></script>
 <script src="runtime.js"></script>
 <script>
 (function () {
