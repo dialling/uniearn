@@ -251,8 +251,9 @@ async function loadMessages(reqId, peerId, keepLocal) {
     at: parseTs(m.created_at), mine: Number(m.sender_id) === myId,
   }));
   if (!out.length && keepLocal) return out;   // 服务端还没读到时别把刚发的气泡抹掉
+  const target = numIdOf(reqId);
   store.update((s) => {
-    (s.requests || []).forEach((r) => { if (r.id === reqId) r.messages = out; });
+    (s.requests || []).forEach((r) => { if (numIdOf(r.id) === target) r.messages = out; });
   });
   return out;
 }
@@ -464,7 +465,7 @@ async function act(action, payload = {}) {
     }
   }
   if (action === 'messages') {
-    const row = (store.get().requests || []).find(r => r.id === reqId) || {};
+    const row = (store.get().requests || []).find(r => numIdOf(r.id) === numIdOf(reqId)) || {};
     return loadMessages(reqId, peerOf(row));
   }
   if (action === 'message') {
@@ -480,7 +481,7 @@ async function act(action, payload = {}) {
       // 先乐观上屏，GET 失败也不会让气泡消失
       store.update((st) => {
         (st.requests || []).forEach((r) => {
-          if (r.id !== reqId) return;
+          if (numIdOf(r.id) !== numIdOf(reqId)) return;
           const list = Array.isArray(r.messages) ? r.messages : [];
           list.push({ id: 'local-' + Date.now(), text: content, photo: payload.photo || '', at: Date.now(), mine: true });
           r.messages = list;
