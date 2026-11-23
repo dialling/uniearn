@@ -41,7 +41,9 @@ function parseTs(v) {
   const s = String(v).trim();
   if (/^\d+$/.test(s)) { const n = Number(s); return n > 1e11 ? n : n * 1000; }
   const iso = s.includes('T') ? s : s.replace(' ', 'T');
-  const norm = /Z|[+-]\d{2}:?\d{2}$/.test(iso) ? iso : iso + 'Z';
+  // 服务端时间统一是「北京时间」的 'YYYY-MM-DD HH:MM:SS'，不带时区。
+  // 之前补 'Z' 当 UTC 解析，页面上的下单/送达时间整体多了 8 小时。
+  const norm = /Z|[+-]\d{2}:?\d{2}$/.test(iso) ? iso : iso + '+08:00';
   const t = Date.parse(norm);
   return Number.isFinite(t) ? t : (Date.parse(s) || 0);
 }
