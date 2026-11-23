@@ -264,15 +264,16 @@ async function syncLoyalty() {
   const state = store.get();
   const accountId = state.profile && state.profile.accountId;
   if (!accountId) return null;
-  const out = await require('./xp-loyalty').sync(accountId, Date.now());
-  if (out && out.progression) {
-    store.update((s) => {
-      s.progression = out.progression; s.progressionAccountId = accountId;
-      if (out.yuni) s.yuniPlay = out.yuni;
-      if (out.rewards) s.rewards = out.rewards;
-    });
-  }
-  return out;
+  // 直接打 /api/loyalty/sync：xp-loyalty 在本地已有缓存的场景会走早退分支，
+  // 不带回 yuni，鱼桶就会一直停在旧快照（角标永远是 1）。
+  const data = await api.post('/api/loyalty/sync', {}).catch(() => null);
+  if (!data) return null;
+  store.update((s) => {
+    if (data.progression) { s.progression = data.progression; s.progressionAccountId = accountId; }
+    if (data.yuni) s.yuniPlay = data.yuni;
+    if (data.rewards) s.rewards = data.rewards;
+  });
+  return data;
 }
 async function sync() {
   const [h, m] = await Promise.all([hall(), mine(), loadSupport().catch(() => [])]);

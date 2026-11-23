@@ -72,7 +72,7 @@ Page({
   this.setData({tierLevel:tier.level,tierAvatar:tierAvatar(tier.level),level:name(tier),tierName:name(tier),rankName:name(tier),points:tier.points,progress:tier.progress,remaining:tier.remaining,levelStartName:start,levelEndName:end,levelMessage:message,nextJobsText:message,...levelCard(tier,language)});
   this.setData({walletBalance:(Number((store.get().walletSummary||{}).balance_cents||0)/100).toFixed(2)});
   // 合并模式：钱包数据在服务端，walletSummary 不会自己出现，进页面时拉一次
-  if(require('../../utils/merge-mode').enabled&&store.get().profile.accountId&&!store.get().profile.loggedOut){
+  if(require('../../utils/merge-mode').enabled&&(()=>{try{return !!require('../../utils/util').getToken();}catch(_){return false;}})()&&store.get().profile.accountId&&!store.get().profile.loggedOut){
     require('../../utils/wallet').overview().then(v=>{
       store.update(s=>{s.walletSummary={balance_cents:v.balance_cents||0,pending_cents:v.pending_cents||0};});
       this.setData({walletBalance:(Number(v.balance_cents||0)/100).toFixed(2),earnWaiting:(Number(v.pending_cents||0)/100).toFixed(2)});
