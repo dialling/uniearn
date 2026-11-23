@@ -56,7 +56,9 @@ function toRequest(order, opts = {}) {
   const cent = n => Math.round(Number(n || 0));
   const statusMap = {
     pending: 'waiting', accepted: 'taken', picked_up: 'collected',
-    completed: 'delivered', confirmed: 'confirmed', cancelled: 'cancelled',
+    // 服务端只有 completed（跑手已送达）；正式版一直把它当「已完成」展示，
+    // 这里保持一致，避免体验版一堆历史单挂在「进行中·待确认」。
+    completed: 'confirmed', confirmed: 'confirmed', cancelled: 'cancelled',
     refunded: 'refunded', disputed: 'disputed'
   };
   const status = statusMap[order.status] || 'waiting';
