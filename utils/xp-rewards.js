@@ -1,6 +1,8 @@
 // 优惠券：REST 拉取后写进 store.rewards，页面仍然是原来的渲染逻辑。
 const api = require('./api'), store = require('./store');
 async function load() {
+  // 没登录时服务端会回 401，直接跳过，别在启动日志里刷红字
+  if (!require('./util').getToken()) return [];
   try {
     const [all, avail] = await Promise.all([api.get('/api/coupons'), api.get('/api/coupons/available')]);
     const rows = (all && all.list) || [];
