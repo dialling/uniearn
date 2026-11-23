@@ -92,9 +92,11 @@ Page({
   if(this.data.loggingOut||this.data.loading)return;
   this.setData({loggingOut:true,error:''});
   try{
+   const zhOut=store.get().language!=='en';
    const confirmed=await new Promise((resolve,reject)=>wx.showModal({
-    title:'Log out?',content:'Are you sure you want to log out? You can sign in again with WeChat or student verification.',
-    confirmText:'Log out',cancelText:'Cancel',success:r=>resolve(!!r.confirm),fail:reject
+    title:zhOut?'退出登录？':'Log out?',
+    content:zhOut?'确定要退出登录吗？之后可以用微信或学生认证重新登录。':'Are you sure you want to log out? You can sign in again with WeChat or student verification.',
+    confirmText:zhOut?'退出登录':'Log out',cancelText:zhOut?'取消':'Cancel',success:r=>resolve(!!r.confirm),fail:reject
    }));
    if(!confirmed)return;
    await account.call('logout');this.refresh();
