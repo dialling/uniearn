@@ -217,13 +217,18 @@ function pay(orderId) {
 }
 async function hall() {
   // 大厅是公开接口（optionalAuth），游客也能看单；只是不会带「我的」标记
-  const [openRes, doneRes] = await Promise.all([
+  const [openRes, doneRes, accRes, pickRes] = await Promise.all([
     api.get('/api/orders?status=pending').catch(() => ({})),
     api.get('/api/orders?status=completed&limit=50').catch(() => ({})),
+    api.get('/api/orders?status=accepted&limit=50').catch(() => ({})),
+    api.get('/api/orders?status=picked_up&limit=50').catch(() => ({})),
   ]);
   const pick = (r) => (r && (r.list || r.orders)) || [];
   const rows = pick(openRes).map(o => toRequest(o))
-    .concat(pick(doneRes).map(o => ({...toRequest(o), status:'confirmed', done:true})));
+    .concat(pick(doneRes).map(o => ({...toRequest(o), status:'confirmed', done:true})))
+    // 进行中·公开进度：服务端只给已接单/已取货的公开单
+    .concat(pick(accRes).map(o => toRequest(o)))
+    .concat(pick(pickRes).map(o => toRequest(o)));
   store.update(s => { s.publicJobs = rows; });
   return rows;
 }
