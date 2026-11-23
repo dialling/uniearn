@@ -171,7 +171,7 @@ function toRequest(order, opts = {}) {
     big,
     collected,
     arrived: !!order.arrived,
-    photo: order.delivery_photo || order.photo || '',
+    photo: fullAvatar(order.delivery_photo || order.photo || ''),
     riderPhoto: riderPhotos[0] || '',
     riderPhotos,
     orderPictures,
@@ -588,21 +588,23 @@ async function act(action, payload = {}) {
     return loadMessages(reqId, await resolvePeer(reqId, row));
   }
   if (action === 'message') {
-    const content = payload.text || payload.photo || '';
+    const isPhoto = !!payload.photo;
+    const content = isPhoto ? '' : (payload.text || '');
     const reqRow = (store.get().requests || []).find(r => r.id === reqId);
     const peer = (await resolvePeer(reqId, reqRow)) || payload.peer || payload.with || '';
     if (peer) {
       await api.post('/api/messages/peer/' + encodeURIComponent(String(peer)), {
         content,
         order_id: id || undefined,
-        ...(payload.photo ? { photo: payload.photo } : {})
+        // 服务端字段叫 image，且只接受本站 /uploads/ 地址
+        ...(isPhoto ? { image: payload.photo } : {})
       });
       // 先乐观上屏，GET 失败也不会让气泡消失
       store.update((st) => {
         (st.requests || []).forEach((r) => {
           if (numIdOf(r.id) !== numIdOf(reqId)) return;
           const list = Array.isArray(r.messages) ? r.messages : [];
-          list.push({ id: 'local-' + Date.now(), text: content, photo: payload.photo || '', at: Date.now(), mine: true });
+          list.push({ id: 'local-' + Date.now(), text: isPhoto ? '' : content, photo: isPhoto ? payload.photo : '', at: Date.now(), mine: true });
           r.messages = list;
         });
       });
