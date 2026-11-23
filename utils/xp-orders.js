@@ -70,6 +70,8 @@ function pay(orderId){
   });
 }
 async function hall(){
+  // 没登录就别打接口，避免启动时一串 401
+  if(!require('./util').getToken())return [];
   const res=await api.get('/api/orders');
   const list=(res&&(res.list||res.orders))||[];
   const rows=list.map(toRequest).map(classify);
@@ -81,6 +83,7 @@ function classify(row){
   return row;
 }
 async function mine(){
+  if(!require('./util').getToken())return [];
   const res=await api.get('/api/orders/mine');
   const list=(res&&(res.list||res.orders))||[];
   const rows=list.map(toRequest);
