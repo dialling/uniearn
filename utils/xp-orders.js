@@ -517,8 +517,16 @@ async function act(action, payload = {}) {
     const body = {
       request_key: payload.operationId || ('trip-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8)),
       order_ids: ids,
-      category: data.category, station: data.station, dorm: data.dorm,
-      capacity: data.capacity, depart: data.depart, note: data.note,
+      category: data.category,
+      station: data.station, stations: Array.isArray(data.stations) ? data.stations : undefined,
+      pickupAddress: data.pickupAddress || '', waypoint: data.waypoint || '',
+      destinationType: data.destinationType || 'dorm',
+      dorm: data.dorm, dorms: Array.isArray(data.dorms) ? data.dorms : undefined,
+      deliveryAddress: data.deliveryAddress || '',
+      capacity: data.capacity,
+      // 服务端按 when/time/duration 计算出发与截止时间（不认 depart 字段）
+      when: data.when, time: data.time, duration: data.duration,
+      note: data.note,
     };
     const trip = await api.post('/api/trips', body);
     await mine().catch(() => []);
