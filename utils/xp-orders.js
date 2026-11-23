@@ -364,7 +364,12 @@ async function loadMessages(reqId, peerId, keepLocal) {
   if (!out.length && keepLocal) return out;   // 服务端还没读到时别把刚发的气泡抹掉
   const target = numIdOf(reqId);
   store.update((s) => {
-    (s.requests || []).forEach((r) => { if (numIdOf(r.id) === target) r.messages = out; });
+    (s.requests || []).forEach((r) => {
+      if (numIdOf(r.id) !== target) return;
+      r.messages = out;
+      // 打开会话即视为已读：清掉红点计数
+      r.unread = 0; r.supportUnread = 0;
+    });
   });
   return out;
 }
@@ -617,6 +622,7 @@ async function act(action, payload = {}) {
           const list = Array.isArray(r.messages) ? r.messages : [];
           list.push({ id: 'local-' + Date.now(), text: isPhoto ? '' : content, photo: isPhoto ? payload.photo : '', at: Date.now(), mine: true });
           r.messages = list;
+          r.unread = 0; r.supportUnread = 0;
         });
       });
       await loadMessages(reqId, peer, true);
