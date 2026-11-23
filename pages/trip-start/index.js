@@ -50,7 +50,9 @@ Page({
   if(this.data.starting)return;
   this.setData({starting:true});
   try{
-   if(!await account.requireRunner())return;
+   // 发起顺路行程只要求登录，不要求已是跑腿员（学生也能顺路带一单）
+   const prof=store.get().profile||{};
+   if(prof.loggedOut){require('../../utils/nav').navigateTo({url:'/pages/welcome/index'});return;}
    // Account refresh can update orders; validate the current selection and clock again.
    f.previewTrip(this.selectionState(),this.data);
    this.setData({error:''});
