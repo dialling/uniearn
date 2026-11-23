@@ -1,16 +1,63 @@
 # UniEarn · 校园代取与跑腿小程序
 
-XJTLU 校园里的「顺路帮拿」平台。同学发布 **代取快递**、**代拿外卖** 或 **其他任务**，跑手（Runner）顺路接单、取件、上门送达并拍照留证，双方确认后结算。中英双语，微信小程序 + 微信云开发（CloudBase）。
+XJTLU 校园里的「顺路帮拿」平台。同学发布 **代取快递**、**代拿外卖** 或 **其他任务**，跑手（Runner）顺路接单、取件、上门送达并拍照留证，双方确认后结算。中英双语，微信小程序 + **自建 HTTP 后端**。
 
 | 项 | 值 |
 | --- | --- |
-| 小程序 AppID | `wxf6d43df037493a8c` |
-| 云开发环境 ID | `cloud1-d1g757cev03375e35`（在 `utils/ocr-config.js` 里） |
-| 版本 | `0.9.20` |
-| 技术栈 | 微信小程序原生（WXML/WXSS/JS）+ 云函数 + 云数据库 + 云存储 |
+| 小程序 AppID | `wxf85d5cbdae249978` |
+| 后端地址 | `https://pararouter.cn`（体验版 / 正式版 / 模拟器统一） |
+| 后端代码 | 独立仓库 `xjtlu-run-no-run` 的 `server/`（Node.js + Express + SQLite） |
+| 版本 | `4.0.4` |
+| 技术栈 | 微信小程序原生（WXML/WXSS/JS）+ REST API |
 | 基础库 | `3.7.0` |
 | Node.js | ≥ 18（**仅**用于跑本地测试，小程序本身不需要） |
-| 规模 | 127 个 JS / 43 个 JSON，27 个页面，35 个客户端模块，4 个云函数，39 个测试文件 |
+| 规模 | 127 个 JS / 43 个 JSON，27 个页面，35 个客户端模块，39 个测试文件 |
+
+---
+
+## 后端约定（重要）
+
+**本项目不再使用微信云开发（CloudBase）。** 所有数据、文件、OCR、消息都走自建后端 `https://pararouter.cn`。
+
+### 硬性规则
+
+1. **禁止新增 `wx.cloud.*` 调用**：`wx.cloud.init` / `callFunction` / `uploadFile` / `getTempFileURL` / `deleteFile` 一律不写。
+2. **禁止在客户端依赖 `cloudfunctions/`**：该目录是历史遗留（原始 uniEarn 项目带进来的），只作存档，不再部署、不再被调用。
+3. **不要在 `merge-mode` 里关掉 REST**：`utils/merge-mode.js` 的 `enabled` 必须为 `true`；置为 `false` 会退回云函数通道，而当前 AppID 名下没有云环境，所有请求都会失败。
+4. **新功能一律「后端先有接口」**：先在 `server/src/routes/` 加路由，再在 `utils/xp-*.js` 里映射，页面只调用 `utils/orders.js` / `utils/account.js`，不直接碰 `api.js`。
+
+### 调用链
+
+```
+页面 (pages/*)
+  └── utils/orders.js · utils/account.js · utils/wallet.js   ← merge 模式分支
+        └── utils/xp-orders.js · utils/xp-account.js · utils/xp-rewards.js
+              └── utils/api.js  →  https://pararouter.cn/api/*
+                    └── server/src/routes/*.js  →  SQLite
+```
+
+`utils/cloud.js` 只在 `merge-mode` 关闭时才返回真实的 `wx.cloud`；合并模式下它返回一个 REST 适配器，把历史云函数名（`newsService` / `parseParcelScreenshot` / `parseSmsScreenshot` / `studentAccount` / `orderService`）转成对应的 HTTP 请求，避免老页面报「云函数不存在」。
+
+### 已转接的云函数
+
+| 云函数 | 现在的落点 |
+| --- | --- |
+| `studentAccount`（status） | `GET /api/auth/me` |
+| `orderService`（wallet 等） | `GET /api/wallet`、`/api/orders/*`（见 `xp-orders.js`） |
+| `parseParcelScreenshot` | `POST /api/ocr/parcel` |
+| `parseSmsScreenshot` | `POST /api/ocr/sms` |
+| `newsService`（newsList） | 后端暂无资讯源，返回空列表；需先建 news 表 |
+| `newsService`（analyticsBatch / activityConfig） | no-op |
+
+### 本地联调
+
+```bash
+# 后端（另一个仓库 xjtlu-run-no-run）
+cd server && PORT=8099 node src/index.js
+
+# 小程序：utils/config.js 里 develop 默认指向线上；本机联调时临时改成
+# http://127.0.0.1:8099 即可
+```
 
 ## 网页预览 · Clickable preview
 
@@ -54,6 +101,9 @@ uniearn/
     ├── UPDATE-CN.md               0.9.20 版本更新说明
     └── SELF-CHECK.txt             一次完整自检的原始输出
 ```
+
+> `cloudfunctions/` 为历史云函数代码，仅作存档，已不部署、不被引用。新增后端能力请写到 `xjtlu-run-no-run/server/`。
+
 
 小程序根目录就是仓库根目录（`miniprogramRoot: "./"`），所以 `app.*`、`assets/`、`components/`、`pages/`、`utils/` 必须留在顶层，不能收进 `src/`。`project.config.json` 的 `packOptions.ignore` 已把 `tests/`、`scripts/` 和所有 `.md` / `.txt` 排除在小程序包外。
 
