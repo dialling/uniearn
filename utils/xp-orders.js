@@ -483,12 +483,12 @@ async function act(action, payload = {}) {
     return res;
   }
   if (action === 'cancel') {
-    const res = await api.post('/api/orders/' + id + '/cancel', { reason: payload.reason || '' });
+    const res = await api.post('/api/orders/' + id + '/cancel', { cancel_reason: payload.reason || payload.cancelReason || '' });
     updateRequestLocally(reqId, { status: 'cancelled', cancelledAt: Date.now() });
     return res;
   }
   if (action === 'runnerCancel') {
-    const res = await api.post('/api/orders/' + id + '/cancel', { reason: payload.reason || '' });
+    const res = await api.post('/api/orders/' + id + '/cancel', { cancel_reason: payload.reason || payload.cancelReason || '' });
     updateRequestLocally(reqId, { status: 'waiting', runnerId: null, isRunner: false, collected: [] });
     store.update(s => {
       for (const t of (s.trips || [])) {
