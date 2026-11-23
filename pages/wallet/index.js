@@ -125,7 +125,7 @@ Page({
   if (this.data.error) this.setData({error:''});
   if (this.data.loading) { this.load(); return; }
   const ui = this.data.ui, bal = this.data.balanceCents, actor = store.get().profile.accountId;
-  if (bal <= 0) { wx.showToast({title:ui.noBalance,icon:'none'}); return; }
+  if (!(bal > 0)) { wx.showToast({title:ui.noBalance,icon:'none'}); this.load(); return; }
   this.setData({withdrawing:true});
   try {
    const answer = await new Promise((resolve, reject) => wx.showModal({title:ui.confirmTitle,content:ui.confirmText.replace('{n}',this.data.balance),confirmText:ui.confirm,cancelText:ui.cancel,success:resolve,fail:reject}));
