@@ -35,4 +35,4 @@
  </scroll-view><button class="rules-ok" bindtap="closeRules">{{ui.close}}</button></view></view>
 </view>
 
-<view class="wv-ver">v{{version}}</view></view>
+</view>
