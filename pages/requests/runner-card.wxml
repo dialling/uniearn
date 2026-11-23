@@ -17,6 +17,6 @@
   </view>
   <view wx:if="{{!item.items.length}}" class="runner-route"><text class="runner-destination">{{item.route}}</text></view>
   <template is="message-notice" data="{{notice:item.notice,zh,replyingId}}"/>
-  <view class="runner-card-footer"><text class="runner-count">{{item.items.length}} {{zh?'单':'orders'}}<text wx:if="{{item.quantity}}"> · {{item.quantity}} {{item.category==='task'?(zh?'项':'tasks'):item.category==='takeout'?(zh?'袋':'bags'):(zh?'件':'parcels')}}</text></text><text class="runner-open">{{zh?'查看任务':'Open job'}} <text>›</text></text></view>
+  <view class="runner-card-footer"><button wx:if="{{!item.done && !item.cancelled}}" class="runner-go" data-id="{{item.id}}" catchtap="trip">{{zh?(item.phase==='collect'?'去取件':'继续行程'):(item.phase==='collect'?'Pick up':'Continue')}}</button><text class="runner-count">{{item.items.length}} {{zh?'单':'orders'}}<text wx:if="{{item.quantity}}"> · {{item.quantity}} {{item.category==='task'?(zh?'项':'tasks'):item.category==='takeout'?(zh?'袋':'bags'):(zh?'件':'parcels')}}</text></text><text class="runner-open">{{zh?'查看任务':'Open job'}} <text>›</text></text></view>
  </view>
 </template>
