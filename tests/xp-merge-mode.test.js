@@ -33,7 +33,7 @@ global.wx = {
         data: {
           ok: true,
           list: path.includes('status=completed') ? [] : [
-            { id: 42, publisher_id: 202, publisher: { nickname: 'WeChat user 9295', avatar: '/uploads/avatars/9295.png' }, type: 'food', title: '外卖代取', pickup_location: 'North gate', delivery_location: 'Dorm 7', room: '412', price_cents: 500, status: 'pending', created_at: '2026-11-23 12:00:00' },
+            { id: 42, publisher_id: 202, publisher: { nickname: '微信用户9295', avatar: '/uploads/avatars/9295.png' }, type: 'food', title: '外卖代取', pickup_location: '文缘外卖柜', delivery_location: '文缘 16 楼 D02 1612', price_cents: 500, status: 'pending', created_at: '2026-11-23 12:00:00' },
             { id: 43, publisher_id: 101, publisher_name: 'Tester', type: 'express', title: '快递代取', pickup_location: 'Station A', delivery_location: 'Dorm 5', room: '118', pickup_code: '11-1-2222,11-1-3333', size: 'large', price_cents: 800, status: 'pending', created_at: '2026-11-23 12:05:00' }
           ]
         }
@@ -115,7 +115,7 @@ function loadPage(name, opts = {}) {
 
 (async () => {
   store.reset();
-  store.update(s => { s.language = 'en'; s.profile = { ...s.profile, accountId: '101', onboarded: true }; });
+  store.update(s => { s.language = 'en'; s.profile = { ...s.profile, accountId: '101', campusId: 'sip', onboarded: true }; });
 
   // 1. orders.upload uses config.baseUrl (not config.config.baseUrl)
   const uploadedUrl = await orders.upload('/tmp/proof.jpg');
@@ -136,7 +136,25 @@ function loadPage(name, opts = {}) {
   assert.equal(otherOrder.ownerId, '202');
   assert.equal(otherOrder.owner, 'WeChat user 9295');
   assert.equal(otherOrder.ownerAvatar, 'https://pararouter.cn/uploads/avatars/9295.png');
-  assert.equal(otherOrder.room, '412');
+  assert.equal(otherOrder.area, 'wenyuan');
+  assert.equal(otherOrder.dorm, 'D02');
+  assert.equal(otherOrder.floor, 16);
+  assert.equal(otherOrder.room, '1612');
+  assert.equal(otherOrder.station, 'Wenyuan takeaway locker');
+  const jobsPage = loadPage('jobs');
+  jobsPage.refresh();
+  const xpHallCard = jobsPage.data.cards.find(c => c.key === 'xp-42');
+  assert.equal(xpHallCard.originLabel, 'Wenyuan takeaway locker');
+  assert.equal(xpHallCard.destinationLabel, 'Wenyuan D02 Room 1612');
+  assert.equal(xpHallCard.publisherName, 'WeChat user 9295');
+  assert.equal(xpHallCard.pickupCard, true);
+  store.update(s => { s.language = 'zh'; });
+  jobsPage.refresh();
+  const xpHallCardZh = jobsPage.data.cards.find(c => c.key === 'xp-42');
+  assert.equal(xpHallCardZh.originLabel, '文缘外卖柜');
+  assert.equal(xpHallCardZh.destinationLabel, '文缘 D02 1612室');
+  assert.equal(xpHallCardZh.publisherName, '微信用户9295');
+  store.update(s => { s.language = 'en'; });
   assert.equal(ownOrder.isMine, true);
   assert.equal(ownOrder.ownerId, '101');
   assert.deepEqual(ownOrder.codes, ['11-1-2222', '11-1-3333']);

@@ -1,7 +1,30 @@
 // 合并版订单通道：把 Uniearn 的 orders.act 映射到西浦跑（XP）的 HTTP 接口。
 // 价格由 XP 服务端统一计算（3 元/单，文星 3 楼及以上 +1），客户端只传地址与类型。
-const api = require('./api'), store = require('./store');
+const api = require('./api'), store = require('./store'), campus = require('./campus');
 const TYPE = { takeout: 'food', parcel: 'express', task: 'other' };
+const AREAS = { wenyuan: '文缘', wenxing: '文星', wencui: '文萃', wenhui: '文荟', bafei: '芭菲' };
+const AREA_ID = Object.fromEntries(Object.entries(AREAS).map(([id, zh]) => [zh, id]));
+const STATION_FROM_ZH = Object.fromEntries(campus.STATIONS.map(x => [x.zh, x.value]));
+
+function splitDorm(text) {
+  const s = String(text || '').trim();
+  const bafei = campus.buildingsOf('bafei').find(b => s.includes(b)) || '';
+  const area = bafei ? AREAS.bafei : Object.values(AREAS).find(a => s.includes(a)) || '';
+  const floor = Number((s.match(/(\d{1,2})\s*楼/) || [])[1]) || 0;
+  const b = s.toUpperCase().match(/(?:^|[^A-Z0-9])([A-D]\d{2})(?=[^0-9]|$)/);
+  const building = b && campus.isBuilding(b[1]) ? b[1] : '';
+  if (!area && !building) return { place: true, address: /^接单后可见$/.test(s) ? '' : s };
+  let room = '';
+  if (building) room = s.slice(s.toUpperCase().indexOf(building, b.index) + building.length).trim();
+  else if (bafei) room = s.slice(s.indexOf(bafei) + bafei.length).trim();
+  else if (area === '芭菲') room = s.replace(/^芭菲/, '').replace(/\d{1,2}\s*楼/, '').trim();
+  return { place: false, area, floor, dorm: building || bafei || (area === '芭菲' ? '芭菲' : ''), room };
+}
+function nick(name) {
+  const en = (store.get() || {}).language === 'en';
+  const s = String(name || '');
+  return en ? s.replace(/^微信用户\s*(\d*)$/, (_, n) => 'WeChat user' + (n ? ' ' + n : '')) : s;
+}
 
 function addressLine(data) {
   return String(data.deliveryAddress || [data.dorm, data.room].filter(Boolean).join(' ') || data.room || '').trim();
@@ -100,6 +123,18 @@ function toRequest(order, opts = {}) {
   const runnerId = order.trip_id
     ? ('xp-trip-' + order.trip_id)
     : (runId && ['taken', 'collected', 'delivered', 'confirmed', 'disputed'].includes(status) ? ('xp-trip-' + order.id) : null);
+  const where = splitDorm(order.delivery_location);
+  const publicLocation = splitDorm(order.public_delivery_location);
+  const explicitRoom = String(order.room || order.dorm_room || '').trim();
+  const station = STATION_FROM_ZH[order.pickup_location] || order.pickup_location || '';
+  const hasDormFields = !where.place || !publicLocation.place || !!order.dorm || !!explicitRoom || /^Dorm\b/i.test(String(order.delivery_location || ''));
+  const destinationType = order.destination_type || (hasDormFields || /^接单后可见$/.test(String(order.delivery_location || '').trim()) ? 'dorm' : 'place');
+  const dorm = (where.place ? '' : where.dorm) || (!publicLocation.place ? publicLocation.dorm : '') || order.dorm || (destinationType === 'place' ? '' : where.address || '');
+  const room = where.place ? (!publicLocation.place ? (publicLocation.room || explicitRoom) : explicitRoom) : (where.room || publicLocation.room || explicitRoom);
+  const area = (where.place ? (!publicLocation.place ? AREA_ID[publicLocation.area] : '') : AREA_ID[where.area]) || order.area || '';
+  const floor = Number(order.floor || order.delivery_floor) || where.floor || publicLocation.floor || 0;
+  const publicRoom = publicLocation.room || '';
+  const deliveryAddress = destinationType === 'place' ? (where.place ? where.address : String(order.delivery_location || '')) : String(order.delivery_location || '');
   return {
     id, xpId: order.id,
     category,
@@ -107,14 +142,15 @@ function toRequest(order, opts = {}) {
     title: order.title || '',
     note: order.description || order.note || '',
     shop: order.shop || '',
-    station: order.pickup_location || '',
-    pickupPoint: order.pickup_location || '',
-    dorm: order.delivery_location || '',
-    room: order.room || order.dorm_room || '',
-    deliveryAddress: order.delivery_location || '',
-    destinationType: order.destination_type || 'dorm',
-    area: order.area || '',
-    floor: Number(order.floor) || 0,
+    station,
+    pickupPoint: station,
+    dorm,
+    room,
+    publicRoom,
+    deliveryAddress,
+    destinationType,
+    area,
+    floor,
     phone: order.recipient_phone || '',
     reward: cent(
       order.price && order.price.total_cents !== undefined ? order.price.total_cents
@@ -136,6 +172,7 @@ function toRequest(order, opts = {}) {
     riderPhotos,
     orderPictures,
     closesAt: parseTs(order.closes_at) || (createdAt + 3600000),
+    arrivalAt: parseTs(order.food_arrival_at || order.arrival_at) || createdAt,
     createdAt,
     takenAt: parseTs(order.accepted_at || order.taken_at),
     collectedAt: parseTs(order.picked_up_at || order.collected_at),
@@ -151,9 +188,11 @@ function toRequest(order, opts = {}) {
       (order.publisher && (order.publisher.avatar || order.publisher.avatar_url || order.publisher.avatarUrl))
       || order.publisher_avatar || order.publisher_avatar_url || order.avatar_url || order.avatar || ''
     ),
-    owner: (order.publisher && (order.publisher.nickname || order.publisher.name))
-      || order.publisher_name || order.nickname || '',
-    runnerName: order.runner_name || '',
+    owner: nick(
+      (order.publisher && (order.publisher.nickname || order.publisher.name))
+      || order.publisher_name || order.nickname || ''
+    ),
+    runnerName: nick(order.runner_name || (order.acceptor && order.acceptor.nickname) || ''),
     runnerPhone: order.runner_phone || '',
     history: Array.isArray(order.history) ? order.history : []
   };

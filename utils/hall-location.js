@@ -17,7 +17,7 @@ function group(orders,language='zh',showRoom){
 function merge(summary,request){
  const result={...summary,...request};
  // Older request snapshots blanked hall fields; prefer the nonempty public value.
- for(const key of ['dormGender','room','pickupPoint'])if(!result[key]&&summary&&summary[key])result[key]=summary[key];
+ for(const key of ['dormGender','room','pickupPoint','publicRoom'])if(!result[key]&&summary&&summary[key])result[key]=summary[key];
  return result;
 }
 module.exports={detail,group,merge,canViewRoom};
