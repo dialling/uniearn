@@ -8,6 +8,10 @@ async function overview() {
     const res = await api.get('/api/wallet?intraday=1&_t=' + Date.now());   // 防微信 GET 缓存，提现后必须拿到新余额
     if (!res || res.ok === false) throw Error((res && res.message) || '钱包暂时无法加载，请重试。');
     const cents = Number(res.balance_cents || 0);
+    store.update((st) => {
+      st.walletSummary = { balance_cents: cents, pending_cents: Number(res.pending_cents || 0) };
+      st.profile = { ...(st.profile || {}), walletBalance: (cents / 100).toFixed(2) };
+    });
     return {
       mode: 'test',
       balance_cents: cents,
@@ -28,6 +32,8 @@ async function overview() {
       rules: res.rules || [],
       mchId: res.mch_id || '', appId: res.app_id || '',
       source: res,
+      // 同步到全局摘要，「我的」页等位置直接读它，避免显示上一次的余额
+      __syncStore: true,
     };
   }
   await require('./account').call('status');
