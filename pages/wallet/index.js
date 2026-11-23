@@ -131,26 +131,28 @@ Page({
   this.setData({ withdrawing: true, error: '' });
   return new Promise((resolve) => {
     const done = (ok) => { this.setData({ withdrawing: false }); resolve(ok); };
-    wx.showModal({
-      title: ui.confirmTitle || '提现',
-      content: String(ui.confirmText || '将可用余额 ¥{n} 提现，1–3 个工作日内处理。').replace('{n}', this.data.balance),
-      confirmText: ui.confirm || '提现',
-      cancelText: ui.cancel || '取消',
-      success: (r) => {
-        console.log('[wallet] modal answer', r && r.confirm);
-        if (!r || !r.confirm) return done(false);
-        api.withdraw(bal).then((result) => {
-          console.log('[wallet] withdraw result', JSON.stringify((result && result.withdrawal) || result).slice(0, 160));
-          wx.showToast({ title: (result.withdrawal && result.withdrawal.status === 'approved') ? (ui.success || '已提交') : (ui.failed || '提现失败'), icon: 'none' });
-          this.load().finally(() => done(true));
-        }).catch((e) => {
-          console.log('[wallet] withdraw error', e && (e.message || e.errMsg || e));
-          this.setData({ error: (e && e.message) || '提现失败' });
-          this.load().finally(() => done(false));
-        });
-      },
-      fail: (e) => { console.log('[wallet] modal fail', e && e.errMsg); done(false); },
-    });
+    try {
+      wx.showModal({
+        title: ui.confirmTitle || '提现',
+        content: String(ui.confirmText || '将可用余额 ¥{n} 提现，1–3 个工作日内处理。').replace('{n}', this.data.balance),
+        confirmText: ui.confirm || '提现',
+        cancelText: ui.cancel || '取消',
+        success: (r) => {
+          console.log('[wallet] modal answer', r && r.confirm);
+          if (!r || !r.confirm) return done(false);
+          api.withdraw(bal).then((result) => {
+            console.log('[wallet] withdraw result', JSON.stringify((result && result.withdrawal) || result).slice(0, 160));
+            wx.showToast({ title: (result.withdrawal && result.withdrawal.status === 'approved') ? (ui.success || '已提交') : (ui.failed || '提现失败'), icon: 'none' });
+            this.load().finally(() => done(true));
+          }).catch((e) => {
+            console.log('[wallet] withdraw error', e && (e.message || e.errMsg || e));
+            this.setData({ error: (e && e.message) || '提现失败' });
+            this.load().finally(() => done(false));
+          });
+        },
+        fail: (e) => { console.log('[wallet] modal fail', e && e.errMsg); done(false); },
+      });
+    } catch (err) { console.log('[wallet] modal threw', err && (err.message || err)); done(false); }
   });
  }
 });
