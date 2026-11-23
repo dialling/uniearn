@@ -261,6 +261,21 @@ async function hall() {
     api.get('/api/orders?status=picked_up&limit=50').catch(() => ({})),
   ]);
   const pick = (r) => (r && (r.list || r.orders)) || [];
+  const trips = await api.get('/api/trips').catch(() => ({}));
+  const label = (v) => {
+    const raw = String(v || '').trim();
+    if (!raw.startsWith('[')) return raw;
+    try { const a = JSON.parse(raw); return Array.isArray(a) ? a.join('、') : raw; } catch (_) { return raw; }
+  };
+  store.update((s) => {
+    s.openTrips = (trips.public_trips || []).map((t) => ({
+      id: 'xp-trip-' + t.id, xpId: Number(t.id),
+      category: t.category, station: label(t.station), dorm: t.dorm || '',
+      dorms: t.dorms || [], remaining: t.remaining, capacity: t.capacity,
+      runnerName: t.runner_name || '', runnerAvatar: t.runner_avatar || '',
+      joinUntil: parseTs(t.join_until), departAt: parseTs(t.depart_at), phase: t.phase,
+    }));
+  });
   const rows = pick(openRes).map(o => toRequest(o))
     .concat(pick(doneRes).map(o => ({...toRequest(o), status:'confirmed', done:true})))
     // 进行中·公开进度：服务端只给已接单/已取货的公开单

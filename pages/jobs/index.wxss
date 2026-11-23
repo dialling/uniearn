@@ -332,3 +332,6 @@ radial-gradient(80% 42% at 92% 74%,rgba(210,196,170,.20),transparent 55%),
 .nj-when.is-task{color:#2b59c3}
 .nj-when.is-task .nj-when-dot{background:#2b59c3;box-shadow:0 0 0 6rpx #2b59c326}
 .page-dark .nj-when.is-task{color:#8fb0ff}
+
+.trip-card{margin-bottom:16rpx}
+.trip-join{background:#1f6b4a;color:#fff;border-radius:999rpx;padding:10rpx 26rpx;font-size:26rpx}
