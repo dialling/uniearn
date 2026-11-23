@@ -70,6 +70,7 @@ Page({
  stationChoice(e){if(this.data.starting)return;const option=this.data.stationOptions[Number(e.currentTarget.dataset.index)];if(!option)return;
   const prev=this.data.stations||[];
   const key=String(option.value||option.label||'');
+  console.log('[trip] station tap', key, 'prev', JSON.stringify(prev));
   const list=option.manual?[]:(prev.indexOf(key)>=0?prev.filter(v=>v!==key):prev.concat(key));
   this.setData({requestIds:[],selectionEdited:false,stationManual:!!option.manual,station:option.manual?'':key,stations:list,stationPickCount:list.length});this.refresh();},
  toggleCustomDuration(){if(this.data.starting)return;const customDurationInput=this.data.customDurationInput||'15';this.setData({requestIds:[],selectionEdited:false,customDurationOpen:true,customDurationInput,duration:Number(customDurationInput)});this.refresh();},
