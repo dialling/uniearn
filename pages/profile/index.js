@@ -71,6 +71,10 @@ Page({
   const message=language==='en'?'Complete one more order to level up':'再完成一单升级';
   this.setData({tierLevel:tier.level,tierAvatar:tierAvatar(tier.level),level:name(tier),tierName:name(tier),rankName:name(tier),points:tier.points,progress:tier.progress,remaining:tier.remaining,levelStartName:start,levelEndName:end,levelMessage:message,nextJobsText:message,...levelCard(tier,language)});
   this.setData({walletBalance:(Number((store.get().walletSummary||{}).balance_cents||0)/100).toFixed(2)});
+  // 右上角的数字改成「可用积分」= 累计 − 已花（买鱼竿/装备），等级页仍看累计。
+  const progPts=Number((store.get().progression||{}).points)||0;
+  const spent=Number((store.get().yuniPlay||{}).spent)||0;
+  this.setData({availablePoints:Math.max(0,progPts-spent)});
   // 合并模式：钱包数据在服务端，walletSummary 不会自己出现，进页面时拉一次
   if(require('../../utils/merge-mode').enabled&&(()=>{try{return !!require('../../utils/util').getToken();}catch(_){return false;}})()&&store.get().profile.accountId&&!store.get().profile.loggedOut){
     require('../../utils/wallet').overview().then(v=>{

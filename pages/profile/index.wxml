@@ -9,7 +9,7 @@
  </view>
 <block wx:else>
 <!-- 2026-11-15: 按 design/me-preview 定稿：Yuni 舞台在最上方（名字与积分在场景里），下面是等级、数据、钱包与设置 -->
-<yuni-stage id="yuni-stage" name="{{profile.displayName||profile.name||ui.account}}" badge="{{badgeText}}" verified="{{isRunner}}" points="{{points||0}}" bind:editname="editUsername" bind:badge="profileEntry" bind:points="levels" bind:changed="yuniChanged"></yuni-stage>
+<yuni-stage id="yuni-stage" name="{{profile.displayName||profile.name||ui.account}}" badge="{{badgeText}}" verified="{{isRunner}}" points="{{availablePoints||points||0}}" bind:editname="editUsername" bind:badge="profileEntry" bind:points="levels" bind:changed="yuniChanged"></yuni-stage>
 <view class="me-body">
  <!-- 等级 -->
  <view class="me-block me-level" bindtap="levels" hover-class="me-press">
