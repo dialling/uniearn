@@ -1,6 +1,6 @@
 const assert=require('node:assert/strict'),fs=require('node:fs');let def,navigation;
 global.Page=x=>def=x;global.wx={getStorageSync:()=>null,setStorageSync(){},navigateTo:x=>navigation=x.url,redirectTo:x=>navigation=x.url,showToast(){},showModal:o=>o.success({confirm:true})};
-const store=require('../utils/store'),orders=require('../utils/orders');store.reset();store.update(s=>{s.profile={...s.profile,name:'Kevin',onboarded:true,phone:'13801026092',dorm:'Dorm 7',room:'118'};});require('../pages/task-post/index');const p={...def,data:structuredClone(def.data),setData(v){Object.assign(this.data,v);}};p.onLoad();assert.equal(p.data.price,3);assert.equal(p.data.total,'3.00');assert.equal(p.data.validTitle,false);p.text({currentTarget:{dataset:{field:'title'}},detail:{value:'Return my library books'}});assert.equal(p.data.validTitle,true);
+const store=require('../utils/store'),orders=require('../utils/orders');store.reset();store.update(s=>{s.profile={...s.profile,name:'Kevin',onboarded:true,phone:'13801026092',dorm:'Dorm 7',room:'118'};});require('../pages/task-post/index');const p={...def,data:structuredClone(def.data),setData(v,cb){Object.assign(this.data,v);if(typeof cb==='function')cb();}};p.onLoad();assert.equal(p.data.price,3);assert.equal(p.data.total,'3.00');assert.equal(p.data.validTitle,false);p.text({currentTarget:{dataset:{field:'title'}},detail:{value:'Return my library books'}});assert.equal(p.data.validTitle,true);
 assert.equal(Number(p.data.priceText),p.data.price);
 p.priceInput({detail:{value:'5'}});
 assert.equal(p.data.price,5);

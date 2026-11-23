@@ -5,7 +5,7 @@ const store=require('../utils/store'),orders=require('../utils/orders');
 store.reset();
 store.update(s=>{s.language='en';s.profile={...s.profile,name:'Kevin',onboarded:true,phone:'13801026092'};s.publicTrips=[{id:'t9',category:'other',phase:'collect',cancelled:false,joinUntil:Date.now()-60000,capacity:5,remaining:5,station:'Restaurant',dorm:'D01'}];});
 require('../pages/task-post/index');
-const p={...def,data:structuredClone(def.data),setData(v){Object.assign(this.data,v);}};
+const p={...def,data:structuredClone(def.data),setData(v,cb){Object.assign(this.data,v);if(typeof cb==='function')cb();}};
 p.onLoad({tripId:'t9'});
 p.text({currentTarget:{dataset:{field:'title'}},detail:{value:'Help me return a book'}});
 assert.equal(p.data.tripReady,false);
