@@ -56,3 +56,6 @@ page{background:#ffffff}
 @keyframes welcome-bubble{from{opacity:0;transform:translate3d(-20rpx,10rpx,0) scale(.94)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
 .yuni-pic{animation:var(--ue-animation,welcome-yuni .6s cubic-bezier(.3,1.3,.5,1) backwards,ue-float 3.4s ease-in-out .6s infinite)}
 .hello{animation:var(--ue-animation,welcome-bubble .4s cubic-bezier(.22,.8,.3,1) .2s backwards)}
+
+.welcome-skip{margin-top:18rpx;background:transparent;border:0;color:#7c7768;font-size:26rpx;line-height:1.6}
+.welcome-skip::after{border:0}

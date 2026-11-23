@@ -34,6 +34,7 @@
     </view>
     <view class="welcome-agreement" bindtap="agree"><text class="welcome-check {{agreed?'checked':''}}">{{agreed?'✓':''}}</text><text class="agreement-text">{{copy.terms}} <text class="link" catchtap="terms">{{copy.termsName}}</text> {{copy.and}} <text class="link" catchtap="privacy">{{copy.privacyName}}</text></text></view>
     <button class="welcome-enter" bindtap="enter" loading="{{motionEnabled && (busy)}}" disabled="{{busy}}">{{copy.enter}}</button>
+    <button class="welcome-skip" bindtap="browse" disabled="{{busy}}">{{language==='zh'?'先随便看看':'Browse first'}}</button>
   </view>
 </view>
 <yuni-assistant topic=""/>
