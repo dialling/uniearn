@@ -120,3 +120,7 @@
 .news-redesign .news-view-all{flex:none;padding:10rpx 22rpx;border-radius:999rpx;background:#fbe9de;color:#c2410c;font-size:24rpx;font-weight:700;line-height:1.3}
 .news-redesign .news-view-all .section-arrow{margin-left:4rpx}
 .page-dark.news-redesign .news-view-all{background:#3a2416;color:#f4a06e}
+
+/* 顶栏下面直接贴 Uniearn 分区，去掉标题那一行留下的空白 */
+.reference-section:first-child{margin-top:0;}
+.reference-section:first-child .news-section-label{margin-top:10rpx;}
