@@ -326,12 +326,17 @@ async function mine() {
   // 「我发布的 / 我接的单」都空掉，只剩本地残留的一单。
   const published = (res && res.published) || [];
   const accepted = (res && res.accepted) || [];
-  const rows = published.map(o => toRequest(o, { defaultMine: true }))
-    .concat(accepted.map(o => {
-      const r = toRequest(o, { defaultMine: false });
-      r.isRunner = true; r.mine = false;
-      return r;
-    }));
+  // 同一单可能既是我发布、又被我自己接下（顺路行程里自己加自己的单）。
+  // 之前 accepted 会整行覆盖 published，isMine 变 false，导致「我发布的」里看不到。
+  const merged = new Map();
+  published.forEach((o) => { const r = toRequest(o, { defaultMine: true }); merged.set(r.id, r); });
+  accepted.forEach((o) => {
+    const r = toRequest(o, { defaultMine: false });
+    const existing = merged.get(r.id);
+    if (existing) { existing.isRunner = true; existing.runnerId = r.runnerId || existing.runnerId; }
+    else { r.isRunner = true; r.mine = false; merged.set(r.id, r); }
+  });
+  const rows = [...merged.values()];
   store.update(s => {
     const existingTrips = Array.isArray(s.trips) ? s.trips : [];
     const byReq = new Map();
