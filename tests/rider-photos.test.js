@@ -7,7 +7,7 @@ mergeMode.enabled=false;
 const store=require('../utils/store'),orders=require('../utils/orders'),paths=require('../utils/rider-photos').paths;
 function page(name,id){delete require.cache[require.resolve('../pages/'+name+'/index')];require('../pages/'+name+'/index');const p={...definition,data:structuredClone(definition.data),setData:x=>Object.assign(p.data,x)};p.onLoad({id});p.refresh();return p;}
 const tap=index=>({currentTarget:{dataset:{index}}});
-const food={category:'takeout',owner:'Student',phone:'13801026092',station:'North gate',dorm:'D01',room:'1111',bags:1,price:3,arrived:false,arrivalTime:require('../utils/workflow').clock(Date.now()+1800000)};
+const food={category:'takeout',owner:'Student',phone:'13801026092',station:'North gate',dorm:'D01',room:'1111',bags:1,price:3,arrived:false,arrivalTime:require('../utils/workflow').clock(Math.min(Date.now()+1800000,new Date().setHours(23,58,0,0)))};
 async function create(){const result=await h.call('customer','create',{data:food});assert.equal(result.ok,true,result.error);return result.value.id;}
 async function file(who='customer'){const r=await h.call(who,'prepareUpload');assert.equal(r.ok,true,r.error);return 'cloud://test/'+r.value.cloudPath;}
 (async()=>{

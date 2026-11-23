@@ -224,3 +224,5 @@ button.btn.delivery-photo-btn{display:flex;align-items:center;justify-content:ce
 
 .trip-share-btn{margin:12rpx 0 0;background:#fff;border:1rpx solid #dcd8cc;color:#2f6b4f;font-size:26rpx;line-height:2.2;border-radius:999rpx}
 .trip-share-btn::after{border:0}
+
+.trip-cancel-btn{background:#fff5f2;border-color:#f0c9bd;color:#a63b22}
