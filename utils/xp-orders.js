@@ -61,7 +61,10 @@ function toRequest(order, opts = {}) {
     completed: 'confirmed', confirmed: 'confirmed', cancelled: 'cancelled',
     refunded: 'refunded', disputed: 'disputed'
   };
-  const status = statusMap[order.status] || 'waiting';
+  // completed 有两种含义：等发布人确认（await_confirm / offline_unconfirmed），
+  // 以及早已确认过的历史单。前者留在「待确认」，后者算已完成。
+  const awaiting = order.status === 'completed' && (order.await_confirm || order.offline_unconfirmed);
+  const status = order.status === 'completed' ? (awaiting ? 'delivered' : 'confirmed') : (statusMap[order.status] || 'waiting');
   const category = order.type === 'express' ? 'parcel' : (order.type === 'other' ? 'task' : 'takeout');
   const myId = myAccountId();
   const pubId = order.publisher_id != null ? String(order.publisher_id) : (order.user_id != null ? String(order.user_id) : '');
