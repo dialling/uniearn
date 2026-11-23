@@ -119,7 +119,11 @@ Page({
   },
 
  async withdraw() {
-  if (this.data.withdrawing || this.data.loading || this.data.error) return;
+  if (this.data.withdrawing) return;
+  // 之前只要页面有过一次错误（比如 token 过期导致的 401），按钮就被禁掉，
+  // 用户看到的是「点了没反应」。这里先清错误再继续。
+  if (this.data.error) this.setData({error:''});
+  if (this.data.loading) { this.load(); return; }
   const ui = this.data.ui, bal = this.data.balanceCents, actor = store.get().profile.accountId;
   if (bal <= 0) { wx.showToast({title:ui.noBalance,icon:'none'}); return; }
   this.setData({withdrawing:true});
