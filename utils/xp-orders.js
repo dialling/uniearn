@@ -232,6 +232,15 @@ async function mine() {
   });
   return rows;
 }
+// 聊天对象＝订单里的另一方。runnerId 可能是 'xp-trip-12' 这类本地 id，
+// 传给 /api/messages/peer 前必须还原成数字用户 ID。
+function peerOf(row) {
+  if (!row) return 0;
+  const raw = row.isRunner ? row.ownerId : (row.runnerUserId || row.runnerId);
+  const n = Number(String(raw == null ? '' : raw).replace(/[^0-9]/g, ''));
+  return Number.isSafeInteger(n) && n > 0 ? n : 0;
+}
+
 async function loadMessages(reqId, peerId, keepLocal) {
   if (!require('./util').getToken() || !peerId) return [];
   const myId = Number((require('./util').getUser() || {}).id) || 0;
@@ -456,13 +465,12 @@ async function act(action, payload = {}) {
   }
   if (action === 'messages') {
     const row = (store.get().requests || []).find(r => r.id === reqId) || {};
-    const peer = row.isRunner ? row.ownerId : (row.runnerUserId || row.runnerId || 0);
-    return loadMessages(reqId, peer);
+    return loadMessages(reqId, peerOf(row));
   }
   if (action === 'message') {
     const content = payload.text || payload.photo || '';
     const reqRow = (store.get().requests || []).find(r => r.id === reqId);
-    const peer = payload.peer || payload.with || (reqRow && (reqRow.isMine ? reqRow.runnerUserId : reqRow.ownerId)) || '';
+    const peer = peerOf(reqRow) || payload.peer || payload.with || '';
     if (peer) {
       await api.post('/api/messages/peer/' + encodeURIComponent(String(peer)), {
         content,
