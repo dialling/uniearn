@@ -84,10 +84,10 @@ function layers(worn = {}, mood = '', mouth = false) {
   const scarf = (catalog.item(worn.scarf) || catalog.item('green')).color, tool = isTool(worn.hand) ? worn.hand : '';
   return {
     back: memo('back|' + worn.back + '|' + worn.bag, () => wrap((worn.back === 'cape' ? P.capeBack : '') + (worn.bag === 'backpack' ? P.packBack : ''))),
-    body: memo('body|' + worn.bag + '|' + worn.back, () => wrap(P.feet + P.body + (worn.bag === 'satchel' && worn.back !== 'cape' ? P.satchel : '') + (worn.bag === 'backpack' ? P.packStraps : '') + (worn.back === 'cape' ? P.medal : ''))),
+    body: memo('body|' + worn.bag + '|' + worn.back, () => wrap(P.feet + P.body + (worn.bag === 'satchel' && worn.back !== 'cape' ? P.satchel : '') + (worn.bag === 'backpack' ? P.packStraps : '') + (worn.badge === 'epaulettes' ? P.epaulettes : '') + (worn.back === 'cape' ? P.medal : ''))),
     head: memo('head|' + worn.hat + '|' + tool + '|' + mood + '|' + mouth, () => wrap(P.head + (mood === 'shy' || mood === 'love' || mood === 'drool' ? P.blush : '') + (mood === 'shy' ? P.shyLines : '') + (mood === 'dizzy' ? P.sweat : '') + (mouth ? P.beakOpen : P.beakShut) + (P.hats[worn.hat] || '') + (worn.hat === 'captain' && tool === 'trident' ? P.laurel : ''))),
     eyes: memo('eyes|' + mood, () => wrap(P.eyes[mood === 'hungry' ? 'shy' : mood === 'drool' ? 'excited' : mood] || P.eyes.normal)), // hungry: big pleading eyes
-    front: memo('front|' + worn.scarf + '|' + worn.badge + '|' + worn.left, () => wrap(P.scarf.replace(/var\(--scarf,[^)]*\)/g, scarf[0]).replace(/var\(--scarf2,[^)]*\)/g, scarf[1]) + (worn.badge === 'epaulettes' ? P.epaulettes : '') + (worn.left === 'balloon' ? P.balloon : ''))),
+    front: memo('front|' + worn.scarf + '|' + worn.badge + '|' + worn.left, () => wrap(P.scarf.replace(/var\(--scarf,[^)]*\)/g, scarf[0]).replace(/var\(--scarf2,[^)]*\)/g, scarf[1]) + (worn.left === 'balloon' ? P.balloon : ''))),
     wingL: memo('wingL', () => wrap(P.wingL)), wingR: memo('wingR', () => wrap(P.wingR)),
     tool: tool ? memo('tool|' + tool, () => wrap(P.tools[tool])) : '',
     line: tool ? memo('line|' + tool, () => wrap(P.line.replace(/var\(--line,[^)]*\)/g, tool === 'trident' ? '#f2b233' : '#5d6470') + '<g transform="translate(150 106) scale(.68)">' + P.bobbers[tool] + '</g>')) : ''
