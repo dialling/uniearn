@@ -57,7 +57,7 @@
  </view>
 </block>
   <view class="me-block">
-   <view class="me-row" hover-class="me-row-press" bindtap="admin"><image class="me-ico" src="/assets/icons3d/star.svg" mode="aspectFit"/><view class="me-grow"><view class="me-row-title">{{language==='en'?'Admin console':'管理员登录'}}</view></view><view class="me-chev"/></view>
-   <view wx:if="{{!profile.loggedOut}}" class="me-row" hover-class="me-row-press" bindtap="logout"><image class="me-ico" src="/assets/icons3d/arrow.svg" mode="aspectFit"/><view class="me-grow"><view class="me-row-title">{{language==='en'?'Log out':'退出登录'}}</view></view><view class="me-chev"/></view>
+   <view class="me-row" hover-class="me-row-press" bindtap="admin"><image class="me-ico" src="/assets/icons3d/person.svg" mode="aspectFit"/><view class="me-grow"><view class="me-row-title">{{language==='en'?'Admin console':'管理员登录'}}</view></view><view class="me-chev"/></view>
+   <view wx:if="{{!profile.loggedOut}}" class="me-row" hover-class="me-row-press" bindtap="logout"><image class="me-ico" src="/assets/icons3d/offline.svg" mode="aspectFit"/><view class="me-grow"><view class="me-row-title">{{language==='en'?'Log out':'退出登录'}}</view></view><view class="me-chev"/></view>
   </view>
 </view>
