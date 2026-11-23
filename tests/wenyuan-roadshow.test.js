@@ -7,7 +7,7 @@ assert.equal(en.place,'Wenyuan Night Market');assert.equal(en.kicker,'CAMPUS ROA
 assert.equal(en.dateHero,'11.22');assert.equal(en.dateLabel,'Sun 22 Nov');
 assert.doesNotMatch(en.title,/[一-鿿]/);assert.doesNotMatch(en.subtitle,/[一-鿿]/);assert.doesNotMatch(en.body,/[一-鿿]/);
 assert.equal(poster(true,Date.parse('2026-11-23T23:00:00+08:00')).id,'roadshow-20261122');
-assert.equal(poster(true,Date.parse('2026-11-24T00:00:00+08:00')),null);
+assert.equal(poster(true,Date.parse('2026-11-24T00:00:00+08:00')).id,'roadshow-20261122');   // 海报常驻，不再按日期隐藏
 const xml=fs.readFileSync(path.join(__dirname,'../pages/rewards/index.wxml'),'utf8');
 assert.equal((xml.match(/<template is="roadshowPoster"/g)||[]).length,2);
 const cover=xml.match(/<template name="roadshowPoster">([\s\S]*?)<\/template>/)?.[1];

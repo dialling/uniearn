@@ -1,5 +1,5 @@
 // 11.22 Wenyuan Night Market roadshow. Hidden after 23 Nov 2026 (China time).
-const UNTIL=Date.parse('2026-11-24T00:00:00+08:00');
+const UNTIL=Date.parse('2099-01-01T00:00:00+08:00');   // 路演海报保留，不再自动隐藏
 module.exports=function poster(zh,now=Date.now()){
   if(now>=UNTIL)return null;
   return {

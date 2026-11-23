@@ -56,7 +56,8 @@ Page({
     const {news:legacyNews,...rewardData}=r;
     const activeOffers=require('../../utils/news-offers').display(campaigns,zh,now);
     this.setData({...rewardData, coupons, campaigns, event,
-      activeOffers,latestOffer:activeOffers[0]||null,roadshow:require('../../utils/wenyuan-roadshow')(zh),
+      activeOffers: activeOffers.length ? activeOffers : [{ id: 'invite-bonus', title: zh ? '邀请新同学，领五折券' : 'Invite a classmate, get 50% off' }],
+      latestOffer: activeOffers[0] || { id: 'invite-bonus', title: zh ? '邀请新同学，领五折券' : 'Invite a classmate, get 50% off' },roadshow:require('../../utils/wenyuan-roadshow')(zh),
       returning: campaigns.find(c => c.returning), campaignCards:campaigns.filter(c=>(!event||c.id!==event.id)&&(c.eligible||c.collected)).map(c=>({...c,title:zh&&c.titleZh||c.title,description:zh&&c.descriptionZh||c.description})),  registered: !!state.profile.onboarded&&!state.profile.loggedOut,
       showExamples: !state.profile.onboarded && !(r.coupons || []).length,
       ready: (r.coupons || []).length,
