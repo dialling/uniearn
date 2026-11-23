@@ -216,8 +216,7 @@ function pay(orderId) {
   });
 }
 async function hall() {
-  // 没登录就别打接口，避免启动时一串 401
-  if (!require('./util').getToken()) return [];
+  // 大厅是公开接口（optionalAuth），游客也能看单；只是不会带「我的」标记
   const [openRes, doneRes] = await Promise.all([
     api.get('/api/orders?status=pending').catch(() => ({})),
     api.get('/api/orders?status=completed&limit=50').catch(() => ({})),
