@@ -221,3 +221,6 @@ button.btn.delivery-photo-btn{display:flex;align-items:center;justify-content:ce
 .page-dark .trip-group-remind{background:#3a2416;color:#f4a06e}
 
 .delivery-proof{width:140rpx;height:140rpx;border-radius:16rpx;margin:10rpx 0;background:#eee}
+
+.trip-share-btn{margin:12rpx 0 0;background:#fff;border:1rpx solid #dcd8cc;color:#2f6b4f;font-size:26rpx;line-height:2.2;border-radius:999rpx}
+.trip-share-btn::after{border:0}

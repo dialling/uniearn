@@ -47,4 +47,5 @@ Page({data:{...require('../../utils/motion').data(),tab:'students',tabs:tabs(fal
    ui.toast(new Error(zh?('已关闭 '+n+' 个订单'):('Closed '+n+' orders')));
   }catch(e){ui.toast(new Error(String(e&&e.message||e)||(zh?'关闭失败，请重试':'Could not close the orders, please try again')));}
   finally{this.setData({deleting:false});}
- }});
+ },onShareAppMessage(){const q=this.topic||(this.data&&this.data.topic)||'';return{title:'Uniearn',path:'/pages/info/index'+(q?'?topic='+encodeURIComponent(q):'')}}
+});

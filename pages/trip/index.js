@@ -20,7 +20,10 @@ function stationLabel(v){const raw=String(v||'').trim();
   if(raw.startsWith('[')){try{const a=JSON.parse(raw);if(Array.isArray(a)&&a.length)return a.join(rc.zh(store.get().language)?'、' : ', ');}catch(_){}}
   return raw;}
 Page({data:{...require('../../utils/motion').data(),trip:null,requests:[],reward:'0.00',boxes:0,cancelling:'',cancellingRequest:null,cancelReason:'',cancelBusy:false,parcelBusy:'',collectingId:'',allCollected:false,deliveryId:'',deliveryPhoto:'',sendingDelivery:false,deliverySubmitted:false,deliveryError:'',sealReporting:'',fullNumbers:{},paid:'0.00',pending:'0.00',joinOpen:false,remaining:0,minutes:0},
- onLoad(o){this.id=o.id;this.failedPickupPhotos=new Set();},onShow(){if(wx.setNavigationBarTitle)wx.setNavigationBarTitle({title:zh()?'取件与送达':'Pick up & deliver'});orders.bind(this);},onHide(){orders.unbind(this);},onUnload(){orders.unbind(this);},
+ onLoad(o){this.id=o.id;this.failedPickupPhotos=new Set();
+  // 允许右上角菜单转发
+  try { wx.showShareMenu({ withShareTicket: true, menus: ['shareAppMessage','shareTimeline'] }); } catch (_) {}
+ },onShow(){if(wx.setNavigationBarTitle)wx.setNavigationBarTitle({title:zh()?'取件与送达':'Pick up & deliver'});orders.bind(this);},onHide(){orders.unbind(this);},onUnload(){orders.unbind(this);},
  refresh(){const s=store.get(),lang=rc.zh(s.language)?'zh':'en';
   const norm=v=>String(v==null?'':v).replace(/[^0-9]/g,'');
   const t=s.trips.find(x=>x.id===this.id)||s.trips.find(x=>norm(x.id)===norm(this.id)&&norm(this.id));

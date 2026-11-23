@@ -143,5 +143,6 @@ Page({
     this.setData({tab:i,doc:DOC[TABS[i].id][zh?'zh':'en']});
     if(typeof wx!=='undefined'&&wx.pageScrollTo)wx.pageScrollTo({scrollTop:0,duration:0});
   }
+,onShareAppMessage(){const q=this.topic||(this.data&&this.data.topic)||'';return{title:'Uniearn',path:'/pages/info/index'+(q?'?topic='+encodeURIComponent(q):'')}}
 });
 module.exports={DOC,TABS};
