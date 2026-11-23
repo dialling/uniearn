@@ -198,8 +198,16 @@ function syncTripsFromRequests(s, rows) {
 async function mine() {
   if (!require('./util').getToken()) return [];
   const res = await api.get('/api/orders/mine');
-  const list = (res && (res.list || res.orders)) || [];
-  const rows = list.map(o => toRequest(o, { defaultMine: true }));
+  // 服务端返回的是 { published, accepted }，不是 list；之前只读 list 导致
+  // 「我发布的 / 我接的单」都空掉，只剩本地残留的一单。
+  const published = (res && res.published) || [];
+  const accepted = (res && res.accepted) || [];
+  const rows = published.map(o => toRequest(o, { defaultMine: true }))
+    .concat(accepted.map(o => {
+      const r = toRequest(o, { defaultMine: false });
+      r.isRunner = true; r.mine = false;
+      return r;
+    }));
   store.update(s => {
     const existingTrips = Array.isArray(s.trips) ? s.trips : [];
     const byReq = new Map();
