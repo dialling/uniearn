@@ -304,7 +304,20 @@ async function act(action, payload = {}) {
     const reqIds = normalizeXpIds(payload);
     if (!reqIds.length) throw Error('缺少订单 ID');
     const results = [];
-    for (const one of reqIds) results.push(await api.post('/api/orders/' + numIdOf(one) + '/accept', {}));
+    for (const one of reqIds) {
+      try {
+        results.push(await api.post('/api/orders/' + numIdOf(one) + '/accept', {}));
+      } catch (e) {
+        // 连点/重复接单：服务端回 ALREADY_ACCEPTED 或 409。已经接过的直接当成功，
+        // 顺手把大厅和我的订单刷一遍，避免卡片停在「待接单」再点又报状态已变化。
+        const already = (e && (e.code === 'ALREADY_ACCEPTED' || e.status === 409))
+          || /已接单|已被接|ALREADY/i.test((e && e.message) || '');
+        if (!already) throw e;
+        results.push({ ok: true, already: true, order: { id: numIdOf(one) } });
+      }
+    }
+    await mine().catch(() => []);
+    await hall().catch(() => []);
     const trip = acceptLocally(reqIds, results);
     return { id: trip.id, trip, results, ok: true };
   }
