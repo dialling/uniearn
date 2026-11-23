@@ -268,7 +268,8 @@ async function hall() {
     try { const a = JSON.parse(raw); return Array.isArray(a) ? a.join('、') : raw; } catch (_) { return raw; }
   };
   store.update((s) => {
-    s.openTrips = (trips.public_trips || []).map((t) => ({
+    const seen = new Set();
+    s.openTrips = (trips.public_trips || []).filter((t) => (seen.has(t.id) ? false : (seen.add(t.id), true))).map((t) => ({
       id: 'xp-trip-' + t.id, xpId: Number(t.id),
       category: t.category, station: label(t.station), dorm: t.dorm || '',
       dorms: t.dorms || [], remaining: t.remaining, capacity: t.capacity,
@@ -566,6 +567,7 @@ async function act(action, payload = {}) {
         else t.cancelled = true;
       }
     });
+    store.update((st) => { st.openTrips = (st.openTrips || []).filter((t) => t.id !== reqId); });
     await hall().catch(() => []);   // 结束后大厅/公开列表要立刻少一条
     return { ok: true };
   }
