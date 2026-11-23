@@ -54,7 +54,7 @@ Page({
    // Account refresh can update orders; validate the current selection and clock again.
    f.previewTrip(this.selectionState(),this.data);
    this.setData({error:''});
-   const a=this.data,data={category:a.category,when:a.when,time:a.time,duration:a.duration,station:a.station,pickupAddress:a.category==='other'?a.pickupAddress:'',waypoint:a.category==='other'?a.waypoint:'',destinationType:a.destinationType,deliveryAddress:a.deliveryAddress,dorm:a.dorm,...(a.destinationType==='place'?{}:{dorms:a.dorms.slice()}),capacity:a.capacity,requestIds:a.requestIds.slice(),...(a.selfRequestId?{selfRequestId:a.selfRequestId}:{})};
+   const a=this.data,data={category:a.category,when:a.when,time:a.time,duration:a.duration,station:a.station,stations:(a.stationManual?[]:(a.stations&&a.stations.length?a.stations:[a.station])),pickupAddress:a.category==='other'?a.pickupAddress:'',waypoint:a.category==='other'?a.waypoint:'',destinationType:a.destinationType,deliveryAddress:a.deliveryAddress,dorm:a.dorm,...(a.destinationType==='place'?{}:{dorms:a.dorms.slice()}),capacity:a.capacity,requestIds:a.requestIds.slice(),...(a.selfRequestId?{selfRequestId:a.selfRequestId}:{})};
    const t=await orders.act('startTrip',{data});wx.redirectTo({url:'/pages/trip/index?id='+t.id});
   }catch(e){ui.toast(this.selectionMessage(e));orders.sync().catch(()=>{});}finally{this.setData({starting:false});}
  },
@@ -65,7 +65,10 @@ Page({
  // 2026-11-21: tap a building to add it to the trip or take it off; at least one stays chosen.
  toggleBuilding(e){if(this.data.starting)return;const code=e.currentTarget.dataset.code,now=this.data.dorms||[];if(!this.data.buildingCodes.includes(code))return;let dorms=now.includes(code)?now.filter(x=>x!==code):now.concat(code);if(!dorms.length){wx.showToast({title:zh()?'至少选择一栋楼':'Choose at least one building',icon:'none'});return;}dorms=this.data.buildingCodes.filter(x=>dorms.includes(x));this.setData({requestIds:[],selectionEdited:false,dorms,dorm:dorms[0]});this.refresh();},
  destinationBuilding(e){if(this.data.starting)return;const buildingIndex=Number(e.detail.value),dorm=this.data.buildingCodes[buildingIndex]||this.data.buildingCodes[0];this.setData({requestIds:[],selectionEdited:false,buildingIndex,dorm});this.refresh();},
- stationChoice(e){if(this.data.starting)return;const option=this.data.stationOptions[Number(e.currentTarget.dataset.index)];if(!option)return;this.setData({requestIds:[],selectionEdited:false,stationManual:!!option.manual,station:option.manual?'':option.value});this.refresh();},
+ stationChoice(e){if(this.data.starting)return;const option=this.data.stationOptions[Number(e.currentTarget.dataset.index)];if(!option)return;
+  const prev=this.data.stations||[];
+  const list=option.manual?[]:(prev.indexOf(option.value)>=0?prev.filter(v=>v!==option.value):prev.concat(option.value));
+  this.setData({requestIds:[],selectionEdited:false,stationManual:!!option.manual,station:option.manual?'':option.value,stations:list});this.refresh();},
  toggleCustomDuration(){if(this.data.starting)return;const customDurationInput=this.data.customDurationInput||'15';this.setData({requestIds:[],selectionEdited:false,customDurationOpen:true,customDurationInput,duration:Number(customDurationInput)});this.refresh();},
  setCustomDuration(e){if(this.data.starting)return;const customDurationInput=String(e.detail.value||'');this.setData({requestIds:[],selectionEdited:false,customDurationInput,duration:customDurationInput===''?0:Number(customDurationInput)});this.refresh();}
 });
