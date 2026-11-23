@@ -206,12 +206,12 @@ async function performAct(action, payload = {}) {
     })();
   } catch(e){track('action_result',{action,result:e.business?'business':'network',duration:Date.now()-started});throw e;}finally { mutating=false; }
 }
-async function upload(path) {
+async function upload(path, kind) {
   if (!path || path.startsWith('cloud://') || /^https?:\/\//i.test(path)) return path || '';
   const demo=require('./group-test-session');if(demo.current())return demo.upload(path);
   if (require('./merge-mode').enabled) {
     if (uploads.has(path)) return uploads.get(path);
-    const job = uploadJob(() => require('./xp-orders').upload(path));
+    const job = uploadJob(() => require('./xp-orders').upload(path, kind));
     uploads.set(path, job);
     const started = Date.now();
     try {
