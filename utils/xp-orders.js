@@ -229,6 +229,7 @@ async function mine() {
   return rows;
 }
 async function loadSupport() {
+  if (!require('./util').getToken()) return [];
   const res = await api.get('/api/cs/messages').catch(() => ({}));
   const rows = (res && res.list) || [];
   const messages = rows.map((r) => ({
