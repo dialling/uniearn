@@ -100,7 +100,11 @@ function toRequest(order, opts = {}) {
     area: order.area || '',
     floor: Number(order.floor) || 0,
     phone: order.recipient_phone || '',
-    reward: cent(order.price_cents !== undefined ? order.price_cents : (order.reward_cents || 0)) / 100,
+    reward: cent(
+      order.price && order.price.total_cents !== undefined ? order.price.total_cents
+      : order.price_cents !== undefined ? order.price_cents
+      : order.reward !== undefined ? order.reward
+      : (order.reward_cents || 0)) / 100,
     status,
     disputed: status === 'disputed' || !!order.disputed,
     campusId: 'sip',
@@ -154,9 +158,13 @@ function pay(orderId) {
 async function hall() {
   // 没登录就别打接口，避免启动时一串 401
   if (!require('./util').getToken()) return [];
-  const res = await api.get('/api/orders');
-  const list = (res && (res.list || res.orders)) || [];
-  const rows = list.map(o => toRequest(o));
+  const [openRes, doneRes] = await Promise.all([
+    api.get('/api/orders?status=pending').catch(() => ({})),
+    api.get('/api/orders?status=completed&limit=50').catch(() => ({})),
+  ]);
+  const pick = (r) => (r && (r.list || r.orders)) || [];
+  const rows = pick(openRes).map(o => toRequest(o))
+    .concat(pick(doneRes).map(o => ({...toRequest(o), status:'confirmed', done:true})));
   store.update(s => { s.publicJobs = rows; });
   return rows;
 }
