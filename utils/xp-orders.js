@@ -204,9 +204,28 @@ function toRequest(order, opts = {}) {
 async function create(data) {
   const res = await api.post('/api/orders', bodyOf(data));
   if (!res || res.ok !== true) throw Error((res && res.message) || '发布失败');
-  const order = res.order || res;
+  let order = res.order || res;
   const request = toRequest(order, { defaultMine: true });
   store.update(s => { s.requests = s.requests || []; if (!s.requests.some(r => r.id === request.id)) s.requests.unshift(request); });
+
+  // 未支付的单不算发布成功：先拉起支付，取消就把这单撤掉，避免大厅里出现空单
+  if (order && order.payment_status === 'unpaid') {
+    try {
+      const paid = await pay(request.id);
+      if (paid && paid.paid) {
+        const fresh = await api.get('/api/orders/' + numIdOf(request.id)).catch(() => null);
+        if (fresh && (fresh.order || fresh)) order = fresh.order || fresh;
+      }
+    } catch (e) {
+      await api.post('/api/orders/' + numIdOf(request.id) + '/cancel',
+        { cancel_reason: '其他：未完成支付' }).catch(() => {});
+      store.update((s) => { s.requests = (s.requests || []).filter((r) => numIdOf(r.id) !== numIdOf(request.id)); });
+      const err = Error(/cancel|取消/i.test(String(e && e.message || ''))
+        ? '支付未完成，订单未发布' : (e && e.message) || '支付未完成，订单未发布');
+      err.code = 'PAY_CANCELLED';
+      throw err;
+    }
+  }
   return { id: request.id, order, request };
 }
 function pay(orderId) {
