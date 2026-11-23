@@ -432,13 +432,26 @@ async function act(action, payload = {}) {
   // Yuni 钓鱼/喂食/衣柜：老版客户端就是这么调的（/api/loyalty/yuni/:action）
   if (['yuniBuy', 'yuniWear', 'yuniFish', 'yuniFeed', 'yuniTestPoints', 'yuniTestRound'].includes(action)) {
     const map = { yuniBuy: 'buy', yuniWear: 'wear', yuniFish: 'fish', yuniFeed: 'feed', yuniTestPoints: 'test-points', yuniTestRound: 'test-round' };
-    const res = await api.post('/api/loyalty/yuni/' + map[action], {
-      request_key: payload.operationId || ('yuni-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8)),
-      item: payload.item, slot: payload.slot, landed: payload.landed, perfect: payload.perfect,
-      index: payload.index, fish: payload.fish,
-    });
-    await syncLoyalty().catch(() => null);
-    return res;
+    // 3 秒内同参数只发一次：连点/动画重入会拿到同一个 request_key，
+    // 服务端直接回放上次结果，而不是第二次报「这条鱼已经喂过」。
+    const slot = Math.floor(Date.now() / 3000);
+    const sig = [action, payload.index, payload.fish, payload.item, payload.slot].join(':');
+    const request_key = payload.operationId || ('yuni-' + action + '-' + slot + '-' + sig.length + '-' + Math.abs(sig.split('').reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7)));
+    try {
+      const res = await api.post('/api/loyalty/yuni/' + map[action], {
+        request_key,
+        item: payload.item, slot: payload.slot, landed: payload.landed, perfect: payload.perfect,
+        index: payload.index, fish: payload.fish,
+      });
+      await syncLoyalty().catch(() => null);
+      return res;
+    } catch (e) {
+      if (payload.operationId && e && (e.code === 'YUNI_FISH' || e.status === 409)) {
+        await syncLoyalty().catch(() => null);
+        return { already: true };
+      }
+      throw e;
+    }
   }
   if (action === 'messages') {
     const row = (store.get().requests || []).find(r => r.id === reqId) || {};
