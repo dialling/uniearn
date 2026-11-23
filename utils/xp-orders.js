@@ -43,7 +43,11 @@ function bodyOf(data) {
     pickup_location: String(data.pickupPoint || data.station || ''),
     delivery_location: addressLine(data),
     recipient_phone: String(data.phone || ''),
-    area: String(data.area || ''),
+    // 服务端白名单是中文名（文缘/文星/文萃/文荟/芭菲），客户端传的是 id（wenyuan…）
+    area: (() => { const raw = String(data.area || '').trim(); if (!raw) return '';
+      const list = require('./campus').AREAS || [];
+      const hit = list.find(a => a.id === raw) || list.find(a => a.zh === raw);
+      return hit ? hit.zh : raw; })(),
     floor: Number(data.floor) || 0,
     shop: String(data.shop || ''),
     dorm_type: ['male', 'female'].includes(data.dormGender) ? data.dormGender : '',
