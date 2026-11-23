@@ -44,9 +44,14 @@ function weekStats(transactions, zh, now = Date.now()) {
   };
 }
 Page({
- data: {...require('../../utils/motion').data(),version:require('../../package.json').version,ui: copy('zh', require('../../utils/merge-mode').enabled), language: 'zh', loading: true, chartReady: false, withdrawing: false, rulesVisible: false, hideAmount: false, balance: '0.00', balanceCents: 0, todayIncome: '0.00', totalIncome: '0.00', pendingCents: 0, pendingYuan: '0.00', debt: '0.00', debtCents: 0, chartMax: '', chartStart: '', rules: {}, transactions: [], withdrawals: [], pending: [], error: ''},
+ data: {...require('../../utils/motion').data(),version:'',ui: copy('zh', require('../../utils/merge-mode').enabled), language: 'zh', loading: true, chartReady: false, withdrawing: false, rulesVisible: false, hideAmount: false, balance: '0.00', balanceCents: 0, todayIncome: '0.00', totalIncome: '0.00', pendingCents: 0, pendingYuan: '0.00', debt: '0.00', debtCents: 0, chartMax: '', chartStart: '', rules: {}, transactions: [], withdrawals: [], pending: [], error: ''},
  onLoad() { this._visible = true; },
- onShow() { this._visible = true; this.setData({ withdrawing: false, error: '' }); this.load(); },
+ onShow() { this._visible = true;
+  let version = '';
+  try { version = (wx.getAccountInfoSync && wx.getAccountInfoSync().miniProgram || {}).version || ''; } catch (_) {}
+  this.setData({ withdrawing: false, error: '', version });
+  this.load();
+ },
  onHide() { this._visible = false; this._loadId = (this._loadId || 0) + 1; },
  onUnload() { this.onHide(); },
  onReady() { this._ready = true; this.drawChart(); },
