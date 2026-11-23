@@ -21,6 +21,8 @@ assert.match(stage,/next\.feedCount = \(next\.dailyFish \? 1 : 0\) \+ next\.orde
 assert.match(wxml,/<text wx:if="\{\{feedCount\}\}" class="ys-count \{\{gift\?'ys-count-gift':''\}\}">\{\{feedCount\}\}<\/text>/,'the waiting fish shows as an amber count on Feed');
 const me=read('pages/profile/index.wxml'),mejs=read('pages/profile/index.js');
 assert.doesNotMatch(me,/dailyfeed/);assert.ok(mejs.includes("this.autoFeed=o.feed==='1'")&&mejs.includes('feedDailyNow(){'),'Me page feeds on arrival from Levels');
-assert.ok(read('components/nav/index.wxml').includes('class="nav-fish-dot"')&&read('components/nav/index.js').includes("fishWaiting:require('../../utils/checkin').dailyFishWaiting()"),'Me tab dot while the fish waits');
+// 合并模式接的是西浦跑后端，没有云端每日签到数据；红点恒亮但页面上没有可喂的鱼，
+// 所以 nav 在 merge-mode 下隐藏这个红点（见 components/nav/index.js）。
+assert.ok(read('components/nav/index.wxml').includes('class="nav-fish-dot"')&&read('components/nav/index.js').includes("!require('../../utils/merge-mode').enabled&&require('../../utils/checkin').dailyFishWaiting()"),'fish dot hidden while merge-mode has no check-in data');
 assert.ok(!read('components/lang-switch/index.wxml').includes('daily-checkin'),'popup removed from every page');
 console.log('Me page Feed: Yuni eats today\'s dried fish in the scene; Me tab dot; no popup');

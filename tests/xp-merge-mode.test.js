@@ -27,12 +27,12 @@ global.wx = {
   request({ url, method, data, header, success }) {
     calls.push({ url, method, data, header });
     const path = url.replace(/^https?:\/\/[^/]+/, '');
-    if (path === '/api/orders' && method === 'GET') {
+    if (path.startsWith('/api/orders?status=') || (path === '/api/orders' && method === 'GET')) {
       return success({
         statusCode: 200,
         data: {
           ok: true,
-          list: [
+          list: path.includes('status=completed') ? [] : [
             { id: 42, publisher_id: 202, publisher_name: 'Alice', type: 'food', title: '外卖代取', pickup_location: 'North gate', delivery_location: 'Dorm 7', room: '412', price_cents: 500, status: 'pending', created_at: '2026-11-23 12:00:00' },
             { id: 43, publisher_id: 101, publisher_name: 'Tester', type: 'express', title: '快递代取', pickup_location: 'Station A', delivery_location: 'Dorm 5', room: '118', pickup_code: '11-1-2222,11-1-3333', size: 'large', price_cents: 800, status: 'pending', created_at: '2026-11-23 12:05:00' }
           ]
@@ -44,9 +44,10 @@ global.wx = {
         statusCode: 200,
         data: {
           ok: true,
-          list: [
+          published: [
             { id: 43, publisher_id: 101, publisher_name: 'Tester', type: 'express', title: '快递代取', pickup_location: 'Station A', delivery_location: 'Dorm 5', room: '118', pickup_code: '11-1-2222,11-1-3333', size: 'large', price_cents: 800, status: 'pending', created_at: '2026-11-23 12:05:00' }
-          ]
+          ],
+          accepted: []
         }
       });
     }

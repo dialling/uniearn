@@ -81,7 +81,7 @@ cancelPick(e){const ids=String(e.currentTarget.dataset.ids||e.currentTarget.data
   const wasBound=!!this._orderRender;if(wasBound)orders.unbind(this);
   this.setData({sendingDelivery:true,deliveryError:''});
   try{
-   const photo=await orders.upload(this.data.deliveryPhoto);
+   const photo=await orders.upload(this.data.deliveryPhoto,'proof');
    const ids=this.deliveryIds&&this.deliveryIds.length?this.deliveryIds:[this.data.deliveryId];
    for(const id of ids){const r=store.get().requests.find(x=>x.id===id);if(r&&r.status==='collected')await orders.act('deliver',{id,photo});}
    this.deliveryRefreshPending=wasBound;

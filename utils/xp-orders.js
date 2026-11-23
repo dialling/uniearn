@@ -397,11 +397,13 @@ async function act(action, payload = {}) {
   if (action === 'collectCoupon' || action === 'invite') throw Error('优惠券/邀请需要服务端接口（当前未提供）');
   throw Error('该操作尚未接入西浦跑后端：' + action);
 }
-function upload(filePath) {
+function upload(filePath, kind) {
   const token = require('./util').getToken();
   return new Promise((resolve, reject) => {
     wx.uploadFile({
-      url: require('./config').baseUrl + '/api/orders/upload',
+      // 送达凭证必须走 /api/orders/proof（存到 /uploads/proofs/），
+      // 混用 /upload 会被服务端判为 BAD_PROOF「凭证照片地址不合法」。
+      url: require('./config').baseUrl + (kind === 'proof' ? '/api/orders/proof' : '/api/orders/upload'),
       filePath,
       name: 'file',
       header: token ? { Authorization: 'Bearer ' + token } : {},
