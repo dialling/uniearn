@@ -23,7 +23,8 @@ Page({data:{...require('../../utils/motion').data(),trip:null,requests:[],reward
  onLoad(o){this.id=o.id;this.failedPickupPhotos=new Set();
   // 允许右上角菜单转发
   try { wx.showShareMenu({ withShareTicket: true, menus: ['shareAppMessage','shareTimeline'] }); } catch (_) {}
- },onShow(){if(wx.setNavigationBarTitle)wx.setNavigationBarTitle({title:zh()?'取件与送达':'Pick up & deliver'});orders.bind(this);},onHide(){orders.unbind(this);},onUnload(){orders.unbind(this);},
+ },onShow(){orders.viewTrip(this.id).then(()=>this.refresh()).catch(()=>{});
+  if(wx.setNavigationBarTitle)wx.setNavigationBarTitle({title:zh()?'取件与送达':'Pick up & deliver'});orders.bind(this);},onHide(){orders.unbind(this);},onUnload(){orders.unbind(this);},
  refresh(){const s=store.get(),lang=rc.zh(s.language)?'zh':'en';
   const norm=v=>String(v==null?'':v).replace(/[^0-9]/g,'');
   const t=s.trips.find(x=>x.id===this.id)||s.trips.find(x=>norm(x.id)===norm(this.id)&&norm(this.id));

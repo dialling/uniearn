@@ -430,7 +430,7 @@ async function sync() {
       remaining: t.remaining, capacity: t.capacity, phase: t.phase,
       joinUntil: parseTs(t.join_until), departAt: parseTs(t.depart_at),
       runnerName: t.runner_name || '', runnerAvatar: t.runner_avatar || '',
-      requestIds: [], cancelled: false, createdAt: Date.now(),
+      requestIds: (t.request_ids || []).map(String), cancelled: false, createdAt: Date.now(),
     }));
     store.update((s) => {
       s.trips = (s.trips || []).filter((x) => !trips.some((t) => t.id === x.id)).concat(trips);
