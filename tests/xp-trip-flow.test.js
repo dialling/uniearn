@@ -119,6 +119,9 @@ const tap = dataset => ({ currentTarget: { dataset } });
   assert.equal(food.data.tripStationCount, 4);
   assert.equal(food.data.lockerReady, false, 'no locker is preselected when the trip has several');
   assert.ok(!/[\[\]"]/.test(food.data.tripFrom));
+  const foodWxml = require('node:fs').readFileSync(require.resolve('../pages/takeaway/index.wxml'), 'utf8');
+  const tripPart = foodWxml.slice(foodWxml.indexOf('<block wx:if="{{tripId}}">'), foodWxml.indexOf('</block>', foodWxml.indexOf('<block wx:if="{{tripId}}">')));
+  assert.ok(/<picker[^>]*bindchange="pickLocker"/.test(tripPart), 'the locker choice is on screen while joining a trip');
   food.pickLocker({ detail: { value: 2 } });
   assert.equal(food.data.pickupPoint, '文星东南门口外卖点（翰林妈妈驿站对面）');
   assert.equal(food.data.lockerReady, true);
@@ -223,6 +226,20 @@ const tap = dataset => ({ currentTarget: { dataset } });
   await orders.sync();
   await orders.act('endEmpty', { id: 'xp-trip-59' });
   assert.equal(store.get().trips.find(t => t.id === 'xp-trip-59').cancelled, true);
+
+  // "I'm running" card for a multi-locker trip nobody has joined yet: one short line, no raw list, proper English counts.
+  const runnerCard = require('../utils/runner-trip-card');
+  const multi = { id: 'xp-trip-60', category: 'takeout', station: JSON.stringify(['丰食汇KFC外卖柜', '文缘夜市门口外卖柜']), dorm: 'D01', dorms: ['D01'], destinationType: 'dorm', phase: 'collect', joinUntil: Date.now() + 5 * 60000, requestIds: [] };
+  const zhCard = runnerCard.card(multi, [], 'zh'), enCard = runnerCard.card(multi, [], 'en');
+  assert.equal(zhCard.route, '丰食汇KFC外卖柜 等 2 处 → D01');
+  assert.equal(enCard.route, 'Fengshihui KFC takeaway locker + 1 more → D01');
+  assert.equal(zhCard.waiting, true);
+  assert.match(zhCard.waitingText, /等待同学加入 · 还剩 [45] 分钟/);
+  assert.equal(zhCard.countText, '0 单');
+  const oneBag = runnerCard.card(multi, [{ id: 'xp-1', category: 'takeout', status: 'taken', pickupPoint: '文缘夜市门口外卖柜', station: '文缘夜市门口外卖柜', dorm: 'D01', room: '1612', reward: 3, small: 1, big: 0 }], 'en');
+  assert.equal(oneBag.countText, '1 order · 1 bag');
+  assert.equal(oneBag.waiting, false);
+  assert.equal(runnerCard.card({ ...multi, category: 'parcel', station: JSON.stringify(['文缘菜鸟驿站', '翰林兔喜']) }, [], 'zh').route, '文缘菜鸟驿站 等 2 处 → D01');
 
   console.log('XP trip flow: join with trip id, offers, accept, pickup, deliver, customer confirm and bilingual errors passed.');
 })().catch(e => { console.error(e); process.exitCode = 1; });

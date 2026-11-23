@@ -15,8 +15,8 @@
    <view class="nr-line"><text class="runner-destination nr-dest">{{order.category==='task'?order.title:order.destination}}</text><text wx:if="{{item.items.length>1}}" class="nr-fee">¥{{order.reward}}</text></view>
    <view class="runner-state {{order.disputed?'runner-issue-state':''}}"><text>{{order.status}}</text><text wx:if="{{order.timing && !order.disputed}}" class="runner-timing">{{order.timing}}</text><text wx:if="{{order.deadline}}" class="runner-timing">{{order.deadlineLabel}} {{order.deadline}}</text></view><view wx:if="{{order.notice}}" class="report-nudge">{{order.notice}}</view>
   </view>
-  <view wx:if="{{!item.items.length}}" class="runner-route"><text class="runner-destination">{{item.route}}</text></view>
+  <view wx:if="{{!item.items.length}}" class="runner-route"><text class="runner-destination">{{item.route}}</text><view wx:if="{{item.waiting}}" class="runner-state"><text>{{item.waitingText}}</text></view></view>
   <template is="message-notice" data="{{notice:item.notice,zh,replyingId}}"/>
-  <view class="runner-card-footer"><button wx:if="{{!item.done && !item.cancelled}}" class="runner-go" data-id="{{item.id}}" catchtap="trip">{{zh?(item.phase==='collect'?'去取件':'继续行程'):(item.phase==='collect'?'Pick up':'Continue')}}</button><text class="runner-count">{{item.items.length}} {{zh?'单':'orders'}}<text wx:if="{{item.quantity}}"> · {{item.quantity}} {{item.category==='task'?(zh?'项':'tasks'):item.category==='takeout'?(zh?'袋':'bags'):(zh?'件':'parcels')}}</text></text><text class="runner-open">{{zh?'查看任务':'Open job'}} <text>›</text></text></view>
+  <view class="runner-card-footer"><button wx:if="{{!item.done && !item.cancelled}}" class="runner-go" data-id="{{item.id}}" catchtap="trip">{{!item.items.length?(zh?'查看行程':'Open trip'):zh?(item.phase==='collect'?'去取件':'继续行程'):(item.phase==='collect'?'Pick up':'Continue')}}</button><text class="runner-count">{{item.countText}}</text><text class="runner-open">{{zh?'查看任务':'Open job'}} <text>›</text></text></view>
  </view>
 </template>

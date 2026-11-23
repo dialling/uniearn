@@ -172,6 +172,10 @@
 .jt-row{gap:16rpx;padding-left:18rpx}
 .jt-row-icon{flex:none;width:56rpx;height:56rpx}
 .jt-row-label{width:auto;min-width:88rpx}
+.jt-pick-value{flex:1;min-width:0;padding:20rpx 0;font-size:29rpx;font-weight:700;line-height:1.4;color:#16181c;text-align:right}
+.jt-pick-value.empty{color:#a8a59c;font-weight:500}
+.jt-row-need{border-color:#f3c9ae}
+.page-dark .jt-pick-value{color:#edebe4}
 /* 2026-11-17: card 1 reads as a route, the same language as Start a trip: a 3D pin for where the food is picked up,
    a dotted line, and a pin for where it goes. Details (note, soup, photos) follow below a soft divider. */
 .takeaway-page.tw-v2 .tw-route{margin-top:2rpx}
