@@ -74,7 +74,10 @@ noteChip(e){const t=String(e.currentTarget.dataset.text||''),cur=String(this.dat
  syncArrivalInput(){const h=this.data.arrivalHour,m=this.data.arrivalMinute,invalid=(h.length===2&&Number(h)>23)||(m.length===2&&Number(m)>59),complete=h.length===2&&m.length===2,digits=complete&&!invalid?h+m:'';this.setData({arrivalTime:complete&&!invalid?h+':'+m:'',arrivalError:invalid?(this.data.zh?'小时请输入 00–23，分钟请输入 00–59':'Use hours 00–23 and minutes 00–59'):'',arrivalDigits:digits,arrivalDigit1:digits[0]||'0',arrivalDigit2:digits[1]||'0',arrivalDigit3:digits[2]||'0',arrivalDigit4:digits[3]||'0'});this.totals();},
  updateCancelClock(){if(!this.data.night&&!this.data.arrived)return;const closeTime=f.clock(Date.now()+30*60000);if(closeTime!==this.data.closeTime)this.setData({closeTime});},
  count(e){this.setData({bags:Math.max(1,Math.min(5,this.data.bags+Number(e.currentTarget.dataset.delta)))});this.totals();},
- setNight(e){const night=e.currentTarget.dataset.night==='1';if(night===!!this.data.night)return;if(night)this._dayPrice=this.data.price;const price=night?4:(this._dayPrice||3);this.setData({night,bags:night?1:this.data.bags,price,priceText:String(price)});this.lang();this.totals();},
+ setNight(e){const night=e.currentTarget.dataset.night==='1';
+  // 加入别人的顺路行程时只能发外卖/快递，夜市不属于该行程类型
+  if(night&&this.data.tripId){require('../../utils/ui').toast(this.data.zh?'顺路行程只能发外卖或快递，夜市请单独发布':'Trips only accept takeaway or parcels; post night-market orders separately');return;}
+  if(night===!!this.data.night)return;if(night)this._dayPrice=this.data.price;const price=night?4:(this._dayPrice||3);this.setData({night,bags:night?1:this.data.bags,price,priceText:String(price)});this.lang();this.totals();},
  base(){return this.data.night?this.data.price:this.data.bags*this.data.price;},
  tripField(e){this.setData({[e.currentTarget.dataset.field]:e.detail.value,phoneError:''});this.totals();},field(e){const field=e.currentTarget.dataset.field,value=e.detail.value;this.setData({[field]:value});
 if(field==='room'){const campus=require('../../utils/campus');this.setData({floor:campus.floorOfRoom(value)});}},
