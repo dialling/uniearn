@@ -217,3 +217,5 @@
 .jt-bld-press{opacity:.7}
 .page-dark .jt-bld-chip{background:#242522;border-color:#3a3b37;color:#c8c7bd}
 .page-dark .jt-bld-chip.on{background:#1d2f28;border-color:#6fd0a8;color:#6fd0a8}
+
+.trip-join-banner{margin:12rpx 0 0;padding:16rpx 20rpx;border-radius:16rpx;background:#e8f3ec;color:#1f6b4a;font-size:26rpx}
