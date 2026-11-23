@@ -1,5 +1,6 @@
 const store = require('./store');
 const {ensureCloud} = require('./cloud');
+function ms(v){const n=Number(v);if(Number.isFinite(n)&&n>1e11)return n;const t=Date.parse(String(v||'').replace(' ','T')+'Z');return Number.isFinite(t)?t:0;}
 async function overview() {
   if (require('./merge-mode').enabled) {
     const api = require('./api');
@@ -17,11 +18,12 @@ async function overview() {
       debt_cents: 0,
       total_income_cents: Number(res.total_income_cents || 0),
       today_income_cents: Number(res.today_income_cents || 0),
+      // 服务端返回 'YYYY-MM-DD HH:MM:SS'（UTC）；页面按毫秒时间戳格式化，先转成 ms。
       transactions: (res.transactions || []).map((t) => ({
         id: t.id, kind: t.kind, amount_cents: t.amount_cents, balance_after: t.balance_after,
-        remark: t.remark, created_at: t.created_at, order_no: t.order_id,
+        remark: t.remark, created_at: ms(t.created_at), order_no: t.order_id,
       })),
-      withdrawals: res.withdrawals || [],
+      withdrawals: (res.withdrawals || []).map((w) => ({...w, created_at: ms(w.created_at)})),
       series: res.series || [],
       rules: res.rules || [],
     };
