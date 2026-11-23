@@ -229,6 +229,21 @@ async function mine() {
   });
   return rows;
 }
+async function loadMessages(reqId, peerId) {
+  if (!require('./util').getToken() || !peerId) return [];
+  const myId = Number((require('./util').getUser() || {}).id) || 0;
+  const res = await api.get('/api/messages/peer/' + encodeURIComponent(String(peerId))).catch(() => ({}));
+  const rows = (res && (res.messages || res.list)) || [];
+  const out = rows.map((m) => ({
+    id: m.id, text: m.content || '', photo: m.image || '',
+    at: parseTs(m.created_at), mine: Number(m.sender_id) === myId,
+  }));
+  store.update((s) => {
+    (s.requests || []).forEach((r) => { if (r.id === reqId) r.messages = out; });
+  });
+  return out;
+}
+
 async function loadSupport() {
   if (!require('./util').getToken()) return [];
   const res = await api.get('/api/cs/messages').catch(() => ({}));
@@ -372,16 +387,23 @@ async function act(action, payload = {}) {
     });
     return { ok: true };
   }
+  if (action === 'messages') {
+    const row = (store.get().requests || []).find(r => r.id === reqId) || {};
+    const peer = row.isRunner ? row.ownerId : (row.runnerUserId || row.runnerId || 0);
+    return loadMessages(reqId, peer);
+  }
   if (action === 'message') {
     const content = payload.text || payload.photo || '';
     const reqRow = (store.get().requests || []).find(r => r.id === reqId);
     const peer = payload.peer || payload.with || (reqRow && (reqRow.isMine ? reqRow.runnerUserId : reqRow.ownerId)) || '';
     if (peer) {
-      return api.post('/api/messages/peer/' + encodeURIComponent(String(peer)), {
+      await api.post('/api/messages/peer/' + encodeURIComponent(String(peer)), {
         content,
         order_id: id || undefined,
         ...(payload.photo ? { photo: payload.photo } : {})
       });
+      await loadMessages(reqId, peer);
+      return { ok: true };
     }
     if (id) return api.post('/api/messages/order/' + id, { content, photo: payload.photo || '' });
     throw Error('缺少聊天对象');
