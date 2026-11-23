@@ -131,7 +131,8 @@ function toRequest(order, opts = {}) {
     isMine,
     mine: isMine,
     isRunner,
-    owner: order.publisher_name || '',
+    owner: (order.publisher && (order.publisher.nickname || order.publisher.name))
+      || order.publisher_name || order.nickname || '',
     runnerName: order.runner_name || '',
     runnerPhone: order.runner_phone || '',
     history: Array.isArray(order.history) ? order.history : []
