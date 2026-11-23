@@ -132,15 +132,29 @@ Page({
   if (this.data.loading) { this.load(); return; }
   const ui = this.data.ui, bal = this.data.balanceCents, actor = store.get().profile.accountId;
   if (!(bal > 0)) { wx.showToast({title:ui.noBalance,icon:'none'}); this.load(); return; }
-  this.setData({withdrawing:true});
+  this.setData({ withdrawing: true });
   try {
-   const answer = await new Promise((resolve, reject) => wx.showModal({title:ui.confirmTitle,content:ui.confirmText.replace('{n}',this.data.balance),confirmText:ui.confirm,cancelText:ui.cancel,success:resolve,fail:reject}));
-   if (!answer.confirm || !this._visible || actor !== store.get().profile.accountId) return;
-   const result = await api.withdraw(bal);
-   if (!this._visible || actor !== store.get().profile.accountId) return;
-   wx.showToast({title:result.withdrawal.status==='approved'?ui.success:ui.failed,icon:'none'});
-   await this.load();
-  } catch (e) { if(this._visible) { this.clearWallet(); this.setData({error:e.message}); await this.load(); wx.showToast({title:e.message,icon:'none'}); } }
-  finally { this.setData({withdrawing:false}); }
+    const answer = await new Promise((resolve) => {
+      wx.showModal({
+        title: ui.confirmTitle || '提现',
+        content: String(ui.confirmText || '将可用余额 ¥{n} 提现，1–3 个工作日内处理。').replace('{n}', this.data.balance),
+        confirmText: ui.confirm || '提现',
+        cancelText: ui.cancel || '取消',
+        success: (r) => resolve(!!(r && r.confirm)),
+        fail: (e) => { console.log('[wallet] modal fail', e && e.errMsg); resolve(false); },
+      });
+    });
+    console.log('[wallet] modal answer', answer);
+    if (!answer || !this._visible || actor !== store.get().profile.accountId) return;
+    console.log('[wallet] calling api.withdraw', bal);
+    const result = await api.withdraw(bal);
+    console.log('[wallet] withdraw result', JSON.stringify(result && result.withdrawal || result).slice(0, 200));
+    if (!this._visible || actor !== store.get().profile.accountId) return;
+    wx.showToast({ title: result.withdrawal.status === 'approved' ? ui.success : ui.failed, icon: 'none' });
+    await this.load();
+  } catch (e) {
+    console.log('[wallet] withdraw error', e && (e.message || e.errMsg || e));
+    if (this._visible) { this.setData({ error: (e && e.message) || '提现失败' }); await this.load(); wx.showToast({ title: (e && e.message) || '提现失败', icon: 'none' }); }
+  } finally { this.setData({ withdrawing: false }); }
  }
 });
