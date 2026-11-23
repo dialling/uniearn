@@ -228,8 +228,18 @@ async function mine() {
   });
   return rows;
 }
+async function loadSupport() {
+  const res = await api.get('/api/cs/messages').catch(() => ({}));
+  const rows = (res && res.list) || [];
+  const messages = rows.map((r) => ({
+    id: r.id, text: r.content || '', photo: r.image || '',
+    at: parseTs(r.created_at), mine: r.direction !== 'in',
+  }));
+  store.update((s) => { s.supportTickets = [{ id: 'cs', orderId: null, messages }]; });
+  return messages;
+}
 async function sync() {
-  const [h, m] = await Promise.all([hall(), mine()]);
+  const [h, m] = await Promise.all([hall(), mine(), loadSupport().catch(() => [])]);
   return { hall: h, mine: m };
 }
 function numIdOf(v) { return Number(String(v || '').replace(/^xp-/, '')); }
@@ -367,7 +377,14 @@ async function act(action, payload = {}) {
     return api.post('/api/reports', { order_id: id, reason: payload.reason || '', detail: payload.note || payload.detail || '', images: payload.photos || [] });
   }
   if (action === 'supportRequest' || action === 'supportMessage' || action === 'supportReply') {
-    return api.post('/api/cs/messages', { content: payload.text || payload.topic || '' });
+    const res = await api.post('/api/cs/messages', {
+      content: payload.text || '',
+      image: payload.photo || '',
+      type: payload.photo ? 'image' : 'text',
+      topic: payload.topic || '',
+    });
+    await loadSupport();
+    return res;
   }
   if (action === 'rewardsInit') {
     const coupons = await require('./xp-rewards').load();
