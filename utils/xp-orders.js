@@ -548,8 +548,19 @@ async function act(action, payload = {}) {
       note: data.note,
     };
     const trip = await api.post('/api/trips', body);
+    const localId = 'xp-trip-' + (trip && trip.id);
+    // 新建行程还没有订单，mine() 不会把它带回来；本地先存一份，行程页才能打开
+    store.update((st) => {
+      st.trips = st.trips || [];
+      st.trips = [{
+        id: localId, campusId: (st.profile || {}).campusId || 'sip',
+        category: body.category, station: body.station || '', dorm: body.dorm || '',
+        capacity: body.capacity || 1, depart: 'Now', phase: 'collect',
+        requestIds: (ids || []).map(String), cancelled: false, createdAt: Date.now(),
+      }, ...st.trips.filter((t) => t.id !== localId)];
+    });
     await mine().catch(() => []);
-    return { id: 'xp-trip-' + (trip && trip.id), trip };
+    return { id: localId, trip };
   }
   if (action === 'leave' || action === 'endEmpty') {
     const tripRow = (store.get().trips || []).find(t => t.id === reqId) || {};
