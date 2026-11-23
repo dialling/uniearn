@@ -30,9 +30,17 @@ const cnDay = at => new Date(Number(at) + OFFSET).toISOString().slice(0, 10);
 // 最近 7 天的每日入账 / 提现，用于余额卡下方的柱形图
 function weekStats(transactions, zh, now = Date.now()) {
   const days = Array.from({ length: 7 }, (_, i) => cnDay(now - (6 - i) * DAY));
-  const rows = Array.from(transactions || [], t => ({ day: cnDay(t.created_at), cents: Number(t.amount_cents) || 0 }));
-  const income = days.map(d => rows.filter(r => r.day === d && r.cents > 0).reduce((n, r) => n + r.cents, 0));
-  const paid = days.map(d => rows.filter(r => r.day === d && r.cents < 0).reduce((n, r) => n + r.cents, 0));
+  // 退款/撤销流水（withdraw_refund）不是收入也不是支出：之前按正负号统计，
+  // 每取消一次提现，「已入账」「已提现」两边各涨一次。
+  const rows = Array.from(transactions || [], t => ({
+    day: cnDay(t.created_at),
+    cents: Number(t.amount_cents) || 0,
+    kind: String(t.kind || ''),
+  }));
+  const isIncome = r => (r.kind ? r.kind === 'payout' : r.cents > 0);
+  const isPaid = r => (r.kind ? r.kind === 'withdraw' : r.cents < 0);
+  const income = days.map(d => rows.filter(r => r.day === d && isIncome(r)).reduce((n, r) => n + r.cents, 0));
+  const paid = days.map(d => rows.filter(r => r.day === d && isPaid(r)).reduce((n, r) => n + r.cents, 0));
   const max = Math.max.apply(null, income.concat([1]));
   const labels = ['日', '一', '二', '三', '四', '五', '六'];
   return {
