@@ -11,6 +11,8 @@ cloud.ensureCloud=()=>({
  async callFunction({name,data}){if(name==='studentAccount'&&data.action==='saveDorm'){const id=h.engine.idFor(h.user),a=h.accounts[id];a.profile={...a.profile,dorm:data.dorm,room:data.room,pickup:data.pickup};return{result:{ok:true,account:{id,profile:a.profile,verification:a.verification}}};}assert.equal(name,'orderService');const result=await h.client(data);if(failAfterCommit&&data.action==='create'){failAfterCommit=false;throw Error('network lost after commit');}return{result};},
  async uploadFile({cloudPath}){return{fileID:'cloud://test/'+cloudPath};}
 });
+const mergeMode=require('../utils/merge-mode'),prevMerge=mergeMode.enabled;
+mergeMode.enabled=false;
 const store=require('../utils/store'),account=require('../utils/account'),orders=require('../utils/orders');account.requireRunner=async()=>true;
 function load(n,args={}){delete require.cache[require.resolve('../pages/'+n+'/index')];require('../pages/'+n+'/index');const p={...def,data:structuredClone(def.data)};p.setData=x=>Object.assign(p.data,x);if(p.onLoad)p.onLoad(args);return p;}
 const e=data=>({currentTarget:{dataset:data}});
@@ -36,4 +38,4 @@ async function login(name){h.user=name;orders.invalidate();store.reset();const a
  const joining=load('takeaway',{tripId:second.id});joining.customLocker({detail:{value:'Takeaway locker by Dorm 7'}});joining.setData({arrived:true,agreed:true,bags:2,room:joining.data.room||'101',phone:joining.data.phone||'13800000001'});const count=h.state.requests.length;await joining.post();assert.equal(h.state.requests.length,count);assert.match(notices.at(-1),/Too many/);
  joining.setData({bags:1});await joining.post();assert.equal(h.state.requests.length,count+1);assert.equal(h.state.requests[0].runnerId,null,'joining sends the runner a request first');assert.equal(h.state.requests[0].offeredTripId,second.id);
  console.log('Cloud page integration: lost-response retry, post, customer list, raise, two identities, pickup, cloud photo, confirm, runner-only earnings, cross-device share and join rollback passed.');
-})().catch(e=>{console.error(e);process.exitCode=1;});
+})().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>{mergeMode.enabled=prevMerge;});

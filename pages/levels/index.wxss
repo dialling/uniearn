@@ -9,7 +9,7 @@ page{background:#e7f3ed;color:#16181c;overflow-x:hidden}
 .lv-log-top{position:relative;z-index:1;display:flex;align-items:center;gap:24rpx}
 .lv-buoy{flex:none;width:176rpx;height:176rpx;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fff6d6 0%,#ffe08a 55%,#f2b233 100%);box-shadow:0 0 0 8rpx rgba(255,224,138,.25),inset 0 -8rpx 0 rgba(122,78,0,.18);display:flex;align-items:center;justify-content:center}
 .lv-buoy-yuni{width:160rpx;height:160rpx;margin-top:-12rpx}
-.lv-buoy.is-hop .lv-buoy-yuni{animation:lv-hop .6s cubic-bezier(.22,.68,.35,1)}
+.lv-buoy.is-hop .lv-buoy-yuni{animation:var(--ue-animation,lv-hop .6s cubic-bezier(.22,.68,.35,1))}
 @keyframes lv-hop{0%,100%{transform:translateY(0)}40%{transform:translateY(-34rpx) scale(.97,1.04)}70%{transform:translateY(0) scale(1.04,.96)}}
 .lv-log-copy{flex:1;min-width:0}
 .lv-log-level{display:inline-block;padding:4rpx 16rpx;border-radius:99rpx;background:#f2b233;color:#1c2a54;font-size:22rpx;font-weight:900}
@@ -96,7 +96,7 @@ page{background:#e7f3ed;color:#16181c;overflow-x:hidden}
 .page-dark .lv-day-token,.page-dark .lv-stop-tag{background:#2a322d}
 .page-dark .lv-gear-chip{background:#26302b;color:#edf4ef}
 .page-dark .lv-stop-more,.page-dark .lv-earn-row{border-color:#2c342f}
-@media(prefers-reduced-motion:reduce){.lv-stop.is-here .lv-stop-buoy,.lv-buoy.is-hop .lv-buoy-yuni{animation:none}}
+@media(prefers-reduced-motion:reduce){.lv-stop.is-here .lv-stop-buoy,.lv-buoy.is-hop .lv-buoy-yuni{animation:var(--ue-animation,none)}}
 /* 2026-11-17: these points come as a fish to feed Yuni */
 .lv-earn-side{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:8rpx}
 .lv-earn-pts{gap:0}

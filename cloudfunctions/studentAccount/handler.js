@@ -45,8 +45,8 @@ function createHandler({getOpenId,repo,env,now=Date.now}) {
         if(account.loggedOut||!account.profile)return fail('LOGIN_REQUIRED','Sign in first.');
         let profile={...account.profile};
         if(action==='selectCampus'){
-          if(event.universityId!=='xjtlu'||event.campusId!=='sip')return fail('CAMPUS_CLOSED','Only XJTLU SIP campus is open.');
-          profile.universityId='xjtlu';profile.campusId='sip';
+          if(!['xjtlu','ruc','suda'].includes(event.universityId)||event.campusId!=='sip')return fail('CAMPUS_CLOSED','Only XJTLU SIP campus is open.');
+          profile.universityId=event.universityId;profile.campusId='sip';
         }else if(action==='campusInterest'){
           if(event.campusId!=='taicang')return fail('INVALID_CAMPUS','Unknown campus.');profile.taicangInterested=true;
         }else{

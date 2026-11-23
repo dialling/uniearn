@@ -1,3 +1,4 @@
+<view style="{{motionStyle}}">
 <view class="name-page {{dark?'dark':''}}">
   <view class="np-card">
     <view class="np-hero">
@@ -25,4 +26,5 @@
   </view>
 
   <view class="np-bottom"><button class="np-save" bindtap="save" loading="{{saving}}" disabled="{{!canSave||saving}}">{{zh?'保存昵称':'Save name'}}</button></view>
+</view>
 </view>

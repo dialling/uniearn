@@ -7,6 +7,8 @@ global.wx={getStorageSync:()=>null,setStorageSync(){},showToast:o=>notices.push(
   if(mode!=='ok')throw Error(mode==='missing'?'cloud.callFunction:fail Error: access_token missing (callId: '+(++sequence)+')':'cloud.callFunction:fail network timeout (callId: '+(++sequence)+')');
   return {result:{ok:true,snapshot:{accountId:'student',revision:++sequence,requests:[],trips:[],publicTrips:[],stats:{},preferences:{}}}};
  }}};
+const mergeMode=require('../utils/merge-mode'),prevMerge=mergeMode.enabled;
+mergeMode.enabled=false;
 const store=require('../utils/store'),orders=require('../utils/orders'),errors=require('../utils/cloud-errors');
 (async()=>{
  store.reset();store.update(s=>{s.language='zh';s.profile={...s.profile,onboarded:false,loggedOut:true};});
@@ -28,4 +30,4 @@ const store=require('../utils/store'),orders=require('../utils/orders'),errors=r
  assert.equal(errors.loginMessage(Error('unrelated'),'en','Try again'),'Try again');
  assert(errors.accessTokenMissing({errMsg:'cloud.callFunction:fail access_token missing'}));
  console.log('Cloud login errors: tool-specific guidance, bilingual safe messages, raw diagnostics retained, call-ID deduplication, sign-in toast suppression, cache preservation and recovery reset passed.');
-})().catch(e=>{console.error(e);process.exitCode=1;});
+})().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>{mergeMode.enabled=prevMerge;});

@@ -10,6 +10,8 @@ global.wx={getStorageSync:key=>storage[key],setStorageSync:(key,value)=>storage[
  assert.equal(name,'orderService');if(data.action==='walletWithdraw')withdrawCalls++;
  const result=await h.client(data);if(lost&&data.action==='walletWithdraw'){lost=false;throw Error('network response lost after commit');}return{result};
 }}};
+const mergeMode=require('../utils/merge-mode'),prevMerge=mergeMode.enabled;
+mergeMode.enabled=false;
 const store=require('../utils/store');store.update(s=>{s.profile={...h.accounts[id('runner')].profile,accountId:id('runner'),studentVerified:true};s.language='zh';});
 require('../pages/wallet/index');const page={...def,data:structuredClone(def.data),setData(patch,fn){Object.assign(this.data,patch);if(fn)fn();}};page.onLoad();
 (async()=>{
@@ -28,4 +30,4 @@ require('../pages/wallet/index');const page={...def,data:structuredClone(def.dat
  const hidden={...def,data:structuredClone(def.data),setData(patch,fn){Object.assign(this.data,patch);fn&&fn();}};hidden.onLoad();const pending=hidden.load();hidden.onHide();resolve({balance_cents:999999});await pending;assert.equal(hidden.data.balanceCents,0);
  const xml=fs.readFileSync(require.resolve('../pages/wallet/index.wxml'),'utf8');assert.ok(xml.includes('hideAmount?\'***\':(item.positive'));assert.ok(xml.includes('ui.testNote'));
  console.log('Wallet page: cloud overview, double-tap guard, lost-response recovery, test labels, isolated hide preferences, account switch/logout and hidden-page response guard passed.');
-})().catch(e=>{console.error(e);process.exitCode=1;});
+})().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>{mergeMode.enabled=prevMerge;});

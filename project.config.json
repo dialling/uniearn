@@ -34,10 +34,6 @@
         "type": "folder"
       },
       {
-        "value": ".claude",
-        "type": "folder"
-      },
-      {
         "value": "admin-web",
         "type": "folder"
       },
@@ -58,40 +54,12 @@
         "type": "folder"
       },
       {
-        "value": "uniearn-github-latest",
-        "type": "folder"
-      },
-      {
-        "value": "uniearn-github-main-latest",
-        "type": "folder"
-      },
-      {
-        "value": "uniearn-main-b5afddd",
-        "type": "folder"
-      },
-      {
-        "value": "UniEarn-GitHub-Changes",
-        "type": "folder"
-      },
-      {
-        "value": "uniearn-upload",
-        "type": "folder"
-      },
-      {
         "value": ".md",
         "type": "suffix"
       },
       {
         "value": ".txt",
         "type": "suffix"
-      },
-      {
-        "value": "UniEarn-GitHub-Changes",
-        "type": "folder"
-      },
-      {
-        "value": "uniearn-upload",
-        "type": "folder"
       },
       {
         "value": "docs",
@@ -106,110 +74,6 @@
         "type": "folder"
       },
       {
-        "value": ".workbuddy-ai",
-        "type": "folder"
-      },
-      {
-        "value": "outputs",
-        "type": "folder"
-      },
-      {
-        "type": "file",
-        "value": "assets/profile-ranks/avatar-1.png"
-      },
-      {
-        "type": "file",
-        "value": "assets/profile-ranks/avatar-2.png"
-      },
-      {
-        "type": "file",
-        "value": "assets/profile-ranks/avatar-3.png"
-      },
-      {
-        "type": "file",
-        "value": "assets/profile-ranks/avatar-4.png"
-      },
-      {
-        "type": "file",
-        "value": "assets/profile-ranks/avatar-5.png"
-      },
-      {
-        "value": "assets/yuni-bag.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-deliver.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-earn.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-go.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-happy.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-hello.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-look.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-oops.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-party.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-phone.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-sleep.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-think.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-wave.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-work.svg",
-        "type": "file"
-      },
-      {
-        "value": "assets/yuni-worried.svg",
-        "type": "file"
-      },
-      {
-        "type": "file",
-        "value": "assets/yuni-look.png"
-      },
-      {
-        "type": "file",
-        "value": "assets/yuni-sleep.png"
-      },
-      {
-        "type": "file",
-        "value": "assets/yuni-worried.png"
-      },
-      {
-        "type": "file",
-        "value": "assets/yuni-hello.png"
-      },
-      {
         "type": "file",
         "value": ".gitignore"
       },
@@ -220,170 +84,6 @@
       {
         "type": "file",
         "value": "project.private.config.json"
-      },
-      {
-        "type": "file",
-        "value": "assets/balance-outline.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/coupon-outline.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/help-outline.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/invite-classmate.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/invite/uniearn-print.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/invite/gift.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/jobs-active.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/jobs-green.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/jobs.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/language-outline.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/message-active.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/message-green.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/moon-outline.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/news-tag.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/phone-active.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/phone-green.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/phone-outline.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/phone.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/photo-active.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/photo-blue.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/photo-orange.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/profile-active.png"
-      },
-      {
-        "type": "file",
-        "value": "assets/profile-active.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/profile-white.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/profile.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/receipt-outline.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/rewards-active.png"
-      },
-      {
-        "type": "file",
-        "value": "assets/rewards-active.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/rewards-green.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/rewards.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/rules-outline.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/sheet-pickup.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/sheet-task.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/sheet-trip.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/sheet-yuan.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/sms-active.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/sms-green.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/sms.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/support-outline.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/university-outline.svg"
-      },
-      {
-        "type": "file",
-        "value": "assets/yuni-play/i-sound-off.svg"
       }
     ],
     "include": []

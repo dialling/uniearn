@@ -17,7 +17,12 @@ function enqueue(fn, priority=false) {
 }
 async function drainQueue(){if(queueRunning)return;queueRunning=true;try{while(jobs.length){const job=jobs.shift();try{job.resolve(await job.fn());}catch(e){job.reject(e);}}}finally{queueRunning=false;}}
 function act(action,payload={}){
- if(require('./merge-mode').enabled)return require('./xp-orders').act(action,payload);
+ if(require('./merge-mode').enabled){
+  return require('./xp-orders').act(action,payload).then(res=>{
+   subscribers.forEach(fn=>{try{fn();}catch(e){console.error('Order view refresh',e);}});
+   return res;
+  });
+ }
  const key=JSON.stringify({action,...payload}),expectedGeneration=generation;
  if(activeActions.has(key))return activeActions.get(key);
  const result=enqueue(()=>{if(expectedGeneration!==generation)throw Error('Account changed. Please reopen this page.');return performAct(action,payload);},true);
@@ -96,6 +101,10 @@ async function call(data) {
 }
 // Read receipts wait for pending operations without competing with order mutations.
 function readMessages(id) {
+ if(require('./merge-mode').enabled){
+  store.update(s=>{const r=(s.requests||[]).find(x=>x.id===id);if(r)r.unread=0;});
+  return Promise.resolve();
+ }
  const expectedGeneration=generation;
  return enqueue(()=>{
   if(expectedGeneration!==generation)return;
@@ -115,10 +124,23 @@ async function guestSignIn(campusId) {
   invalidate();
   return true;
 }
-function sync() {
-  if(require('./merge-mode').enabled){const xp=require('./xp-orders');xp.hall().catch(()=>null);return xp.mine().catch(()=>null);}
+function sync(opts = {}) {
+  const debounced = !!(opts && opts.debounced);
+  if(require('./merge-mode').enabled){
+    if(syncing)return syncing;
+    if(debounced&&!quietResume&&Date.now()-(store.get().lastSyncAt||0)<2000)return Promise.resolve();
+    syncing=enqueue(async()=>{
+      const xp=require('./xp-orders');
+      await xp.sync();
+      try{await require('./xp-rewards').load();}catch(_){}
+      store.update(s=>{s.lastSyncAt=Date.now();});
+      if(foreground)quietResume=false;
+      subscribers.forEach(fn=>{try{fn();}catch(e){console.error('Order view refresh',e);}});
+    }).finally(()=>{syncing=null;});
+    return syncing;
+  }
   if (syncing) return syncing;
-  if(!quietResume&&Date.now()-(store.get().lastSyncAt||0)<2000)return Promise.resolve();
+  if(debounced&&!quietResume&&Date.now()-(store.get().lastSyncAt||0)<2000)return Promise.resolve();
   syncing = enqueue(async()=>{
     const syncGeneration=generation,value=await call({action:'sync'});
     if(syncGeneration!==generation)return value;
@@ -184,8 +206,24 @@ async function performAct(action, payload = {}) {
   } catch(e){track('action_result',{action,result:e.business?'business':'network',duration:Date.now()-started});throw e;}finally { mutating=false; }
 }
 async function upload(path) {
-  if (!path || path.startsWith('cloud://')) return path || '';
+  if (!path || path.startsWith('cloud://') || /^https?:\/\//i.test(path)) return path || '';
   const demo=require('./group-test-session');if(demo.current())return demo.upload(path);
+  if (require('./merge-mode').enabled) {
+    if (uploads.has(path)) return uploads.get(path);
+    const job = uploadJob(() => require('./xp-orders').upload(path));
+    uploads.set(path, job);
+    const started = Date.now();
+    try {
+      const res = await job;
+      const value = typeof res === 'string' ? res : ((res && (res.url || res.fileID)) || '');
+      track('upload_result', { result: 'ok', duration: Date.now() - started });
+      return value;
+    } catch (e) {
+      track('upload_result', { result: 'network', duration: Date.now() - started });
+      uploads.delete(path);
+      throw e;
+    }
+  }
   if (uploads.has(path)) return uploads.get(path);
   const job=uploadJob(async()=>{
     const {cloudPath}=await call({action:'prepareUpload'});
@@ -197,14 +235,14 @@ async function upload(path) {
 function bind(page, method='refresh') {
   unbind(page);
   page._orderRender=()=>page[method](); subscribers.add(page._orderRender);
-  page[method](); sync().catch(()=>{});
+  page[method](); sync({debounced:true}).catch(()=>{});
 }
 function subscribe(fn) { subscribers.add(fn); return ()=>subscribers.delete(fn); }
 function unbind(page) { if(page._orderRender)subscribers.delete(page._orderRender);page._orderRender=null; }
-function start() { quietResume=true;yuniEvents.resume();foreground=true;stopTimer();sync().catch(()=>{});timer=setInterval(()=>{if(uploadRunning||mutating||activeActions.size)return;sync().catch(()=>{});},10000); }
+function start() { quietResume=true;yuniEvents.resume();foreground=true;stopTimer();sync({debounced:true}).catch(()=>{});timer=setInterval(()=>{if(uploadRunning||mutating||activeActions.size)return;sync({debounced:true}).catch(()=>{});},10000); }
 function stopTimer() { if(timer)clearInterval(timer);timer=null; }
 function stop() { foreground=false;quietResume=true;yuniEvents.suspend();stopTimer(); }
 function photoURL(path) { return store.get().photoURLs[path] || path; }
-function invalidate(){yuniEvents.reset();generation++;previous=null;uploads.clear();}
+function invalidate(){yuniEvents.reset();generation++;previous=null;quietResume=true;uploads.clear();}
 module.exports={invalidate,sync,act,readMessages,upload,bind,unbind,subscribe,start,stop,photoURL};
 module.exports.viewTrip=viewTrip;module.exports.guestSignIn=guestSignIn;

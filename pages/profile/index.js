@@ -21,8 +21,8 @@ function levelCard(tier,language){
  };
 }
 Page({
-  onShareAppMessage() {return require('../../utils/share-card').shareInfo(this.data.zh);},
-  onShareTimeline() {return require('../../utils/share-card').shareTimeline(this.data.zh);},
+  onShareAppMessage() {return require('../../utils/share-card').shareInfo(this.data.language!=='en');},
+  onShareTimeline() {return require('../../utils/share-card').shareTimeline(this.data.language!=='en');},
 
  data:{...require('../../utils/motion').data(),ui:meCopy('zh'),language:'zh',initial:'?',tierLevel:1,tierAvatar:tierAvatar(1),postedCount:0,deliveredCount:0,couponCount:0,unlockedCount:0,profile:{},loading:false,loggingOut:false,error:'',level:'Yuni 新星',limit:10,remaining:15,levelOpen:false,stickersOpen:false,settingsOpen:false,postedBadge:'bronze',jobsBadge:'bronze',tierName:'Yuni 新星',rankName:'Yuni 新星',nextJobsText:''},
  onLoad(o={}){this.pendingInviteCode=String(o.invite||'').trim();this.autoFeed=o.feed==='1';},

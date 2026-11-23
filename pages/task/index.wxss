@@ -178,7 +178,7 @@ button.task-icon::after{border:0}
 .tk-fold-end{display:flex;align-items:center;gap:14rpx}
 .tk-fold-total{font-size:28rpx;font-weight:800}
 .tk-fold.tk-fold-open{margin-bottom:12rpx}
-.tk-fold-chev{flex:none;width:14rpx;height:14rpx;margin:0 6rpx 8rpx;border-right:4rpx solid #8a877e;border-bottom:4rpx solid #8a877e;transform:rotate(45deg);transition:transform .2s ease}
+.tk-fold-chev{flex:none;width:14rpx;height:14rpx;margin:0 6rpx 8rpx;border-right:4rpx solid #8a877e;border-bottom:4rpx solid #8a877e;transform:rotate(45deg);transition:var(--ue-transition,transform .2s ease)}
 .tk-fold-chev.open{transform:rotate(-135deg);margin:8rpx 6rpx 0}
 /* 2026-11-18: the order number lives in Order details. */
 .tk-orderno-row{align-items:center}

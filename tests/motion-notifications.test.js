@@ -1,5 +1,7 @@
 const assert=require('node:assert/strict'),{harness}=require('./helpers/order-cloud'),h=harness(),notices=[];
 global.wx={getStorageSync:()=>null,setStorageSync(){},showToast:x=>notices.push(x.title),cloud:{init(){},async callFunction({data}){return {result:await h.client(data)};}}};
+const mergeMode=require('../utils/merge-mode'),prevMerge=mergeMode.enabled;
+mergeMode.enabled=false;
 const store=require('../utils/store'),orders=require('../utils/orders');store.reset();
 store.update(s=>{s.language='zh';s.yuniTips=false;s.profile={...s.profile,...h.accounts[h.engine.idFor('customer')].profile,accountId:h.engine.idFor('customer'),onboarded:true};});
 (async()=>{
@@ -11,4 +13,4 @@ store.update(s=>{s.language='zh';s.yuniTips=false;s.profile={...s.profile,...h.a
  await orders.act('preferences',{values:{orderUpdates:false}});notices.length=0;
  assert.equal((await h.call('runner','pickup',{id:created.value.id})).ok,true);await orders.sync();assert.deepEqual(notices,[],'the separate order notification switch still controls progress reminders');
  console.log('Motion-off mode keeps plain order updates and respects the separate order notification preference');
-})().catch(e=>{console.error(e);process.exitCode=1;});
+})().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>{mergeMode.enabled=prevMerge;});

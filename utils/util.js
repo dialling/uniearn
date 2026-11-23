@@ -220,7 +220,7 @@ module.exports = {
       content: '登录后即可下单/接单/查看，浏览时不会打扰你。',
       confirmText: '去登录',
       cancelText: '稍后',
-      success: (r) => { if (r.confirm) wx.navigateTo({ url: '/pages/login/login' }); },
+      success: (r) => { if (r.confirm) wx.navigateTo({ url: '/pages/welcome/index' }); },
     });
     return false;
   },

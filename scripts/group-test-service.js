@@ -3,7 +3,7 @@
 
 const {randomUUID} = require('node:crypto');
 const {harness} = require('../tests/helpers/order-cloud');
-const {make} = require('../utils/group-test-orders');
+const {make} = require('./group-test-orders');
 function session() {
   const db = harness();
   db.edit(state => {

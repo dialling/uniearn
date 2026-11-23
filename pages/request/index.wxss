@@ -178,5 +178,5 @@ page{background:#f2f1ec}.journey-page{background:#f2f1ec;padding:30rpx 28rpx 75r
 /* 2026-11-17: while waiting, Order details folds into one row (the route and the total are already shown above). */
 .journey-details-title.rq-fold{display:flex;align-items:center;justify-content:space-between;margin-bottom:0}
 .journey-details-title.rq-fold.rq-fold-open{margin-bottom:13rpx}
-.rq-fold-chev{flex:none;width:14rpx;height:14rpx;margin:0 6rpx 8rpx;border-right:4rpx solid #8a877e;border-bottom:4rpx solid #8a877e;transform:rotate(45deg);transition:transform .2s ease}
+.rq-fold-chev{flex:none;width:14rpx;height:14rpx;margin:0 6rpx 8rpx;border-right:4rpx solid #8a877e;border-bottom:4rpx solid #8a877e;transform:rotate(45deg);transition:var(--ue-transition,transform .2s ease)}
 .rq-fold-chev.open{transform:rotate(-135deg);margin:8rpx 6rpx 0}

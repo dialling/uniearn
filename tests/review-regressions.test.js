@@ -83,7 +83,7 @@ try{
   '../../utils/campus':{areaOfBuilding:()=>({}),floorOfRoom:()=>1,highFloor:()=>false}
  };
  vm.runInNewContext(fs.readFileSync(require.resolve('../pages/takeaway/index.js'),'utf8'),{Date,Page:p=>definition=p,wx:{redirectTo(){}},require:n=>{assert.ok(n in dependencies,n);return dependencies[n];}});
- const p={...definition,data:{...definition.data,zh:false,phone:'13800000000',dorm:'D01',room:'101',firstRoute:false,night:true,price:4}};
+ const p={...definition,data:{...definition.data,zh:false,phone:'13800000000',dorm:'D01',room:'101',firstRoute:false,night:true,shop:'Night stall',price:4}};
  p.setData=v=>Object.assign(p.data,v);
  p.totals();
  now+=5*60000;p.updateCancelClock();

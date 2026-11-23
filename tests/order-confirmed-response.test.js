@@ -7,6 +7,8 @@ cloud.ensureCloud=()=>({async callFunction(){
  calls++;
  return {result:{ok:true,value:{id:'trip-confirmed'},snapshot:{accountId:'student',revision:calls,requests:broken?null:[{id:'r1',status:'taken',isRunner:true,runnerId:'trip-confirmed'}],trips:[],publicTrips:[],stats:{},preferences:{}}}};
 }});
+const mergeMode=require('../utils/merge-mode'),prevMerge=mergeMode.enabled;
+mergeMode.enabled=false;
 const store=require('../utils/store'),orders=require('../utils/orders'),events=require('../utils/yuni-events');
 (async()=>{
  store.reset();store.update(s=>{s.language='zh';});
@@ -20,4 +22,4 @@ const store=require('../utils/store'),orders=require('../utils/orders'),events=r
  assert.equal(calls,2,'snapshot rendering failure does not replay a confirmed action');
  assert.equal(store.get().pendingOrderOperation,undefined);
  console.log('Confirmed cloud results remain successful when snapshot rendering or notifications fail.');
-})().catch(e=>{console.error(e);process.exitCode=1;});
+})().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>{mergeMode.enabled=prevMerge;});

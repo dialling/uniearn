@@ -31,6 +31,33 @@ Page({
   const link='https://pararouter.cn/uni?invite='+encodeURIComponent(this.data.inviteCode);
   require('../../utils/clipboard').copy(link,{zh:this.data.zh});},
   input(e){this.setData({inviteInput:e.detail.value});},
+  promoInputChange(e){this.setData({promoInput:e.detail.value,promoMsg:''});},
+  async redeemPromo(){
+    const code=String(this.data.promoInput||'').trim(),zh=this.data.zh;
+    if(!code){const msg=zh?'请输入兑换码':'Enter a code';this.setData({promoMsg:msg});ui.toast(msg);return;}
+    if(this.data.promoBusy)return;
+    this.setData({promoBusy:true,promoMsg:''});
+    try{
+      if(require('../../utils/merge-mode').enabled){
+        const res=await require('../../utils/api').post('/api/coupons/redeem',{code});
+        await require('../../utils/xp-rewards').load();
+        const msg=(res&&res.message)||(zh?'兑换成功，优惠券已放入券包':'Coupon redeemed');
+        this.setData({promoInput:'',promoMsg:msg});
+        wx.showToast({title:msg,icon:'none'});
+      }else{
+        await orders.act('redeemPromo',{code});
+        const msg=zh?'兑换成功，优惠券已放入券包':'Coupon redeemed';
+        this.setData({promoInput:'',promoMsg:msg});
+        wx.showToast({title:msg,icon:'none'});
+      }
+    }catch(err){
+      const msg=(err&&err.message)||(zh?'兑换失败，请检查兑换码':'Could not redeem this code');
+      this.setData({promoMsg:msg});
+      ui.toast(err);
+    }finally{
+      this.setData({promoBusy:false});
+    }
+  },
   async redeem(){
     const code=String(this.data.inviteInput||'').trim(),zh=this.data.zh;
     if(!code){wx.showToast({title:zh?'请输入同学的邀请码':'Enter a classmateʼs code',icon:'none'});return;}

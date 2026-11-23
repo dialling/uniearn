@@ -2,6 +2,8 @@ const assert=require('node:assert/strict'),{harness}=require('./helpers/order-cl
 const h=harness();h.user='runner';let definition,confirm=true,actions=[],notices=[];
 global.Page=x=>definition=x;
 global.wx={getStorageSync:()=>null,setStorageSync(){},showToast:x=>notices.push(x.title),showModal:x=>x.success({confirm}),cloud:{init(){},async callFunction({data}){actions.push(data.action);return {result:await h.client(data)};}}};
+const mergeMode=require('../utils/merge-mode'),prevMerge=mergeMode.enabled;
+mergeMode.enabled=false;
 const store=require('../utils/store'),orders=require('../utils/orders');
 store.reset();store.update(s=>{s.language='zh';s.profile={...s.profile,accountId:h.engine.idFor('runner'),onboarded:true,campusId:'sip',studentVerified:true};});
 require('../pages/trip/index');
@@ -61,4 +63,4 @@ async function accept(ids){const r=await h.call('runner','accept',{ids});assert.
  assert.match(xml,/parcel-station/);
  assert.match(xml,/item\.pictures/);
  console.log('Trip pickup actions: one-step food pickup/delivery, multi-order guards, retries, duplicate taps, cancellation and parcel auto-deliver passed');
-})().catch(e=>{console.error(e);process.exitCode=1;});
+})().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>{mergeMode.enabled=prevMerge;});

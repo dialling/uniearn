@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict');
 const {harness}=require('./helpers/order-cloud');
 const {publicAccount}=require('../cloudfunctions/studentAccount/handler');
-const clientContact=require('../utils/runner-contact'),serverContact=require('../cloudfunctions/orderService/runner-contact');
+const serverContact=require('../cloudfunctions/orderService/runner-contact');
 const h=harness(),id=h.engine.idFor;let definition,navigations=[],acceptCalls=0,legacyStatus=false;
 const actor=id('runner'),runner=h.accounts[actor];
 runner.profile={...runner.profile,name:'',phone:''};runner.verification={status:'verified',studentName:'Private Real Name',phone:'13800001111',gender:'female'};
@@ -11,12 +11,16 @@ global.wx={getStorageSync:()=>null,setStorageSync(){},showToast(){},showModal:op
  if(name==='studentAccount'){const a=publicAccount(h.accounts[id(h.user)],id(h.user));if(legacyStatus)delete a.verification.phone;return{result:{ok:true,account:a}};}
  assert.equal(name,'orderService');if(data.action==='accept')acceptCalls++;return{result:await h.client(data)};
 }}};
+const mergeMode=require('../utils/merge-mode'),prevMerge=mergeMode.enabled;
+mergeMode.enabled=false;
 const store=require('../utils/store'),orders=require('../utils/orders'),account=require('../utils/account');
 store.update(s=>{s.profile={...runner.profile,accountId:actor,onboarded:true,studentVerified:true,runnerRulesAccepted:true};s.language='zh';s.agreements={terms:true};});
 function page(name,options={}) {delete require.cache[require.resolve('../pages/'+name+'/index')];require('../pages/'+name+'/index');const page={...definition,data:structuredClone(definition.data),setData(patch){Object.assign(this.data,patch);}};if(page.onLoad)page.onLoad(options);return page;}
 const food={category:'takeout',owner:'Customer',phone:'13801026092',station:'North gate',dorm:'Dorm 7',room:'412',bags:1,price:3,arrived:true};
 (async()=>{
- for(const sample of [{profile:{name:'Display',phone:'138 0000 0000'},verification:{status:'verified',phone:'13900000000'}},{profile:{name:'Legacy',phone:'138 0000 0000'},verification:{status:'verified'}},{profile:{},verification:{status:'pending',phone:'13900000000'}}])assert.deepEqual(clientContact(sample),serverContact(sample),'client/server contact precedence matches');
+ assert.deepEqual(serverContact({profile:{displayName:'Shown',name:'Display',phone:'138 0000 0000'},verification:{status:'verified',phone:'13900000000'}}),{name:'Shown',phone:'13900000000'});
+ assert.deepEqual(serverContact({profile:{name:'Legacy',phone:'138 0000 0000'},verification:{status:'verified'}}),{name:'Legacy',phone:'13800000000'});
+ assert.deepEqual(serverContact({profile:{},verification:{status:'pending',phone:'13900000000'}}),{name:'Runner',phone:''});
  legacyStatus=true; // Reproduce an older deployed status response without verification.phone.
  const posted=await h.call('customer','create',{data:food});assert.equal(posted.ok,true,posted.error);await orders.sync();
  const jobs=page('jobs');jobs.refresh();await jobs.take({currentTarget:{dataset:{ids:[posted.value.id]}}});
@@ -36,4 +40,4 @@ const food={category:'takeout',owner:'Customer',phone:'13801026092',station:'Nor
  runner.verification.status='unverified';const blocked=await h.call('runner','startTrip',{data:{category:'takeout',when:'now',duration:10,station:'Other gate',dorm:'Dorm 7',capacity:1}});assert.equal(blocked.ok,false);assert.match(blocked.error,/student check/);runner.verification.status='verified';
  runner.loggedOut=true;navigations=[];assert.equal(await account.requireRunner(),false);assert.deepEqual(navigations,['/pages/welcome/index']);
  console.log('Acceptance navigation: actual approval guard → cloud accept → new trip details, reviewed phone fallback, private real name, parcel/start-trip parity, legacy profiles, review/rules and logout gates passed.');
-})().catch(error=>{console.error(error);process.exitCode=1;});
+})().catch(error=>{console.error(error);process.exitCode=1;}).finally(()=>{mergeMode.enabled=prevMerge;});

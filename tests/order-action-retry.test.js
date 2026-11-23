@@ -10,6 +10,8 @@ cloud.ensureCloud=()=>({async callFunction({data}){
  if(mode==='offline'||(mode==='recover'&&calls.length===1))throw Error('network timeout');
  return {result:{ok:true,value:{id:'saved-order'}}};
 }});
+const mergeMode=require('../utils/merge-mode'),prevMerge=mergeMode.enabled;
+mergeMode.enabled=false;
 const store=require('../utils/store'),orders=require('../utils/orders');
 (async()=>{
  store.reset();store.update(s=>{s.language='zh';});
@@ -31,4 +33,4 @@ const store=require('../utils/store'),orders=require('../utils/orders');
  await assert.rejects(orders.act('cancel',{id:'another-order'}),/Cancel window ended/);
  assert.equal(calls.length,1);assert.equal(store.get().pendingOrderOperation,undefined);
  console.log('Order retry: delayed recovery, stable operation IDs, pending recovery, authentication diagnostics and business failures passed.');
-})().catch(e=>{console.error(e);process.exitCode=1;});
+})().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>{mergeMode.enabled=prevMerge;});

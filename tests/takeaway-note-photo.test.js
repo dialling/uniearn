@@ -4,6 +4,8 @@ const {harness}=require('./helpers/order-cloud'),h=harness();
 let definition,chooseOptions,preview;const notices=[],uploads=[];
 global.Page=value=>definition=value;
 global.wx={getStorageSync:()=>null,setStorageSync(){},showToast:value=>notices.push(value.title),redirectTo(){},chooseMedia:options=>chooseOptions=options,saveFile:options=>options.success({savedFilePath:options.tempFilePath}),previewImage:options=>preview=options,cloud:{init(){},async callFunction({data}){return {result:await h.client(data)};},async uploadFile({cloudPath,filePath}){uploads.push(filePath);return {fileID:'cloud://test/'+cloudPath};}}};
+const mergeMode=require('../utils/merge-mode'),prevMerge=mergeMode.enabled;
+mergeMode.enabled=false;
 const store=require('../utils/store'),orders=require('../utils/orders');
 function page(name,options={}){delete require.cache[require.resolve('../pages/'+name+'/index')];require('../pages/'+name+'/index');const p={...definition,data:structuredClone(definition.data),setData:value=>Object.assign(p.data,value)};p.onLoad(options);return p;}
 (async()=>{
@@ -26,4 +28,4 @@ function page(name,options={}){delete require.cache[require.resolve('../pages/'+
  h.user='runner';await orders.sync();const trip=page('trip',{id:accepted.snapshot.trips[0].id});trip.refresh();const pictures=trip.data.requests[0].orderPictures;assert.equal(pictures.length,3);assert.ok(pictures.every(photo=>photo.startsWith('https://private.example/')),'accepting runner can view every uploaded photo');trip.previewPictures({currentTarget:{dataset:{id:order.id,index:2}}});assert.equal(preview.urls.length,3);assert.equal(preview.current,pictures[2]);
  const xml=fs.readFileSync(require.resolve('../pages/takeaway/index.wxml'),'utf8');/* 2026-11-17 order agreed with the user: photos, then soup, then the note last */assert.ok(xml.indexOf('note-photo-area')<xml.indexOf('note-soup'));assert.ok(xml.indexOf('note-soup')<xml.indexOf('{{ui.noteLabel}}'));
  console.log('Takeaway note photos: multi-select, remaining count, per-photo deletion, gallery preview, cancellation, three-photo limit, cloud persistence and customer/runner display passed.');
-})().catch(error=>{console.error(error);process.exitCode=1;});
+})().catch(error=>{console.error(error);process.exitCode=1;}).finally(()=>{mergeMode.enabled=prevMerge;});

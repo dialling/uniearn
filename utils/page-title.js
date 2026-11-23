@@ -41,7 +41,9 @@ const MAP={
   help:['帮助与支持','Help & support'],
   'notify-guide':['微信通知设置','WeChat notifications'],
   terms:['用户协议与隐私','Terms & privacy'],
-  profile:['我的','Me']
+  profile:['我的','Me'],
+  'profile-name':['修改昵称','Edit display name'],
+  yuni:['Yuni','Yuni']
 };
 function lang(){return store.get().language==='en'?'en':'zh';}
 // The page stack can hand back a route as a string, a {path} object or nothing at all.

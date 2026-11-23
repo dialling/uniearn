@@ -15,6 +15,8 @@ function page(name){
   require('../pages/'+name+'/index');
   return {...definition,data:structuredClone(definition.data),setData(v){Object.assign(this.data,v);}};
 }
+const mergeMode=require('../utils/merge-mode'),prevMerge=mergeMode.enabled;
+mergeMode.enabled=false;
 const store=require('../utils/store'),orders=require('../utils/orders');
 async function run(){
   const hall=page('jobs');
@@ -56,4 +58,4 @@ async function run(){
   assert.equal(store.get().walletSummary.balance_cents,900);
   console.log('Actual hall, trip and publisher page handlers: picked both, submitted photos, confirmed both, paid ¥9.');
 }
-run().catch(e=>{console.error(e);process.exitCode=1;});
+run().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>{mergeMode.enabled=prevMerge;});

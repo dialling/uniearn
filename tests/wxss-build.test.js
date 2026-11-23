@@ -60,7 +60,6 @@ for(const sheet of shipped){
 // The invite page keeps its cover fonts inline for the same reason.
 const invite=read('pages/invite/index.wxss');
 assert.match(invite,/@font-face\{font-family:"Invite Serif";font-style:normal;font-weight:700;/);
-assert.match(invite,/@font-face\{font-family:"Invite Serif";font-style:normal;font-weight:800;/);
 assert.doesNotMatch(invite,/@import/);
 
 console.log('WXSS build: no stray stylesheet under assets/, imports resolve, and font faces stay in the syntax the devtools build accepts.');

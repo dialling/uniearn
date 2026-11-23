@@ -15,14 +15,14 @@
  <view class="yn-group">{{zh?'设置':'Settings'}}</view>
  <view class="yn-list">
   <view class="yn-row"><image class="yn-ico" src="/assets/yuni-play/i-sound.svg" mode="aspectFit"/><view class="yn-grow"><view class="yn-title">{{zh?'音效':'Sounds'}}</view><view class="yn-val">{{zh?'和 Yuni 玩时的音乐和音效':'Music and effects when you play with Yuni'}}</view></view><switch color="#0b7a55" checked="{{soundOn}}" bindchange="sound"/></view>
-  <view class="yn-row"><image class="yn-ico" src="/assets/yuni-play/i-sparkle.svg" mode="aspectFit"/><view class="yn-grow"><view class="yn-title">{{zh?'提示和动画':'Tips and animations'}}</view><view class="yn-val">{{zh?'Yuni 弹出订单进度提示，页面上有动画':'Yuni pops up with order updates, and pages move'}}</view></view><switch color="#0b7a55" checked="{{tipsOn}}" bindchange="tips"/></view>
+  <view class="yn-row"><image class="yn-ico" src="/assets/yuni-play/spin.svg" mode="aspectFit"/><view class="yn-grow"><view class="yn-title">{{zh?'提示和动画':'Tips and animations'}}</view><view class="yn-val">{{zh?'Yuni 弹出订单进度提示，页面上有动画':'Yuni pops up with order updates, and pages move'}}</view></view><switch color="#0b7a55" checked="{{tipsOn}}" bindchange="tips"/></view>
  </view>
 
  <view class="yn-group">{{zh?'帮助':'Help'}}</view>
  <view class="yn-list">
   <view class="yn-row" hover-class="yn-row-press" bindtap="yuniGuide"><image class="yn-ico" src="/assets/yuni-play/i-yuni.svg" mode="aspectFit"/><view class="yn-grow"><view class="yn-title">{{zh?'Yuni 新手引导':'Yuni guide'}}</view><view class="yn-val">{{zh?'Yuni 带你认识喂食、钓鱼、商店和升级':'A quick tour of feeding, fishing, the shop and levels'}}</view></view><view class="yn-chev"/></view>
   <view class="yn-row" hover-class="yn-row-press" bindtap="guide"><image class="yn-ico" src="/assets/yuni-play/i-help.svg" mode="aspectFit"/><view class="yn-grow"><view class="yn-title">{{zh?'重看新手引导':'Replay the app guide'}}</view><view class="yn-val">{{zh?'再看一遍接单大厅，以及发单和行程的小提示':'See the job hall tour and the posting and trip tips again'}}</view></view><view class="yn-chev"/></view>
-  <view class="yn-row" hover-class="yn-row-press" bindtap="levels"><image class="yn-ico" src="/assets/yuni-play/i-rules.svg" mode="aspectFit"/><view class="yn-grow"><view class="yn-title">{{zh?'等级和奖励':'Levels and rewards'}}</view><view class="yn-val">{{zh?'怎么赚积分，每级送什么装备':'How to earn points and the gear each level unlocks'}}</view></view><view class="yn-chev"/></view>
+  <view class="yn-row" hover-class="yn-row-press" bindtap="levels"><image class="yn-ico" src="/assets/yuni-play/book.svg" mode="aspectFit"/><view class="yn-grow"><view class="yn-title">{{zh?'等级和奖励':'Levels and rewards'}}</view><view class="yn-val">{{zh?'怎么赚积分，每级送什么装备':'How to earn points and the gear each level unlocks'}}</view></view><view class="yn-chev"/></view>
  </view>
 
  <view class="yn-group">{{zh?'怎么和 Yuni 玩':'How to play with Yuni'}}</view>

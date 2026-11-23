@@ -56,7 +56,7 @@ function submit(s,actor,data,now,validatePhoto){
  if(!owner&&reason==='Seal broken'&&!r.sealReportedAt)r.sealReportedAt=now;
  const t=ticket(s,actor,r,now);if(reason!=='Report response')pause(r,owner,'team',now);
  if(owner&&r.status==='disputed'&&(data.reason||r.dispute?.contactOnly!==false))r.dispute={...(r.dispute||{}),reason,note,photo:photo||r.dispute?.photo||'',at:r.dispute?.at||now,updatedAt:now,contactOnly:false};
- t.messages.push({text:(data.reason&&data.reason!=='Something else'?'['+data.reason+'] ':'')+note,note,...(data.reason?{reason:data.reason}:{}),...(photo?{photo}:{}),at:now,mine:true});t.readAt=now;t.updatedAt=now;
+ t.messages.push({text:(data.reason&&data.reason!=='Something else'?'['+data.reason+'] ':'')+note,note,...(data.reason?{reason:data.reason}:{}),...(photo?{photo}:{}),at:now,mine:true});for(const m of t.messages)if(!m.mine)delete m.unread;t.readAt=now;t.updatedAt=now;
  if(t.messages.filter(m=>m.mine).length===1)workflow.event(r,(owner?'Customer':'Runner')+' contacted the Uniearn team',now);
  return {ticketId:t.id,paused:owner&&r.status==='disputed'};
 }
@@ -86,9 +86,9 @@ function resolve(s,actor,data,now){
  for(const t of open){t.status='resolved';t.resolvedAt=now;}
  workflow.event(r,'Reporter resolved feedback · order progress unchanged',now);return {id:r.id,completed:false};
 }
-function read(s,actor,data,now){const {order:r}=context(s,actor,data.id);for(const t of (s.members[actor]?.supportTickets||[]))if(t.orderId===r.id)t.readAt=now;return {id:r.id};}
+function read(s,actor,data,now){const {order:r}=context(s,actor,data.id);for(const t of (s.members[actor]?.supportTickets||[]))if(t.orderId===r.id){t.readAt=now;for(const m of t.messages||[])if(!m.mine)delete m.unread;}return {id:r.id};}
 // Team replies the participant has not opened yet, with the latest one for previews.
-function unread(s,actor,id){const tickets=(s.members[actor]?.supportTickets||[]).filter(t=>t.orderId===id),team=tickets.flatMap(t=>(t.messages||[]).filter(m=>!m.mine&&m.at>(t.readAt||0)));const last=team[team.length-1];return {supportUnread:team.length,supportPreview:last?String(last.text||''):'',supportPreviewZh:last?String(last.textZh||last.text||''):''};}
+function unread(s,actor,id){const tickets=(s.members[actor]?.supportTickets||[]).filter(t=>t.orderId===id),team=tickets.flatMap(t=>(t.messages||[]).filter(m=>!m.mine&&(m.unread||m.at>(t.readAt||0))));const last=team[team.length-1];return {supportUnread:team.length,supportPreview:last?String(last.text||''):'',supportPreviewZh:last?String(last.textZh||last.text||''):''};}
 // 2026-11-14 (user decision): the other participant sees the reason the reporter picked (e.g. "Customer not responding"),
 // never the reporter's own words or photos. It shows while that report is open.
 function notice(s,r,actor){
@@ -106,7 +106,7 @@ const TEAM_CLOSE={
 };
 function teamClose(s,id,now,outcome='resolved'){
  const [text,textZh]=TEAM_CLOSE[outcome]||TEAM_CLOSE.resolved;let closed=0;
- for(const member of Object.values(s.members||{}))for(const t of member.supportTickets||[])if(t.orderId===id&&t.status==='open'){(t.messages||(t.messages=[])).push({text,textZh,at:now,mine:false,teamClose:outcome});t.status='resolved';t.resolvedAt=now;t.resolvedBy='team';closed++;}
+ for(const member of Object.values(s.members||{}))for(const t of member.supportTickets||[])if(t.orderId===id&&t.status==='open'){(t.messages||(t.messages=[])).push({text,textZh,at:now,mine:false,unread:true,teamClose:outcome});t.status='resolved';t.resolvedAt=now;t.resolvedBy='team';closed++;}
  return closed;
 }
 module.exports={contact,submit,resolve,closeTickets,state,read,unread,notice,teamClose};

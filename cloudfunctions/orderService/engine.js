@@ -164,7 +164,7 @@ function execute(s, actor, account, event, now = Date.now()) {
   check(account && account.profile && !account.loggedOut, 'Save your profile / log in in Me first.');
   const action = event.action;
   const campusId=account.profile.campusId,contact=require('./runner-contact')(account);
-  if(['create','accept','acceptBoxes','startTrip'].includes(action))check(account.profile.universityId==='xjtlu'&&campusId==='sip','Choose XJTLU SIP campus before posting or taking jobs.');
+  if(['create','accept','acceptBoxes','startTrip'].includes(action))check(['xjtlu','ruc','suda'].includes(account.profile.universityId)&&campusId==='sip','Choose XJTLU SIP campus before posting or taking jobs.');
   if (['accept','acceptBoxes','startTrip'].includes(action))check(!require('./runner-level').level(stats(s,actor),now).paused,'Taking jobs is paused for seven days. Contact the team before returning.');
   if (runnerActions.has(action)) check(account.verification && account.verification.status === 'verified', 'Complete your student check before accepting jobs.');
   if(runnerActions.has(action))check(!!account.runnerRulesAcceptedAt,'Read and accept the runner rules first.');
@@ -213,7 +213,7 @@ function execute(s, actor, account, event, now = Date.now()) {
     check(t,'Support conversation is closed or unavailable.');
     const text=String(event.text||'').trim();check(text&&text.length<=500,'Enter a reply up to 500 characters.');
     t.messages=t.messages||[];check(t.messages.filter(msg=>!msg.mine&&now-msg.at<86400000).length<100,'Too many team replies today.');
-    t.messages.push({text,at:now,mine:false});value={ticketId:t.id};
+    t.messages.push({text,at:now,mine:false,unread:true});value={ticketId:t.id};
   } else if (action === 'create') {
     check(s.requests.filter(r => r.ownerId === actor && OPEN_STATUSES.includes(r.status)).length < MAX_OPEN_PER_USER, 'You have '+MAX_OPEN_PER_USER+' open orders. Wait for some to finish before posting more.');
     check(s.requests.filter(r => r.ownerId === actor && r.createdAt > now - 86400000).length < MAX_CREATES_PER_DAY, 'You can post up to '+MAX_CREATES_PER_DAY+' orders a day.');
@@ -288,7 +288,7 @@ function execute(s, actor, account, event, now = Date.now()) {
     if (action === 'riderPhoto') { check(['waiting','taken'].includes(r.status), 'Pickup has already started.'); const replacing=event.replace===true,incoming=Array.isArray(event.photos)?event.photos:(event.photo?[event.photo]:[]),existing=Array.isArray(r.riderPhotos)?r.riderPhotos.slice():(r.riderPhoto?[r.riderPhoto]:[]);check(incoming.length<=(replacing?3:3-existing.length),'Up to three rider photos.');check(replacing||incoming.length>0,'Add at least one rider photo.');r.riderPhotos=(replacing?incoming:existing.concat(incoming)).map(p=>photo(p,actor,true));r.riderPhoto=r.riderPhotos[0]||'';value={riderPhotos:r.riderPhotos.slice()}; }
   } else if (['pickup','deliver','missingParcel','runnerCancel','taskDone','sealBroken'].includes(action)) {
     const r = runnerRequest(s, event.id, actor);
-    if(action==='taskDone'){check(r.category==='task'&&r.status==='taken','This task cannot be completed now.');const note=String(event.note||'').trim();check(note.length<=500,'Completion note must be at most 500 characters.');r.status='delivered';r.photo=photo(event.photo,actor);r.completionNote=note;r.deliveredAt=now;const taskTrip=ownTrip(s,r.runnerId,actor);taskTrip.phase=taskTrip.requestIds.every(id=>['delivered','confirmed','disputed'].includes(s.requests.find(x=>x.id===id).status))?'done':'collect';if(taskTrip.phase==='done')taskTrip.joinUntil=now;f.event(r,'Completion submitted',now);rewards.recordBonus(s,actor,r,now);}
+    if(action==='taskDone'){check(r.category==='task'&&r.status==='taken','This task cannot be completed now.');const note=String(event.note||'').trim();check(note.length>=1&&note.length<=500,'Completion note must be 1–500 characters.');r.status='delivered';r.photo=photo(event.photo,actor);r.completionNote=note;r.deliveredAt=now;const taskTrip=ownTrip(s,r.runnerId,actor);taskTrip.phase=taskTrip.requestIds.every(id=>['delivered','confirmed','disputed'].includes(s.requests.find(x=>x.id===id).status))?'done':'collect';if(taskTrip.phase==='done')taskTrip.joinUntil=now;f.event(r,'Completion submitted',now);rewards.recordBonus(s,actor,r,now);}
     if(action==='sealBroken'){check(r.category==='takeout'&&r.status==='taken','Report a seal before pickup.');r.sealReportedAt=now;f.event(r,'Seal already broken at pickup',now);}
     if(action==='missingParcel')value=require('./parcel-missing').missingParcel(s,r.id,event.index,event.expectedCodes,now);
     if (action === 'pickup') {

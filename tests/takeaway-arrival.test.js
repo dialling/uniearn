@@ -7,6 +7,8 @@ global.wx={getStorageSync:()=>null,setStorageSync(){},showToast:value=>notices.p
 // Mock the cloud module itself so the test runs against both the wx.cloud and XP adapter builds.
 const cloud=require('../utils/cloud');
 cloud.ensureCloud=()=>({async callFunction({data}){return{result:await h.client(data)};}});
+const mergeMode=require('../utils/merge-mode'),prevMerge=mergeMode.enabled;
+mergeMode.enabled=false;
 const store=require('../utils/store'),orders=require('../utils/orders'),f=require('../utils/workflow');
 function page(name,args={}){delete require.cache[require.resolve('../pages/'+name+'/index')];require('../pages/'+name+'/index');const p={...definition,data:structuredClone(definition.data)};p.setData=value=>Object.assign(p.data,value);p.onLoad(args);return p;}
 const input=(p,part,value)=>p.inputArrival({currentTarget:{dataset:{part}},detail:{value}});
@@ -35,4 +37,4 @@ const status=value=>({currentTarget:{dataset:{value}}});
  assert.equal((await h.call('customer','foodArrived',{id:r.id})).ok,false,'an arrived order cannot be marked twice');
  await h.call('runner','pickup',{id:r.id});assert.equal((await h.call('customer','foodArrived',{id:r.id})).ok,false,'pickup locks arrival changes');
  console.log('Takeaway arrival: required ETA, expired ETA, preserved input, saved ETA/closure, early arrival update, runner visibility and ownership checks passed.');
-})().catch(e=>{console.error(e);process.exitCode=1;});
+})().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>{mergeMode.enabled=prevMerge;});

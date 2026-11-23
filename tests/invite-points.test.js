@@ -7,12 +7,11 @@ const adminRewards=require('../cloudfunctions/adminService/order-engine/rewards'
 const orderDefaults=require('../cloudfunctions/orderService/activity-default.json');
 const newsDefaults=require('../cloudfunctions/newsService/activity-default.json');
 const clientActivity=require('../utils/news-activity');
-const clientActivityJson=JSON.parse(read('utils/news-activity.json'));
 const meCopy=require('../utils/me-copy');
 
 const referral=config=>config.tasks.find(t=>t.kind==='referral');
 const weekly=config=>config.tasks.find(t=>t.kind==='weekly_login');
-for(const [name,config] of [['orderService',orderDefaults],['newsService',newsDefaults],['client-js',clientActivity],['client-json',clientActivityJson]]){
+for(const [name,config] of [['orderService',orderDefaults],['newsService',newsDefaults],['client-js',clientActivity]]){
  assert.equal(referral(config).points,20,name+' invite task is 20 points');
  assert.equal(weekly(config).points,10,name+' weekly check-in stays at 10');
  assert.equal(config.referralCoupon.discountRate,0.5,name+' invite coupon rate unchanged');

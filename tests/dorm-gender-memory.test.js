@@ -7,6 +7,8 @@ let repairCalls=0;
 // Mock the cloud module itself so the test runs against both the wx.cloud and XP adapter builds.
 const cloud=require('../utils/cloud');
 cloud.ensureCloud=()=>({async callFunction({data}){if(data.action==='restoreDormGenders')repairCalls++;return {result:await h.client(data)};}});
+const mergeMode=require('../utils/merge-mode'),prevMerge=mergeMode.enabled;
+mergeMode.enabled=false;
 const store=require('../utils/store'),orders=require('../utils/orders');
 const route={accountId:actor,dorm:'A05',room:'1111',owner:'Customer',phone:'13801026092',dormGender:'female'};
 const request={...route,id:'r1',isMine:true,status:'waiting',category:'takeout',campusId:'sip',dormGender:''};
@@ -33,4 +35,4 @@ assert.deepEqual(repairs({...state,profile:{...state.profile,loggedOut:true}}),[
  h.edit(s=>{const r=s.requests.find(r=>r.id===id);r.status='confirmed';r.confirmedAt=Date.now();delete r.dormGender;});
  const completed=await h.call('customer','restoreDormGenders',{repairs:[payload]});assert.equal(completed.ok,true,completed.error);assert.equal(completed.value.updated,1);assert.equal(h.state.requests.find(r=>r.id===id).dormGender,'female');
  console.log('Dorm gender memory: exact saved address, account isolation, ambiguity, server ownership/stale-address guard, no overwrite and actual sync restoration passed.');
-})().catch(e=>{console.error(e);process.exitCode=1;});
+})().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>{mergeMode.enabled=prevMerge;});

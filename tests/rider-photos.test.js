@@ -2,6 +2,8 @@ const assert=require('node:assert/strict'),{harness}=require('./helpers/order-cl
 let definition,chooseOptions,preview;const notices=[],uploads=[];
 global.Page=x=>definition=x;
 global.wx={getStorageSync:()=>null,setStorageSync(){},showToast:x=>notices.push(x.title),chooseMedia:x=>chooseOptions=x,saveFile:x=>x.success({savedFilePath:x.tempFilePath}),previewImage:x=>preview=x,cloud:{init(){},async callFunction({data}){return {result:await h.client(data)};},async uploadFile({cloudPath,filePath}){uploads.push(filePath);return {fileID:'cloud://test/'+cloudPath};}}};
+const mergeMode=require('../utils/merge-mode'),prevMerge=mergeMode.enabled;
+mergeMode.enabled=false;
 const store=require('../utils/store'),orders=require('../utils/orders'),paths=require('../utils/rider-photos').paths;
 function page(name,id){delete require.cache[require.resolve('../pages/'+name+'/index')];require('../pages/'+name+'/index');const p={...definition,data:structuredClone(definition.data),setData:x=>Object.assign(p.data,x)};p.onLoad({id});p.refresh();return p;}
 const tap=index=>({currentTarget:{dataset:{index}}});
@@ -43,4 +45,4 @@ async function file(who='customer'){const r=await h.call(who,'prepareUpload');as
  // Old cloud deployments must fail clearly before selecting/uploading, not lose all but the first image.
  const sync=orders.sync;orders.sync=async()=>{};store.update(s=>s.orderCapabilities={});chooseOptions=null;await clearPage.riderPhoto();assert.equal(chooseOptions,null);assert.match(notices.at(-1),/云端/);orders.sync=sync;
  console.log('Rider photos: replace/add/remove galleries, limits, legacy compatibility, cancellation, owner/runner/privacy guards, temp URLs and old-cloud capability checks passed');
-})().catch(e=>{console.error(e);process.exitCode=1;});
+})().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>{mergeMode.enabled=prevMerge;});
