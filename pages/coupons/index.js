@@ -6,7 +6,7 @@ Page({
   onShareTimeline() {return require('../../utils/share-card').shareTimeline(this.data.zh);},
 
  data:{...require('../../utils/motion').data(),language:'zh',tab:'available',items:[],showUseFor:'',couponName:'',loading:false},
- onShow(){require('../../utils/appearance').apply(this);orders.bind(this,'refresh');},
+ onShow(){require('../../utils/appearance').apply(this);orders.bind(this,'refresh');if(require('../../utils/merge-mode').enabled)require('../../utils/xp-rewards').load().finally(()=>this.refresh());else this.refresh();},
  onHide(){orders.unbind(this);},
  onUnload(){orders.unbind(this);},
  refresh(){

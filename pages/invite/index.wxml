@@ -44,6 +44,12 @@
    <input class="iv-input" value="{{inviteInput}}" bindinput="input" placeholder="{{zh?'输入邀请码':'Enter the code'}}" placeholder-class="iv-ph" maxlength="20"/>
    <view class="iv-chip solid {{redeeming?'busy':''}}" hover-class="iv-press" bindtap="redeem">{{zh?'使用':'Use'}}</view>
   </view>
+  <view class="iv-sub">{{zh?'兑换码':'Redeem code'}}</view>
+  <view class="iv-card iv-redeem">
+   <input class="iv-input" value="{{promoInput}}" bindinput="promoInputChange" placeholder="{{zh?'输入兑换码领优惠券':'Enter a code for a coupon'}}" placeholder-class="iv-ph" maxlength="32"/>
+   <view class="iv-chip solid {{promoBusy?'busy':''}}" hover-class="iv-press" bindtap="redeemPromo">{{zh?'兑换':'Redeem'}}</view>
+  </view>
+  <view wx:if="{{promoMsg}}" class="iv-muted">{{promoMsg}}</view>
  </view>
 
  <view class="iv-dock">
