@@ -47,7 +47,7 @@ function createRequest(s, data) {
 }
 function routeStation(r){return catalog.category(r)==='takeout'?(r.pickupPoint||r.station):r.station;}
 function routeStationMatches(r,trip){return routeStation(r)===trip.station;}
-function eligible(s, trip) { return s.requests.filter(r=>r.status==='waiting' && routeStationMatches(r,trip) && tripRoute.destinationMatches(r,trip) && tripRoute.categoryMatches(r,trip) && boxes(r)<=trip.capacity); }
+function eligible(s, trip) { return s.requests.filter(r=>r.status==='waiting' && catalog.category(r)===trip.category && routeStationMatches(r,trip) && tripRoute.destinationMatches(r,trip) && tripRoute.categoryMatches(r,trip) && boxes(r)<=trip.capacity); }
 function assign(s, trip, ids, opts = {}) {
   if(new Set(ids).size!==ids.length||ids.some(id=>trip.requestIds.includes(id)))throw Error('Duplicate order');
   const selection=ids.map(id=>s.requests.find(r=>r.id===id));
