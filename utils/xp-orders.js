@@ -255,8 +255,24 @@ async function loadSupport() {
   store.update((s) => { s.supportTickets = [{ id: 'cs', orderId: null, messages }]; });
   return messages;
 }
+async function syncLoyalty() {
+  if (!require('./util').getToken()) return null;
+  const state = store.get();
+  const accountId = state.profile && state.profile.accountId;
+  if (!accountId) return null;
+  const out = await require('./xp-loyalty').sync(accountId, Date.now());
+  if (out && out.progression) {
+    store.update((s) => {
+      s.progression = out.progression; s.progressionAccountId = accountId;
+      if (out.yuni) s.yuniPlay = out.yuni;
+      if (out.rewards) s.rewards = out.rewards;
+    });
+  }
+  return out;
+}
 async function sync() {
   const [h, m] = await Promise.all([hall(), mine(), loadSupport().catch(() => [])]);
+  await syncLoyalty().catch(() => null);
   return { hall: h, mine: m };
 }
 function numIdOf(v) { return Number(String(v || '').replace(/^xp-/, '')); }
@@ -386,6 +402,17 @@ async function act(action, payload = {}) {
       }
     });
     return { ok: true };
+  }
+  // Yuni 钓鱼/喂食/衣柜：老版客户端就是这么调的（/api/loyalty/yuni/:action）
+  if (['yuniBuy', 'yuniWear', 'yuniFish', 'yuniFeed', 'yuniTestPoints', 'yuniTestRound'].includes(action)) {
+    const map = { yuniBuy: 'buy', yuniWear: 'wear', yuniFish: 'fish', yuniFeed: 'feed', yuniTestPoints: 'test-points', yuniTestRound: 'test-round' };
+    const res = await api.post('/api/loyalty/yuni/' + map[action], {
+      request_key: payload.operationId || ('yuni-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8)),
+      item: payload.item, slot: payload.slot, landed: payload.landed, perfect: payload.perfect,
+      index: payload.index, fish: payload.fish,
+    });
+    await syncLoyalty().catch(() => null);
+    return res;
   }
   if (action === 'messages') {
     const row = (store.get().requests || []).find(r => r.id === reqId) || {};
