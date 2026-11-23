@@ -90,7 +90,7 @@
 <view class="offer-heading"><image class="rq-head-icon" mode="aspectFit" src="/assets/icons3d/bolt.svg"/><text class="strong">{{zh?'提高赏金':'Add to your offer'}}</text></view>
 <view class="hint offer-hint">{{zh?'加价仅对整笔订单计算一次，接单后不可加价。':'Added once to the whole order. Available before acceptance only.'}}</view>
 <view class="offer-options"><button wx:for="{{offerAmounts}}" wx:key="*this" class="offer-option" hover-class="offer-option-press" data-amount="{{item}}" bindtap="raise" disabled="{{raising}}">+¥{{item}}</button><button class="offer-option offer-custom" hover-class="offer-option-press" bindtap="customRaise" disabled="{{raising}}">{{zh?'自定义':'Custom'}}</button></view>
-<view class="rq-bill"><view wx:if="{{request.discount}}" class="row hint"><text>{{zh?'优惠券':'Coupon'}}</text><text>−¥{{request.discount}}</text></view><view class="row strong rq-total"><text>{{zh?'合计（模拟）':'Total (simulated)'}}</text><text>¥{{request.total}}</text></view></view>
+<view class="rq-bill"><view wx:if="{{request.discount}}" class="row hint"><text>{{zh?'优惠券':'Coupon'}}</text><text>−¥{{request.discount}}</text></view><view class="row strong rq-total"><text>{{zh?'合计':'Total'}}</text><text>¥{{request.total}}</text></view></view>
 <view class="offer-footer"><view class="offer-footer-copy"><text wx:if="{{request.closesAt}}" class="hint">{{zh?'若 '+request.closeTime+' 前无人接单，将全额退款。':'Auto-refund if not taken by '+request.closeTime+'.'}}</text><text wx:else class="hint">{{zh?'无人接单时可免费取消。':'Cancel free before a runner accepts.'}}</text></view><button wx:if="{{cancelWindow.canCancel}}" class="offer-cancel" hover-class="offer-cancel-press" bindtap="cancel">{{cancelWindow.button}}</button></view>
 </view>
 <view wx:if="{{request.orderPictures.length}}" class="flow-card">

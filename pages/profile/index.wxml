@@ -56,4 +56,8 @@
   <view class="yg-actions"><button wx:if="{{yg>0}}" class="yg-btn yg-back" bindtap="ygBack">{{language==='en'?'Back':'上一步'}}</button><button class="yg-btn yg-next" bindtap="ygNext">{{yg===0?(language==='en'?'Show me':'带我看看'):yg===ygLast?(language==='en'?'Got it':'知道了'):(language==='en'?'Next':'下一步')}}</button></view>
  </view>
 </block>
+  <view class="me-block">
+   <view class="me-row" hover-class="me-row-press" bindtap="admin"><image class="me-ico" src="/assets/icons3d/star.svg" mode="aspectFit"/><view class="me-grow"><view class="me-row-title">{{language==='en'?'Admin console':'管理员登录'}}</view></view><view class="me-chev"/></view>
+   <view wx:if="{{!profile.loggedOut}}" class="me-row" hover-class="me-row-press" bindtap="logout"><image class="me-ico" src="/assets/icons3d/arrow.svg" mode="aspectFit"/><view class="me-grow"><view class="me-row-title">{{language==='en'?'Log out':'退出登录'}}</view></view><view class="me-chev"/></view>
+  </view>
 </view>

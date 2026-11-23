@@ -217,9 +217,23 @@ function pay(orderId) {
 }
 async function hall() {
   // 大厅是公开接口（optionalAuth），游客也能看单；只是不会带「我的」标记
+  // 已完成单分页拉全（接口单页上限 200，用 before 游标翻页）
+  async function allCompleted() {
+    const out = [];
+    let before = 0;
+    for (let i = 0; i < 10; i++) {
+      const q = '/api/orders?status=completed&limit=200' + (before ? '&before=' + before : '');
+      const r = await api.get(q).catch(() => ({}));
+      const list = (r && (r.list || r.orders)) || [];
+      out.push(...list);
+      if (!(r && r.has_more) || !list.length) break;
+      before = list[list.length - 1].id;
+    }
+    return { list: out };
+  }
   const [openRes, doneRes, accRes, pickRes] = await Promise.all([
     api.get('/api/orders?status=pending').catch(() => ({})),
-    api.get('/api/orders?status=completed&limit=50').catch(() => ({})),
+    allCompleted(),
     api.get('/api/orders?status=accepted&limit=50').catch(() => ({})),
     api.get('/api/orders?status=picked_up&limit=50').catch(() => ({})),
   ]);
