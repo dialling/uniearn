@@ -29,7 +29,9 @@ Page({
    this.setData({sending:true});
    try{
      const path=await require('../../utils/ui').photo([source]);
-     const photo=await orders.upload(path);
+     const up=await orders.upload(path);
+     const photo=typeof up==='string'?up:((up&&up.url)||'');
+     if(!photo)throw Error('图片上传失败');
      await orders.act('message',{id:this.id,photo});
      this.closeMenu();
    }catch(error){if(!/cancel/i.test(error.errMsg||error.message||''))wx.showToast({title:error.message||'发送失败',icon:'none'});}
