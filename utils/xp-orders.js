@@ -138,6 +138,7 @@ function toRequest(order, opts = {}) {
     isMine,
     mine: isMine,
     isRunner,
+    ownerAvatar: (order.publisher && order.publisher.avatar) || order.publisher_avatar || '',
     owner: (order.publisher && (order.publisher.nickname || order.publisher.name))
       || order.publisher_name || order.nickname || '',
     runnerName: order.runner_name || '',

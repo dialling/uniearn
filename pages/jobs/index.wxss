@@ -326,3 +326,6 @@ radial-gradient(80% 42% at 92% 74%,rgba(210,196,170,.20),transparent 55%),
 .nj-when.is-task{color:#2b59c3}
 .nj-when.is-task .nj-when-dot{background:#2b59c3;box-shadow:0 0 0 6rpx #2b59c326}
 .page-dark .nj-when.is-task{color:#8fb0ff}
+
+.job-poster-img{width:44rpx;height:44rpx;border-radius:50%;flex:0 0 auto;background:#e9efe9;}
+.job-poster-open{margin:12rpx 0 4rpx;}
