@@ -20,7 +20,7 @@
   <view class="ts-stop">
    <view class="ts-rail"><image class="ts-pin" src="/assets/icons3d/pickup.svg" mode="aspectFit"/><view class="ts-dots"/></view>
    <view class="ts-stop-body">
-    <view class="ts-stop-title">{{category==='takeout'?(zh?'在哪个外卖柜取':'Pick up at which locker'):category==='parcel'?(zh?'在哪个快递站取':'Pick up at which station'):(zh?'从哪里出发':'Where are you starting?')}}</view>
+    <view class="ts-stop-title">{{category==='takeout'?(zh?'在哪个外卖柜取':'Pick up at which locker'):category==='parcel'?(zh?'在哪个快递站取':'Pick up at which station'):(zh?'从哪里出发':'Where are you starting?')}}{{stationPickCount>1?' · '+(zh?'已选 '+stationPickCount+' 个':' '+stationPickCount+' selected'):''}}</view>
     <block wx:if="{{category==='other'}}">
      <input class="ts-input" value="{{station}}" data-field="station" bindinput="text" maxlength="200" placeholder="{{zh?'店铺、建筑或出发地点':'Shop, building or starting place'}}"/>
      <input class="ts-input" value="{{pickupAddress}}" data-field="pickupAddress" bindinput="text" maxlength="200" placeholder="{{zh?'具体位置（选填），如一楼入口':'Exact spot (optional), e.g. ground-floor entrance'}}"/>

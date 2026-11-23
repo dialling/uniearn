@@ -68,7 +68,7 @@ Page({
  stationChoice(e){if(this.data.starting)return;const option=this.data.stationOptions[Number(e.currentTarget.dataset.index)];if(!option)return;
   const prev=this.data.stations||[];
   const list=option.manual?[]:(prev.indexOf(option.value)>=0?prev.filter(v=>v!==option.value):prev.concat(option.value));
-  this.setData({requestIds:[],selectionEdited:false,stationManual:!!option.manual,station:option.manual?'':option.value,stations:list});this.refresh();},
+  this.setData({requestIds:[],selectionEdited:false,stationManual:!!option.manual,station:option.manual?'':option.value,stations:list,stationPickCount:list.length});this.refresh();},
  toggleCustomDuration(){if(this.data.starting)return;const customDurationInput=this.data.customDurationInput||'15';this.setData({requestIds:[],selectionEdited:false,customDurationOpen:true,customDurationInput,duration:Number(customDurationInput)});this.refresh();},
  setCustomDuration(e){if(this.data.starting)return;const customDurationInput=String(e.detail.value||'');this.setData({requestIds:[],selectionEdited:false,customDurationInput,duration:customDurationInput===''?0:Number(customDurationInput)});this.refresh();}
 });
