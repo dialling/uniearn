@@ -28,7 +28,7 @@
     </block>
     <block wx:else>
      <view class="ts-options" role="radiogroup">
-      <view wx:for="{{stationOptions}}" wx:key="value" class="ts-option {{(item.manual?stationManual:(!stationManual&&(station===item.value||station===item.label||stations.indexOf(item.value)>=0||stations.indexOf(item.label)>=0)))?'on':''}}" role="checkbox" aria-checked="{{item.manual?stationManual:(!stationManual&&stations.indexOf(item.value)>=0)}}" data-index="{{index}}" bindtap="stationChoice"><view class="ts-radio"/><text>{{item.label}}</text></view>
+      <view wx:for="{{stationOptions}}" wx:key="value" class="ts-option {{item.on?'on':''}}" role="checkbox" aria-checked="{{item.on}}" data-index="{{index}}" bindtap="stationChoice"><view class="ts-radio"/><text>{{item.label}}</text></view>
      </view>
      <input wx:if="{{stationManual}}" class="ts-input" value="{{station}}" data-field="station" bindinput="text" placeholder="{{category==='takeout'?(zh?'输入外卖柜名称':'Enter the locker name'):(zh?'输入快递站名称':'Enter the station name')}}" maxlength="200"/>
     </block>
