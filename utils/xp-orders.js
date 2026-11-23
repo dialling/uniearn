@@ -617,7 +617,19 @@ async function act(action, payload = {}) {
   if (action === 'walletWithdraw') return api.post('/api/wallet/withdraw', { amount_cents: Number(payload.amount_cents) || 0 });
   if (action === 'upload') return upload(payload.filePath || payload.path);
   if (action === 'report' || action === 'orderFeedbackSubmit') {
-    return api.post('/api/reports', { order_id: id, reason: payload.reason || '', detail: payload.note || payload.detail || '', images: payload.photos || [] });
+    // 服务端只接受中文原因白名单；客户端传的是英文 id，这里做一次映射
+    const RMAP = {
+      'Not received': '未收到货', 'Food not ready': '未收到货',
+      'Wrong bag': '其它', 'Result differs': '其它', 'Task not completed': '其它',
+      'Spilled or damaged': '物品损坏或丢失', 'Seal broken': '物品损坏或丢失',
+      'Runner not responding': '接单后失联', 'Customer not responding': '接单后失联',
+      'Runner very late': '其它', 'Cannot find address': '其它',
+      'Customer unsafe or rude': '言语骚扰',
+      'Report response': '其它', 'Something else': '其它',
+    };
+    const rawReason = payload.reason || '';
+    const serverReason = RMAP[rawReason] || (/^[\u4e00-\u9fa5]/.test(rawReason) ? rawReason : '其它');
+    return api.post('/api/reports', { order_id: id, reason: serverReason, detail: payload.note || payload.detail || '', images: payload.photos || [] });
   }
   if (action === 'supportRequest' || action === 'supportMessage' || action === 'supportReply') {
     const res = await api.post('/api/cs/messages', {
