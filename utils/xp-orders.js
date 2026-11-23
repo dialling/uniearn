@@ -232,7 +232,7 @@ async function mine() {
   });
   return rows;
 }
-async function loadMessages(reqId, peerId) {
+async function loadMessages(reqId, peerId, keepLocal) {
   if (!require('./util').getToken() || !peerId) return [];
   const myId = Number((require('./util').getUser() || {}).id) || 0;
   const res = await api.get('/api/messages/peer/' + encodeURIComponent(String(peerId))).catch(() => ({}));
@@ -241,6 +241,7 @@ async function loadMessages(reqId, peerId) {
     id: m.id, text: m.content || '', photo: m.image || '',
     at: parseTs(m.created_at), mine: Number(m.sender_id) === myId,
   }));
+  if (!out.length && keepLocal) return out;   // 服务端还没读到时别把刚发的气泡抹掉
   store.update((s) => {
     (s.requests || []).forEach((r) => { if (r.id === reqId) r.messages = out; });
   });
@@ -454,7 +455,16 @@ async function act(action, payload = {}) {
         order_id: id || undefined,
         ...(payload.photo ? { photo: payload.photo } : {})
       });
-      await loadMessages(reqId, peer);
+      // 先乐观上屏，GET 失败也不会让气泡消失
+      store.update((st) => {
+        (st.requests || []).forEach((r) => {
+          if (r.id !== reqId) return;
+          const list = Array.isArray(r.messages) ? r.messages : [];
+          list.push({ id: 'local-' + Date.now(), text: content, photo: payload.photo || '', at: Date.now(), mine: true });
+          r.messages = list;
+        });
+      });
+      await loadMessages(reqId, peer, true);
       return { ok: true };
     }
     if (id) return api.post('/api/messages/order/' + id, { content, photo: payload.photo || '' });
