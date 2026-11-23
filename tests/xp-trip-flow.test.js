@@ -100,6 +100,39 @@ const tap = dataset => ({ currentTarget: { dataset } });
   assert.equal(join.data.tripStationLabel, 'Fengshihui KFC takeaway locker');
   assert.equal(join.data.minutes, 10);
   assert.ok(calls.some(c => c.path === '/api/trips?include=57'), 'the shared trip is fetched by its number');
+  // The job board shows a multi-locker trip as one short line, never the raw list.
+  server.public = [tripView({ is_runner: false, dorm: 'D01', dorms: ['D01'], station: JSON.stringify(['丰食汇KFC外卖柜', '文缘夜市门口外卖柜', '文星东南门口外卖点（翰林妈妈驿站对面）', '文星水果店门口外卖点']) })];
+  await orders.sync();
+  const hall = loadPage('jobs'); hall.refresh();
+  const card = hall.data.openTrips[0];
+  assert.equal(card.station, 'Fengshihui KFC takeaway locker + 3 more');
+  assert.ok(!/[\[\]"]/.test(card.station + card.dorm), 'no brackets or quotes');
+  assert.match(card.dorm, /D01/);
+  assert.equal(card.left, '5 bags left');
+  store.update(s => { s.language = 'zh'; }); hall.refresh();
+  assert.equal(hall.data.openTrips[0].station, '丰食汇KFC外卖柜 等 4 处');
+  assert.equal(hall.data.openTrips[0].left, '还能接 5 袋');
+  store.update(s => { s.language = 'en'; });
+  // Joining a multi-locker trip: the student picks one locker, and only that one is sent (server allows 40 chars).
+  const food = loadPage('takeaway', { tripId: 'xp-trip-57' });
+  assert.equal(food.data.routeLocked, true);
+  assert.equal(food.data.tripStationCount, 4);
+  assert.equal(food.data.lockerReady, false, 'no locker is preselected when the trip has several');
+  assert.ok(!/[\[\]"]/.test(food.data.tripFrom));
+  food.pickLocker({ detail: { value: 2 } });
+  assert.equal(food.data.pickupPoint, '文星东南门口外卖点（翰林妈妈驿站对面）');
+  assert.equal(food.data.lockerReady, true);
+  assert.ok(xp.bodyOf({ category: 'takeout', pickupPoint: food.data.pickupPoint, station: food.data.station }).pickup_location.length <= 40);
+  server.public = [tripView({ is_runner: false, category: 'parcel', route_type: 'parcel', station: JSON.stringify(['文缘菜鸟驿站', '翰林兔喜']) })];
+  await orders.sync();
+  const parcel = loadPage('create', { tripId: 'xp-trip-57', mode: 'request', category: 'parcel' });
+  parcel.setData({ codes: ['1-2-3', '4-5-6'] }); parcel.syncStation();
+  assert.equal(parcel.data.tripStationCount, 2);
+  assert.equal(parcel.data.parcelStations[0].chosen, false);
+  assert.ok(!/[\[\]"]/.test(parcel.data.tripFrom));
+  parcel.pickStation({ currentTarget: { dataset: { i: 0 } }, detail: { value: 1 } });
+  assert.equal(parcel.data.pickupPoint, '翰林兔喜');
+  assert.ok(parcel.data.parcelStations.every(x => x.point === '翰林兔喜'));
   storage.user = { id: 101, nickname: 'Runner' }; server.trips = runnerTrips; server.public = [];
 
   // 2. A friend joins: the runner sees the request with the timer from the server.

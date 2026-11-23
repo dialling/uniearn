@@ -16,9 +16,8 @@ function groupSame(rs){
  return out;
 }
 const store=require('../../utils/store'),d=require('../../utils/domain'),f=require('../../utils/workflow'),ui=require('../../utils/ui'),rc=require('../../utils/runner-copy'),routeLabel=require('../../utils/route-label'),zh=()=>rc.zh(store.get().language);
-function stationList(v){const raw=String(v||'').trim();if(raw.startsWith('[')){try{const a=JSON.parse(raw);if(Array.isArray(a))return a.map(x=>String(x||'').trim()).filter(Boolean);}catch(_){}}return raw?[raw]:[];}
 // Title of the trip in the current language. Takeaway trips show the locker names; an empty trip falls back to the trip's own stations.
-function tripStations(t,rs,s){const lang=rc.zh(s.language)?'zh':'en',sep=lang==='zh'?'、':', ';if(t.category==='takeout'){const fromOrders=routeLabel.group(rs,lang);if(fromOrders)return fromOrders;const lockers=require('../../utils/takeaway-lockers');return stationList(t.station).map(x=>lockers.label(x,lang)||routeLabel.place(x,lang)).join(sep);}return stationList(t.station).map(x=>rc.name(x,s.language)||x).join(sep);}
+function tripStations(t,rs,s){const lang=rc.zh(s.language)?'zh':'en';return (t.category==='takeout'&&routeLabel.group(rs,lang))||require('../../utils/trip-stations').short(t,lang);}
 function stationLabel(v){const raw=String(v||'').trim();
   if(raw.startsWith('[')){try{const a=JSON.parse(raw);if(Array.isArray(a)&&a.length)return a.join(rc.zh(store.get().language)?'、' : ', ');}catch(_){}}
   return raw;}

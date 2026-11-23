@@ -32,6 +32,12 @@
   </picker>
   <input wx:if="{{lockerCustom}}" always-embed placeholder-class="ue-ph" class="field" value="{{lockerCustomText}}" placeholder="{{zh?'请填写外卖柜或取件点的具体位置':'Enter the locker or pickup location'}}" bindinput="customLocker" maxlength="200"/>
   <view class="hint">{{zh?'外卖柜位置会显示在接单大厅，方便同学查看取件地点。':'The locker location is visible to everyone in Jobs.'}}</view>
+ </block><block wx:elif="{{tripStationCount>1}}">
+  <view class="field-label note-label">{{zh?'你的外卖在哪个柜':'Which locker has your food'}}</view>
+  <picker mode="selector" range="{{lockerOptions}}" range-key="label" value="{{lockerIndex}}" bindchange="pickLocker">
+   <view class="field ue-select locker-select {{lockerChosen?'':'empty'}}"><text class="ue-select-text">{{lockerChosen?lockerOptions[lockerIndex].label:(zh?'请选择外卖柜':'Choose a takeaway locker')}}</text><text class="ue-chev"></text></view>
+  </picker>
+  <view class="hint">{{zh?'这趟行程会经过多个外卖柜，选你的外卖所在的那一个。':'This trip stops at several lockers. Choose the one with your food.'}}</view>
  </block>
   </view></view>
  </view>
