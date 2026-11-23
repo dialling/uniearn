@@ -79,7 +79,7 @@ Page({
   if(require('../../utils/merge-mode').enabled&&(()=>{try{return !!require('../../utils/util').getToken();}catch(_){return false;}})()&&store.get().profile.accountId&&!store.get().profile.loggedOut){
     require('../../utils/wallet').overview().then(v=>{
       store.update(s=>{s.walletSummary={balance_cents:v.balance_cents||0,pending_cents:v.pending_cents||0};});
-      this.setData({walletBalance:(Number(v.balance_cents||0)/100).toFixed(2),earnWaiting:(Number(v.pending_cents||0)/100).toFixed(2)});
+      this.setData({walletBalance:(Number(v.balance_cents||0)/100).toFixed(2),earnWaitingNum:Number(v.pending_cents||0),earnWaiting:(Number(v.pending_cents||0)/100).toFixed(2)});
     }).catch(()=>{});
   }
  },

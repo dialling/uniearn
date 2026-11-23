@@ -25,7 +25,7 @@
  <!-- 钱包与优惠 -->
  <view class="me-group">{{language==='en'?'Wallet & rewards':'钱包与优惠'}}</view>
  <view class="me-list">
-  <view wx:if="{{isRunner}}" class="me-row" hover-class="me-row-press" bindtap="wallet"><image class="me-ico" src="/assets/yuni-play/i-wallet.svg" mode="aspectFit"/><view class="me-grow"><view class="me-row-title">{{language==='en'?'My wallet':'我的钱包'}}</view><view class="me-val">¥{{earnWaiting}} {{ui.waiting}}</view></view><text class="me-money">¥{{walletBalance}}</text><view class="me-chev"/></view>
+  <view wx:if="{{isRunner}}" class="me-row" hover-class="me-row-press" bindtap="wallet"><image class="me-ico" src="/assets/yuni-play/i-wallet.svg" mode="aspectFit"/><view class="me-grow"><view class="me-row-title">{{language==='en'?'My wallet':'我的钱包'}}</view><view class="me-val"><block wx:if="{{earnWaitingNum>0}}">¥{{earnWaiting}} {{ui.waiting}}</block><block wx:else>{{language==='en'?'Tap to open':'点击查看'}}</block></view></view><text class="me-money">¥{{walletBalance}}</text><view class="me-chev"/></view>
   <view class="me-row" hover-class="me-row-press" bindtap="coupons"><image class="me-ico" src="/assets/yuni-play/shop.svg" mode="aspectFit"/><view class="me-grow"><view class="me-row-title">{{ui.myCoupons}}</view><view class="me-val">{{couponCount}} {{ui.ready}}</view></view><view class="me-chev"/></view>
   <view class="me-row" hover-class="me-row-press" bindtap="inviteFriends"><image class="me-ico" src="/assets/yuni-play/i-invite.svg" mode="aspectFit"/><view class="me-grow"><view class="me-row-title">{{ui.inviteTitle}}</view><view class="me-val">{{language==='en'?'Get a 50% off coupon':'得五折优惠券'}}</view></view><view class="me-chev"/></view>
  </view>
