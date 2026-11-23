@@ -252,7 +252,15 @@ async function resolvePeer(reqId, row) {
   const pub = Number(o.publisher_id != null ? o.publisher_id : (o.publisher && o.publisher.id)) || 0;
   if (acc && acc !== me) return acc;
   if (pub && pub !== me) return pub;
-  return 0;
+  // 订单 id 可能来自行程（不是订单号）或已查不到：退回会话列表，
+  // 用订单号匹配，退不到就取唯一那条会话。
+  const conv = await api.get('/api/messages/conversations').catch(() => null);
+  const list = (conv && (conv.list || conv.conversations)) || [];
+  const target = numIdOf(reqId);
+  const hit = list.find((c) => Array.isArray(c.orderIds) && c.orderIds.includes(target))
+    || list.find((c) => c.latestOrder && c.latestOrder.id === target)
+    || (list.length === 1 ? list[0] : null);
+  return hit && hit.peerId ? Number(hit.peerId) : 0;
 }
 
 async function loadMessages(reqId, peerId, keepLocal) {
