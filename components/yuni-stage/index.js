@@ -591,6 +591,9 @@ Component({
         } else if (wearing) { await orders.act('yuniWear', { slot: i.slot, item: '' }); this.say(this.t('好，先收起来。', 'OK, off it goes.')); }
         else { await orders.act('yuniWear', { slot: i.slot, item: i.id }); this.say(pick(zh ? ['我看起来怎么样？', '眼光不错。', '感觉真好！'] : ['How do I look?', 'Nice choice.', 'Feels good!'])); this.act({ face: 'happy', body: 'spin', wings: 'cheer' }, 1100); }
       } catch (e) { ui.toast(e.message || e); }
+      // 预览会覆盖真实 worn：动作结束后必须清掉，否则脱下后角色还穿着
+      this.trying = null;
+      this.triggerEvent('changed');
       this.buying = false; this.sync();
     },
 
