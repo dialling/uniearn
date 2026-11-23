@@ -334,4 +334,4 @@ radial-gradient(80% 42% at 92% 74%,rgba(210,196,170,.20),transparent 55%),
 .page-dark .nj-when.is-task{color:#8fb0ff}
 
 .trip-card{margin-bottom:16rpx}
-.trip-join{background:#1f6b4a;color:#fff;border-radius:999rpx;padding:10rpx 26rpx;font-size:26rpx}
+.trip-join{background:#1f6b4a;color:#fff;border-radius:999rpx;padding:8rpx 22rpx;font-size:24rpx;font-weight:500;line-height:1.4;white-space:nowrap;align-self:center;margin-left:12rpx}

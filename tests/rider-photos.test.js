@@ -1,3 +1,4 @@
+const FAKE_NOW=Date.parse('2026-11-23T12:00:00+08:00');Date.now=()=>FAKE_NOW;   // 固定时间，避免临近午夜时到达时间跨天
 const assert=require('node:assert/strict'),{harness}=require('./helpers/order-cloud'),h=harness();
 let definition,chooseOptions,preview;const notices=[],uploads=[];
 global.Page=x=>definition=x;
@@ -7,7 +8,7 @@ mergeMode.enabled=false;
 const store=require('../utils/store'),orders=require('../utils/orders'),paths=require('../utils/rider-photos').paths;
 function page(name,id){delete require.cache[require.resolve('../pages/'+name+'/index')];require('../pages/'+name+'/index');const p={...definition,data:structuredClone(definition.data),setData:x=>Object.assign(p.data,x)};p.onLoad({id});p.refresh();return p;}
 const tap=index=>({currentTarget:{dataset:{index}}});
-const food={category:'takeout',owner:'Student',phone:'13801026092',station:'North gate',dorm:'D01',room:'1111',bags:1,price:3,arrived:false,arrivalTime:require('../utils/workflow').clock(Math.min(Date.now()+1800000,new Date().setHours(23,58,0,0)))};
+const food={category:'takeout',owner:'Student',phone:'13801026092',station:'North gate',dorm:'D01',room:'1111',bags:1,price:3,arrived:false,arrivalTime:require('../utils/workflow').clock(Date.now()+1800000),night:false};
 async function create(){const result=await h.call('customer','create',{data:food});assert.equal(result.ok,true,result.error);return result.value.id;}
 async function file(who='customer'){const r=await h.call(who,'prepareUpload');assert.equal(r.ok,true,r.error);return 'cloud://test/'+r.value.cloudPath;}
 (async()=>{
