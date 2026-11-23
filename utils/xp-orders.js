@@ -233,7 +233,7 @@ async function loadSupport() {
   const rows = (res && res.list) || [];
   const messages = rows.map((r) => ({
     id: r.id, text: r.content || '', photo: r.image || '',
-    at: parseTs(r.created_at), mine: r.direction !== 'in',
+    at: parseTs(r.created_at), mine: r.direction === 'user',
   }));
   store.update((s) => { s.supportTickets = [{ id: 'cs', orderId: null, messages }]; });
   return messages;
@@ -440,4 +440,4 @@ function upload(filePath, kind) {
     });
   });
 }
-module.exports = { act, create, pay, mine, hall, sync, upload, toRequest, bodyOf };
+module.exports = { act, create, pay, mine, hall, sync, support: loadSupport, upload, toRequest, bodyOf };

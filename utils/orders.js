@@ -124,6 +124,7 @@ async function guestSignIn(campusId) {
   invalidate();
   return true;
 }
+function support(){return require('./merge-mode').enabled?require('./xp-orders').support():Promise.resolve([]);}
 function sync(opts = {}) {
   const debounced = !!(opts && opts.debounced);
   if(require('./merge-mode').enabled){
@@ -244,5 +245,5 @@ function stopTimer() { if(timer)clearInterval(timer);timer=null; }
 function stop() { foreground=false;quietResume=true;yuniEvents.suspend();stopTimer(); }
 function photoURL(path) { return store.get().photoURLs[path] || path; }
 function invalidate(){yuniEvents.reset();generation++;previous=null;quietResume=true;uploads.clear();}
-module.exports={invalidate,sync,act,readMessages,upload,bind,unbind,subscribe,start,stop,photoURL};
+module.exports={invalidate,sync,support,act,readMessages,upload,bind,unbind,subscribe,start,stop,photoURL};
 module.exports.viewTrip=viewTrip;module.exports.guestSignIn=guestSignIn;
