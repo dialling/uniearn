@@ -10,6 +10,34 @@ const GET_RETRY_DELAY_MS = 400;
 // 再大就容易被微信 uploadFile 超时打断（用户只看到「上传失败」）。
 const HUGE_UPLOAD_BYTES = 3 * 1024 * 1024;
 
+// 401 时静默换一次新 token（wx.login 是免费的，不需要用户点任何东西），
+// 再重放原请求；只有刷新也失败才把用户置为访客。
+let refreshing = null;
+function refreshToken() {
+  if (refreshing) return refreshing;
+  refreshing = new Promise((resolve, reject) => {
+    wx.login({
+      success(login) {
+        if (!login || !login.code) return reject(Error('NO_CODE'));
+        wx.request({
+          url: config.baseUrl + '/api/auth/login',
+          method: 'POST',
+          data: { code: login.code },
+          header: { 'Content-Type': 'application/json' },
+          success(res) {
+            const d = res.data || {};
+            if (d.ok && d.token) { require('./util').setToken(d.token); resolve(d.token); }
+            else reject(Error(d.message || 'RELOGIN_FAILED'));
+          },
+          fail: reject,
+        });
+      },
+      fail: reject,
+    });
+  }).finally(() => { refreshing = null; });
+  return refreshing;
+}
+
 function request(method, path, data = {}, attempt = 1) {
   const token = getToken();
   return new Promise((resolve, reject) => {
@@ -24,7 +52,18 @@ function request(method, path, data = {}, attempt = 1) {
       success(res) {
         const d = res.data || {};
         if (res.statusCode === 401) {
-          // 凭证失效：清掉登录态，进入访客模式（可继续浏览），不再强制跳登录页
+          // 先尝试静默续期：token 过期/清缓存都能自己恢复，用户无感
+          if (attempt === 1 && !path.startsWith('/api/auth/')) {
+            refreshToken()
+              .then(() => request(method, path, { ...data }, 2))
+              .then(resolve, () => {
+                clearAuth();
+                const app = getApp();
+                if (app && app.globalData) app.globalData.guest = true;
+                reject({ code: 'UNAUTHORIZED', message: '登录已失效，请先登录' });
+              });
+            return;
+          }
           clearAuth();
           const app = getApp();
           if (app && app.globalData) app.globalData.guest = true;
