@@ -103,7 +103,7 @@ Page({
     confirmText:zhOut?'退出登录':'Log out',cancelText:zhOut?'取消':'Cancel',success:r=>resolve(!!r.confirm),fail:reject
    }));
    if(!confirmed)return;
-   await account.call('logout');this.refresh();
+   await account.call('logout');try{store.update(s=>{s.walletSummary=null;});}catch(_){}this.refresh();
   }catch(e){this.setData({error:e.message||'Could not log out. Please try again.'});}
   finally{this.setData({loggingOut:false});}
  },

@@ -2,7 +2,7 @@
 // Sounds for playing with Yuni (2026-11-15): short tunes and effects made with Web Audio, so no audio
 // files are shipped. Everything is silent when the device has no Web Audio or sounds are switched off.
 const store = require('./store');
-let ctx = null, failed = false;
+let ctx = null, master = null, failed = false;
 const enabled = () => store.get().yuniSounds !== false;
 function context() {
   if (!enabled() || failed) return null;
@@ -17,6 +17,14 @@ function context() {
     } catch (_) { ctx = null; }
   }
   if (!ctx || !ctx.createOscillator) { ctx = null; failed = true; return null; }
+  // 手机扬声器上原来的 .16 音量几乎听不见：加一级总增益，统一放大
+  try {
+    if (!master && ctx.createGain) {
+      master = ctx.createGain();
+      master.gain.value = 2.2;
+      master.connect(ctx.destination);
+    }
+  } catch (_) { master = null; }
   return ctx;
 }
 // Browsers only start audio after a tap; call this from any tap so later sounds (like Yuni's own chatter) can play.
@@ -30,8 +38,8 @@ function tone(f, at, dur, o = {}) {
     if (a.state === 'suspended' && a.resume) a.resume();
     const t = a.currentTime + at, osc = a.createOscillator(), g = a.createGain();
     osc.type = o.type || 'triangle'; osc.frequency.setValueAtTime(f, t); if (o.to) osc.frequency.exponentialRampToValueAtTime(o.to, t + dur);
-    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(o.vol || .16, t + .012); g.gain.exponentialRampToValueAtTime(.001, t + dur);
-    osc.connect(g); g.connect(a.destination); osc.start(t); osc.stop(t + dur + .03); api.played++;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(o.vol || .28, t + .012); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+    osc.connect(g); g.connect(master || a.destination); osc.start(t); osc.stop(t + dur + .03); api.played++;
   } catch (_) {}
 }
 function noise(at, dur, o = {}) {
@@ -42,8 +50,8 @@ function noise(at, dur, o = {}) {
     for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
     const src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain(); src.buffer = buf;
     f.type = o.type || 'lowpass'; f.frequency.setValueAtTime(o.from || 1200, t); if (o.to) f.frequency.exponentialRampToValueAtTime(o.to, t + dur);
-    g.gain.setValueAtTime(o.vol || .2, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
-    src.connect(f); f.connect(g); g.connect(a.destination); src.start(t); api.played++;
+    g.gain.setValueAtTime(o.vol || .3, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+    src.connect(f); f.connect(g); g.connect(master || a.destination); src.start(t); api.played++;
   } catch (_) {}
 }
 const N = { G4: 392, C5: 523, E5: 659, G5: 784, A5: 880, C6: 1047, E6: 1319, G6: 1568 };

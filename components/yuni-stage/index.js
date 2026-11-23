@@ -43,7 +43,8 @@ Component({
     castLabel: '', castSub: '', castClass: '', hint: '', leftText: '', bucket: [], card: null, casting: false, bobStyle: '', bobSrc: '', bobClass: '', lineStyle: '', shadowClass: '', shadowStyle: '', bang: false, splash: null, prize: null, bookOpen: false, book: [], bookCount: '0/0'
   },
   lifetimes: {
-    attached() { this.face = ''; this.mouth = false; this.trying = null; this.taps = []; this.unsubscribe = store.subscribe(() => this.sync()); this.sync(); this.rest(); this.blinker = setInterval(() => this.blinkOnce(), 3400); },
+    attached() { try { require('../../utils/yuni-sound').unlock(); } catch (_) {}
+    this.face = ''; this.mouth = false; this.trying = null; this.taps = []; this.unsubscribe = store.subscribe(() => this.sync()); this.sync(); this.rest(); this.blinker = setInterval(() => this.blinkOnce(), 3400); },
     detached() { if (this.unsubscribe) this.unsubscribe(); clearInterval(this.blinker); this.clearTimers(); }
   },
   // Each time the Me page opens, Yuni waves and greets the member by name.
@@ -175,7 +176,8 @@ Component({
       });
     },
     // ── finger in the scene: follow it, and react to how it moves ──
-    onStart(e) {
+    onStart(e) { try { require('../../utils/yuni-sound').unlock(); } catch (_) {}
+    
       sound.unlock();
       const p = e.touches[0]; if (!p) return;
       this.touch = { x: p.clientX, y: p.clientY, moved: 0, strokeDist: 0, at: Date.now(), flips: [], dir: 0, high: 0 };

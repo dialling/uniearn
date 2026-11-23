@@ -130,7 +130,7 @@ Page({
    if (!this._visible || actor !== store.get().profile.accountId) return;
    wx.showToast({title:result.withdrawal.status==='approved'?ui.success:ui.failed,icon:'none'});
    await this.load();
-  } catch (e) { if(this._visible) { this.setData({error:e.message}); await this.load(); wx.showToast({title:e.message,icon:'none'}); } }
+  } catch (e) { if(this._visible) { this.clearWallet(); this.setData({error:e.message}); await this.load(); wx.showToast({title:e.message,icon:'none'}); } }
   finally { this.setData({withdrawing:false}); }
  }
 });
