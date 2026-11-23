@@ -406,6 +406,28 @@ async function act(action, payload = {}) {
     });
     return { ok: true };
   }
+  if (action === 'startTrip') {
+    const data = payload.data || {};
+    if (data.selfRequestId) throw Error('请先处理自己的待接单，再发起行程。');
+    const ids = (data.requestIds || []).map(numIdOf).filter(Boolean);
+    const body = {
+      request_key: payload.operationId || ('trip-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8)),
+      order_ids: ids,
+      category: data.category, station: data.station, dorm: data.dorm,
+      capacity: data.capacity, depart: data.depart, note: data.note,
+    };
+    const trip = await api.post('/api/trips', body);
+    await mine().catch(() => []);
+    return { id: 'xp-trip-' + (trip && trip.id), trip };
+  }
+  if (action === 'leave' || action === 'endEmpty') {
+    const tripRow = (store.get().trips || []).find(t => t.id === reqId) || {};
+    const tripId = String(tripRow.xpId || reqId).replace(/^xp-trip-/, '');
+    if (tripId && /^\d+$/.test(tripId)) {
+      await api.post('/api/trips/' + tripId + (action === 'leave' ? '/leave' : '/end'), {}).catch(() => {});
+    }
+    return { ok: true };
+  }
   // Yuni 钓鱼/喂食/衣柜：老版客户端就是这么调的（/api/loyalty/yuni/:action）
   if (['yuniBuy', 'yuniWear', 'yuniFish', 'yuniFeed', 'yuniTestPoints', 'yuniTestRound'].includes(action)) {
     const map = { yuniBuy: 'buy', yuniWear: 'wear', yuniFish: 'fish', yuniFeed: 'feed', yuniTestPoints: 'test-points', yuniTestRound: 'test-round' };
