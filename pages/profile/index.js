@@ -107,6 +107,6 @@ Page({
   if(profile.onboarded&&!profile.loggedOut)require('../../utils/nav').navigateTo({url:'/pages/profile-name/index'});
  },
  noop(){},
- studentCheck(){require('../../utils/nav').navigateTo({url:'/pages/student-check/index'});},admin(){require('../../utils/nav').navigateTo({url:'/pages/admin/index'});},
+ studentCheck(){require('../../utils/nav').navigateTo({url:'/pages/student-check/index'});},admin(){try{wx.navigateTo({url:'/pages/admin/index',fail:(e)=>{const m=String(e&&e.errMsg||'');if(/not found|not exist|subpackage|not registered/i.test(m))wx.reLaunch({url:'/pages/admin/index'});else wx.showToast({title:m||'admin page failed',icon:'none'});}});}catch(e){wx.showToast({title:String(e&&e.message||e),icon:'none'});}},
  reset(){wx.showModal({title:'Clear this device cache?',content:'Cloud orders and your profile stay saved. Check My requests first if a previous action had a network error.',success:r=>{if(r.confirm){const profile=store.get().profile;store.reset();store.update(s=>{s.profile=profile;});this.refresh();require('../../utils/orders').sync().catch(()=>{});}}});}
 });
