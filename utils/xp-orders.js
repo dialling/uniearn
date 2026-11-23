@@ -358,7 +358,7 @@ async function loadMessages(reqId, peerId, keepLocal) {
   const res = await api.get('/api/messages/peer/' + encodeURIComponent(String(peerId))).catch(() => ({}));
   const rows = (res && (res.messages || res.list)) || [];
   const out = rows.map((m) => ({
-    id: m.id, text: m.content || '', photo: m.image || '',
+    id: m.id, text: m.content || '', photo: fullAvatar(m.image || ''),
     at: parseTs(m.created_at), mine: Number(m.sender_id) === myId,
   }));
   if (!out.length && keepLocal) return out;   // 服务端还没读到时别把刚发的气泡抹掉
@@ -374,7 +374,7 @@ async function loadSupport() {
   const res = await api.get('/api/cs/messages').catch(() => ({}));
   const rows = (res && res.list) || [];
   const messages = rows.map((r) => ({
-    id: r.id, text: r.content || '', photo: r.image || '',
+    id: r.id, text: r.content || '', photo: fullAvatar(r.image || ''),
     at: parseTs(r.created_at), mine: r.direction === 'user',
   }));
   store.update((s) => { s.supportTickets = [{ id: 'cs', orderId: null, messages }]; });
