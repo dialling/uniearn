@@ -17,6 +17,7 @@ function enqueue(fn, priority=false) {
 }
 async function drainQueue(){if(queueRunning)return;queueRunning=true;try{while(jobs.length){const job=jobs.shift();try{job.resolve(await job.fn());}catch(e){job.reject(e);}}}finally{queueRunning=false;}}
 function act(action,payload={}){
+ if(require('./merge-mode').enabled)return require('./xp-orders').act(action,payload);
  const key=JSON.stringify({action,...payload}),expectedGeneration=generation;
  if(activeActions.has(key))return activeActions.get(key);
  const result=enqueue(()=>{if(expectedGeneration!==generation)throw Error('Account changed. Please reopen this page.');return performAct(action,payload);},true);
@@ -115,6 +116,7 @@ async function guestSignIn(campusId) {
   return true;
 }
 function sync() {
+  if(require('./merge-mode').enabled){const xp=require('./xp-orders');xp.hall().catch(()=>null);return xp.mine().catch(()=>null);}
   if (syncing) return syncing;
   if(!quietResume&&Date.now()-(store.get().lastSyncAt||0)<2000)return Promise.resolve();
   syncing = enqueue(async()=>{

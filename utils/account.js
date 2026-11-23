@@ -1,5 +1,6 @@
 const {ensureCloud}=require('./cloud'),store=require('./store');
 async function core(action,extra={}) {
+  if(require('./merge-mode').enabled)return require('./xp-account').call(action,extra);
   const wasVerified=!!store.get().profile.studentVerified;
   const cloud=ensureCloud();
   const {result}=await cloud.callFunction({name:'studentAccount',data:{action,lang:store.get().language==='en'?'en':'zh',...extra}});
