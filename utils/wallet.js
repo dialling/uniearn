@@ -26,6 +26,8 @@ async function overview() {
       withdrawals: (res.withdrawals || []).map((w) => ({...w, created_at: ms(w.created_at)})),
       series: res.series || [],
       rules: res.rules || [],
+      mchId: res.mch_id || '', appId: res.app_id || '',
+      source: res,
     };
   }
   await require('./account').call('status');
@@ -40,7 +42,36 @@ async function overview() {
   store.update(s => {s.walletSummary = result.snapshot.walletSummary;});
   return value;
 }
+const api = require('./api');
+
+function withdrawalStatus(row) {
+  if (!row) return 'processing';
+  if (row.status === 'rejected') return 'rejected';
+  if (row.state === 'SUCCESS' || (row.status === 'approved' && !row.out_bill_no)) return 'approved';
+  return 'processing';
+}
+
+async function finishWithdrawal(wallet, transfer) {
+  let current = transfer;
+  if (transfer && transfer.package_info && wx.requestMerchantTransfer && wallet.mchId) {
+    await new Promise((resolve) => wx.requestMerchantTransfer({
+      mchId: wallet.mchId, appId: wallet.appId, package: transfer.package_info, complete: resolve,
+    }));
+    current = await api.get('/api/wallet/withdrawals/' + transfer.withdrawal_id + '/status').catch(() => transfer);
+  }
+  return { withdrawal: {
+    id: (current && current.withdrawal_id) || (transfer && transfer.withdrawal_id),
+    status: withdrawalStatus(current),
+    canConfirm: current && current.state === 'WAIT_USER_CONFIRM',
+  } };
+}
+
 async function withdraw(amount) {
+  if (require('./merge-mode').enabled) {
+    const wallet = await overview();
+    const transfer = await api.post('/api/wallet/withdraw', {amount_cents: Number(amount)});
+    return finishWithdrawal(wallet, transfer);
+  }
   // Existing order queue persists the operation ID across response loss and retries.
   return require('./orders').act('walletWithdraw', {amount_cents: amount});
 }
