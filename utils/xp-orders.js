@@ -207,7 +207,9 @@ function toRequest(order, opts = {}) {
   };
 }
 async function create(data) {
-  const res = await api.post('/api/orders', bodyOf(data));
+  const payload = bodyOf(data);
+  console.log('[order] create trip_id=', payload.trip_id || 0, 'type=', payload.type);
+  const res = await api.post('/api/orders', payload);
   if (!res || res.ok !== true) throw Error((res && res.message) || '发布失败');
   let order = res.order || res;
   const request = toRequest(order, { defaultMine: true });
