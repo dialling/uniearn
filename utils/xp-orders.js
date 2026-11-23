@@ -68,7 +68,10 @@ function toRequest(order, opts = {}) {
   const category = order.type === 'express' ? 'parcel' : (order.type === 'other' ? 'task' : 'takeout');
   const myId = myAccountId();
   const pubId = order.publisher_id != null ? String(order.publisher_id) : (order.user_id != null ? String(order.user_id) : '');
-  const runId = order.runner_id != null ? String(order.runner_id) : '';
+  // 服务端把接单人选在 acceptor 对象里（runner_id 是老字段）
+  const runRaw = order.runner_id != null ? order.runner_id
+    : (order.acceptor_id != null ? order.acceptor_id : (order.acceptor && order.acceptor.id));
+  const runId = runRaw != null ? String(runRaw) : '';
   const isRunner = order.is_runner !== undefined ? !!order.is_runner : (!!myId && !!runId && runId === myId);
   const isMine = order.is_mine !== undefined
     ? !!order.is_mine
