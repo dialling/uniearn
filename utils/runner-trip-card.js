@@ -24,7 +24,7 @@ function card(trip,requests,language='zh',now=Date.now()){
    note:clean(r.note),dropNote:runner.name(r.dropNote,language)||'',quantity:boxes(r),unit:task?(zh?'项':'tasks'):food?(zh?'袋':'bags'):(zh?'件':'parcels'),
    soup:!!r.soup,fragile:!!r.fragile,raised:Number(r.raised||0)>0,reward:Number(r.reward||0).toFixed(2)};
  });
- const hasDispute=items.some(r=>r.disputed),done=!hasDispute&&(trip.phase==='done'||requests.length>0&&requests.every(r=>['confirmed','cancelled','refunded'].includes(r.status)));
+ const hasDispute=items.some(r=>r.disputed),done=!hasDispute&&(trip.phase==='done'||trip.phase==='ended'||requests.length>0&&requests.every(r=>['confirmed','cancelled','refunded'].includes(r.status)));
  const genders=items.filter((r,i)=>r.genderKey&&items.findIndex(x=>x.genderKey===r.genderKey)===i).map(r=>({key:r.genderKey,label:r.gender}));
  const taskId=trip.category==='task'&&requests[0]?requests[0].id:'';
  return {...trip,taskId,done,hasDispute,items,genders,type:trip.category==='task'?(zh?'任务':'Task'):trip.category==='takeout'?(requests.some(r=>r.night)?(zh?'夜市代买':'Night market'):(zh?'外卖代取':'Takeaway')):(zh?'快递代取':'Parcels'),
