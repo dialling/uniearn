@@ -33,7 +33,7 @@ global.wx = {
         data: {
           ok: true,
           list: path.includes('status=completed') ? [] : [
-            { id: 42, publisher_id: 202, publisher_name: 'Alice', type: 'food', title: '外卖代取', pickup_location: 'North gate', delivery_location: 'Dorm 7', room: '412', price_cents: 500, status: 'pending', created_at: '2026-11-23 12:00:00' },
+            { id: 42, publisher_id: 202, publisher: { nickname: 'WeChat user 9295', avatar: '/uploads/avatars/9295.png' }, type: 'food', title: '外卖代取', pickup_location: 'North gate', delivery_location: 'Dorm 7', room: '412', price_cents: 500, status: 'pending', created_at: '2026-11-23 12:00:00' },
             { id: 43, publisher_id: 101, publisher_name: 'Tester', type: 'express', title: '快递代取', pickup_location: 'Station A', delivery_location: 'Dorm 5', room: '118', pickup_code: '11-1-2222,11-1-3333', size: 'large', price_cents: 800, status: 'pending', created_at: '2026-11-23 12:05:00' }
           ]
         }
@@ -134,6 +134,8 @@ function loadPage(name, opts = {}) {
   const ownOrder = store.get().requests.find(r => r.id === 'xp-43');
   assert.equal(otherOrder.isMine, false, 'hall orders from another user are not marked isMine');
   assert.equal(otherOrder.ownerId, '202');
+  assert.equal(otherOrder.owner, 'WeChat user 9295');
+  assert.equal(otherOrder.ownerAvatar, 'https://pararouter.cn/uploads/avatars/9295.png');
   assert.equal(otherOrder.room, '412');
   assert.equal(ownOrder.isMine, true);
   assert.equal(ownOrder.ownerId, '101');

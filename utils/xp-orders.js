@@ -52,6 +52,12 @@ function myAccountId() {
   const p = (store.get() || {}).profile || {};
   return String(u.id || u.accountId || p.accountId || '');
 }
+function fullAvatar(raw) {
+  const s = String(raw || '').trim();
+  if (!s) return '';
+  if (/^(https?:|wxfile:|data:|cloud:|\/assets\/)/.test(s)) return s;
+  return require('./config').baseUrl + (s.startsWith('/') ? s : '/' + s);
+}
 function toRequest(order, opts = {}) {
   const cent = n => Math.round(Number(n || 0));
   const statusMap = {
@@ -141,7 +147,10 @@ function toRequest(order, opts = {}) {
     isMine,
     mine: isMine,
     isRunner,
-    ownerAvatar: (order.publisher && order.publisher.avatar) || order.publisher_avatar || '',
+    ownerAvatar: fullAvatar(
+      (order.publisher && (order.publisher.avatar || order.publisher.avatar_url || order.publisher.avatarUrl))
+      || order.publisher_avatar || order.publisher_avatar_url || order.avatar_url || order.avatar || ''
+    ),
     owner: (order.publisher && (order.publisher.nickname || order.publisher.name))
       || order.publisher_name || order.nickname || '',
     runnerName: order.runner_name || '',

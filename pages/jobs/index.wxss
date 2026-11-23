@@ -166,7 +166,7 @@ radial-gradient(80% 42% at 92% 74%,rgba(210,196,170,.20),transparent 55%),
 .job-poster{display:flex;align-items:center;gap:14rpx;min-width:0;flex:1}
 .job-poster-avatar{display:flex;align-items:center;justify-content:center;width:64rpx;height:64rpx;border-radius:50%;background:#e7f3ed;color:#0b7a55;font-size:26rpx;font-weight:700;line-height:1;flex:none}
 .job-poster-name{min-width:0;font-size:26rpx;font-weight:650;color:#303930;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.jobs-page .job-card .job-footer-take .job-take-button{justify-content:center;gap:10rpx;width:auto;min-width:168rpx;max-width:48%;padding:15rpx 22rpx;flex:none;white-space:nowrap}
+.jobs-page .job-card .job-footer-take .job-take-button{justify-content:center;gap:10rpx;width:auto;min-width:224rpx;max-width:48%;min-height:82rpx;padding:18rpx 36rpx;flex:none;white-space:nowrap}
 .job-take-press{opacity:.82;background:rgba(11,122,85,.14)!important;box-shadow:none!important}
 .job-footer.own-footer,.job-footer.taken-footer,.job-footer.done-footer{display:block}
 .job-footer.own-footer>.hint,.job-footer.taken-footer>.hint{margin:0 0 12rpx;font-size:21rpx;line-height:1.5}
@@ -269,7 +269,7 @@ radial-gradient(80% 42% at 92% 74%,rgba(210,196,170,.20),transparent 55%),
 .jobs-page .nj-card .job-footer{margin-top:26rpx;padding-top:0;border-top:0}
 .nj-due{display:flex;align-items:baseline;gap:10rpx;min-width:0;font-size:25rpx;color:#6b6860}
 .nj-due .job-deadline-value{font-weight:700;color:#16181c}
-.jobs-page .nj-card .btn.job-take-button{border:0;border-radius:24rpx;background:linear-gradient(180deg,#1aa36f 0%,#0c7d58 52%,#086847 100%);color:#fff;font-weight:700;text-shadow:0 2rpx 0 rgba(0,40,24,.28);box-shadow:0 10rpx 20rpx rgba(11,122,85,.24),inset 0 2rpx 0 rgba(255,255,255,.3),inset 0 -5rpx 0 rgba(0,40,24,.2)}
+.jobs-page .nj-card .btn.job-take-button{border:0;border-radius:26rpx;background:linear-gradient(180deg,#329467 0%,#1c7c52 56%,#166a45 100%);color:#fff;font-size:28rpx;font-weight:700;text-shadow:0 2rpx 0 rgba(0,40,24,.24);box-shadow:0 10rpx 20rpx rgba(11,122,85,.22),inset 0 2rpx 0 rgba(255,255,255,.28),inset 0 -4rpx 0 rgba(0,40,24,.2)}
 .page-dark .nj-type,.page-dark.jobs-page .nj-card .job-route-destination,.page-dark.jobs-page .nj-card .job-task-title,.page-dark .nj-due .job-deadline-value{color:#edebe4}
 .page-dark .nj-sub,.page-dark .nj-meta text,.page-dark .nj-due,.page-dark.jobs-page .nj-card .job-route-origin{color:#a9a69c}
 .page-dark .nj-cat{background:#2a2c26;border-color:#3a3b37;color:#c8c7bd}
@@ -310,7 +310,7 @@ radial-gradient(80% 42% at 92% 74%,rgba(210,196,170,.20),transparent 55%),
 .nj-chips:empty{display:none}
 
 /* parcel cards drop "Accept by" (2026-11-15): keep Take on the right */
-.job-footer-take{justify-content:flex-end}
+.job-footer-take{justify-content:space-between}
 .job-footer-take .nj-due{margin-right:auto}
 
 /* time + Take on one line (2026-11-15): orange dot = still coming, green = ready now */
@@ -327,9 +327,16 @@ radial-gradient(80% 42% at 92% 74%,rgba(210,196,170,.20),transparent 55%),
 .nj-when.is-task .nj-when-dot{background:#2b59c3;box-shadow:0 0 0 6rpx #2b59c326}
 .page-dark .nj-when.is-task{color:#8fb0ff}
 
-.job-poster-img{width:44rpx;height:44rpx;border-radius:50%;flex:0 0 auto;background:#e9efe9;}
-.job-poster-open{margin:12rpx 0 4rpx;}
+/* Open job card header badge next to category title, and full-size avatar in bottom row */
+.nj-type-row{display:flex;align-items:center;flex-wrap:wrap;gap:4rpx 14rpx;min-width:0}
+.nj-type-row .nj-type{font-size:30rpx;font-weight:700;color:#16181c;line-height:1.35}
+.nj-type-row .nj-when{flex:0 1 auto;min-width:0;margin-right:0;gap:10rpx;font-size:24rpx;font-weight:600;color:#3b4740;line-height:1.35}
+.nj-type-row .nj-when-dot{width:12rpx;height:12rpx;box-shadow:none}
+.nj-type-row .nj-when.is-now{color:#0b7a55}
+.nj-type-row .nj-when.is-task{color:#2b59c3}
+.page-dark .nj-type-row .nj-type{color:#edebe4}
+.page-dark .nj-type-row .nj-when{color:#d8e2db}
+.page-dark .nj-type-row .nj-when.is-now{color:#6fd0a8}
+.page-dark .nj-type-row .nj-when.is-task{color:#8fb0ff}
 
-.job-take-row{display:flex;align-items:center;justify-content:space-between;gap:16rpx;margin-top:8rpx;}
-.job-take-row .job-poster{margin:0;flex:1 1 auto;min-width:0;}
-.job-take-row .job-take-button{margin:0;flex:0 0 auto;}
+.job-poster-img{width:64rpx;height:64rpx;border-radius:50%;flex:none;background:#e9efe9}
