@@ -102,6 +102,7 @@ async function act(action,payload){
   if(action==='confirm')return api.post('/api/orders/'+id+'/confirm-complete',{});
   if(action==='cancel')return api.post('/api/orders/'+id+'/cancel',{reason:payload.reason||''});
   if(action==='message')return api.post('/api/messages/peer/'+encodeURIComponent(String(payload.peer||payload.with||'')),{text:payload.text||''});
+  if(action==='walletWithdraw')return api.post('/api/wallet/withdraw',{amount_cents:Number(payload.amount_cents)||0});
   if(action==='upload')return upload(payload.filePath||payload.path);
   if(action==='acceptBoxes'){const ids=(payload.ids||[]).map(x=>Number(String(x).replace('xp-','')));const out=[];for(const one of ids)out.push(await api.post('/api/orders/'+one+'/accept',{}));return out;}
   if(action==='report'||action==='orderFeedbackSubmit')return api.post('/api/reports',{order_id:id,reason:payload.reason||'',detail:payload.note||payload.detail||'',images:payload.photos||[]});

@@ -1,6 +1,31 @@
 const store = require('./store');
 const {ensureCloud} = require('./cloud');
 async function overview() {
+  if (require('./merge-mode').enabled) {
+    const api = require('./api');
+    await require('./account').call('status');
+    const res = await api.get('/api/wallet');
+    if (!res || res.ok === false) throw Error((res && res.message) || '钱包暂时无法加载，请重试。');
+    const cents = Number(res.balance_cents || 0);
+    return {
+      mode: 'test',
+      balance_cents: cents,
+      balance_yuan: (cents / 100).toFixed(2),
+      pending_cents: Number(res.pending_cents || 0),
+      pending_yuan: (Number(res.pending_cents || 0) / 100).toFixed(2),
+      pending: res.pending || [],
+      debt_cents: 0,
+      total_income_cents: Number(res.total_income_cents || 0),
+      today_income_cents: Number(res.today_income_cents || 0),
+      transactions: (res.transactions || []).map((t) => ({
+        id: t.id, kind: t.kind, amount_cents: t.amount_cents, balance_after: t.balance_after,
+        remark: t.remark, created_at: t.created_at, order_no: t.order_id,
+      })),
+      withdrawals: res.withdrawals || [],
+      series: res.series || [],
+      rules: res.rules || [],
+    };
+  }
   await require('./account').call('status');
   const actor = store.get().profile.accountId;
   if (!actor || store.get().profile.loggedOut) throw Error(store.get().language === 'en' ? 'Log in to open your wallet.' : '请先登录再查看钱包。');
