@@ -189,6 +189,8 @@ function loadPage(name, opts = {}) {
   await account.call('saveAvatar', { avatarUrl: 'https://cdn.example/avatar.jpg' });
   assert.equal(store.get().profile.avatarUrl, 'https://cdn.example/avatar.jpg');
 
+  // 管理身份现在要先用管理员账号登录（admin_ok 标记），否则不打 /api/admin/stats
+  storage.admin_ok = '1';
   const adminStatus = await account.call('adminStatus');
   assert.equal(adminStatus.admin, true);
   const dash = await account.call('adminDashboard');

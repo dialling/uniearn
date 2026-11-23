@@ -138,19 +138,28 @@ async function call(action, extra = {}) {
       if (res && res.ok === false) throw Error(res.message || '提交失败');
       return { account: shape((res && res.user) || require('./util').getUser() || {}) };
     }
-    case 'adminLogin':
-      return api2.adminLogin(extra.username, extra.password);
+    case 'adminLogin': {
+      const r = await api2.adminLogin(extra.username, extra.password);
+      // 管理员登录返回的是管理员身份 token，换掉本地 token 后 /api/admin/* 才通得过
+      if (r && r.token) { require('./util').setToken(r.token); wx.setStorageSync('admin_ok', '1'); }
+      return r;
+    }
     case 'adminLogout':
+      wx.removeStorageSync('admin_ok');
       return { ok: true };
     case 'adminStatus': {
+      // 还没用管理员账号登录过就别打 /api/admin/stats，不然控制台一串 401
+      if (wx.getStorageSync('admin_ok') !== '1') return { ok: true, admin: false };
       try {
         const res = await api2.get('/api/admin/stats');
         return { ok: true, admin: !!(res && res.ok !== false) };
       } catch (_) {
+        wx.removeStorageSync('admin_ok');
         return { ok: true, admin: false };
       }
     }
     case 'adminDashboard': {
+      if (wx.getStorageSync('admin_ok') !== '1') throw { code: 'UNAUTHORIZED', message: '请先用管理员账号登录' };
       const res = await api2.get('/api/admin/stats');
       const raw = (res && res.stats) || res || {};
       return {
