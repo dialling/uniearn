@@ -675,6 +675,7 @@ async function act(action, payload = {}) {
   throw Error('该操作尚未接入西浦跑后端：' + action);
 }
 function upload(filePath, kind) {
+  if (!filePath) return Promise.resolve('');   // 没有照片就不要发起上传（空路径必然失败）
   const token = require('./util').getToken();
   return new Promise((resolve, reject) => {
     wx.uploadFile({
