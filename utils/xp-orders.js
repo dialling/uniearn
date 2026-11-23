@@ -211,7 +211,7 @@ async function create(data) {
   // 未支付的单不算发布成功：先拉起支付，取消就把这单撤掉，避免大厅里出现空单
   if (order && order.payment_status === 'unpaid') {
     try {
-      const paid = await pay(request.id);
+      const paid = await pay(numIdOf(request.id));   // 服务端要数字 id，'xp-123' 会被判订单不存在
       if (paid && paid.paid) {
         const fresh = await api.get('/api/orders/' + numIdOf(request.id)).catch(() => null);
         if (fresh && (fresh.order || fresh)) order = fresh.order || fresh;
