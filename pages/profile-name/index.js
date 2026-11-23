@@ -31,7 +31,7 @@ Page({
     try { path = await images.chooseImage(['album', 'camera']); } catch (e) { return; }
     this.setData({avatarBusy:true, error:''});
     try {
-      const fileID = await orders.upload(await images.compress(path));
+      const fileID = await orders.upload(await images.compress(path), 'avatar');
       await account.call('saveAvatar', {avatarUrl:fileID});
       orders.sync().catch(() => {});
       this.setData({avatar:path});

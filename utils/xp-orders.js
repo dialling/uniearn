@@ -440,7 +440,7 @@ function upload(filePath, kind) {
     wx.uploadFile({
       // 送达凭证必须走 /api/orders/proof（存到 /uploads/proofs/），
       // 混用 /upload 会被服务端判为 BAD_PROOF「凭证照片地址不合法」。
-      url: require('./config').baseUrl + (kind === 'proof' ? '/api/orders/proof' : '/api/orders/upload'),
+      url: require('./config').baseUrl + (kind === 'proof' ? '/api/orders/proof' : kind === 'avatar' ? '/api/auth/avatar' : '/api/orders/upload'),
       filePath,
       name: 'file',
       header: token ? { Authorization: 'Bearer ' + token } : {},

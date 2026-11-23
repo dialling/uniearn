@@ -103,8 +103,11 @@ async function call(action, extra = {}) {
     }
     case 'saveAvatar': {
       const url = extra.avatarUrl !== undefined ? extra.avatarUrl : (extra.url || extra.fileID || '');
-      if (url === '' || /^https?:/.test(url)) {
-        try { await api2.post('/api/auth/avatar', { url }); } catch (_) {}
+      // /api/auth/avatar 是 multipart 上传，只收 file；本地已有 URL（/uploads/avatars/…）
+      // 时用 /avatar-url 落库，否则别人看到的一直是微信头像。
+      if (url) {
+        if (/^\/uploads\/avatars\//.test(url)) await api2.post('/api/auth/avatar-url', { url });
+        else if (/^https?:/.test(url)) await api2.post('/api/auth/avatar-url', { url }).catch(() => {});
       }
       return patchLocal(null, { avatarUrl: url });
     }
