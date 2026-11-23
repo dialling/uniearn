@@ -26,6 +26,43 @@ function nick(name) {
   return en ? s.replace(/^微信用户\s*(\d*)$/, (_, n) => 'WeChat user' + (n ? ' ' + n : '')) : s;
 }
 
+function isEn() { return (store.get() || {}).language === 'en'; }
+function say(zh, en) { return isEn() ? en : zh; }
+// 服务端错误只带中文 message；英文界面按错误码换成英文，中文界面保留服务端原文。
+const ERROR_EN = {
+  TRIP_CLOSED: 'This trip has stopped taking orders. Go back and edit your order.',
+  RUNNER_REQUIRED: 'This runner can no longer take orders. Choose another trip.',
+  SELF_ACCEPT: 'You cannot add your own order to your own trip.',
+  TRIP_ROUTE: 'The pickup, destination or order type does not match this trip. Edit your order.',
+  TRIP_ORDER_CHANGED: 'The selected order has changed. Refresh and try again.',
+  TRIP_ARRIVAL: 'Your food arrives after this runner leaves.',
+  TRIP_FULL: 'This trip is full. Go back and edit your order.',
+  TOO_MANY_ACTIVE: 'This runner already has the maximum number of active orders.',
+  TRIP_NOT_FOUND: 'Trip not found.',
+  TRIP_OFFER_GONE: 'This request is no longer available. Refresh the trip.',
+  TRIP_INPUT: 'Check the trip route, capacity and selected orders.',
+  TRIP_TIME: 'Choose a valid departure time.',
+  TRIP_HAS_ORDERS: 'This trip still has orders. Finish them first.',
+  TRIP_PICKUP_REQUIRED: 'Pick up every order on this trip before delivering.',
+  FORBIDDEN: 'You do not have permission to do this.',
+  NOT_COMPLETED: 'The order is not delivered yet, so it cannot be confirmed.',
+  COMPLAINT_OPEN: 'A report on this order is being handled. Resolve it first.',
+  UNAUTHORIZED: 'Your sign-in has expired. Please sign in again.',
+  NETWORK: 'Network error. Check your connection and try again.',
+};
+function localizeError(e) {
+  if (!e || !isEn()) return e;
+  const en = ERROR_EN[e.code];
+  if (!en) return e;
+  const out = e instanceof Error ? e : Object.assign(Error(en), e);
+  out.message = en;
+  return out;
+}
+function tripNum(v) {
+  const n = Number(String(v == null ? '' : v).replace(/^xp-trip-/, ''));
+  return Number.isSafeInteger(n) && n > 0 ? n : 0;
+}
+
 function addressLine(data) {
   return String(data.deliveryAddress || [data.dorm, data.room].filter(Boolean).join(' ') || data.room || '').trim();
 }
@@ -54,9 +91,10 @@ function bodyOf(data) {
     pickup_code: (data.codes || [])[0] || ''
   };
   // 加入顺路行程：服务端只认数字 trip_id，客户端是 'xp-trip-12' 这种
-  if (data.tripId) {
-    const n = Number(String(data.tripId).replace(/^xp-trip-/, ''));
-    if (Number.isSafeInteger(n) && n > 0) body.trip_id = n;
+  // 只认字符串/数字：页面曾把布尔标记 joinedTrip=true 当成 tripId 传进来，导致 trip_id 丢失
+  if (typeof data.tripId === 'string' || typeof data.tripId === 'number') {
+    const n = tripNum(data.tripId);
+    if (n) body.trip_id = n;
   }
   if (data.category === 'parcel') {
     if (data.parcelSize) body.size = String(data.parcelSize);
@@ -129,8 +167,9 @@ function toRequest(order, opts = {}) {
   const createdAt = parseTs(order.created_at) || Date.now();
   const riderPhotos = Array.isArray(order.rider_photos) ? order.rider_photos : (order.rider_photo ? [order.rider_photo] : []);
   const orderPictures = Array.isArray(order.images) ? order.images : (Array.isArray(order.order_pictures) ? order.order_pictures : []);
-  const runnerId = order.trip_id
-    ? ('xp-trip-' + order.trip_id)
+  const realTrip = order.runner_trip_id || order.trip_id;
+  const runnerId = realTrip
+    ? ('xp-trip-' + realTrip)
     : (runId && ['taken', 'collected', 'delivered', 'confirmed', 'disputed'].includes(status) ? ('xp-trip-' + order.id) : null);
   const where = splitDorm(order.delivery_location);
   const publicLocation = splitDorm(order.public_delivery_location);
@@ -203,14 +242,18 @@ function toRequest(order, opts = {}) {
     ),
     runnerName: nick(order.runner_name || (order.acceptor && order.acceptor.nickname) || ''),
     runnerPhone: order.runner_phone || '',
-    history: Array.isArray(order.history) ? order.history : []
+    history: Array.isArray(order.history) ? order.history : [],
+    ...(order.offered_trip_id && order.status === 'pending' ? {
+      offeredTripId: 'xp-trip-' + order.offered_trip_id,
+      offerExpiresAt: parseTs(order.offer_expires_at),
+    } : {})
   };
 }
 async function create(data) {
   const payload = bodyOf(data);
   console.log('[order] create trip_id=', payload.trip_id || 0, 'type=', payload.type);
   const res = await api.post('/api/orders', payload);
-  if (!res || res.ok !== true) throw Error((res && res.message) || '发布失败');
+  if (!res || res.ok !== true) throw Error((res && res.message) || say('发布失败', 'Could not post the order'));
   let order = res.order || res;
   const request = toRequest(order, { defaultMine: true });
   store.update(s => { s.requests = s.requests || []; if (!s.requests.some(r => r.id === request.id)) s.requests.unshift(request); });
@@ -220,6 +263,8 @@ async function create(data) {
     try {
       const paid = await pay(numIdOf(request.id));   // 服务端要数字 id，'xp-123' 会被判订单不存在
       if (paid && paid.paid) {
+        // 主动查单：微信回调可能晚到，查单会让服务端立即记为已付，加入行程的请求才会发给跑手
+        await api.get('/api/pay/status/' + numIdOf(request.id)).catch(() => null);
         const fresh = await api.get('/api/orders/' + numIdOf(request.id)).catch(() => null);
         if (fresh && (fresh.order || fresh)) order = fresh.order || fresh;
       }
@@ -227,21 +272,22 @@ async function create(data) {
       await api.post('/api/orders/' + numIdOf(request.id) + '/cancel',
         { cancel_reason: '其他：未完成支付' }).catch(() => {});
       store.update((s) => { s.requests = (s.requests || []).filter((r) => numIdOf(r.id) !== numIdOf(request.id)); });
-      const err = Error(/cancel|取消/i.test(String(e && e.message || ''))
-        ? '支付未完成，订单未发布' : (e && e.message) || '支付未完成，订单未发布');
+      const unpaid = say('支付未完成，订单未发布', 'Payment was not completed, so the order was not posted');
+      const err = Error(/cancel|取消/i.test(String(e && e.message || '')) ? unpaid : (localizeError(e) && localizeError(e).message) || unpaid);
       err.code = 'PAY_CANCELLED';
       throw err;
     }
   }
+  await mine().catch(() => []);
   return { id: request.id, order, request };
 }
 function pay(orderId) {
   return api.post('/api/pay/prepay', { order_id: Number(orderId) }).then(res => {
-    if (!res || res.ok !== true) throw Error((res && res.message) || '支付发起失败');
+    if (!res || res.ok !== true) throw Error((res && res.message) || say('支付发起失败', 'Could not start the payment'));
     const payParams = res.pay;
     if (!payParams) return { offline: true };
     return new Promise((resolve, reject) => {
-      wx.requestPayment({ ...payParams, success: () => resolve({ paid: true }), fail: e => reject(Error(e && e.errMsg || '支付取消')) });
+      wx.requestPayment({ ...payParams, success: () => resolve({ paid: true }), fail: e => reject(Error(e && e.errMsg || say('支付取消', 'Payment cancelled'))) });
     });
   });
 }
@@ -268,22 +314,6 @@ async function hall() {
     api.get('/api/orders?status=picked_up&limit=50').catch(() => ({})),
   ]);
   const pick = (r) => (r && (r.list || r.orders)) || [];
-  const trips = await api.get('/api/trips').catch(() => ({}));
-  const label = (v) => {
-    const raw = String(v || '').trim();
-    if (!raw.startsWith('[')) return raw;
-    try { const a = JSON.parse(raw); return Array.isArray(a) ? a.join('、') : raw; } catch (_) { return raw; }
-  };
-  store.update((s) => {
-    const seen = new Set();
-    s.openTrips = (trips.public_trips || []).filter((t) => (seen.has(t.id) ? false : (seen.add(t.id), true))).map((t) => ({
-      id: 'xp-trip-' + t.id, xpId: Number(t.id),
-      category: t.category, station: label(t.station), dorm: t.dorm || '',
-      dorms: t.dorms || [], remaining: t.remaining, capacity: t.capacity,
-      runnerName: t.runner_name || '', runnerAvatar: t.runner_avatar || '',
-      joinUntil: parseTs(t.join_until), departAt: parseTs(t.depart_at), phase: t.phase,
-    }));
-  });
   const rows = pick(openRes).map(o => toRequest(o))
     .concat(pick(doneRes).map(o => ({...toRequest(o), status:'confirmed', done:true})))
     // 进行中·公开进度：服务端只给已接单/已取货的公开单
@@ -429,27 +459,75 @@ async function syncLoyalty() {
   });
   return data;
 }
+function tripRow(t, now) {
+  const joinUntil = parseTs(t.join_until);
+  const requestIds = (t.request_ids || []).map((id) => 'xp-' + id);
+  // 无人加入、开放时间已过的空行程：服务端仍是 collect，但实际已结束，不再挂在「我接的单」里
+  const expiredEmpty = t.is_runner && t.phase === 'collect' && !requestIds.length && !(joinUntil > now);
+  return {
+    id: 'xp-trip-' + t.id, xpId: Number(t.id), serverTrip: true,
+    campusId: 'sip', universityId: 'xjtlu',
+    category: t.category, routeType: t.route_type || t.category,
+    station: t.station || '', pickupAddress: t.pickup_address || '', waypoint: t.waypoint || '',
+    destinationType: t.destination_type || 'dorm', dorm: t.dorm || '', dorms: t.dorms || [],
+    deliveryAddress: t.delivery_address || '',
+    capacity: Number(t.capacity) || 1, remaining: Number(t.remaining) || 0,
+    departAt: parseTs(t.depart_at), joinUntil, depart: 'Now',
+    phase: expiredEmpty ? 'ended' : t.phase, cancelled: expiredEmpty,
+    runnerName: nick(t.runner_name || ''), runnerAvatar: fullAvatar(t.runner_avatar || ''),
+    isRunner: !!t.is_runner, requestIds,
+  };
+}
+// GET /api/trips：我的行程（含订单列表）、发给我的加入请求、可加入的公开行程
+async function loadTrips(strict) {
+  const want = tripNum((store.get() || {}).viewTripId);
+  let data;
+  try { data = await api.get('/api/trips' + (want ? '?include=' + want : '')); }
+  catch (e) { if (strict) throw e; return null; }
+  if (!data) return null;
+  const now = Date.now();
+  const signedIn = !!require('./util').getToken();
+  const mineTrips = (data.mine || []).map((t) => tripRow(t, now));
+  const offers = signedIn ? (data.offers || []).map((o) => ({ ...toRequest(o), fromOffer: true })) : [];
+  const seen = new Set();
+  const publicTrips = (data.public_trips || []).filter((t) => (seen.has(t.id) ? false : (seen.add(t.id), true)))
+    .map((t) => tripRow(t, now));
+  store.update((s) => {
+    const byId = new Map(mineTrips.map((t) => [t.id, t]));
+    const claimed = new Set(mineTrips.flatMap((t) => t.requestIds));
+    const kept = (s.trips || []).filter((t) => !byId.has(t.id)).map((t) => {
+      // 服务端不再返回的真实行程已结束（mine 只排除 ended）
+      if (signedIn && t.serverTrip && !t.cancelled) return { ...t, phase: 'ended', cancelled: true, joinUntil: 0 };
+      // 同一单已归到服务端的真实行程，就别再挂在本地拼出来的行程上
+      const ids = (t.requestIds || []).filter((id) => !claimed.has(id));
+      return ids.length === (t.requestIds || []).length ? t : { ...t, requestIds: ids };
+    }).filter((t) => t.serverTrip || (t.requestIds || []).length);
+    const merged = (s.trips || []).filter((t) => byId.has(t.id)).map((t) => ({ ...t, ...byId.get(t.id) }));
+    const fresh = mineTrips.filter((t) => !(s.trips || []).some((x) => x.id === t.id));
+    if (signedIn) s.trips = merged.concat(fresh, kept);
+    (s.requests || []).forEach((r) => { if (claimed.has(r.id)) r.runnerId = mineTrips.find((t) => t.requestIds.includes(r.id)).id; });
+    const offerIds = new Set(offers.map((o) => o.id));
+    s.requests = (s.requests || []).filter((r) => !(r.fromOffer && !offerIds.has(r.id)));
+    for (const o of offers) {
+      const i = s.requests.findIndex((r) => r.id === o.id);
+      if (i < 0) s.requests.push(o);
+      else if (s.requests[i].fromOffer) s.requests[i] = o;
+      else Object.assign(s.requests[i], { offeredTripId: o.offeredTripId, offerExpiresAt: o.offerExpiresAt });
+    }
+    const pubIds = new Set(publicTrips.map((t) => t.id));
+    s.openTrips = publicTrips;
+    s.publicTrips = publicTrips;
+    // 通过分享链接打开、但不是我的行程：放进 trips，加入页/下单页才能找到它
+    if (want && pubIds.has('xp-trip-' + want) && !(s.trips || []).some((t) => t.id === 'xp-trip-' + want)) {
+      s.trips = (s.trips || []).concat(publicTrips.filter((t) => t.id === 'xp-trip-' + want));
+    }
+  });
+  return data;
+}
 async function sync() {
-  const wantTrip = String((store.get() || {}).viewTripId || '').replace(/^xp-trip-/, '');
-  const tripReq = wantTrip && /^\d+$/.test(wantTrip)
-    ? api.get('/api/trips?include=' + wantTrip).catch(() => null)
-    : Promise.resolve(null);
-  const [h, m, tripData] = await Promise.all([hall(), mine(), loadSupport().catch(() => []), tripReq]);
-  if (tripData && Array.isArray(tripData.public_trips)) {
-    const trips = tripData.public_trips.map((t) => ({
-      id: 'xp-trip-' + t.id, xpId: Number(t.id), category: t.category,
-      station: t.station, dorm: t.dorm || '', dorms: t.dorms || [],
-      remaining: t.remaining, capacity: t.capacity, phase: t.phase,
-      joinUntil: parseTs(t.join_until), departAt: parseTs(t.depart_at),
-      runnerName: t.runner_name || '', runnerAvatar: t.runner_avatar || '',
-      requestIds: (t.request_ids || []).map(String), cancelled: false, createdAt: Date.now(),
-    }));
-    store.update((s) => {
-      s.trips = (s.trips || []).filter((x) => !trips.some((t) => t.id === x.id)).concat(trips);
-      s.openTrips = (s.openTrips || []).filter((x) => !trips.some((t) => t.id === x.id)).concat(trips);
-    });
-  }
-
+  const [h, m] = await Promise.all([hall(), mine(), loadSupport().catch(() => [])]);
+  // 行程要在 mine() 之后合并：mine() 会整体替换 requests，加入请求要叠加在它上面
+  await loadTrips();
   await syncLoyalty().catch(() => null);
   return { hall: h, mine: m };
 }
@@ -501,17 +579,23 @@ function updateRequestLocally(reqId, patch) {
   });
 }
 async function act(action, payload = {}) {
+  try { return await runAct(action, payload); }
+  catch (e) { throw localizeError(e); }
+}
+async function runAct(action, payload = {}) {
   const id = idOf(payload);
   const reqId = payload && payload.id ? String(payload.id) : (id ? 'xp-' + id : '');
   if (action === 'create') {
-    const made = await create(payload.data || payload);
-    try { await pay(made.order.id); } catch (e) { made.payError = String((e && e.message) || e); }
-    return made;
+    // create() 内部已经拉起支付，这里不能再付第二次。
+    // 外层 tripId 是页面最终决定（外卖晚到时可能改成发到大厅），优先于 data 里的。
+    const data = { ...(payload.data || payload) };
+    if (payload.data && Object.prototype.hasOwnProperty.call(payload, 'tripId')) data.tripId = payload.tripId || '';
+    return create(data);
   }
   if (action === 'payOrder') return pay(id);
   if (action === 'accept' || action === 'acceptBoxes') {
     const reqIds = normalizeXpIds(payload);
-    if (!reqIds.length) throw Error('缺少订单 ID');
+    if (!reqIds.length) throw Error(say('缺少订单 ID', 'Missing order ID'));
     const results = [];
     for (const one of reqIds) {
       try {
@@ -529,6 +613,19 @@ async function act(action, payload = {}) {
     await hall().catch(() => []);
     const trip = acceptLocally(reqIds, results);
     return { id: trip.id, trip, results, ok: true };
+  }
+  if (action === 'tripOffer') {
+    const row = (store.get().requests || []).find(r => r.id === reqId) || {};
+    const trip = tripNum(payload.tripId || row.offeredTripId);
+    if (!trip || !id) throw Error(say('这笔加入请求已失效，请刷新行程', 'This request is no longer available. Refresh the trip.'));
+    const decision = payload.decision === 'accept' ? 'accept' : 'decline';
+    const res = await api.post('/api/trips/' + trip + '/offers/' + id, { decision });
+    if (decision === 'decline') {
+      store.update(s => { s.requests = (s.requests || []).filter(r => !(r.id === reqId && r.fromOffer)); });
+    }
+    await mine().catch(() => []);
+    await loadTrips();
+    return res;
   }
   if (action === 'pickup') {
     const res = await api.post('/api/orders/' + id + '/status', { status: 'picked_up' });
@@ -573,7 +670,7 @@ async function act(action, payload = {}) {
   }
   if (action === 'startTrip') {
     const data = payload.data || {};
-    if (data.selfRequestId) throw Error('请先处理自己的待接单，再发起行程。');
+    if (data.selfRequestId) throw Error(say('请先处理自己的待接单，再发起行程。', 'Handle your own waiting order before starting a trip.'));
     const ids = (data.requestIds || []).map(numIdOf).filter(Boolean);
     const body = {
       request_key: payload.operationId || ('trip-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8)),
@@ -592,29 +689,39 @@ async function act(action, payload = {}) {
     const trip = await api.post('/api/trips', body);
     const localId = 'xp-trip-' + (trip && trip.id);
     // 新建行程还没有订单，mine() 不会把它带回来；本地先存一份，行程页才能打开
+    const minutes = Number(body.duration) || 0;
     store.update((st) => {
       st.trips = st.trips || [];
       st.trips = [{
-        id: localId, campusId: (st.profile || {}).campusId || 'sip',
+        id: localId, xpId: Number(trip && trip.id) || 0, serverTrip: true, isRunner: true,
+        campusId: (st.profile || {}).campusId || 'sip',
         category: body.category, station: body.station || '', dorm: body.dorm || '',
-        capacity: body.capacity || 1, depart: 'Now', phase: 'collect',
-        requestIds: (ids || []).map(String), cancelled: false, createdAt: Date.now(),
+        dorms: body.dorms || (body.dorm ? [body.dorm] : []), destinationType: body.destinationType,
+        deliveryAddress: body.deliveryAddress, capacity: body.capacity || 1, remaining: body.capacity || 1,
+        joinUntil: body.when === 'now' && minutes ? Date.now() + minutes * 60000 : 0,
+        depart: 'Now', phase: 'collect',
+        requestIds: (ids || []).map((n) => 'xp-' + n), cancelled: false, createdAt: Date.now(),
       }, ...st.trips.filter((t) => t.id !== localId)];
     });
     await mine().catch(() => []);
+    await loadTrips();
     return { id: localId, trip };
   }
   if (action === 'leave' || action === 'endEmpty') {
     const tripRow = (store.get().trips || []).find(t => t.id === reqId) || {};
-    const tripId = String(tripRow.xpId || reqId).replace(/^xp-trip-/, '');
-    if (tripId && /^\d+$/.test(tripId)) {
+    // 直接从大厅接的单没有服务端行程（本地按订单号拼的 xp-trip-N），不能拿去调行程接口
+    const tripId = tripNum(tripRow.xpId || reqId);
+    if (tripId && (tripRow.serverTrip || !tripRow.id)) {
       await api.post('/api/trips/' + tripId + (action === 'leave' ? '/leave' : '/end'), {});
     }
     store.update((st) => {
       st.openTrips = (st.openTrips || []).filter((t) => t.id !== reqId);
-      st.trips = (st.trips || []).map((t) => (t.id === reqId ? { ...t, phase: action === 'leave' ? 'deliver' : 'ended', joinUntil: 0 } : t));
+      st.publicTrips = (st.publicTrips || []).filter((t) => t.id !== reqId);
+      st.trips = (st.trips || []).map((t) => (t.id !== reqId ? t
+        : action === 'leave' ? { ...t, phase: 'deliver', joinUntil: 0 }
+        : { ...t, phase: 'ended', cancelled: true, joinUntil: 0 }));
     });
-    await hall().catch(() => []);
+    await loadTrips();
     return { ok: true };
   }
   // Yuni 钓鱼/喂食/衣柜：老版客户端就是这么调的（/api/loyalty/yuni/:action）
@@ -671,7 +778,7 @@ async function act(action, payload = {}) {
       return { ok: true };
     }
     if (id) return api.post('/api/messages/order/' + id, { content, photo: payload.photo || '' });
-    throw Error('缺少聊天对象');
+    throw Error(say('缺少聊天对象', 'No one to message on this order'));
   }
   if (action === 'walletWithdraw') return api.post('/api/wallet/withdraw', { amount_cents: Number(payload.amount_cents) || 0 });
   if (action === 'upload') return upload(payload.filePath || payload.path);
@@ -755,4 +862,4 @@ function upload(filePath, kind) {
     });
   });
 }
-module.exports = { act, create, pay, mine, hall, sync, support: loadSupport, upload, toRequest, bodyOf };
+module.exports = { act, create, pay, mine, hall, sync, loadTrips, support: loadSupport, upload, toRequest, bodyOf };

@@ -26,7 +26,7 @@ Page({data:{...require('../../utils/motion').data(),request:null,photoBusy:false
   if(this.data.raising)return;const r=this.data.request,zh=this.data.zh,amount=Number(e.currentTarget.dataset.amount),remaining=Math.max(0,100-Number(r&&r.raised||0));
   if(!r||!r.isMine||r.status!=='waiting')return ui.toast(zh?'仅等待接单时可以加价':'You can increase the offer only while waiting');
   if(!Number.isFinite(amount)||amount<.01||amount>remaining||Math.abs(Math.round(amount*100)-amount*100)>1e-6)return ui.toast(zh?'请输入 ¥0.01–'+remaining.toFixed(2)+'，最多两位小数':'Enter ¥0.01–'+remaining.toFixed(2)+', up to 2 decimal places');
-  this.setData({raising:true});try{const total=((Math.round(r.reward*100)+Math.round(amount*100))/100).toFixed(2);if(!await ui.confirm(zh?'加价 ¥'+amount.toFixed(2)+'？':'Increase by ¥'+amount.toFixed(2)+'?',zh?'本单赏金将变为 ¥'+total+'。仅在等待接单时可加价，当前为模拟金额。':'Your offer will become ¥'+total+'. Available before acceptance only. This is a simulated amount.'))return;
+  this.setData({raising:true});try{const total=((Math.round(r.reward*100)+Math.round(amount*100))/100).toFixed(2);if(!await ui.confirm(zh?'加价 ¥'+amount.toFixed(2)+'？':'Increase by ¥'+amount.toFixed(2)+'?',zh?'本单赏金将变为 ¥'+total+'。仅在等待接单时可加价。':'Your offer will become ¥'+total+'. Available before acceptance only.'))return;
    await orders.act('raise',{id:this.id,amount});this.refresh();wx.showToast({title:zh?'加价成功':'Offer increased',icon:'success'});
   }catch(error){ui.toast(error);this.refresh();}finally{this.setData({raising:false});}
  },

@@ -104,7 +104,7 @@
 <view class="hint">{{zh?'送达照片':'Delivery photo'}} · {{request.deliveredTime}} · {{request.deliveryLocationLabel}}</view>
 </view>
 <view wx:if="{{request.isMine && request.status==='delivered'}}" class="flow-card">
-<view class="soft hint">{{zh?'模拟合计 ¥'+request.total+'。确认后，预览版将向跑手结算 ¥'+request.rewardText+'。':'Demo total ¥'+request.total+'. Confirming settles ¥'+request.rewardText+' to the runner in this preview.'}}</view>
+<view class="soft hint">{{zh?'合计 ¥'+request.total+'。确认收货后，¥'+request.rewardText+' 将结算给跑手。':'Total ¥'+request.total+'. Confirming pays ¥'+request.rewardText+' to the runner.'}}</view>
 
 <view class="confirm-row"><button class="btn confirm-main" bindtap="confirm">{{zh?'已收到 · 确认 ¥':'Got it · confirm ¥'}}{{request.rewardText}}</button><view class="confirm-info" hover-class="confirm-info-press" role="button" aria-label="{{zh?'确认说明':'About confirming'}}" bindtap="confirmInfo"><image mode="aspectFit" src="/assets/icons/info-muted.svg"/></view></view>
 <view wx:if="{{request.isMine && (request.status==='delivered'||request.status==='disputed')}}" class="confirm-row"><button class="btn outline report-btn" disabled="{{!request.canReport}}" bindtap="issue">{{zh?'有问题':'Somethingʼs wrong'}}</button><view class="confirm-info" hover-class="confirm-info-press" role="button" aria-label="{{zh?'投诉说明':'About reporting a problem'}}" bindtap="reportInfo"><image mode="aspectFit" src="/assets/icons/info-muted.svg"/></view></view>
@@ -123,7 +123,7 @@
  <view wx:if="{{request.category==='parcel' && request.isMine}}" wx:for="{{request.parcelItems}}" wx:key="index" class="journey-parcel-detail">{{zh?'包裹 ':'Parcel '}}{{index+1}} · {{item.pickupPoint||request.station}} · {{item.code}}</view>
  <view wx:if="{{!(request.isMine && request.status==='waiting')}}" class="journey-detail-row journey-price-row"><view class="journey-detail-label"><text class="journey-detail-icon">◉</text><text>{{zh?'赏金':'Reward'}}</text></view><text class="journey-price">¥{{request.rewardText}}</text></view>
  <view wx:if="{{request.discount && !(request.isMine && request.status==='waiting')}}" class="journey-detail-row"><text>{{zh?'优惠券':'Coupon'}}</text><text>−¥{{request.discount}}</text></view>
- <view wx:if="{{(request.discount || request.fee!=='0.00') && !(request.isMine && request.status==='waiting')}}" class="journey-detail-row journey-net-total"><text>{{zh?'模拟合计':'Demo total'}}</text><text>¥{{request.total}}</text></view>
+ <view wx:if="{{(request.discount || request.fee!=='0.00') && !(request.isMine && request.status==='waiting')}}" class="journey-detail-row journey-net-total"><text>{{zh?'合计':'Total'}}</text><text>¥{{request.total}}</text></view>
  <view wx:if="{{request.note}}" class="journey-order-note">{{request.note}}</view></block>
 </view>
 <view wx:if="{{request.feedbackOpen && !request.canResolveFeedback}}" class="report-contact"><view wx:if="{{request.reportNoticeText}}" class="report-nudge">{{request.reportNoticeText}}</view><button class="report-contact-btn" hover-class="report-contact-press" catchtap="issue"><view wx:if="{{request.supportUnread>0}}" class="report-dot"/><text>{{request.supportUnread>0?(zh?'Uniearn 已回复，查看':'Uniearn replied · View'):(zh?'联系 Uniearn 团队':'Contact the Uniearn team')}}</text></button></view>

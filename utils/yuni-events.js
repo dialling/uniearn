@@ -45,7 +45,7 @@ if(r.status==='collected'){title=mine?(zh?'在路上了！':'On the way!'):(zh?'
 if(r.status==='delivered'){title=mine?(zh?'送到了！':'Itʼs here!'):(zh?'这单完成了！':'Nice run!');text=mine?(zh?'检查物品后，在订单里确认完成。':'Check it, then confirm completion on the order.'):awaitingCopy(zh);pose=mine?'happy':'deliver';}
 if(r.status==='confirmed'){const s=settleOf(r);if(s==='settled'){title=zh?'已确认完成！':'Confirmed!';text=zh?'订单已完成，测试账本已结算。':'The order is complete and the test ledger has settled.';pose='earn';}else if(s==='escrow'){title=zh?'这单完成了！':'Nice run!';text=awaitingCopy(zh);pose='deliver';}else{title=zh?'这单完成了！':'Nice run!';text=zh?'订单已完成。':'The order is complete.';pose='deliver';}}
 if(r.status==='cancelled'){title=zh?'订单已取消':'Order cancelled';text=zh?'查看订单了解详情和测试退款记录。':'Open the order for details and its test refund record.';pose='oops';}
-if(r.status==='refunded'){title=zh?'无人接单，已退款':'No runner · refunded';text=zh?'订单已关闭，测试退款已记录。':'The order closed and the demo refund is recorded.';pose='oops';}
+if(r.status==='refunded'){title=zh?'无人接单，已退款':'No runner · refunded';text=zh?'订单已关闭，退款已记录。':'The order closed and the refund is recorded.';pose='oops';}
 if(r.status==='disputed'){title=zh?'问题已提交':'Problem reported';text=zh?'赏金已冻结，我们将在 24 小时内审核处理。':'Payment is on hold. We will review the issue within 24 hours.';pose='think';}
 if(r.status==='delivered'&&!mine)awaitingSettle[r.id]=orderMeta.accountId;
 if(['confirmed','cancelled','refunded'].includes(r.status))delete awaitingSettle[r.id];

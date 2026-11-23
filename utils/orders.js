@@ -112,7 +112,12 @@ function readMessages(id) {
  });
 }
 // A shared trip link opened before signing in: fetch just that trip.
-function viewTrip(id) { store.update(x=>{x.viewTripId=String(id||'');}); return call({action:'sync',viewTripId:String(id||'')}); }
+function viewTrip(id) {
+ store.update(x=>{x.viewTripId=String(id||'');});
+ // 合并版没有云函数：直接按编号向 XP 拉这条行程（失败要抛出，加入页才不会误判「行程已结束」）
+ if(require('./merge-mode').enabled)return require('./xp-orders').loadTrips(true).then(()=>{subscribers.forEach(fn=>{try{fn();}catch(e){console.error('Order view refresh',e);}});});
+ return call({action:'sync',viewTripId:String(id||'')});
+}
 // Sign a guest in with WeChat when they add their first order, and use the trip's campus.
 async function guestSignIn(campusId) {
   const p = store.get().profile || {};
