@@ -53,6 +53,11 @@ function bodyOf(data) {
     dorm_type: ['male', 'female'].includes(data.dormGender) ? data.dormGender : '',
     pickup_code: (data.codes || [])[0] || ''
   };
+  // 加入顺路行程：服务端只认数字 trip_id，客户端是 'xp-trip-12' 这种
+  if (data.tripId) {
+    const n = Number(String(data.tripId).replace(/^xp-trip-/, ''));
+    if (Number.isSafeInteger(n) && n > 0) body.trip_id = n;
+  }
   if (data.category === 'parcel') {
     if (data.parcelSize) body.size = String(data.parcelSize);
     if (Array.isArray(data.parcelItems)) {
