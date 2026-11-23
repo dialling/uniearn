@@ -241,6 +241,20 @@ function peerOf(row) {
   return Number.isSafeInteger(n) && n > 0 ? n : 0;
 }
 
+// 没有本地行时回退到订单详情，用 publisher_id / acceptor_id 算出对方
+async function resolvePeer(reqId, row) {
+  let peer = peerOf(row);
+  if (peer) return peer;
+  const me = Number((require('./util').getUser() || {}).id) || 0;
+  const data = await api.get('/api/orders/' + numIdOf(reqId)).catch(() => null);
+  const o = (data && (data.order || data)) || {};
+  const acc = Number(o.acceptor_id != null ? o.acceptor_id : (o.acceptor && o.acceptor.id)) || 0;
+  const pub = Number(o.publisher_id != null ? o.publisher_id : (o.publisher && o.publisher.id)) || 0;
+  if (acc && acc !== me) return acc;
+  if (pub && pub !== me) return pub;
+  return 0;
+}
+
 async function loadMessages(reqId, peerId, keepLocal) {
   if (!require('./util').getToken() || !peerId) return [];
   const myId = Number((require('./util').getUser() || {}).id) || 0;
@@ -466,12 +480,12 @@ async function act(action, payload = {}) {
   }
   if (action === 'messages') {
     const row = (store.get().requests || []).find(r => numIdOf(r.id) === numIdOf(reqId)) || {};
-    return loadMessages(reqId, peerOf(row));
+    return loadMessages(reqId, await resolvePeer(reqId, row));
   }
   if (action === 'message') {
     const content = payload.text || payload.photo || '';
     const reqRow = (store.get().requests || []).find(r => r.id === reqId);
-    const peer = peerOf(reqRow) || payload.peer || payload.with || '';
+    const peer = (await resolvePeer(reqId, reqRow)) || payload.peer || payload.with || '';
     if (peer) {
       await api.post('/api/messages/peer/' + encodeURIComponent(String(peer)), {
         content,
