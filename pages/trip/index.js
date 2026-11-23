@@ -55,6 +55,10 @@ Page({data:{...require('../../utils/motion').data(),trip:null,requests:[],reward
   this.failedPickupPhotos.add(photo);this.refresh();
  },
  async collect(e){if(this.data.parcelBusy||this.data.cancelBusy)return;const {id,index,code}=e.currentTarget.dataset,r=store.get().requests.find(r=>r.id===id);if(!r)return;const parcel=r.category==='parcel'&&index!==undefined,i=Number(index);if(parcel&&code!==undefined&&String(code)!==r.codes[i])return ui.toast(zh()?'包裹已变化，请刷新后重试':'Parcels changed. Refresh and try again.');this.setData({parcelBusy:id+':'+index});try{await orders.act('pickup',{id,...(parcel?{index:i,expectedCodes:r.codes.slice()}:{})});}catch(error){ui.toast(error);}finally{this.setData({parcelBusy:''});this.refresh();}},
+ async confirmDone(e){const id=e.currentTarget.dataset.id;if(!id||this.data.confirming)return;
+  try{this.setData({confirming:true});await orders.act('confirm',{id});await this.refresh();}
+  catch(err){require('../../utils/ui').toast(err.message||'确认失败');}
+  finally{this.setData({confirming:false});} },
  async collectAndDeliver(e){
   if(this.data.collectingId||this.data.cancelBusy)return;
   const id=e.currentTarget.dataset.id,ids=String(e.currentTarget.dataset.ids||id).split(',').filter(Boolean),state=store.get(),trip=state.trips.find(t=>t.id===this.id),request=state.requests.find(r=>r.id===id);
