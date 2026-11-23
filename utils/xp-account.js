@@ -146,6 +146,7 @@ async function call(action, extra = {}) {
     }
     case 'adminLogout':
       wx.removeStorageSync('admin_ok');
+      require('./util').clearToken();   // 管理员 token 不留在设备上
       return { ok: true };
     case 'adminStatus': {
       // 还没用管理员账号登录过就别打 /api/admin/stats，不然控制台一串 401

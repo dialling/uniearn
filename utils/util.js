@@ -210,6 +210,9 @@ module.exports = {
   TYPE_LABEL,
   TYPE_ICON,
   getToken() { return wx.getStorageSync('token') || ''; },
+  // 管理员登录拿到的是管理员身份 token，需要替换本地 token
+  setToken(token) { const t = String(token || ''); if (t) wx.setStorageSync('token', t); },
+  clearToken() { wx.removeStorageSync('token'); },
   // 是否有登录态
   isLogin() { return !!wx.getStorageSync('token'); },
   // 访客操作需登录：无 token 时弹「去登录」引导，返回 false；有 token 返回 true
