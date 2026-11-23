@@ -124,37 +124,33 @@ Page({
   },
 
  async withdraw() {
-  console.log('[wallet] withdraw tapped', this.data.withdrawing, this.data.balanceCents, this.data.loading, this.data.error);
+  console.log('[wallet] withdraw tapped', this.data.withdrawing, this.data.balanceCents, this.data.loading);
   if (this.data.withdrawing) return;
-  // 之前只要页面有过一次错误（比如 token 过期导致的 401），按钮就被禁掉，
-  // 用户看到的是「点了没反应」。这里先清错误再继续。
-  if (this.data.error) this.setData({error:''});
-  if (this.data.loading) { this.load(); return; }
-  const ui = this.data.ui, bal = this.data.balanceCents, actor = store.get().profile.accountId;
-  if (!(bal > 0)) { wx.showToast({title:ui.noBalance,icon:'none'}); this.load(); return; }
-  this.setData({ withdrawing: true });
-  try {
-    const answer = await new Promise((resolve) => {
-      wx.showModal({
-        title: ui.confirmTitle || '提现',
-        content: String(ui.confirmText || '将可用余额 ¥{n} 提现，1–3 个工作日内处理。').replace('{n}', this.data.balance),
-        confirmText: ui.confirm || '提现',
-        cancelText: ui.cancel || '取消',
-        success: (r) => resolve(!!(r && r.confirm)),
-        fail: (e) => { console.log('[wallet] modal fail', e && e.errMsg); resolve(false); },
-      });
+  const ui = this.data.ui || {}, bal = Number(this.data.balanceCents) || 0;
+  if (!(bal > 0)) { wx.showToast({ title: ui.noBalance || '没有可提现余额', icon: 'none' }); this.load(); return; }
+  this.setData({ withdrawing: true, error: '' });
+  return new Promise((resolve) => {
+    const done = (ok) => { this.setData({ withdrawing: false }); resolve(ok); };
+    wx.showModal({
+      title: ui.confirmTitle || '提现',
+      content: String(ui.confirmText || '将可用余额 ¥{n} 提现，1–3 个工作日内处理。').replace('{n}', this.data.balance),
+      confirmText: ui.confirm || '提现',
+      cancelText: ui.cancel || '取消',
+      success: (r) => {
+        console.log('[wallet] modal answer', r && r.confirm);
+        if (!r || !r.confirm) return done(false);
+        api.withdraw(bal).then((result) => {
+          console.log('[wallet] withdraw result', JSON.stringify((result && result.withdrawal) || result).slice(0, 160));
+          wx.showToast({ title: (result.withdrawal && result.withdrawal.status === 'approved') ? (ui.success || '已提交') : (ui.failed || '提现失败'), icon: 'none' });
+          this.load().finally(() => done(true));
+        }).catch((e) => {
+          console.log('[wallet] withdraw error', e && (e.message || e.errMsg || e));
+          this.setData({ error: (e && e.message) || '提现失败' });
+          this.load().finally(() => done(false));
+        });
+      },
+      fail: (e) => { console.log('[wallet] modal fail', e && e.errMsg); done(false); },
     });
-    console.log('[wallet] modal answer', answer);
-    if (!answer || !this._visible || actor !== store.get().profile.accountId) return;
-    console.log('[wallet] calling api.withdraw', bal);
-    const result = await api.withdraw(bal);
-    console.log('[wallet] withdraw result', JSON.stringify(result && result.withdrawal || result).slice(0, 200));
-    if (!this._visible || actor !== store.get().profile.accountId) return;
-    wx.showToast({ title: result.withdrawal.status === 'approved' ? ui.success : ui.failed, icon: 'none' });
-    await this.load();
-  } catch (e) {
-    console.log('[wallet] withdraw error', e && (e.message || e.errMsg || e));
-    if (this._visible) { this.setData({ error: (e && e.message) || '提现失败' }); await this.load(); wx.showToast({ title: (e && e.message) || '提现失败', icon: 'none' }); }
-  } finally { this.setData({ withdrawing: false }); }
+  });
  }
 });
