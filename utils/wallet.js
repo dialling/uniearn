@@ -5,7 +5,7 @@ async function overview() {
   if (require('./merge-mode').enabled) {
     const api = require('./api');
     await require('./account').call('status');
-    const res = await api.get('/api/wallet');
+    const res = await api.get('/api/wallet?intraday=1');
     if (!res || res.ok === false) throw Error((res && res.message) || '钱包暂时无法加载，请重试。');
     const cents = Number(res.balance_cents || 0);
     return {
