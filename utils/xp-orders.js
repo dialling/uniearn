@@ -559,18 +559,6 @@ async function act(action, payload = {}) {
     });
     return res;
   }
-  if (action === 'leave' || action === 'endEmpty') {
-    store.update(s => {
-      const t = (s.trips || []).find(x => x.id === payload.id);
-      if (t) {
-        if (action === 'leave') { t.phase = 'deliver'; t.joinUntil = 0; }
-        else t.cancelled = true;
-      }
-    });
-    store.update((st) => { st.openTrips = (st.openTrips || []).filter((t) => t.id !== reqId); });
-    await hall().catch(() => []);   // 结束后大厅/公开列表要立刻少一条
-    return { ok: true };
-  }
   if (action === 'startTrip') {
     const data = payload.data || {};
     if (data.selfRequestId) throw Error('请先处理自己的待接单，再发起行程。');
@@ -608,8 +596,13 @@ async function act(action, payload = {}) {
     const tripRow = (store.get().trips || []).find(t => t.id === reqId) || {};
     const tripId = String(tripRow.xpId || reqId).replace(/^xp-trip-/, '');
     if (tripId && /^\d+$/.test(tripId)) {
-      await api.post('/api/trips/' + tripId + (action === 'leave' ? '/leave' : '/end'), {}).catch(() => {});
+      await api.post('/api/trips/' + tripId + (action === 'leave' ? '/leave' : '/end'), {});
     }
+    store.update((st) => {
+      st.openTrips = (st.openTrips || []).filter((t) => t.id !== reqId);
+      st.trips = (st.trips || []).map((t) => (t.id === reqId ? { ...t, phase: action === 'leave' ? 'deliver' : 'ended', joinUntil: 0 } : t));
+    });
+    await hall().catch(() => []);
     return { ok: true };
   }
   // Yuni 钓鱼/喂食/衣柜：老版客户端就是这么调的（/api/loyalty/yuni/:action）
