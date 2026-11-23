@@ -1,8 +1,11 @@
 const {ensureCloud}=require('./cloud');
+const api=require('./api');
+// 动态走后端 /api/news（云函数 newsService 已停用）
 async function call(action,extra={}){
-  const {result}=await ensureCloud().callFunction({name:'newsService',data:{action,...extra}});
-  if(!result||!result.ok){const e=Error(result&&result.error||'动态加载失败 / Could not load news.');e.code=result&&result.code;throw e;}
-  return result;
+  if(action!=='newsList')return {ok:true,items:[]};
+  const res=await api.get('/api/news?limit='+(Number(extra.limit)||20));
+  if(!res||res.ok===false){const e=Error((res&&res.message)||'动态加载失败 / Could not load news.');e.code=res&&res.error;throw e;}
+  return {ok:true,items:(res.items||[]).map(x=>({id:String(x.id),titleZh:x.titleZh,titleEn:x.titleEn,bodyZh:x.bodyZh,bodyEn:x.bodyEn,cover:x.cover||'',publishedAt:x.publishedAt||0}))};
 }
 async function display(items,zh){
   const ids=[...new Set(items.filter(x=>!x.coverURL).map(x=>x.cover).filter(Boolean))];
