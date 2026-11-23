@@ -135,8 +135,8 @@ Page({
       wx.showModal({
         title: ui.confirmTitle || '提现',
         content: String(ui.confirmText || '将可用余额 ¥{n} 提现，1–3 个工作日内处理。').replace('{n}', this.data.balance),
-        confirmText: ui.confirm || '提现',
-        cancelText: ui.cancel || '取消',
+        confirmText: String(ui.confirm || '提现').slice(0, 4),   // 微信要求 ≤4 个汉字
+        cancelText: String(ui.cancel || '取消').slice(0, 4),
         success: (r) => {
           console.log('[wallet] modal answer', r && r.confirm);
           if (!r || !r.confirm) return done(false);
