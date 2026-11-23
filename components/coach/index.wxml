@@ -5,6 +5,6 @@
  <view class="cg-card" style="{{focus?cardStyle:''}}" catchtap="noop">
   <view wx:if="{{last>0}}" class="cg-head"><view class="cg-dots"><view wx:for="{{dots}}" wx:for-item="d" wx:key="*this" class="cg-dot {{d===i?'on':d<i?'past':''}}"/></view><text class="cg-skip" bindtap="finish">{{zh?'跳过':'Skip'}}</text></view>
   <view wx:for="{{[i]}}" wx:for-item="n" wx:key="*this" class="cg-step {{dir==='back'?'from-left':''}}"><view class="cg-body"><image class="cg-yuni" src="/assets/yuni-{{tip.pose}}.png" mode="aspectFit"/><view class="cg-copy"><view class="cg-name">Yuni</view><view class="cg-title">{{tip.title}}</view><view class="cg-text">{{tip.text}}</view></view></view></view>
-  <view class="cg-actions"><button wx:if="{{i>0}}" class="cg-btn cg-back" bindtap="back">{{zh?'上一步':'Back'}}</button><button class="cg-btn cg-next" bindtap="next">{{i===last?(zh?'知道了':'Got it'):(zh?'下一步':'Next')}}</button></view>
+  <view class="cg-actions"><button wx:if="{{i>0}}" class="cg-btn cg-back" bindtap="back">{{zh?'上一步':'Back'}}</button><button class="cg-btn cg-next" catchtap="next">{{i===last?(zh?'知道了':'Got it'):(zh?'下一步':'Next')}}</button></view>
  </view>
 </block>

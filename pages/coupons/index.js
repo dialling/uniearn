@@ -2,6 +2,9 @@ const store=require('../../utils/store'),copy=require('../../utils/create-copy')
 const orders=require('../../utils/orders');
 const dateLabel=value=>{if(!value)return '';const p=require('../../utils/china-time').parts(Number(value));return p.month+'月'+p.day+'日';};
 Page({
+  onShareAppMessage() {return require('../../utils/share-card').shareInfo(this.data.zh);},
+  onShareTimeline() {return require('../../utils/share-card').shareTimeline(this.data.zh);},
+
  data:{...require('../../utils/motion').data(),language:'zh',tab:'available',items:[],showUseFor:'',couponName:'',loading:false},
  onShow(){require('../../utils/appearance').apply(this);orders.bind(this,'refresh');},
  onHide(){orders.unbind(this);},
@@ -14,7 +17,7 @@ Page({
    const value=c.stored?Number(c.balance||0):Number(c.max||0);
    const kind=zh?(c.kind==='deliveryPercent'?'配送费 · 最高抵 ¥3.9':c.kind==='delivery'?'配送费':'订单金额'):(c.kind==='deliveryPercent'?'Delivery fee · up to ¥3.9':c.kind==='delivery'?'Delivery fee':'Order total');
    const description=c.descriptionZh||(zh?copy.coupon(c.description||'',language):c.description)||'';
-   return {...c,status,displayName:name,descriptionDisplay:description,displayAmount:c.percent===50?'5折':value.toFixed(2),kindLabel:kind,expiryLabel:status==='pending'?(zh?'好友完成首单后生效，有效 30 天':'Unlock after their first completed order · valid for 30 days'):c.expiresAt?(zh?'有效期至 ':'Valid until ')+dateLabel(c.expiresAt):zh?'长期有效':'No expiry',statusLabel:status==='pending'?(zh?'待好友完成首单':'Waiting for first order'):status==='used'?(zh?'已使用':'Used'):status==='expired'?(zh?'已过期':'Expired'):(c.usable===false?(zh?'暂不可用':'Unavailable'):zh?'可使用':'Available')};
+   return {...c,status,displayName:name,descriptionDisplay:description,displayAmount:(c.percent>=99?(zh?'免单':'Free'):(c.percent?(zh?(Math.round((10-c.percent/10)*10)/10)+'折':c.percent+'% off'):value.toFixed(2))),kindLabel:kind,expiryLabel:status==='pending'?(zh?'好友完成首单后生效，有效 30 天':'Unlock after their first completed order · valid for 30 days'):c.expiresAt?(zh?'有效期至 ':'Valid until ')+dateLabel(c.expiresAt):zh?'长期有效':'No expiry',statusLabel:status==='pending'?(zh?'待好友完成首单':'Waiting for first order'):status==='used'?(zh?'已使用':'Used'):status==='expired'?(zh?'已过期':'Expired'):(c.usable===false?(zh?'暂不可用':'Unavailable'):zh?'可使用':'Available')};
   });
   const items=rows.filter(c=>this.data.tab==='available'?['available','pending'].includes(c.status):c.status===this.data.tab);
   this.setData({language,items,loading:false});

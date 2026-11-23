@@ -61,6 +61,9 @@ function fishInfo(t,zh){const fish=n=>Math.ceil(n/FISH_POINTS),out={...t};
  else if(t.kind==='weekly_login')Object.assign(out,{fishCount:1,fishIcons:[0],fishLabel:zh?'每天 1 条':'1 a day'});
  return out;}
 Page({
+  onShareAppMessage() {return require('../../utils/share-card').shareInfo(this.data.zh);},
+  onShareTimeline() {return require('../../utils/share-card').shareTimeline(this.data.zh);},
+
  data:{...require('../../utils/motion').data(),language:'zh',pointTasks:[],pointsStatus:'',pointsSyncError:false,levels:rows('zh'),current:0,currentItem:rows('zh')[0],currentLevel:1,points:0,arcMoveMs:ARC_MOVE_MS,arcReleaseMs:ARC_RELEASE_MS,gestureActive:false,dragX:0,dragY:0,mascotJumping:false},
  onLoad(){this.localize(true);},
  onReady(){wx.createSelectorQuery().in(this).select('.level-orbit').boundingClientRect(rect=>{this.orbitRect=rect;}).exec();},

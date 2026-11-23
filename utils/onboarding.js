@@ -6,6 +6,6 @@ const copy={
 function language(){return store.get().language==='en'?'en':'zh';}
 function text(lang=language()){return copy[lang]||copy.zh;}
 function toggle(){const lang=language()==='zh'?'en':'zh';store.update(s=>{s.language=lang;});return lang;}
-function selected(profile=store.get().profile){return profile.universityId==='xjtlu'&&profile.campusId==='sip';}
+function selected(profile=store.get().profile){return ['xjtlu','ruc','suda'].includes(profile.universityId)&&profile.campusId==='sip';}
 function nextPage(profile=store.get().profile){if(!selected(profile))return '/pages/campus/index';const back=String(store.get().afterSignIn||'');if(/^\/pages\/join\/index\?id=[\w-]+$/.test(back)){store.update(s=>{delete s.afterSignIn;});return back;}const code=String(store.get().pendingInviteCode||'').trim();return code?'/pages/invite/index?invite='+encodeURIComponent(code):'/pages/jobs/index';}
 module.exports={language,text,toggle,selected,nextPage};

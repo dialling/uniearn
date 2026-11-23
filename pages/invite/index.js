@@ -27,7 +27,9 @@ Page({
   refresh(){const s=store.get();this.setData({inviteCode:(s.rewards||{}).inviteCode||'',registered:!!s.profile.onboarded});},
   back(){if(getCurrentPages().length>1)wx.navigateBack();else wx.reLaunch({url:'/pages/rewards/index'});},
   register(){const code=String(this.data.inviteInput||'').trim();store.update(s=>{s.pendingInviteCode=code;});wx.reLaunch({url:'/pages/welcome/index'});},
-  copy(){if(!this.data.inviteCode)return this.register();wx.setClipboardData({data:this.data.inviteCode});},
+  copy(){if(!this.data.inviteCode)return this.register();
+  const link='https://pararouter.cn/uni?invite='+encodeURIComponent(this.data.inviteCode);
+  require('../../utils/clipboard').copy(link,{zh:this.data.zh});},
   input(e){this.setData({inviteInput:e.detail.value});},
   async redeem(){
     const code=String(this.data.inviteInput||'').trim(),zh=this.data.zh;

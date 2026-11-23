@@ -13,12 +13,12 @@ Component({
       const p = store.get().profile || {}; if (!p.onboarded || p.loggedOut) return;
       this.timer = setTimeout(() => { if (this.data.when && !coach.seen(this.data.name)) this.start(); }, 650);
     },
-    start() {
+    start() { if (this.data.i >= 0 || this._starting) return; this._starting = true;
       const zh = store.get().language !== 'en', list = coach.steps(this.data.name, zh ? 'zh' : 'en');
       if (!list.length) return;
       this.list = list; this.savedScroll = undefined; this.setData({ i: 0, zh, dir: 'next', focus: null, last: list.length - 1, dots: list.map((_, k) => k) }); this.show(0);
     },
-    next() { const k = this.data.i + 1; if (k > this.data.last) return this.finish(); this.setData({ i: k, dir: 'next' }); this.show(k); },
+    next() { const now = Date.now(); if (now - (this._lastNext || 0) < 350) return; this._lastNext = now; const k = this.data.i + 1; if (k > this.data.last) return this.finish(); this.setData({ i: k, dir: 'next' }); this.show(k); },
     back() { const k = Math.max(0, this.data.i - 1); this.setData({ i: k, dir: 'back' }); this.show(k); },
     finish() {
       clearTimeout(this.timer); coach.mark(this.data.name); this.setData({ i: -1, focus: null });

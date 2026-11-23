@@ -21,6 +21,9 @@ function levelCard(tier,language){
  };
 }
 Page({
+  onShareAppMessage() {return require('../../utils/share-card').shareInfo(this.data.zh);},
+  onShareTimeline() {return require('../../utils/share-card').shareTimeline(this.data.zh);},
+
  data:{...require('../../utils/motion').data(),ui:meCopy('zh'),language:'zh',initial:'?',tierLevel:1,tierAvatar:tierAvatar(1),postedCount:0,deliveredCount:0,couponCount:0,unlockedCount:0,profile:{},loading:false,loggingOut:false,error:'',level:'Yuni 新星',limit:10,remaining:15,levelOpen:false,stickersOpen:false,settingsOpen:false,postedBadge:'bronze',jobsBadge:'bronze',tierName:'Yuni 新星',rankName:'Yuni 新星',nextJobsText:''},
  onLoad(o={}){this.pendingInviteCode=String(o.invite||'').trim();this.autoFeed=o.feed==='1';},
  async onShow(){if(this.pendingInviteCode){store.update(s=>{s.pendingInviteCode=this.pendingInviteCode;});this.pendingInviteCode='';return wx.reLaunch({url:'/pages/welcome/index'});}if(this.autoFeed){this.autoFeed=false;setTimeout(()=>this.feedDailyNow(),700);}this.setData({loading:true,error:''});try{this.refresh();this.refreshTier();this.ygMaybeStart();await account.call('status');await require('../../utils/orders').sync();this.refresh();this.refreshTier();/* 2026-11-21: order fish arrive with this refresh; let Yuni recount them, or Feed shows none while Me holds their points back */const stage=this.selectComponent('#yuni-stage');if(stage&&stage.sync)stage.sync();}catch(e){this.setData({error:e.message});}finally{this.setData({loading:false});}},
