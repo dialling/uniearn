@@ -60,10 +60,17 @@ function withdrawalStatus(row) {
 async function finishWithdrawal(wallet, transfer) {
   let current = transfer;
   if (transfer && transfer.package_info && wx.requestMerchantTransfer && wallet.mchId) {
-    await new Promise((resolve) => wx.requestMerchantTransfer({
+    const answer = await new Promise((resolve) => wx.requestMerchantTransfer({
       mchId: wallet.mchId, appId: wallet.appId, package: transfer.package_info, complete: resolve,
     }));
     current = await api.get('/api/wallet/withdrawals/' + transfer.withdrawal_id + '/status').catch(() => transfer);
+    // 用户在微信收款页点了取消（或直接关掉）：撤销这笔转账并把余额退回
+    const cancelled = /cancel/i.test(String(answer && (answer.errMsg || answer.errmsg) || ''))
+      || (current && current.state === 'WAIT_USER_CONFIRM' && answer && answer.errMsg && !/ok/i.test(answer.errMsg));
+    if (cancelled) {
+      await api.post('/api/wallet/withdrawals/' + transfer.withdrawal_id + '/cancel', {}).catch(() => {});
+      await overview().catch(() => null);
+    }
   }
   return { withdrawal: {
     id: (current && current.withdrawal_id) || (transfer && transfer.withdrawal_id),
