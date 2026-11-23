@@ -40,7 +40,7 @@
    <button wx:if="{{trip.category==='other'}}" class="btn jn-go jn-go-alt" disabled="{{!open}}" data-category="takeout" bindtap="join">{{zh?'添加我的外卖':'Add my takeaway'}}</button>
    <button class="btn orange jn-go" disabled="{{!open}}" data-category="parcel" bindtap="join">{{trip.category==='takeout'?(zh?'添加我的外卖':'Add my takeaway'):trip.category==='parcel'?(zh?'添加我的快递':'Add my parcel'):(zh?'添加我的订单':'Add my order')}}</button>
    <view wx:if="{{!signedIn}}" class="jn-consent">{{zh?'加入即表示你同意':'By joining you agree to the '}}<text class="jn-consent-link" bindtap="terms">{{zh?'《用户协议》':'Terms'}}</text>{{zh?'和':' and '}}<text class="jn-consent-link" bindtap="privacy">{{zh?'《隐私政策》':'Privacy Policy'}}</text>{{zh?'，将用微信登录。':'. We sign you in with WeChat.'}}</view>
-   <view class="preview-label">{{zh?'团队测试 · 不会扣款':'Team test · no payment is taken'}}</view>
+   
   </view>
  </view>
  <view wx:else class="flow-card jn-gone"><image class="jn-gone-yuni" mode="aspectFit" src="/assets/yuni-wave.png"/><view class="jn-gone-title">{{zh?'这个行程不可用或已关闭':'This trip is unavailable or closed'}}</view><view class="jn-gone-text">{{zh?'请检查网络，并询问跑手是否仍可加入。':'Check your connection and ask the runner whether joining is still open.'}}</view><button class="btn jn-go" bindtap="jobs">{{zh?'浏览接单大厅':'Browse Jobs'}}</button></view>

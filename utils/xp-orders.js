@@ -417,7 +417,26 @@ async function syncLoyalty() {
   return data;
 }
 async function sync() {
-  const [h, m] = await Promise.all([hall(), mine(), loadSupport().catch(() => [])]);
+  const wantTrip = String((store.get() || {}).viewTripId || '').replace(/^xp-trip-/, '');
+  const tripReq = wantTrip && /^\d+$/.test(wantTrip)
+    ? api.get('/api/trips?include=' + wantTrip).catch(() => null)
+    : Promise.resolve(null);
+  const [h, m, tripData] = await Promise.all([hall(), mine(), loadSupport().catch(() => []), tripReq]);
+  if (tripData && Array.isArray(tripData.public_trips)) {
+    const trips = tripData.public_trips.map((t) => ({
+      id: 'xp-trip-' + t.id, xpId: Number(t.id), category: t.category,
+      station: t.station, dorm: t.dorm || '', dorms: t.dorms || [],
+      remaining: t.remaining, capacity: t.capacity, phase: t.phase,
+      joinUntil: parseTs(t.join_until), departAt: parseTs(t.depart_at),
+      runnerName: t.runner_name || '', runnerAvatar: t.runner_avatar || '',
+      requestIds: [], cancelled: false, createdAt: Date.now(),
+    }));
+    store.update((s) => {
+      s.trips = (s.trips || []).filter((x) => !trips.some((t) => t.id === x.id)).concat(trips);
+      s.openTrips = (s.openTrips || []).filter((x) => !trips.some((t) => t.id === x.id)).concat(trips);
+    });
+  }
+
   await syncLoyalty().catch(() => null);
   return { hall: h, mine: m };
 }
@@ -547,6 +566,7 @@ async function act(action, payload = {}) {
         else t.cancelled = true;
       }
     });
+    await hall().catch(() => []);   // 结束后大厅/公开列表要立刻少一条
     return { ok: true };
   }
   if (action === 'startTrip') {
