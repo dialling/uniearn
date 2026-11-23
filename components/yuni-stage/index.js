@@ -65,6 +65,8 @@ Component({
         hungry: this.hungry ? this.hungry() : false, testPoints: !!play.testPoints, testRounds: !!play.testRounds, friend: l.friend === 'eagle', dailyFish: require('../../utils/checkin').dailyFishWaiting(), orderFish: require('../../utils/order-fish').waiting().length, mood: this.moodToday(), hasRod: rig.isTool(play.worn.hand), bucketCount: this.holdBucket != null ? this.holdBucket : play.bucket.length, triesLeft: play.fishing.left || 0, balance: play.balance
       };
       // One count on Feed: every fish ready to eat (today's dried fish, fish from orders, caught fish). gift = a dried or order fish is waiting.
+      // 合并模式没有云端每日签到/订单鱼干，旧数据会让角标永远挂着 1；只统计真正钓到的鱼。
+      if (require('../../utils/merge-mode').enabled) { next.dailyFish = null; next.orderFish = 0; }
       next.gift = !!(next.dailyFish || next.orderFish); next.feedCount = (next.dailyFish ? 1 : 0) + next.orderFish + next.bucketCount;
       // A fish was eaten (here or in the Feed Yuni sheet): tell the Me page so its points catch up.
       if (this.lastFeedCount !== undefined && next.feedCount !== this.lastFeedCount) setTimeout(() => this.triggerEvent('changed'), 0);
@@ -486,7 +488,7 @@ Component({
         setTimeout(async () => {
           this.setData({ prize: null });
           try {
-            await orders.act('yuniFeed', { index: n }); this.triggerEvent('changed');
+            await orders.act('yuniFeed', { index: n }); this.triggerEvent('changed'); this.sync();
             sound.eat(pts); this.fedNow(); this.act({ face: f.r === 'common' ? 'happy' : 'love', body: 'munch' }, 1700); this.chew(); this.points('+' + pts + this.t(' 积分', ' pts')); this.cheer();
             this.say(f.r === 'super' ? this.t('这是我吃过最棒的鱼！', 'The best fish I ever had!') : f.r === 'rare' ? this.t('唔，稀有的美味！', 'Mmm, a rare treat!') : this.t('好吃！', 'Yum!'), 2000);
             if (f.r !== 'common') this.confetti(f.r === 'super' ? 30 : 14);
