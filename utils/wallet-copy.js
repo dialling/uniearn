@@ -19,4 +19,30 @@ const words = {
  deduction: ['订单审核扣回', 'Reviewed deduction'], refresh: ['重新加载', 'Reload'], noBalance: ['暂无可提现的测试余额', 'No test balance to withdraw'],
  earnings: ['查看收益详情', 'View earnings details']
 };
-module.exports = language => Object.fromEntries(Object.entries(words).map(([key, pair]) => [key, pair[language === 'en' ? 1 : 0]]));
+// 真实钱包（合并模式）的文案：不再提“模拟/测试”，避免体验版看起来像演示。
+const live = {
+  test: ['钱包', 'Wallet'],
+  testNote: ['余额来自跑腿报酬，提现按平台规则处理。', 'Your balance comes from delivery earnings and is paid out under our payout rules.'],
+  withdraw: ['提现', 'Withdraw'],
+  rules: ['提现规则', 'Payout rules'],
+  ruleHint: ['满 ¥0.01 可提现 · 每日一次 · 工作日处理', 'Withdraw from ¥0.01 · once a day · processed on working days'],
+  confirmTitle: ['提现', 'Withdraw'],
+  confirm: ['确认提现', 'Confirm withdrawal'],
+  cancel: ['取消', 'Cancel'],
+  confirmText: ['将可用余额 ¥{n} 提现，1–3 个工作日内处理。', 'Withdraw ¥{n}; processed within 1–3 working days.'],
+  success: ['提现申请已提交', 'Withdrawal submitted'],
+  failed: ['提现失败，余额已退回', 'Withdrawal failed; balance returned'],
+  processing: ['处理中', 'Processing'],
+  approved: ['已到账', 'Paid out'],
+  rejected: ['已退回', 'Returned'],
+  noBalance: ['暂无可提现金额', 'Nothing to withdraw'],
+  opening_balance: ['历史收益迁入', 'Previous earnings'],
+  withdraw_refund: ['提现失败退回', 'Failed withdrawal returned'],
+};
+module.exports = (language, liveMode) => {
+  const lang = language === 'en' ? 1 : 0;
+  const base = Object.fromEntries(Object.entries(words).map(([k, pair]) => [k, pair[lang]]));
+  if (!liveMode) return base;
+  for (const [k, pair] of Object.entries(live)) base[k] = pair[lang];
+  return base;
+};
