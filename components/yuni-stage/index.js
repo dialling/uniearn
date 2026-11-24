@@ -110,6 +110,7 @@ Component({
       // 2026-11-17: idle moves stay silent. Yuni only makes sounds when someone plays with Yuni.
       const m = pick(moves);
       if (m === 'hungry') {
+        const at = Date.now(); if (at - (this._hungryAt || 0) < 10 * 60000) return; this._hungryAt = at;
         this.act({ face: 'hungry', wings: 'belly', body: 'rumble' }, 2600);
         this.say(pick(zh ? ['好饿啊……', '肚子在咕咕叫……', '有小鱼干吗？'] : ['I\'m so hungry...', 'My tummy is rumbling...', 'Got a little fish for me?']), 2800);
         this.measure(g => { if (g) this.float({ kind: 'note', text: zh ? '咕噜…' : 'grr…', style: 'left:' + (g.cx + g.width * .18) + 'px;top:' + (g.cy + 20) + 'px' }, 1400); });
@@ -293,6 +294,8 @@ Component({
     feed() {
       sound.unlock();
       this.wake(true); this.rest();
+      // 喂过鱼就算吃过：清掉饥饿角标并重算，避免鱼一直抖
+      if (this.hungry()) { this.fedNow(); this.sync(); }
       // Today's dried fish first (the daily check-in; its points were added at sign-in).
       if (this.data.dailyFish && !this.F) return this.feedDailyFish();
       // Then a fish from a finished order (its points were added when the order was confirmed).
