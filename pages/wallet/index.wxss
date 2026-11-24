@@ -188,3 +188,7 @@
 .rule-line .rule-k{width:168rpx;flex:none;font-size:24rpx;color:#8a8578}
 .rule-line .rule-v{flex:1;font-size:24rpx;line-height:1.5;color:#3a3833}
 .rules-card-foot{margin-top:10rpx;padding-top:10rpx;border-top:1rpx dashed #e3ded2;font-size:22rpx;color:#8a8578;line-height:1.5}
+
+.rules-card-brief{font-size:24rpx;color:#5c584f;line-height:1.5;margin:4rpx 0 6rpx}
+.rules-toggle{margin:12rpx auto 0;width:180rpx;height:60rpx;line-height:60rpx;text-align:center;border-radius:999rpx;background:#efece3;color:#2f6b4f;font-size:24rpx}
+.rules-ok{width:70%;margin-left:auto;margin-right:auto}
