@@ -3,7 +3,8 @@ function formError(f,zh){
  if(String(f.realName||'').trim().length<2)return zh?'请填写真实姓名。':'Enter your real name.';
  if(!['male','female'].includes(f.gender))return zh?'请选择性别。':'Choose your gender.';
  if(!/^1\d{10}$/.test(String(f.phone||'').replace(/\s/g,'')))return zh?'请填写 11 位手机号。':'Enter an 11-digit mobile number.';
- if(!/^\d{6,12}$/.test(String(f.studentId||'').replace(/\s/g,'')))return zh?'请填写正确的学号（6–12 位数字）。':'Enter your student ID (6–12 digits).';
+ // 与服务端一致：西浦学号固定 7 位数字（之前客户端允许 6–12 位，填 8 位会被服务端拒绝）
+ if(!/^\d{7}$/.test(String(f.studentId||'').replace(/\s/g,'')))return zh?'请填写 7 位学号（例如 1959123）。':'Enter your 7-digit student ID (e.g. 1959123).';
  return '';
 }
 const rulesEn=[{title:'Keep details private',body:'Names, rooms, phone numbers and pickup codes are only for the job. Never save or share them.'},{title:'Check the phone number on every bag',body:'Match the phone number before collecting. Report any mismatch.'},{title:'Check the seal sticker',body:'Report a broken seal before pickup and show the seal in your delivery photo.'},{title:'Cancel early, or with a reason',body:'Late personal cancellations add a mark. Missing food can be reported without waiting.'}];
