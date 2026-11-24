@@ -184,6 +184,7 @@ function toRequest(order, opts = {}) {
   const publicRoom = publicLocation.room || '';
   const deliveryAddress = destinationType === 'place' ? (where.place ? where.address : String(order.delivery_location || '')) : String(order.delivery_location || '');
   return {
+    unread: Number((order && (order.unread_chat || order.unread)) || 0),
     id, xpId: order.id,
     category,
     night: order.type === 'night',

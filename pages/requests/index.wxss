@@ -180,3 +180,6 @@
 
 .runner-go{margin-left:auto;background:#1f6b4a;color:#fff;border-radius:999rpx;padding:10rpx 26rpx;font-size:25rpx;line-height:1.4}
 .runner-go::after{border:0}
+
+.no-unread-dot{position:absolute;right:22rpx;top:18rpx;width:16rpx;height:16rpx;border-radius:50%;background:#e8604c}
+.runner-unread-dot{position:absolute;right:22rpx;top:18rpx;width:16rpx;height:16rpx;border-radius:50%;background:#e8604c}

@@ -17,7 +17,9 @@ Page({
       if(!Array.isArray(list)||!list.length)return;
       this.setData({messages:list.map(m=>({...m,photo:m.photo?orders.photoURL(m.photo):'',time:f.clock(m.at)}))});
     }).catch(()=>{});this.setData({zh,quick:QUICK_REPLIES.map(pair=>pair[zh?0:1])});if(wx.setNavigationBarTitle&&zh)wx.setNavigationBarTitle({title:'聊天'});orders.bind(this);this.loadStickers();},
- onHide(){orders.unbind(this);},
+ onHide(){orders.unbind(this);
+  // 已读后同步一次订单，红点（我的订单 / 订单详情 / 底栏）立即消失
+  orders.sync().catch(()=>{});},
  onUnload(){orders.unbind(this);},
  refresh(){const zh=this.data.zh,r=store.get().requests.find(x=>(x.id===this.id||String(x.id).replace(/^xp-/,'')===String(this.id).replace(/^xp-/,''))&&(x.isMine||x.isRunner));if(!r)return;const v=f.view(r,zh?'zh':'en'),available=stickers(zh);this.setData({request:{...v,pickupLabel:routeLabel.pickup(r,zh?'zh':'en'),destinationLabel:routeLabel.destination(r,zh?'zh':'en'),unitLabel:copy.translate(v.unit,zh?'zh':'en')},peer:require('../../utils/contact-identity')(r,r.isMine,zh),name:(r.isMine?r.runnerName:r.owner)||(zh?'同学':'Student'),initial:Array.from(String((r.isMine?r.runnerName:r.owner)||'U').trim()||'U')[0].toUpperCase(),contactMeta:r.isMine?(zh?'跑手 · 已完成 '+((r.runnerStats||{}).jobsDone||0)+' 单':'Runner · '+((r.runnerStats||{}).jobsDone||0)+' completed'):(zh?'同学':'Student')+(r.dorm?' · '+r.dorm:''),phone:r.isMine?r.runnerPhone:r.phone,messages:(this._apiMessages && this._apiMessages.length ? this._apiMessages : (r.messages||[])).map(m=>{const id=stickerId(m.text),sticker=stickerCatalog.lookup(id,zh);return{...m,photo:m.photo?orders.photoURL(m.photo):'',time:f.clock(m.at),isSticker:!!sticker,stickerSrc:sticker&&sticker.src,stickerLabel:sticker&&sticker.name};}),stickers:available,closed:!!r.deliveredAt&&Date.now()>=r.deliveredAt+86400000});if(r.unread&&!this.reading){this.reading=true;orders.readMessages(this.id).catch(e=>console.warn('Message read receipt failed; retry on next refresh',e)).finally(()=>{this.reading=false;});}},
  input(e){const text=e.detail.value;this.setData({text,canSend:!!text.trim()});},
