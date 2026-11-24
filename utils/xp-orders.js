@@ -411,9 +411,15 @@ async function resolvePeer(reqId, row) {
 }
 
 async function loadMessages(reqId, peerId, keepLocal) {
-  if (!require('./util').getToken() || !peerId) return [];
+  if (!require('./util').getToken()) return [];
   const myId = Number((require('./util').getUser() || {}).id) || 0;
-  const res = await api.get('/api/messages/peer/' + encodeURIComponent(String(peerId))).catch(() => ({}));
+  // 聊天按订单隔离：先走 /api/messages/order/:id，只有拿不到订单号时才退回按人
+  const orderId = numIdOf(reqId);
+  let res = orderId ? await api.get('/api/messages/order/' + orderId).catch(() => null) : null;
+  if (!res || !(res.messages || res.list)) {
+    if (!peerId) return [];
+    res = await api.get('/api/messages/peer/' + encodeURIComponent(String(peerId))).catch(() => ({}));
+  }
   const rows = (res && (res.messages || res.list)) || [];
   const out = rows.map((m) => ({
     id: m.id, text: m.content || '', photo: fullAvatar(m.image || ''),
@@ -757,13 +763,10 @@ async function runAct(action, payload = {}) {
     const content = isPhoto ? '' : (payload.text || '');
     const reqRow = (store.get().requests || []).find(r => r.id === reqId);
     const peer = (await resolvePeer(reqId, reqRow)) || payload.peer || payload.with || '';
-    if (peer) {
-      await api.post('/api/messages/peer/' + encodeURIComponent(String(peer)), {
-        content,
-        order_id: id || undefined,
-        // 服务端字段叫 image，且只接受本站 /uploads/ 地址
-        ...(isPhoto ? { image: payload.photo } : {})
-      });
+    if (id || peer) {
+      // 按订单发消息（同一个人的历史对话不会串到新订单）
+      const body = { content, ...(isPhoto ? { image: payload.photo } : {}) };
+      await api.post(id ? '/api/messages/order/' + id : '/api/messages/peer/' + encodeURIComponent(String(peer)), body);
       // 先乐观上屏，GET 失败也不会让气泡消失
       store.update((st) => {
         (st.requests || []).forEach((r) => {

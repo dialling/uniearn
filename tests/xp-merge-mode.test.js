@@ -170,9 +170,10 @@ function loadPage(name, opts = {}) {
 
   // 4. message maps { id, text } to peer endpoint with { content, order_id }
   await orders.act('message', { id: 'xp-42', text: 'On my way' });
-  const msgCall = calls.find(c => c.url.includes('/api/messages/peer/202'));
+  // 聊天按订单隔离：消息发到 /api/messages/order/:id，不再按人
+  const msgCall = calls.find(c => c.url.includes('/api/messages/order/42'));
   assert.ok(msgCall);
-  assert.deepEqual(msgCall.data, { content: 'On my way', order_id: 42 });
+  assert.deepEqual(msgCall.data, { content: 'On my way' });
 
   // 5. account.call saveDisplayName / saveDorm / saveAvatar / admin*
   await account.call('saveDisplayName', { displayName: 'Yichen' });
