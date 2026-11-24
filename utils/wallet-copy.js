@@ -25,7 +25,7 @@ const live = {
   testNote: ['余额来自跑腿报酬，提现按平台规则处理。', 'Your balance comes from delivery earnings and is paid out under our payout rules.'],
   withdraw: ['提现', 'Withdraw'],
   rules: ['提现规则', 'Payout rules'],
-  ruleHint: ['满 ¥0.01 可提现 · 每日一次 · 工作日处理', 'Withdraw from ¥0.01 · once a day · processed on working days'],
+  ruleHint: ['满 ¥0.01 可提现 · 不限提现次数 · 确认后实时到账', 'Withdraw from ¥0.01 · unlimited · instant after confirmation'],
   confirmTitle: ['提现', 'Withdraw'],
   confirm: ['确认提现', 'Confirm withdrawal'],
   cancel: ['取消', 'Cancel'],
