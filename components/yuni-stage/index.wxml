@@ -66,7 +66,7 @@
 
  <view id="ysPlayRow" class="ys-play">
   <view id="ysFeed" class="ys-btn {{hungry||gift?'ys-btn-hungry':''}}" hover-class="ys-press" role="button" bindtap="feed"><view wx:if="{{hungry && !feedCount}}" class="ys-hungry-dot"/><image class="ys-img" src="/assets/yuni-feed/fish.png" mode="aspectFit"/><text>{{zh?'喂食':'Feed'}}</text><text wx:if="{{feedCount}}" class="ys-count {{gift?'ys-count-gift':''}}">{{feedCount}}</text></view>
-  <view id="ysFish" class="ys-btn {{hasRod?'':'ys-btn-gold'}}" hover-class="ys-press" role="button" bindtap="fishing"><image class="ys-img" src="/assets/yuni-play/rod.svg" mode="aspectFit"/><text>{{zh?'钓鱼':'Fishing'}}</text><text wx:if="{{hasRod && (bucketCount || triesLeft)}}" class="ys-count">{{triesLeft}}</text></view>
+  <view id="ysFish" class="ys-btn {{hasRod?'':'ys-btn-gold'}}" hover-class="ys-press" role="button" bindtap="fishing"><image class="ys-img" src="/assets/yuni-play/rod.svg" mode="aspectFit"/><text>{{zh?'钓鱼':'Fishing'}}</text><text wx:if="{{hasRod && fishingOpen && triesLeft>0}}" class="ys-count">{{triesLeft}}</text></view>
   <view id="ysPlay" class="ys-trio"><view class="ys-btn" hover-class="ys-press" role="button" bindtap="five"><image class="ys-img" src="/assets/yuni-play/five.svg" mode="aspectFit"/><text>{{zh?'击掌':'High five'}}</text></view>
   <view class="ys-btn" hover-class="ys-press" role="button" bindtap="dance"><image class="ys-img" src="/assets/yuni-play/dance.svg" mode="aspectFit"/><text>{{zh?'跳舞':'Dance'}}</text></view>
   <view class="ys-btn" hover-class="ys-press" role="button" bindtap="spin"><image class="ys-img" src="/assets/yuni-play/spin.svg" mode="aspectFit"/><text>{{zh?'转圈':'Spin'}}</text></view></view>

@@ -38,7 +38,7 @@ Component({
   data: {
     zh: false, motion: true, L: {}, wings: '', body: 'idle', blink: false, headStyle: '', eyeStyle: '', bubble: '', bubbleOn: false, asleep: false,
     sceneStyle: '', scene: 'morning', dark: false, rideBack: '', rideFront: '', ride: 'floe', mood: 0, moodHearts: [0, 1, 2, 3, 4], fx: [],
-    mode: '', hasRod: false, bucketCount: 0, bucketMax: catalog.BUCKET_MAX, bucketBump: false, triesLeft: 0, soundOn: true,
+    mode: '', hasRod: false, bucketCount: 0, bucketMax: catalog.BUCKET_MAX, bucketBump: false, triesLeft: 0, fishingOpen: false, soundOn: true,
     tabs: [], tab: 0, cards: [], sel: '', balance: 0, buyName: '', buyNote: '', buyLabel: '', buyDisabled: true, buyPlain: false,
     castLabel: '', castSub: '', castClass: '', hint: '', leftText: '', bucket: [], card: null, casting: false, bobStyle: '', bobSrc: '', bobClass: '', lineStyle: '', shadowClass: '', shadowStyle: '', bang: false, splash: null, prize: null, bookOpen: false, book: [], bookCount: '0/0'
   },
@@ -63,7 +63,7 @@ Component({
       const next = {
         zh, motion: motion.enabled(), soundOn: sound.enabled(), scene: SCENES[l.scene] ? l.scene : 'morning', dark: sc.dark, ride: l.ride || 'floe', rideBack: ride.back, rideFront: ride.front,
         sceneStyle: '--sky:' + sc.sky + ';--sea-a:' + sc.a + ';--sea-b:' + sc.b + ';--sea-c:' + sc.c + ';--berg-a:' + sc.ba + ';--berg-b:' + sc.bb + ';--wave:url(\'' + wave + '\')',
-        hungry: this.hungry ? this.hungry() : false, testPoints: !!play.testPoints, testRounds: !!play.testRounds, friend: l.friend === 'eagle', dailyFish: require('../../utils/checkin').dailyFishWaiting(), orderFish: require('../../utils/order-fish').waiting().length, mood: this.moodToday(), hasRod: rig.isTool(play.worn.hand), bucketCount: this.holdBucket != null ? this.holdBucket : play.bucket.length, triesLeft: play.fishing.left || 0, balance: play.balance
+        hungry: this.hungry ? this.hungry() : false, testPoints: !!play.testPoints, testRounds: !!play.testRounds, friend: l.friend === 'eagle', dailyFish: require('../../utils/checkin').dailyFishWaiting(), orderFish: require('../../utils/order-fish').waiting().length, mood: this.moodToday(), hasRod: rig.isTool(play.worn.hand), bucketCount: this.holdBucket != null ? this.holdBucket : play.bucket.length, triesLeft: play.fishing.left || 0, fishingOpen: !!play.fishing.open, balance: play.balance
       };
       // One count on Feed: every fish ready to eat (today's dried fish, fish from orders, caught fish). gift = a dried or order fish is waiting.
       // 合并模式没有云端每日签到/订单鱼干，旧数据会让角标永远挂着 1；只统计真正钓到的鱼。
