@@ -3,7 +3,7 @@ const api = require('../../utils/wallet');
 const store = require('../../utils/store');
 const copy = require('../../utils/wallet-copy');
 const yuan = cents => (Number(cents || 0) / 100).toFixed(2);
-const cnTime = at => at ? new Date(Number(at) + 28800000).toISOString().replace('T', ' ').slice(0, 16) : '';
+const cnTime = at => { const n = Number(at); if (!Number.isFinite(n)) return ''; return new Date(n + 28800000).toISOString().replace('T', ' ').slice(0, 16); };
 function tracePath(ctx, xs, ys) {
   const n = xs.length;
   ctx.moveTo(xs[0], ys[0]);
@@ -72,7 +72,7 @@ Page({
   wx.setStorageSync('wallet_hide_amount:' + actor, hide);
   this.setData({hideAmount: hide}, () => this.drawChart());
  },
- clearWallet() { this._series = []; this.setData({balance:'0.00',balanceCents:0,todayIncome:'0.00',totalIncome:'0.00',pendingCents:0,pendingYuan:'0.00',debt:'0.00',debtCents:0,transactions:[],withdrawals:[],pending:[],chartMax:'',chartStart:'',rules:{},rulesVisible:false,chartReady:false}); },
+ clearWallet() { this._series = []; this.setData({balance:'0.00',balanceCents:0,todayIncome:'0.00',totalIncome:'0.00',pendingCents:0,pendingYuan:'0.00',debt:'0.00',debtCents:0,transactions:[],withdrawals:[],pending:[],chartMax:'',chartStart:'',rules:{scope:'最低 ¥0.01 起提；单笔为账户当前可用余额',limit_text:'每日不限次数',time_window:'7×24 小时随时可提',arrive:'确认收款后实时到账微信零钱',channel:'仅支持本人微信零钱',fee:'免费',notice:'未确认会自动退回'},rulesVisible:false,chartReady:false}); },
  async load() {
   const request = this._loadId = (this._loadId || 0) + 1, language = store.get().language === 'en' ? 'en' : 'zh', ui = copy(language, require('../../utils/merge-mode').enabled);
   const actor = store.get().profile.accountId;
@@ -88,12 +88,13 @@ Page({
    this.setData({weekBars:week.bars,weekLabels:week.labels,weekCount:week.count,weekIn:yuan(week.income),weekOut:yuan(Math.abs(week.paid))});
    const max = Math.max(...this._series), min = Math.min(...this._series);
    this.setData({loading:false,balanceCents:res.balance_cents,balance:res.balance_yuan,todayIncome:yuan(res.today_income_cents),totalIncome:yuan(res.total_income_cents),pendingCents:res.pending_cents,pendingYuan:res.pending_yuan,debtCents:res.debt_cents,debt:yuan(res.debt_cents),rules:res.rules||{scope:'最低 ¥0.01 起提，无其他门槛；单笔提现金额为账户当前可用余额，不收手续费',limit_text:'每日不限次数；每次可提金额＝账户当前可用余额',time_window:'7×24 小时随时可提，无固定提现时段',arrive:'在微信中确认收款后实时到账微信零钱（通常 1 分钟内）；未确认或失败会自动退回余额',channel:'仅支持提现到本人微信零钱',fee:'免费',notice:'未确认收款会自动退回账户余额'},
-    hideAmount:!!wx.getStorageSync('wallet_hide_amount:' + this._actor), chartMax:max > min ? yuan(max) : '',chartStart:res.series.length ? res.series[0].date.slice(5).replace('-', '/') : '',
+    hideAmount:!!wx.getStorageSync('wallet_hide_amount:' + this._actor), chartMax:max > min ? yuan(max) : '',chartStart:(res.series && res.series[0] && res.series[0].date) ? String(res.series[0].date).slice(5).replace('-', '/') : '',
     transactions:Array.from(res.transactions || [], t => ({id:t.id,kindText:ui[t.kind] || t.kind,created_at:cnTime(t.created_at),positive:t.amount_cents >= 0,amountYuan:yuan(Math.abs(t.amount_cents))})),
     withdrawals:Array.from(res.withdrawals || [], w => ({id:w.id,amountYuan:yuan(w.amount_cents),status:w.status,statusText:ui[w.status] || ui.processing,reject_reason:w.status === 'rejected' ? ui.failed : '',created_at:cnTime(w.created_at)})),
     pending:Array.from(res.pending || [], p => ({id:p.order_id,title:p.type==='parcel'?(language==='en'?'Parcel pickup':'快递代取'):p.type==='task'?(language==='en'?'Campus task':'校园任务'):p.night?(language==='en'?'Request a night market purchase':'夜市代买'):(language==='en'?'Takeaway pickup':p.title),amount:yuan(p.amount_cents),detail:p.disputed?ui.disputed:ui.auto+' '+cnTime(p.auto_settle_at)}))
    }, () => this.drawChart());
-  } catch (e) { if (request === this._loadId && this._visible) { if (store.get().profile.loggedOut || this._actor && store.get().profile.accountId !== this._actor) this.clearWallet(); this.setData({loading:false,error:e.message || (language === 'en' ? 'Could not load your wallet.' : '钱包加载失败，请重试。')}); } }
+  } catch (e) { if (request === this._loadId && this._visible) { if (store.get().profile.loggedOut || this._actor && store.get().profile.accountId !== this._actor) this.clearWallet(); console.log('[wallet] load failed', e && (e.stack || e.message));
+    this.setData({loading:false,error:e.message || (language === 'en' ? 'Could not load your wallet.' : '钱包加载失败，请重试。')}); } }
  },
   drawChart() {
     if (!this._ready || !this._visible || this.data.loading || this.data.error || !this._series?.length || typeof wx.createSelectorQuery !== 'function') return;

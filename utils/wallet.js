@@ -29,7 +29,7 @@ async function overview() {
       })),
       withdrawals: (res.withdrawals || []).map((w) => ({...w, created_at: ms(w.created_at)})),
       series: res.series || [],
-      rules: res.rules || [],
+      rules: (res.rules && typeof res.rules === 'object') ? res.rules : null,
       mchId: res.mch_id || '', appId: res.app_id || '',
       source: res,
       // 同步到全局摘要，「我的」页等位置直接读它，避免显示上一次的余额
