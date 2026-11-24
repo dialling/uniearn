@@ -7,7 +7,7 @@ Page({
  data:{...require('../../utils/motion').data(),request:null,text:'',canSend:false,sending:false,messages:[],quick:QUICK_REPLIES.map(pair=>pair[1]),zh:false,menuOpen:false,stickerOpen:false,stickers:[],stickersReady:false,stickerError:''},
  onLoad(o){const raw=String(o&&o.id||'');this.id=/^\d+$/.test(raw)?('xp-'+raw):raw;},
  refreshMessages(){return orders.act('messages',{id:this.id}).then(list=>{
-   if(!Array.isArray(list)||!list.length)return;
+   console.log('[chat] api messages',Array.isArray(list)?list.length:'not-array');if(!Array.isArray(list)||!list.length)return;
    this._apiMessages=list;
    this.setData({messages:list.map(m=>({...m,photo:m.photo?orders.photoURL(m.photo):'',time:f.clock(m.at)}))});
  }).catch(()=>{});},
