@@ -12,11 +12,11 @@ Page({
    this.setData({messages:list.map(m=>({...m,photo:m.photo?orders.photoURL(m.photo):'',time:f.clock(m.at)}))});
  }).catch(()=>{});},
  onShow(){const zh=store.get().language!=='en';
-    // 不依赖 store 里那一行是否存在：直接拿接口返回的列表渲染
-    orders.act('messages',{id:this.id}).then(list=>{
-      if(!Array.isArray(list)||!list.length)return;
-      this.setData({messages:list.map(m=>({...m,photo:m.photo?orders.photoURL(m.photo):'',time:f.clock(m.at)}))});
-    }).catch(()=>{});this.setData({zh,quick:QUICK_REPLIES.map(pair=>pair[zh?0:1])});if(wx.setNavigationBarTitle&&zh)wx.setNavigationBarTitle({title:'聊天'});orders.bind(this);this.loadStickers();},
+    // 统一走 refreshMessages：记录接口列表，避免随后的 store 同步把气泡冲掉
+    this.refreshMessages();
+    this.setData({zh,quick:QUICK_REPLIES.map(pair=>pair[zh?0:1])});
+    if(wx.setNavigationBarTitle&&zh)wx.setNavigationBarTitle({title:'聊天'});
+    orders.bind(this);this.loadStickers();},
  onHide(){orders.unbind(this);
   // 已读后同步一次订单，红点（我的订单 / 订单详情 / 底栏）立即消失
   orders.sync().catch(()=>{});},
