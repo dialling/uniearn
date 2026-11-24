@@ -86,7 +86,7 @@ Page({
    if (!this._series.length) this._series = [res.balance_cents || 0];
    this.setData({weekBars:week.bars,weekLabels:week.labels,weekCount:week.count,weekIn:yuan(week.income),weekOut:yuan(Math.abs(week.paid))});
    const max = Math.max(...this._series), min = Math.min(...this._series);
-   this.setData({loading:false,balanceCents:res.balance_cents,balance:res.balance_yuan,todayIncome:yuan(res.today_income_cents),totalIncome:yuan(res.total_income_cents),pendingCents:res.pending_cents,pendingYuan:res.pending_yuan,debtCents:res.debt_cents,debt:yuan(res.debt_cents),rules:res.rules,
+   this.setData({loading:false,balanceCents:res.balance_cents,balance:res.balance_yuan,todayIncome:yuan(res.today_income_cents),totalIncome:yuan(res.total_income_cents),pendingCents:res.pending_cents,pendingYuan:res.pending_yuan,debtCents:res.debt_cents,debt:yuan(res.debt_cents),rules:res.rules||{scope:'最低 ¥0.01 起提，无其他门槛；单笔提现金额为账户当前可用余额，不收手续费',limit_text:'每日不限次数；每次可提金额＝账户当前可用余额',time_window:'7×24 小时随时可提，无固定提现时段',arrive:'在微信中确认收款后实时到账微信零钱（通常 1 分钟内）；未确认或失败会自动退回余额',channel:'仅支持提现到本人微信零钱',fee:'免费',notice:'未确认收款会自动退回账户余额'},
     hideAmount:!!wx.getStorageSync('wallet_hide_amount:' + this._actor), chartMax:max > min ? yuan(max) : '',chartStart:res.series.length ? res.series[0].date.slice(5).replace('-', '/') : '',
     transactions:Array.from(res.transactions || [], t => ({id:t.id,kindText:ui[t.kind] || t.kind,created_at:cnTime(t.created_at),positive:t.amount_cents >= 0,amountYuan:yuan(Math.abs(t.amount_cents))})),
     withdrawals:Array.from(res.withdrawals || [], w => ({id:w.id,amountYuan:yuan(w.amount_cents),status:w.status,statusText:ui[w.status] || ui.processing,reject_reason:w.status === 'rejected' ? ui.failed : '',created_at:cnTime(w.created_at)})),

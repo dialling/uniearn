@@ -179,3 +179,12 @@
 .wallet-page .wallet-test-note{margin:14rpx 6rpx 0;font-size:22rpx;color:#8a877e;text-align:center}
 .page-dark .wv-num,.page-dark .wv-stat-v,.page-dark .wv-chart-title{color:#edebe4}
 .page-dark .wv-stats,.page-dark .wv-stat+.wv-stat{border-color:#333832}
+
+.rules-card{margin:20rpx 0 0;padding:22rpx 24rpx;border-radius:20rpx;background:#f7f6f2;border:1rpx solid #ece8df}
+.rules-card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10rpx}
+.rules-card-t{font-size:27rpx;font-weight:600;color:#1f1f1f}
+.rules-card-a{font-size:24rpx;color:#2f6b4f}
+.rule-line{display:flex;padding:8rpx 0;align-items:flex-start}
+.rule-line .rule-k{width:168rpx;flex:none;font-size:24rpx;color:#8a8578}
+.rule-line .rule-v{flex:1;font-size:24rpx;line-height:1.5;color:#3a3833}
+.rules-card-foot{margin-top:10rpx;padding-top:10rpx;border-top:1rpx dashed #e3ded2;font-size:22rpx;color:#8a8578;line-height:1.5}

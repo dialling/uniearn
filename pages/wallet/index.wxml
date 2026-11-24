@@ -17,7 +17,14 @@
  </view>
  <button class="wd-btn" catchtap="withdraw" loading="{{motionEnabled && (withdrawing)}}" disabled="{{withdrawing}}">{{ui.withdraw}}</button>
  <view class="wallet-test-note">{{ui.testNote}}</view>
- <view class="rules-link" bindtap="openRules"><text class="rules-link-t">{{ui.ruleHint}}</text><text class="rules-link-a">{{ui.view}} ›</text></view>
+ <view class="rules-card">
+ <view class="rules-card-hd"><text class="rules-card-t">{{ui.rules}}</text><text class="rules-card-a" bindtap="openRules">{{ui.view}} ›</text></view>
+ <view class="rule-line"><text class="rule-k">{{ui.scope}}</text><text class="rule-v">{{rules.scope}}</text></view>
+ <view class="rule-line"><text class="rule-k">{{ui.limit}}</text><text class="rule-v">{{rules.limit_text}}</text></view>
+ <view class="rule-line"><text class="rule-k">{{ui.time}}</text><text class="rule-v">{{rules.time_window}}</text></view>
+ <view class="rule-line"><text class="rule-k">{{ui.arrive}}</text><text class="rule-v">{{rules.arrive}}</text></view>
+ <view class="rules-card-foot">{{ui.ruleHint}}</view>
+</view>
  <view wx:if="{{debtCents>0}}" class="wallet-debt"><view>{{ui.debt}} {{hideAmount?'***':'¥'+debt}}</view><text>{{ui.debtHint}}</text></view>
  <block wx:if="{{pending.length}}"><view class="sec-title">{{ui.pending}}</view><view class="list-card"><view wx:for="{{pending}}" wx:key="id" class="wallet-row"><view class="row-main"><view class="row-t">{{item.title}}</view><view class="row-time">{{item.detail}}</view></view><text class="pending-amount">{{hideAmount?'***':'¥'+item.amount}}</text></view></view></block>
  <block wx:if="{{withdrawals.length}}"><view class="sec-title">{{ui.records}}</view><view class="list-card"><view wx:for="{{withdrawals}}" wx:key="id" class="wallet-row"><view class="row-ico wd"><view class="ico-arrow"/></view><view class="row-main"><view class="row-t">{{ui.withdraw}} {{hideAmount?'***':'¥'+item.amountYuan}}</view><view class="row-time">{{item.created_at}}</view><view wx:if="{{item.reject_reason}}" class="row-reason">{{item.reject_reason}}</view></view><text class="wd-status {{item.status}}">{{item.statusText}}</text></view></view></block>
