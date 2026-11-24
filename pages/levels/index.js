@@ -69,7 +69,7 @@ Page({
  onReady(){wx.createSelectorQuery().in(this).select('.level-orbit').boundingClientRect(rect=>{this.orbitRect=rect;}).exec();},
  onShow(){this.localize(false);require('../../utils/orders').bind(this,'refreshCheckin');require('../../utils/page-title').apply(this);this.stopPointsSync();this.stopPoints=require('./activity-sync').subscribe(config=>{this.pointsConfig=activityDisplay.latest(this.pointsConfig,config);this.updatePointTasks();this.setData({pointsSyncError:false});},()=>this.setData({pointsSyncError:true}));},
  stopPointsSync(){if(this.stopPoints){this.stopPoints();this.stopPoints=null;}},
- refreshCheckin(){const state=store.get(),view=levelData.view(require('../../utils/order-fish').shownProgression(state));this.setData({checkin:checkinView(state,this.data.language),currentLevel:view.level,points:view.points,hero:progressView(view,this.data.language==='en')});},
+ refreshCheckin(){const state=store.get(),view=levelData.view(state.progression || {});this.setData({checkin:checkinView(state,this.data.language),currentLevel:view.level,points:view.points,hero:progressView(view,this.data.language==='en')});},
  // 2026-11-18: Feed Yuni opens the Me page, where Yuni eats today's dried fish (no popup any more).
  openYuniFeed(){
   const state=store.get(),en=this.data.language==='en';
@@ -78,7 +78,7 @@ Page({
  },
  updatePointTasks(){const cached=(store.get().rewards||{}).activities;this.pointsConfig=activityDisplay.latest(this.pointsConfig,cached&&cached.config);const view=activityDisplay.display(this.pointsConfig,this.data.language==='zh');this.setData({pointTasks:view.activityTasks.map(t=>fishInfo(t,this.data.language==='zh')),pointsStatus:view.activityStatusLabel});},
  localize(first){
-  const state=store.get(),language=state.language==='en'?'en':'zh',view=levelData.view(require('../../utils/order-fish').shownProgression(state)),current=first?Math.max(0,view.level-1):this.data.current;
+  const state=store.get(),language=state.language==='en'?'en':'zh',view=levelData.view(state.progression || {}),current=first?Math.max(0,view.level-1):this.data.current;
   const levels=rows(language);
   this.setData({checkin:checkinView(state,language),language,levels,current,currentItem:levels[current],currentLevel:view.level,points:view.points,hero:progressView(view,language==='en')});this.updatePointTasks();
  },
