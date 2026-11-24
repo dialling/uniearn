@@ -191,4 +191,4 @@
 
 .rules-card-brief{font-size:24rpx;color:#5c584f;line-height:1.5;margin:4rpx 0 6rpx}
 .rules-toggle{margin:12rpx auto 0;width:180rpx;height:60rpx;line-height:60rpx;text-align:center;border-radius:999rpx;background:#efece3;color:#2f6b4f;font-size:24rpx}
-.rules-ok{width:70%;margin-left:auto;margin-right:auto}
+.rules-ok{width:70%;margin:22rpx auto 0;height:88rpx;line-height:normal;padding:0;display:flex;align-items:center;justify-content:center}
