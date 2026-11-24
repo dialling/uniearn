@@ -6,6 +6,10 @@ function stickers(zh){return stickerCatalog.list(zh);}
 Page({
  data:{...require('../../utils/motion').data(),request:null,text:'',canSend:false,sending:false,messages:[],quick:QUICK_REPLIES.map(pair=>pair[1]),zh:false,menuOpen:false,stickerOpen:false,stickers:[],stickersReady:false,stickerError:''},
  onLoad(o){const raw=String(o&&o.id||'');this.id=/^\d+$/.test(raw)?('xp-'+raw):raw;},
+ refreshMessages(){return orders.act('messages',{id:this.id}).then(list=>{
+   if(!Array.isArray(list))return;
+   this.setData({messages:list.map(m=>({...m,photo:m.photo?orders.photoURL(m.photo):'',time:f.clock(m.at)}))});
+ }).catch(()=>{});},
  onShow(){const zh=store.get().language!=='en';
     // 不依赖 store 里那一行是否存在：直接拿接口返回的列表渲染
     orders.act('messages',{id:this.id}).then(list=>{
@@ -16,7 +20,7 @@ Page({
  onUnload(){orders.unbind(this);},
  refresh(){const zh=this.data.zh,r=store.get().requests.find(x=>(x.id===this.id||String(x.id).replace(/^xp-/,'')===String(this.id).replace(/^xp-/,''))&&(x.isMine||x.isRunner));if(!r)return;const v=f.view(r,zh?'zh':'en'),available=stickers(zh);this.setData({request:{...v,pickupLabel:routeLabel.pickup(r,zh?'zh':'en'),destinationLabel:routeLabel.destination(r,zh?'zh':'en'),unitLabel:copy.translate(v.unit,zh?'zh':'en')},peer:require('../../utils/contact-identity')(r,r.isMine,zh),name:(r.isMine?r.runnerName:r.owner)||(zh?'同学':'Student'),initial:Array.from(String((r.isMine?r.runnerName:r.owner)||'U').trim()||'U')[0].toUpperCase(),contactMeta:r.isMine?(zh?'跑手 · 已完成 '+((r.runnerStats||{}).jobsDone||0)+' 单':'Runner · '+((r.runnerStats||{}).jobsDone||0)+' completed'):(zh?'同学':'Student')+(r.dorm?' · '+r.dorm:''),phone:r.isMine?r.runnerPhone:r.phone,messages:(r.messages||[]).map(m=>{const id=stickerId(m.text),sticker=stickerCatalog.lookup(id,zh);return{...m,photo:m.photo?orders.photoURL(m.photo):'',time:f.clock(m.at),isSticker:!!sticker,stickerSrc:sticker&&sticker.src,stickerLabel:sticker&&sticker.name};}),stickers:available,closed:!!r.deliveredAt&&Date.now()>=r.deliveredAt+86400000});if(r.unread&&!this.reading){this.reading=true;orders.readMessages(this.id).catch(e=>console.warn('Message read receipt failed; retry on next refresh',e)).finally(()=>{this.reading=false;});}},
  input(e){const text=e.detail.value;this.setData({text,canSend:!!text.trim()});},
- async send(){const text=this.data.text.trim();if(this.data.sending||!text||this.data.closed)return;this.setData({sending:true});try{await orders.act('message',{id:this.id,text});this.setData({text:'',canSend:false,menuOpen:false,stickerOpen:false});}catch(e){wx.showToast({title:e.message,icon:'none'});}finally{this.setData({sending:false});}},
+ async send(){const text=this.data.text.trim();if(this.data.sending||!text||this.data.closed)return;this.setData({sending:true});try{await orders.act('message',{id:this.id,text});this.setData({text:'',canSend:false,menuOpen:false,stickerOpen:false});await this.refreshMessages();}catch(e){wx.showToast({title:e.message,icon:'none'});}finally{this.setData({sending:false});}},
  toggleMenu(){if(this.data.closed||this.data.sending)return;wx.hideKeyboard?.();this.setData({menuOpen:!this.data.menuOpen,stickerOpen:false});},
  async loadStickers(){if(this.loadingStickers||this.data.stickersReady)return;this.loadingStickers=true;this.setData({stickerError:''});try{await stickerCatalog.load();this.setData({stickersReady:true});}catch(e){this.setData({stickerError:this.data.zh?'贴纸加载失败，点击重试':'Could not load stickers. Tap to retry.'});}finally{this.loadingStickers=false;}},
  toggleStickers(){if(this.data.closed||this.data.sending)return;this.setData({menuOpen:true,stickerOpen:true});this.loadStickers();},
@@ -33,6 +37,7 @@ Page({
      const photo=typeof up==='string'?up:((up&&up.url)||'');
      if(!photo)throw Error('图片上传失败');
      await orders.act('message',{id:this.id,photo});
+     await this.refreshMessages();
      this.closeMenu();
    }catch(error){if(!/cancel/i.test(error.errMsg||error.message||''))wx.showToast({title:error.message||'发送失败',icon:'none'});}
    finally{this.setData({sending:false});}
