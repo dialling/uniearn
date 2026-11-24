@@ -124,7 +124,9 @@ async function call(action, extra = {}) {
       return { account: shape(require('./util').getUser() || {}) };
     }
     case 'agreeRules': {
-      store.update(s => { s.runnerRulesAccepted = true; });
+      // 认证中的用户 runner_status 还是 pending，shape() 不会给 runnerRulesAccepted，
+      // 页面判断 accepted 时用 runnerRulesPending，这里两个一起置位，避免「点继续没反应」
+      store.update(s => { s.runnerRulesAccepted = true; s.runnerRulesPending = true; });
       return { account: shape(require('./util').getUser() || {}) };
     }
     case 'apply': {
