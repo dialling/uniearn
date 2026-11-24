@@ -67,7 +67,8 @@ Component({
       };
       // One count on Feed: every fish ready to eat (today's dried fish, fish from orders, caught fish). gift = a dried or order fish is waiting.
       // 合并模式没有云端每日签到/订单鱼干，旧数据会让角标永远挂着 1；只统计真正钓到的鱼。
-      if (require('../../utils/merge-mode').enabled) { next.dailyFish = null; next.orderFish = 0; }
+      // 合并模式没有云端签到鱼干；但订单鱼干来自自建后端，必须保留
+      if (require('../../utils/merge-mode').enabled) { next.dailyFish = null; }
       next.gift = !!(next.dailyFish || next.orderFish); next.feedCount = (next.dailyFish ? 1 : 0) + next.orderFish + next.bucketCount;
       // A fish was eaten (here or in the Feed Yuni sheet): tell the Me page so its points catch up.
       if (this.lastFeedCount !== undefined && next.feedCount !== this.lastFeedCount) setTimeout(() => this.triggerEvent('changed'), 0);
