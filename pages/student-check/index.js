@@ -20,6 +20,8 @@ const stage=!a.profile&&!a.hasProfile?'profile':this._submitApplication?'rules':
  chooseGender(e){this.setData({'form.gender':e.currentTarget.dataset.gender});},
  async submit(){if(this.data.busy)return;const error=formError(this.data.form,this.data.zh);if(error){this.setData({error});return;}this._submitApplication=true;this.setData({stage:'rules',error:'',ruleChecks:this.data.rules.map(()=>false),ruleCount:0});},
  reapply(){this._submitApplication=false;this.setData({stage:'apply',error:''});},
+ // 规则页可以退回第一步，表单内容保留，填错能改
+ backToForm(){if(this.data.busy)return;this._submitApplication=false;this.setData({stage:'apply',error:''});},
  rule(e){if(this.data.busy)return;const i=Number(e.currentTarget.dataset.index),checks=this.data.ruleChecks.slice(),count=this.data.rules.length;if(i===-1)checks.fill(this.data.ruleCount!==count);else if(Number.isInteger(i)&&i>=0&&i<count)checks[i]=!checks[i];else return;this.setData({ruleChecks:checks,ruleCount:checks.filter(Boolean).length});},
  async finish(){if(this.data.ruleCount!==this.data.rules.length||this.data.busy)return;this.setData({busy:true,error:''});
 let accountState=null,rulesError=null;
