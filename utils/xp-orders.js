@@ -654,6 +654,8 @@ async function runAct(action, payload = {}) {
   if (action === 'confirm') {
     const res = await api.post('/api/orders/' + id + '/confirm-complete', {});
     updateRequestLocally(reqId, { status: 'confirmed', confirmedAt: Date.now() });
+    // 结单后立刻同步积分/小鱼干，喂食页和「我的」角标不用等下次冷启动
+    await syncLoyalty().catch(() => null);
     return res;
   }
   if (action === 'cancel') {
