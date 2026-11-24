@@ -15,6 +15,7 @@ require('../utils/checkin').markFed({ key: 'a1:' + today }); assert.equal(fish.s
 fish.markFed('f2'); assert.equal(fish.shownProgression().points, 100, 'all fed: Me matches the server total');
 assert.equal(store.get().progression.points, 100, 'the server total is untouched');
 const read = f => fs.readFileSync(path.join(__dirname, '..', f), 'utf8');
-assert.match(read('pages/profile/index.js'), /yuni-level'\)\.view\(require\('\.\.\/\.\.\/utils\/order-fish'\)\.shownProgression\(state\)\)/, 'Me uses the shown points');
+// 2026-11-24 用户要求：主页等级卡与等级页同口径，直接显示服务端总分（不再扣待喂养的鱼）
+assert.match(read('pages/profile/index.js'), /yuni-level'\)\.view\(\(state \&\& state\.progression\) \|\| \{\}\)/, 'Me uses the server total');
 assert.match(read('components/yuni-stage/index.js'), /next\.feedCount !== this\.lastFeedCount\) setTimeout\(\(\) => this\.triggerEvent\('changed'\), 0\)/, 'eating a fish refreshes Me');
 console.log('Order fish points: Me counts up 5 per fish as Yuni eats; server total unchanged');
