@@ -60,7 +60,17 @@ if(rows.some(r=>r&&r.status!=='waiting'&&r.status!=='taken'))throw Error(hall.tr
    const nav=require('../../utils/nav');
    nav.navigateTo({url});}catch(e){ui.toast(e);}finally{this.taking=false;}},
  joinTrip(e){const id=e.currentTarget.dataset.id;if(id)require('../../utils/nav').navigateTo({url:'/pages/join/index?id='+encodeURIComponent(id)});},
- completedOrder(e){const tapIds=e.currentTarget.dataset.ids||[],s0=store.get(),running=s0.requests.find(r=>tapIds.includes(r.id)&&r.isRunner&&['taken','collected','delivered'].includes(r.status));if(this.data.tab==='open'&&!running){if(tapIds.length)this.openPublicDetail(tapIds[0]);return;}if(this.data.tab!=='done'&&!running)return;const ids=tapIds,s=s0,r=s.requests.find(r=>ids.includes(r.id)&&(r.isMine||r.isRunner));if(!ids.length)return;let url;if(r){url=r.category==='task'?'/pages/task/index?id='+r.id:r.isMine?'/pages/request/index?id='+r.id:r.runnerId?'/pages/trip/index?id='+r.runnerId:'/pages/request/index?id='+r.id;}else url='/pages/public-job/index?id='+ids[0];require('../../utils/nav').navigateTo({url});},
+ completedOrder(e){const tapIds=e.currentTarget.dataset.ids||[],s0=store.get(),running=s0.requests.find(r=>tapIds.includes(r.id)&&r.isRunner&&['taken','collected','delivered'].includes(r.status));if(this.data.tab==='open'&&!running){
+  // 自己发布的单在大厅点「查看进度」：大厅的 publicJobs 不一定包含自己的单，
+  // 之前落到 openPublicDetail 后立刻被关闭，看起来就是点了没反应。
+  const own=s0.requests.find(r=>tapIds.includes(r.id)&&['taken','collected','delivered'].includes(r.status));
+  if(own&&(own.isMine||own.isRunner)){
+    const url=own.runnerId?('/pages/trip/index?id='+own.runnerId):('/pages/request/index?id='+own.id);
+    require('../../utils/nav').navigateTo({url});return;
+  }
+  if(tapIds.length)this.openPublicDetail(tapIds[0]);
+  return;
+}if(this.data.tab!=='done'&&!running)return;const ids=tapIds,s=s0,r=s.requests.find(r=>ids.includes(r.id)&&(r.isMine||r.isRunner));if(!ids.length)return;let url;if(r){url=r.category==='task'?'/pages/task/index?id='+r.id:r.isMine?'/pages/request/index?id='+r.id:r.runnerId?'/pages/trip/index?id='+r.runnerId:'/pages/request/index?id='+r.id;}else url='/pages/public-job/index?id='+ids[0];require('../../utils/nav').navigateTo({url});},
  openPublicDetail(id){this.publicDetailId=id;this.refreshPublicDetail();},
  refreshPublicDetail(){if(!this.publicDetailId)return;const s=store.get(),r=(s.publicJobs||[]).find(r=>r.id===this.publicDetailId&&r.campusId===s.profile.campusId&&['waiting','taken','collected','delivered'].includes(r.status));if(!r){this.closePublicDetail();return;}const mine=s.requests.some(x=>x.id===r.id&&f.owned(s,x));this.setData({publicDetail:{...publicOrder.view(r,s.language),canTake:r.status==='waiting'&&!mine}});},
  closePublicDetail(){this.publicDetailId='';this.setData({publicDetail:null});},
