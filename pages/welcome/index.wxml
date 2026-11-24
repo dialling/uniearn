@@ -3,7 +3,7 @@
 <view wx:if="{{!skipping}}" class="welcome {{darkClass}} {{error?'has-error':''}}">
   <!-- Top: brand row and Yuni greeting the student -->
   <view class="hero">
-    <view class="welcome-header">
+    <view class="welcome-header"><view class="welcome-back" bindtap="backOrBrowse" aria-label="{{language==='zh'?'返回':'Back'}}">‹</view>
       <view class="brand"><view class="logo">U<text>●</text></view><text>Uni<text class="green-word">earn</text></text></view>
       <button class="language-switch" bindtap="toggleLanguage">{{copy.toggle}}</button>
     </view>

@@ -59,3 +59,5 @@ page{background:#ffffff}
 
 .welcome-skip{margin-top:18rpx;background:transparent;border:0;color:#7c7768;font-size:26rpx;line-height:1.6}
 .welcome-skip::after{border:0}
+
+.welcome-back{position:absolute;left:24rpx;top:16rpx;width:64rpx;height:64rpx;line-height:60rpx;text-align:center;font-size:44rpx;color:#1f1f1f}
