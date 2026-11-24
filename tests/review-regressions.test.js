@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs'),vm=require('node:vm');
-const engine=require('../cloudfunctions/orderService/engine');
-const rewards=require('../cloudfunctions/orderService/rewards');
+const engine=require('../legacy/cloudfunctions/orderService/engine');
+const rewards=require('../legacy/cloudfunctions/orderService/rewards');
 const realNow=Date.now;
 let now=Date.parse('2030-01-02T18:00:00+08:00');
 Date.now=()=>now;
@@ -44,7 +44,7 @@ try{
   engine.expire(s,now+1001);rewards.settle(s,now+1001);
   assert.equal(coupon.usedBy,undefined,'automatic refunds restore an entirely cancelled split');
  }
- for(const dir of ['../utils','../cloudfunctions/orderService']){
+ for(const dir of ['../utils','../legacy/cloudfunctions/orderService']){
   const d=require(dir+'/domain'),f=require(dir+'/workflow');
   const s={...engine.initial(),profile:{...account.profile,accountId:runner,jobsDone:0,marks:[]}};
   const base={category:'takeout',campusId:'sip',station:'North gate',dorm:'Library',destinationType:'place',phone:'13800000000',owner:'Customer',bags:1,price:3,arrived:true};

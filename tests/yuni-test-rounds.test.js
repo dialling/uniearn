@@ -1,6 +1,6 @@
 // 2026-11-16 team test: "+ Test tries" gives fresh fishing tries for today; refused once TEST_ROUNDS_FOR_TESTING is off.
 const assert=require('node:assert/strict'),fs=require('node:fs'),{harness}=require('./helpers/order-cloud');
-const play=require('../cloudfunctions/orderService/yuni-play'),catalog=require('../cloudfunctions/orderService/yuni-catalog');
+const play=require('../legacy/cloudfunctions/orderService/yuni-play'),catalog=require('../legacy/cloudfunctions/orderService/yuni-catalog');
 (async()=>{
  const h=harness(),me=h.engine.idFor('customer');
  await h.call('customer','sync');

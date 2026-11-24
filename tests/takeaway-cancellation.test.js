@@ -1,8 +1,8 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
-const engine=require('../cloudfunctions/orderService/engine');
+const engine=require('../legacy/cloudfunctions/orderService/engine');
 const MIN=60000,now=Date.parse('2030-01-02T18:00:00+08:00');
 const base={station:'North gate',dorm:'D01',room:'101',owner:'Student',phone:'13801026092',bags:1,price:3};
-for(const prefix of ['../utils/','../cloudfunctions/orderService/']){
+for(const prefix of ['../utils/','../legacy/cloudfunctions/orderService/']){
  const workflow=require(prefix+'workflow'),domain=require(prefix+'domain');
  const state=()=>{const s=domain.initial();s.requests=[];return s;};
  for(const minutes of [10,30,60]){

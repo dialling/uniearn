@@ -1,6 +1,6 @@
 // 2026-11-16: a lucky-draw coupon in a bottle while fishing (1% on every catch, at most once every 7 days), saved to My coupons.
 const assert=require('node:assert/strict'),{harness}=require('./helpers/order-cloud');
-const play=require('../cloudfunctions/orderService/yuni-play'),catalog=require('../cloudfunctions/orderService/yuni-catalog'),rewards=require('../cloudfunctions/orderService/rewards');
+const play=require('../legacy/cloudfunctions/orderService/yuni-play'),catalog=require('../legacy/cloudfunctions/orderService/yuni-catalog'),rewards=require('../legacy/cloudfunctions/orderService/rewards');
 (async()=>{
  const h=harness(),me=h.engine.idFor('customer');await h.call('customer','sync');
  h.edit(s=>{const m=s.members[me];m.loyalty=m.loyalty||{points:0,level:1,notices:[]};m.loyalty.points=400;m.loyalty.level=3;});

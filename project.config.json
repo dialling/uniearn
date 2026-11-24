@@ -84,6 +84,10 @@
       {
         "type": "file",
         "value": "project.private.config.json"
+      },
+      {
+        "value": "legacy",
+        "type": "folder"
       }
     ],
     "include": []

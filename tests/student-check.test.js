@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
-const {createHandler,idFor,validateApplication}=require('../cloudfunctions/studentAccount/handler');
+const {createHandler,idFor,validateApplication}=require('../legacy/cloudfunctions/studentAccount/handler');
 assert.equal(validateApplication({realName:'张三',gender:'male',phone:'13800000000',studentId:'2512345'}).value.studentId,'2512345');
 assert.equal(validateApplication({realName:'张',gender:'female',phone:'13800000000',studentId:'2512345'}).code,'INVALID_NAME');
 assert.equal(validateApplication({realName:'张三',gender:'male',phone:'1380000',studentId:'2512345'}).code,'INVALID_PHONE');

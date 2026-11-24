@@ -1,9 +1,9 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
-const {createHandler}=require('../cloudfunctions/studentAccount/handler');
+const {createHandler}=require('../legacy/cloudfunctions/studentAccount/handler');
 (async()=>{
  let record={profile:{name:'李明',phone:'13800000000'},verification:{status:'verified'},authRevision:0},repo;
  const cloud={init(){},database:()=>({command:{set:value=>({__replace:value})},runTransaction:async fn=>fn({collection:()=>({doc:()=>({get:async()=>({data:record}),update:async({data})=>{for(const [key,value] of Object.entries(data)){if(value&&Object.prototype.hasOwnProperty.call(value,'__replace'))record[key]=value.__replace;else if(value&&typeof value==='object'&&record[key]===null)throw Object.assign(Error('Cannot create child field under null'),{errCode:-502001});else record[key]=value;}}})})})})};
- vm.runInNewContext(fs.readFileSync(require.resolve('../cloudfunctions/studentAccount/index'),'utf8'),{require:n=>n==='wx-server-sdk'?cloud:n==='./handler'?{createHandler:opts=>{repo=opts.repo;return()=>{};}}:require(n),exports:{},process:{env:{}}});
+ vm.runInNewContext(fs.readFileSync(require.resolve('../legacy/cloudfunctions/studentAccount/index'),'utf8'),{require:n=>n==='wx-server-sdk'?cloud:n==='./handler'?{createHandler:opts=>{repo=opts.repo;return()=>{};}}:require(n),exports:{},process:{env:{}}});
  repo.get=async()=>structuredClone(record);
  const handle=createHandler({repo,getOpenId:()=> 'student',env:{}});
  const r=await handle({action:'logout'});assert.equal(r.account.loggedOut,true);assert.equal(r.account.profile,null);assert.equal(r.account.verification.status,'unverified');

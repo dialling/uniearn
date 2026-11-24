@@ -1,4 +1,4 @@
-const assert=require('node:assert/strict'),auth=require('../cloudfunctions/newsService/auth'),makeRepo=require('../cloudfunctions/newsService/operations-repo'),{handleOperations,validatePromotions}=require('../cloudfunctions/newsService/operations'),{createHttpHandler}=require('../cloudfunctions/newsService/http');
+const assert=require('node:assert/strict'),auth=require('../legacy/cloudfunctions/newsService/auth'),makeRepo=require('../legacy/cloudfunctions/newsService/operations-repo'),{handleOperations,validatePromotions}=require('../legacy/cloudfunctions/newsService/operations'),{createHttpHandler}=require('../legacy/cloudfunctions/newsService/http');
 (async()=>{
  const store={uniearn_news:{},uniearn_accounts:{},uniearn_order_state:{},uniearn_order_archive:{}};let queue=Promise.resolve(),at=Date.now();
  const copy=structuredClone;
@@ -31,7 +31,7 @@ const assert=require('node:assert/strict'),auth=require('../cloudfunctions/newsS
  assert.equal((await http('opsDisableMember',{id:memberId,disabled:true})).statusCode,200);assert.equal((await http('opsUsers',{},memberToken)).statusCode,401);
  assert.equal((await http('opsDisableMember',{id:'admin',disabled:true})).statusCode,409);
  assert.equal((await http('opsOverview',{},'')).statusCode,401);
- const rewards=require('../cloudfunctions/orderService/rewards');const s={requests:[],members:{},trips:[],adminPromotions:{...cfg,campaigns:[{id:'live',title:'Live',max:3,kind:'total',days:5,enabled:true}]}};
+ const rewards=require('../legacy/cloudfunctions/orderService/rewards');const s={requests:[],members:{},trips:[],adminPromotions:{...cfg,campaigns:[{id:'live',title:'Live',max:3,kind:'total',days:5,enabled:true}]}};
  assert.equal(rewards.view(s,id,at).campaigns[0].id,'live');rewards.collect(s,id,'live',at);assert.equal(s.members[id].coupons[0].max,3);s.adminPromotions.campaigns[0].enabled=false;assert.equal(rewards.view(s,other,at).campaigns.length,0);assert.throws(()=>rewards.collect(s,other,'live',at));assert.equal(s.members[id].coupons[0].max,3);
  const future={requests:[],members:{},trips:[],adminPromotions:{...cfg,campaigns:[{id:'future-auto',title:'Scheduled',automatic:true,max:2,days:5,kind:'total',start:new Date(at+86400000).toISOString()}]}};rewards.init(future,id,at);assert.equal((future.members[id].coupons||[]).length,0,'future automatic campaign must not issue coupons early');
  console.log('Operations: masked data, actual counts/no revenue, audited reveal, duplicate/stale review guards, student reservation, shared support reply, order case isolation, campaign conflicts/live schedules, single-use invite, equal member access and immediate revocation passed.');

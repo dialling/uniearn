@@ -1,7 +1,7 @@
 // 2026-11-21: a new user must be able to sign up as a runner. The cloud only accepts an application after the
 // runner rules are agreed (RULES_REQUIRED), so the 跑手申请 page has to record the rules before it sends the application.
 const assert = require('node:assert/strict');
-const { createHandler } = require('../cloudfunctions/studentAccount/handler');
+const { createHandler } = require('../legacy/cloudfunctions/studentAccount/handler');
 (async () => {
   let records = {};
   const repo = {

@@ -1,11 +1,11 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const root=path.resolve(__dirname,'..');
 const read=rel=>fs.readFileSync(path.join(root,rel),'utf8');
-const rewards=require('../cloudfunctions/orderService/rewards');
-const loyalty=require('../cloudfunctions/orderService/loyalty');
-const adminRewards=require('../cloudfunctions/adminService/order-engine/rewards');
-const orderDefaults=require('../cloudfunctions/orderService/activity-default.json');
-const newsDefaults=require('../cloudfunctions/newsService/activity-default.json');
+const rewards=require('../legacy/cloudfunctions/orderService/rewards');
+const loyalty=require('../legacy/cloudfunctions/orderService/loyalty');
+const adminRewards=require('../legacy/cloudfunctions/adminService/order-engine/rewards');
+const orderDefaults=require('../legacy/cloudfunctions/orderService/activity-default.json');
+const newsDefaults=require('../legacy/cloudfunctions/newsService/activity-default.json');
 const clientActivity=require('../utils/news-activity');
 const meCopy=require('../utils/me-copy');
 
@@ -107,5 +107,5 @@ assert.match(rules,/普通每单 10 分/,'unrelated customer-order 10 points sta
 const changeRecord=read('docs/change-record-20261028.md');
 assert.match(changeRecord,/10 积分仍为绑定邀请码后双方各得/,'historical changelog is left as written');
 
-assert.equal(loyalty.invite,require('../cloudfunctions/orderService/loyalty').invite);
+assert.equal(loyalty.invite,require('../legacy/cloudfunctions/orderService/loyalty').invite);
 console.log('Invite points: default configs and UI copy are 20 each, orderService and admin engines award 20 once, repeat binds do not pay again, legacy 10-point balances stay, weekly 10 and 50% / ¥3.9 / 30-day coupon rules unchanged.');

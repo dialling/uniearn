@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict');
-const {parseText}=require('../cloudfunctions/parseParcelScreenshot/parser');
+const {parseText}=require('../legacy/cloudfunctions/parseParcelScreenshot/parser');
 const english=parseText([
  'Already placed in Cainiao station',
  'Tracking number YT7646005782127',

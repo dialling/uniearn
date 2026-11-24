@@ -1,15 +1,15 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const reasons = require('../utils/customer-cancel-reasons');
-const cloudReasons = require('../cloudfunctions/orderService/customer-cancel-reasons');
+const cloudReasons = require('../legacy/cloudfunctions/orderService/customer-cancel-reasons');
 const domain = require('../utils/domain');
-const cloudDomain = require('../cloudfunctions/orderService/domain');
-const engine = require('../cloudfunctions/orderService/engine');
+const cloudDomain = require('../legacy/cloudfunctions/orderService/domain');
+const engine = require('../legacy/cloudfunctions/orderService/engine');
 const workflow = require('../utils/workflow');
 
 assert.equal(
   fs.readFileSync(require.resolve('../utils/customer-cancel-reasons.js'), 'utf8'),
-  fs.readFileSync(require.resolve('../cloudfunctions/orderService/customer-cancel-reasons.js'), 'utf8'),
+  fs.readFileSync(require.resolve('../legacy/cloudfunctions/orderService/customer-cancel-reasons.js'), 'utf8'),
   'client and orderService share one reason catalog'
 );
 assert.deepEqual(reasons.REASONS.map(row => row.key), cloudReasons.REASONS.map(row => row.key));
@@ -83,7 +83,7 @@ assert.equal(after.cancelNote, undefined);
 assert.equal(workflow.view(after, 'en').cancelReasonLabel, 'Other: Runner has not moved');
 assert.equal(engine.snapshot(state, owner, person, Date.now()).requests.find(row => row.id === acceptedAgain).cancel_reason, '其他：Runner has not moved');
 
-const admin = fs.readFileSync(require.resolve('../cloudfunctions/adminService/core.js'), 'utf8');
+const admin = fs.readFileSync(require.resolve('../legacy/cloudfunctions/adminService/core.js'), 'utf8');
 assert.match(admin, /'cancel_reason','cancelReason'/);
 const connection = fs.readFileSync(require.resolve('../admin-web/dist/connection.js'), 'utf8');
 assert.match(connection, /cancelNote:r\.cancelNote/);

@@ -1,4 +1,4 @@
-const assert=require('node:assert/strict'),rewards=require('../cloudfunctions/orderService/rewards');
+const assert=require('node:assert/strict'),rewards=require('../legacy/cloudfunctions/orderService/rewards');
 const now=Date.parse('2030-01-02T12:00:00+08:00'),s={members:{},requests:[],trips:[]};
 const inviter='inviter-account-1',friend='friend-account-2';
 rewards.init(s,inviter,now);rewards.init(s,friend,now);

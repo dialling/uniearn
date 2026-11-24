@@ -1,5 +1,5 @@
 const Module=require('module');
-const engine=require('../../cloudfunctions/orderService/engine');
+const engine=require('../../legacy/cloudfunctions/orderService/engine');
 const clone=x=>JSON.parse(JSON.stringify(x));
 function harness(){
  let state=engine.initial(),revision=0,openid='customer',calls=0;
@@ -29,7 +29,7 @@ function harness(){
  }),async getTempFileURL({fileList}){return{fileList:fileList.map(x=>({fileID:x.fileID,tempFileURL:'https://private.example/'+encodeURIComponent(x.fileID)}))};},
   async deleteFile({fileList}){deletedFiles.push(...fileList);return{fileList:fileList.map(fileID=>({fileID,status:0}))};}};
  const original=Module._load;Module._load=function(name,...args){return name==='wx-server-sdk'?sdk:original.call(this,name,...args);};
- const path=require.resolve('../../cloudfunctions/orderService');delete require.cache[path];let main;
+ const path=require.resolve('../../legacy/cloudfunctions/orderService');delete require.cache[path];let main;
  try{main=require(path).main;}finally{Module._load=original;}
  return{engine,accounts,documents,deletedFiles,get state(){return state;},edit(fn){fn(state);revision++;},
   async call(who,action,extra={}){openid=who;calls++;return main({action,operationId:'test_operation_'+calls,...extra});},

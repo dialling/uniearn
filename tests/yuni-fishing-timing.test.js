@@ -1,6 +1,6 @@
 // 2026-11-16: the fishing timing bar. Only a stop in the green zone (perfect) catches a fish; a miss lands nothing.
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{harness}=require('./helpers/order-cloud');
-const play=require('../cloudfunctions/orderService/yuni-play');
+const play=require('../legacy/cloudfunctions/orderService/yuni-play');
 (async()=>{
  const h=harness(),me=h.engine.idFor('customer');await h.call('customer','sync');
  h.edit(s=>{const m=s.members[me];m.loyalty=m.loyalty||{points:0,level:1,notices:[]};m.loyalty.points=400;m.loyalty.level=3;});

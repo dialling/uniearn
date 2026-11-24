@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict');
 const {harness}=require('./helpers/order-cloud');
-const {publicAccount}=require('../cloudfunctions/studentAccount/handler');
-const serverContact=require('../cloudfunctions/orderService/runner-contact');
+const {publicAccount}=require('../legacy/cloudfunctions/studentAccount/handler');
+const serverContact=require('../legacy/cloudfunctions/orderService/runner-contact');
 const h=harness(),id=h.engine.idFor;let definition,navigations=[],acceptCalls=0,legacyStatus=false;
 const actor=id('runner'),runner=h.accounts[actor];
 runner.profile={...runner.profile,name:'',phone:''};runner.verification={status:'verified',studentName:'Private Real Name',phone:'13800001111',gender:'female'};

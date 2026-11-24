@@ -1,8 +1,8 @@
 'use strict';
 const assert=require('node:assert/strict');
-const {createService,hash}=require('../cloudfunctions/adminService/core');
-const {createRepository}=require('../cloudfunctions/adminService/repository');
-const engine=require('../cloudfunctions/orderService/engine');
+const {createService,hash}=require('../legacy/cloudfunctions/adminService/core');
+const {createRepository}=require('../legacy/cloudfunctions/adminService/repository');
+const engine=require('../legacy/cloudfunctions/orderService/engine');
 const clone=value=>JSON.parse(JSON.stringify(value));
 function database(seed){
  let data=clone(seed);
@@ -66,7 +66,7 @@ async function main(){
  await rejects(service.run({action:'wpay',operationId:'withdraw_0001'},token),'FORBIDDEN');
  assert(Object.values(db.data.uniearn_admin_audit).some(a=>a.action==='review'));
  // A manual mini-program application reaches the independent web backend's review queue.
- const {createHandler,idFor}=require('../cloudfunctions/studentAccount/handler');
+ const {createHandler,idFor}=require('../legacy/cloudfunctions/studentAccount/handler');
  const applicant=idFor('manual-runner');db.data.uniearn_accounts[applicant]={profile:{name:'申请人',phone:'13700137000',universityId:'xjtlu',campusId:'sip'}};
  const applicantRepo={get:async id=>clone(db.data.uniearn_accounts[id]),patch:async(id,patch)=>Object.assign(db.data.uniearn_accounts[id],clone(patch)),findStudent:async sid=>Object.entries(db.data.uniearn_accounts).filter(([,a])=>a.verification?.studentId===sid&&['pending','verified'].includes(a.verification.status)).map(([id])=>id),findPhone:async phone=>Object.entries(db.data.uniearn_accounts).filter(([,a])=>a.verification?.phone===phone&&['pending','verified'].includes(a.verification.status)).map(([id])=>id),submitApplication:async(id,expected,verification,at)=>{Object.assign(db.data.uniearn_accounts[id],{verification:clone(verification),updatedAt:at});return '';}};
  const account=createHandler({getOpenId:()=>'manual-runner',repo:applicantRepo,env:{},now:()=>clock});

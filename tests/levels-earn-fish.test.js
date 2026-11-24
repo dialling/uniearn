@@ -2,7 +2,7 @@
 // Inviting a classmate is worth 20.
 const assert = require('node:assert/strict'), fs = require('node:fs'), path = require('node:path');
 const read = f => fs.readFileSync(path.join(__dirname, '..', f), 'utf8');
-const server = JSON.parse(read('cloudfunctions/orderService/activity-default.json'));
+const server = JSON.parse(read('legacy/cloudfunctions/orderService/activity-default.json'));
 assert.equal(server.tasks.find(t => t.kind === 'referral').points, 20, 'invite is 20 points on the server');
 assert.match(read('utils/news-activity.js'), /"kind": "referral",\s*"enabled": true,\s*"points": 20/, 'the app shows 20 for invite');
 let def; global.Page = d => { def = d; }; global.wx = global.wx || { getStorageSync: () => null, setStorageSync() {} };

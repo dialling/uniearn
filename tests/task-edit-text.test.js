@@ -1,5 +1,5 @@
 // 2026-11-18: on the waiting ticket the task text sits in a clear box, and the customer can edit it until a runner accepts.
-const assert = require('node:assert/strict'), fs = require('node:fs'), path = require('node:path'), engine = require('../cloudfunctions/orderService/engine');
+const assert = require('node:assert/strict'), fs = require('node:fs'), path = require('node:path'), engine = require('../legacy/cloudfunctions/orderService/engine');
 const read = f => fs.readFileSync(path.join(__dirname, '..', f), 'utf8');
 const now = Date.now(), owner = engine.idFor('edit-owner'), other = engine.idFor('edit-other'), account = { profile: { name: 'Student', campusId: 'sip', universityId: 'xjtlu' } };
 let state = engine.initial();

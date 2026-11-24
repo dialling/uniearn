@@ -23,7 +23,7 @@ assert.match(css,/\.compose-input\{flex:1;min-width:0/);
 assert.match(css,/\.send-button\{flex:none;width:68rpx;height:68rpx/);
 assert.match(css,/\.photo-send\{/);
 
-const engine=require('../cloudfunctions/orderService/engine');
+const engine=require('../legacy/cloudfunctions/orderService/engine');
 const crypto=require('node:crypto');
 const openid='support-photo-user';
 const actor=engine.idFor?engine.idFor(openid):crypto.createHash('sha256').update(openid).digest('hex');

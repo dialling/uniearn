@@ -1,4 +1,4 @@
-const assert=require('node:assert/strict'),auth=require('../cloudfunctions/newsService/auth'),{createHttpHandler}=require('../cloudfunctions/newsService/http');
+const assert=require('node:assert/strict'),auth=require('../legacy/cloudfunctions/newsService/auth'),{createHttpHandler}=require('../legacy/cloudfunctions/newsService/http');
 (async()=>{
   let admin=null,content={revision:0,items:[]},stamp=1000000;
   const repo={getAdmin:async()=>admin,setupAdmin:async value=>{if(admin)return false;admin=value;return true;},recordLogin:async(accepted,now)=>{if(admin.lockedUntil>now)return{ok:false,error:'locked'};const fails=accepted?0:admin.fails+1;admin={...admin,fails:fails>=5?0:fails,lockedUntil:fails>=5?now+900000:0};return{ok:true};},newsGet:async()=>content,newsMutate:async fn=>{const r=fn(content);if(r.ok){content=r.state;const{state,...rest}=r;return rest;}return r;}};

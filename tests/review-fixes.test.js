@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict');
-const e=require('../cloudfunctions/orderService/engine'),d=require('../cloudfunctions/orderService/domain'),f=require('../cloudfunctions/orderService/workflow');
+const e=require('../legacy/cloudfunctions/orderService/engine'),d=require('../legacy/cloudfunctions/orderService/domain'),f=require('../legacy/cloudfunctions/orderService/workflow');
 const now=Date.now(),student=e.idFor('student'),runner=e.idFor('runner'),other=e.idFor('other');
 const account=(name,phone)=>({profile:{universityId:'xjtlu',campusId:'sip',name,phone},verification:{status:'verified'},runnerRulesAcceptedAt:1});
 const accounts={[student]:account('Student','13800000001'),[runner]:account('Runner','13800000002'),[other]:account('Other','13800000003')};
@@ -66,7 +66,7 @@ console.log('Coupon split caps, abandon restore, refund floor and acceptBoxes ro
   const after=e.snapshot(state,runner,accounts[runner],now).stats;
   assert.equal(after.jobsDone,before.jobsDone);assert.equal(after.paid,before.paid);
   assert.equal(state.members[student].archivedOrders,1);assert.equal(state.members[student].confirmedMonths.length,1);
-  require('../cloudfunctions/orderService/rewards').invite(state,student,runner.slice(0,12),now);
+  require('../legacy/cloudfunctions/orderService/rewards').invite(state,student,runner.slice(0,12),now);
   assert.equal(state.members[student].invitedBy,runner,'archived orders do not prevent the first invitation binding');
 }
 console.log('Archive: finished orders leave after 8 days, runner totals, chat cleanup and reward history kept.');

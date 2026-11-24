@@ -1,8 +1,8 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{harness}=require('./helpers/order-cloud');
 // 2026-11-15: Yuni shop, wardrobe and fishing. Levels count lifetime points; the shop spends a separate balance.
 const root=path.join(__dirname,'..'),strip=f=>fs.readFileSync(path.join(root,f),'utf8').split('\n').filter(l=>!l.startsWith('//')).join('\n');
-assert.equal(strip('utils/yuni-catalog.js'),strip('cloudfunctions/orderService/yuni-catalog.js'),'the app and server share one catalogue');
-const play=require('../cloudfunctions/orderService/yuni-play'),catalog=require('../cloudfunctions/orderService/yuni-catalog');
+assert.equal(strip('utils/yuni-catalog.js'),strip('legacy/cloudfunctions/orderService/yuni-catalog.js'),'the app and server share one catalogue');
+const play=require('../legacy/cloudfunctions/orderService/yuni-play'),catalog=require('../legacy/cloudfunctions/orderService/yuni-catalog');
 (async()=>{
  const h=harness(),me=h.engine.idFor('customer');
  let snap=(await h.call('customer','sync')).snapshot;assert.ok(snap.yuni,'the snapshot carries Yuni play state');

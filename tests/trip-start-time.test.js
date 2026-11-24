@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict');
 const noon=Date.parse('2030-01-02T12:00:00+08:00'),late=Date.parse('2030-01-02T23:30:00+08:00');
 const cfg={category:'takeout',when:'later',time:'18:30',station:'Gate',dorm:'D01',capacity:5,requestIds:[]};
-for(const base of ['../utils/','../cloudfunctions/orderService/']){
+for(const base of ['../utils/','../legacy/cloudfunctions/orderService/']){
  const f=require(base+'workflow'),d=require(base+'domain');
  for(const duration of [0,31,'',10]){const p=f.previewTrip(d.initial(),{...cfg,duration},noon);assert.equal(p.trip.departAt,f.todayAt('18:30',noon));}
  for(const duration of [0,31])assert.throws(()=>f.previewTrip(d.initial(),{...cfg,when:'now',duration},noon),/duration/);

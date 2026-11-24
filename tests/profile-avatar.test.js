@@ -1,4 +1,4 @@
-const assert=require('node:assert/strict'),{createHandler,idFor}=require('../cloudfunctions/studentAccount/handler');
+const assert=require('node:assert/strict'),{createHandler,idFor}=require('../legacy/cloudfunctions/studentAccount/handler');
 (async()=>{
  const id=idFor('owner'),records={[id]:{profile:{name:'Real Name',phone:'13801026092',campusId:'sip',displayName:'Alis'},verification:{status:'verified'},runnerRulesAcceptedAt:10}};
  const handler=createHandler({getOpenId:()=>'owner',env:{},now:()=>5,repo:{get:async k=>structuredClone(records[k]),patch:async(k,p)=>{records[k]={...records[k],...p};}}});

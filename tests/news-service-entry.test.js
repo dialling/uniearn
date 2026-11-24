@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
-const auth=require('../cloudfunctions/newsService/auth');
+const auth=require('../legacy/cloudfunctions/newsService/auth');
 (async()=>{
   const records={},clone=x=>structuredClone(x);let openid='';
   const sdk={DYNAMIC_CURRENT_ENV:'test',init(){},getWXContext:()=>({OPENID:openid}),getTempFileURL:async({fileList})=>({fileList:fileList.map(fileID=>({fileID,tempFileURL:'https://images.example/'+encodeURIComponent(fileID)}))})};
@@ -7,7 +7,7 @@ const auth=require('../cloudfunctions/newsService/auth');
   const collection=()=>({doc:ref,where:query=>({limit:()=>({get:async()=>({data:records[query._id]?[clone(records[query._id])]:[]})})})});
   sdk.database=()=>({collection,runTransaction:async fn=>fn({collection})});
   const exports={};
-  vm.runInNewContext(fs.readFileSync(require.resolve('../cloudfunctions/newsService/index'),'utf8'),{require:name=>name==='wx-server-sdk'?sdk:name==='./settings.json'?{allowedOrigins:['https://test.example'],setupTokenHash:auth.hash('fixture-bootstrap')}:require('../cloudfunctions/newsService/'+name.slice(2)),exports,Date,Set,Object,console});
+  vm.runInNewContext(fs.readFileSync(require.resolve('../legacy/cloudfunctions/newsService/index'),'utf8'),{require:name=>name==='wx-server-sdk'?sdk:name==='./settings.json'?{allowedOrigins:['https://test.example'],setupTokenHash:auth.hash('fixture-bootstrap')}:require('../legacy/cloudfunctions/newsService/'+name.slice(2)),exports,Date,Set,Object,console});
   const main=exports.main;
   assert.equal((await main({action:'newsList'})).code,'FORBIDDEN');
   openid='student';assert.equal((await main({action:'newsAdminList'})).code,'FORBIDDEN');

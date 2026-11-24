@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict');
-for(const base of ['../utils/','../cloudfunctions/orderService/']){
+for(const base of ['../utils/','../legacy/cloudfunctions/orderService/']){
  const f=require(base+'workflow'),d=require(base+'domain'),now=Date.now();
  for(const offset of [-3600000,0,599999]){
   const s=d.initial();s.requests=[];s.trips=[];s.profile.marks=[];

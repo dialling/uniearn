@@ -1,7 +1,7 @@
 // 2026-11-21: 芭菲 is a fifth dorm area with four buildings named after the nearby areas.
 const assert=require('node:assert/strict');
 global.wx={getStorageSync:()=>null,setStorageSync(){}};
-const campus=require('../utils/campus'),cloud=require('../cloudfunctions/orderService/campus');
+const campus=require('../utils/campus'),cloud=require('../legacy/cloudfunctions/orderService/campus');
 const names=['文缘芭菲','文萃芭菲','文星芭菲','文荟芭菲'],en=['Wenyuan Bafei','Wencui Bafei','Wenxing Bafei','Wenhui Bafei'];
 for(const c of [campus,cloud]){
  assert.deepEqual(c.AREAS.map(a=>a.zh),['文缘','文星','文萃','文荟','芭菲']);

@@ -1,7 +1,7 @@
 // 2026-11-16: the eagle friend. Bought in the shop (Friends tab); after Yuni lands a fish it has a 30% chance to catch
 // one more (its own odds), which goes in the bucket if there is room.
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{harness}=require('./helpers/order-cloud');
-const play=require('../cloudfunctions/orderService/yuni-play'),catalog=require('../cloudfunctions/orderService/yuni-catalog');
+const play=require('../legacy/cloudfunctions/orderService/yuni-play'),catalog=require('../legacy/cloudfunctions/orderService/yuni-catalog');
 (async()=>{
  const eagle=catalog.item('eagle');assert.equal(eagle.slot,'friend');assert.equal(eagle.price,300);assert.equal(eagle.helper.chance,30);
  assert.ok(catalog.TABS.some(t=>t.slots.includes('friend')),'a Friends tab in the shop');

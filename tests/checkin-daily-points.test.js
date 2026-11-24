@@ -1,4 +1,4 @@
-const assert=require('node:assert/strict'),loyalty=require('../cloudfunctions/orderService/loyalty'),policy=require('../cloudfunctions/orderService/activity-config');
+const assert=require('node:assert/strict'),loyalty=require('../legacy/cloudfunctions/orderService/loyalty'),policy=require('../legacy/cloudfunctions/orderService/activity-config');
 const now=Date.parse('2026-11-05T12:00:00+08:00'),day='2026-11-05',config=policy.clone(policy.defaults);
 const state={activityConfig:config,members:{old:{loyalty:{points:10,level:1,notices:[{id:'today',type:'checkin',day,points:10}],checkin:{day,streak:7,cycleDay:7,totalDays:7,rewardPoints:10}}}}};
 loyalty.dailyLogin(state,'old',now);let l=state.members.old.loyalty;assert.equal(l.points,12);assert.equal(l.checkin.dailyPoints,2);assert.equal(l.checkin.totalDays,7);assert.equal(l.notices[0].points,12);assert.equal(l.notices[0].dailyPoints,2);assert.equal(l.notices[0].weeklyPoints,10);

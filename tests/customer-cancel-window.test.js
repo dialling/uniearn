@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs');
 global.wx={getStorageSync:()=>null,setStorageSync(){},showToast(){},showModal(){},setNavigationBarTitle(){},reLaunch(){},navigateTo(){}};
 const {harness}=require('./helpers/order-cloud');
-const domain=require('../cloudfunctions/orderService/domain');
+const domain=require('../legacy/cloudfunctions/orderService/domain');
 const cancelUi=require('../utils/customer-cancel');
 const store=require('../utils/store');
 const yuni=require('../utils/yuni-events');

@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict');
-for(const base of ['../utils/','../cloudfunctions/orderService/']){
+for(const base of ['../utils/','../legacy/cloudfunctions/orderService/']){
  const d=require(base+'domain'),rank=require(base+'runner-level');
  for(const jobsDone of [0,15,40]){
   assert.equal(rank.level({jobsDone}).limit,Infinity);

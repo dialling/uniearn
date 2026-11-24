@@ -1,8 +1,8 @@
 'use strict';
 const fs = require('fs'), path = require('path');
 const root = path.resolve(__dirname, '..');
-const src = path.join(root, 'cloudfunctions/orderService');
-const dest = path.join(root, 'cloudfunctions/adminService/order-engine');
+const src = path.join(root, 'legacy/cloudfunctions/orderService');
+const dest = path.join(root, 'legacy/cloudfunctions/adminService/order-engine');
 fs.mkdirSync(dest, {recursive: true});
 for (const file of fs.readdirSync(src)) {
   if ((file.endsWith('.js') && file !== 'index.js') || (file.endsWith('.json') && !['package.json', 'config.json'].includes(file))) {

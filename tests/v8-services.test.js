@@ -1,4 +1,4 @@
-const assert=require('node:assert/strict'),engine=require('../cloudfunctions/orderService/engine'),rewards=require('../cloudfunctions/orderService/rewards'),f=require('../cloudfunctions/orderService/workflow');
+const assert=require('node:assert/strict'),engine=require('../legacy/cloudfunctions/orderService/engine'),rewards=require('../legacy/cloudfunctions/orderService/rewards'),f=require('../legacy/cloudfunctions/orderService/workflow');
 const now=Date.now(),accounts={c:{profile:{universityId:'xjtlu',campusId:'sip',name:'Customer',phone:'13800000001'},verification:{status:'verified'},runnerRulesAcceptedAt:1},r:{profile:{universityId:'xjtlu',campusId:'sip',name:'Runner',phone:'13800000002'},verification:{status:'verified'},runnerRulesAcceptedAt:1},x:{profile:{universityId:'xjtlu',campusId:'sip',name:'Other',phone:'13800000003'},verification:{status:'verified'},runnerRulesAcceptedAt:1}};
 let s=engine.initial();const ids=Object.fromEntries(Object.keys(accounts).map(k=>[k,engine.idFor(k)]));
 function act(who,action,p={},at=now){const copy=structuredClone(s);const value=engine.execute(copy,ids[who],accounts[who],{action,...p},at);s=copy;return value;}

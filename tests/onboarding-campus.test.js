@@ -1,4 +1,4 @@
-const assert=require('node:assert/strict'),fs=require('fs'),{createHandler,idFor}=require('../cloudfunctions/studentAccount/handler'),engine=require('../cloudfunctions/orderService/engine');
+const assert=require('node:assert/strict'),fs=require('fs'),{createHandler,idFor}=require('../legacy/cloudfunctions/studentAccount/handler'),engine=require('../legacy/cloudfunctions/orderService/engine');
 (async()=>{
  let openid='new-student',records={};const repo={get:async id=>records[id]&&structuredClone(records[id]),patch:async(id,patch)=>records[id]={...(records[id]||{}),...structuredClone(patch)},logout:async id=>Object.assign(records[id],{loggedOut:true})};const handler=createHandler({getOpenId:()=>openid,repo,env:{},now:()=>1000});
  let r=await handler({action:'sessionLogin',name:'Injected',phone:'13800000000',verification:{status:'verified'}});assert.equal(r.ok,true);assert.equal(r.account.profile.name,'');assert.equal(r.account.profile.phone,'');assert.equal(r.account.verification.status,'unverified');

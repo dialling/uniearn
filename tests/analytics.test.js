@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),crypto=require('crypto');
-const a=require('../cloudfunctions/newsService/analytics'),makeRepo=require('../cloudfunctions/newsService/analytics-repo');
+const a=require('../legacy/cloudfunctions/newsService/analytics'),makeRepo=require('../legacy/cloudfunctions/newsService/analytics-repo');
 const {harness}=require('./helpers/order-cloud');
 const at=Date.parse('2026-10-22T12:00:00+08:00'),D=a.DAY,id=crypto.createHash('sha256').update('student').digest('hex'),runner='b'.repeat(64),test='c'.repeat(64);
 function fixtureDB(){let data={uniearn_news:{},uniearn_accounts:{[id]:{profile:{name:'Secret student',phone:'13812345678',campusId:'sip'},analyticsClass:'live'}},uniearn_order_state:{'team-test':{requests:[],trips:[],members:{}}}},queue=Promise.resolve();

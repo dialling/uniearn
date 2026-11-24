@@ -1,6 +1,6 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const root=path.resolve(__dirname,'..'),report=require('../scripts/package-size').inspect(root),{appRoot,ignored}=report,files=report.files.map(f=>f.file);
-for(const dir of ['admin-web','tests','docs','cloudfunctions','design','motion-source','preview-web','scripts'])assert.ok(ignored(dir+'/app.json'),dir+' must not enter the mini program package');
+for(const dir of ['admin-web','tests','docs','legacy','design','motion-source','preview-web','scripts'])assert.ok(ignored(dir+'/app.json'),dir+' must not enter the mini program package');
 for(const removed of ['UniEarn-GitHub-Changes','uniearn-upload'])assert.ok(!fs.existsSync(path.join(root,removed)),removed+' remains deleted');
 assert.deepEqual(files.filter(p=>path.posix.basename(p)==='app.json'),['app.json'],'only the real app root can be packaged');
 const app=JSON.parse(fs.readFileSync(path.join(appRoot,'app.json'),'utf8')),pages=[...app.pages];

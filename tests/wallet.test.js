@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const {harness} = require('./helpers/order-cloud');
-const wallet = require('../cloudfunctions/orderService/wallet');
+const wallet = require('../legacy/cloudfunctions/orderService/wallet');
 const now = Date.parse('2030-01-02T18:00:00+08:00'); Date.now = () => now;
 const h = harness(), id = h.engine.idFor;
 const ok = async (who, action, extra = {}) => {const r = await h.call(who, action, extra); assert.equal(r.ok, true, r.error); return r;};

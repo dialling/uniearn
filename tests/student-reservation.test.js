@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
-const handler=require('../cloudfunctions/studentAccount/handler');
+const handler=require('../legacy/cloudfunctions/studentAccount/handler');
 // Optimistic transactions retry when a concurrent commit changes the read snapshot.
 // Use the actual production repository methods, not a mocked uniqueness check.
 let records={},revision=0,repo,conflicts=0;
@@ -31,7 +31,7 @@ const db={
   throw Error('Too many test transaction retries');
  }
 };
-vm.runInNewContext(fs.readFileSync(require.resolve('../cloudfunctions/studentAccount/index.js'),'utf8'),{
+vm.runInNewContext(fs.readFileSync(require.resolve('../legacy/cloudfunctions/studentAccount/index.js'),'utf8'),{
  require:n=>n==='wx-server-sdk'?{init(){},database:()=>db}:n==='./handler'?{...handler,createHandler:opts=>{repo=opts.repo;return()=>{};}}:require(n),
  exports:{},process:{env:{}}
 });

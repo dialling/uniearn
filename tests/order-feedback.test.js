@@ -13,7 +13,7 @@ const order=(h,id)=>h.state.requests.find(r=>r.id===id),tickets=(h,who)=>(h.stat
   const operation={id,channel:'message',operationId:'order_feedback_retry_0001'};result=await h.call('customer','orderFeedbackContact',operation);assert.equal(result.ok,true,result.error);assert.equal(result.value.paused,true);assert.equal(order(h,id).status,'disputed');const count=tickets(h,'customer')[0].messages.length;await h.call('customer','orderFeedbackContact',operation);assert.equal(tickets(h,'customer')[0].messages.length,count,'lost response is idempotent');
   h.edit(s=>h.engine.expire(s,Date.now()+3*3600000));assert.equal(order(h,id).status,'disputed','automatic confirmation stays paused past two hours');
   const hold=order(h,id).settle_hold_until;assert.ok(hold>Date.now()+23*3600000&&hold<=Date.now()+24*3600000,'feedback pause must set a 24-hour settlement hold');
-  const pending=require('../cloudfunctions/orderService/wallet').overview(h.state,h.engine.idFor('runner')).pending.find(p=>p.order_id===id);
+  const pending=require('../legacy/cloudfunctions/orderService/wallet').overview(h.state,h.engine.idFor('runner')).pending.find(p=>p.order_id===id);
   assert.equal(pending.auto_settle_at,hold,'wallet pending must use the hold, not zero');
   if(category==='night')assert.equal(pending.night,true);
   result=await h.call('runner','orderFeedbackResolve',{id});assert.equal(result.ok,true,result.error);assert.equal(order(h,id).status,'disputed','resolving a runner ticket cannot release the customer hold');
@@ -35,7 +35,7 @@ const order=(h,id)=>h.state.requests.find(r=>r.id===id),tickets=(h,who)=>(h.stat
  held.h.edit(s=>held.h.engine.expire(s,until-1));assert.equal(order(held.h,held.id).status,'disputed');
  // 2026-11-14: the payout stays frozen until the customer resolves it or the team decides.
  held.h.edit(s=>held.h.engine.expire(s,until+7*86400000));assert.equal(order(held.h,held.id).status,'disputed','an unresolved report never auto-confirms');assert.equal(order(held.h,held.id).reviewOverdue,true,'it is flagged for the team instead');
- require('../cloudfunctions/orderService/wallet').settle(held.h.state,until+7*86400000);assert.ok(!((held.h.state.wallets||{})[held.h.engine.idFor('runner')]||{}).balance_cents,'nothing is paid while the report is open');
+ require('../legacy/cloudfunctions/orderService/wallet').settle(held.h.state,until+7*86400000);assert.ok(!((held.h.state.wallets||{})[held.h.engine.idFor('runner')]||{}).balance_cents,'nothing is paid while the report is open');
  assert.equal((fs.readFileSync(path.join(root,'pages/trip/index.wxml'),'utf8').match(/<order-feedback /g)||[]).length,2,'runner feedback entry on parcel collect and on the shared request cards');
  console.log('Unified feedback: all order types/states, participant privacy, order-linked tickets, private evidence, exact retry, two-hour pause, customer resolution/settlement, isolated general support and common entry passed.');
 })().catch(e=>{console.error(e);process.exitCode=1});

@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
-const {handleNews}=require('../cloudfunctions/newsService/news');
+const {handleNews}=require('../legacy/cloudfunctions/newsService/news');
 (async()=>{
   let state={revision:0,items:[]},stamp=1000000;
   const clone=x=>structuredClone(x);

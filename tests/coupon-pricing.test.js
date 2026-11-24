@@ -1,6 +1,6 @@
 const assert=require('node:assert/strict');
 global.wx={getStorageSync:()=>null,setStorageSync(){},showToast(){}};
-const store=require('../utils/store'),rewards=require('../utils/rewards'),server=require('../cloudfunctions/orderService/rewards');
+const store=require('../utils/store'),rewards=require('../utils/rewards'),server=require('../legacy/cloudfunctions/orderService/rewards');
 function coupons(rows){store.update(s=>{s.rewards={coupons:rows};});}
 const now=Date.now(),valid={id:'owned',kind:'total',max:2,expiresAt:now+86400000};
 coupons([]);assert.equal(rewards.quote(null,3,0).total,'3.00');

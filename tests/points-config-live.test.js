@@ -1,8 +1,8 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const {display,latest}=require('../pages/levels/activity-display');
-const config=require('../cloudfunctions/newsService/activity-default.json');
-const {handleOperations}=require('../cloudfunctions/newsService/operations');
-const loyalty=require('../cloudfunctions/orderService/loyalty');
+const config=require('../legacy/cloudfunctions/newsService/activity-default.json');
+const {handleOperations}=require('../legacy/cloudfunctions/newsService/operations');
+const loyalty=require('../legacy/cloudfunctions/orderService/loyalty');
 const {harness}=require('./helpers/order-cloud');
 (async()=>{
  let stored=structuredClone(config),revision=0;

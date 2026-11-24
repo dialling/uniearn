@@ -1,4 +1,4 @@
-const assert=require('node:assert/strict'),auth=require('../cloudfunctions/newsService/auth'),makeRepo=require('../cloudfunctions/newsService/operations-repo'),{createHttpHandler}=require('../cloudfunctions/newsService/http');
+const assert=require('node:assert/strict'),auth=require('../legacy/cloudfunctions/newsService/auth'),makeRepo=require('../legacy/cloudfunctions/newsService/operations-repo'),{createHttpHandler}=require('../legacy/cloudfunctions/newsService/http');
 (async()=>{
  const data={},copy=structuredClone;let queue=Promise.resolve(),at=Date.now();
  const collection=()=>({doc:id=>({get:async()=>{if(!data[id])throw Error('not found');return {data:{...copy(data[id]),_id:id}};},update:async({data:patch})=>Object.assign(data[id],copy(patch)),set:async({data:value})=>{data[id]=copy(value);}})});

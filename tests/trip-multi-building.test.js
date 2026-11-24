@@ -1,7 +1,7 @@
 // 2026-11-21: a runner can start a trip to several dorm buildings (trip.dorms). Orders to any of those buildings fit the
 // trip; other buildings do not. Old one-building trips keep working (trip.dorm only).
-const assert = require('node:assert/strict'), engine = require('../cloudfunctions/orderService/engine');
-const route = require('../cloudfunctions/orderService/trip-route'), clientRoute = require('../utils/trip-route');
+const assert = require('node:assert/strict'), engine = require('../legacy/cloudfunctions/orderService/engine');
+const route = require('../legacy/cloudfunctions/orderService/trip-route'), clientRoute = require('../utils/trip-route');
 const now = Date.now(), base = { universityId: 'xjtlu', campusId: 'sip' };
 const accounts = {
   a: { profile: { ...base, name: 'Ann', phone: '13800000001' }, verification: { status: 'verified' }, runnerRulesAcceptedAt: 1 },

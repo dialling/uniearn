@@ -23,7 +23,7 @@ const order=id=>h.state.requests.find(r=>r.id===id);
  assert.equal(reasons.list({status:'taken',category:'takeout'},true,false).find(r=>r.id==='Seal broken').photo,true);
 
  // Team replies count as unread for that participant until they open the chat.
- const feedback=require('../cloudfunctions/orderService/order-feedback'),customer=h.engine.idFor('customer');
+ const feedback=require('../legacy/cloudfunctions/orderService/order-feedback'),customer=h.engine.idFor('customer');
  const ticket=h.state.members[customer].supportTickets.find(t=>t.orderId===id);ticket.messages.push({text:'We are calling the runner now.',at:Date.now()+1000,mine:false});
  assert.deepEqual(feedback.unread(h.state,customer,id),{supportUnread:1,supportPreview:'We are calling the runner now.',supportPreviewZh:'We are calling the runner now.'});
  feedback.read(h.state,customer,{id},Date.now()+2000);assert.equal(feedback.unread(h.state,customer,id).supportUnread,0,'opening the chat clears the reply');

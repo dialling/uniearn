@@ -47,6 +47,6 @@ async function teamReply(h,who,id,text){const t=ticketOf(h,who,id);const res=awa
  c=await row(h,'customer',id);assert.equal(c.supportUnread,1);
  const done=await h.call('customer','orderFeedbackResolve',{id});assert.equal(done.ok,true,done.error);assert.equal(done.value.completed,true);
  assert.equal(h.state.requests.find(x=>x.id===id).status,'confirmed','resolving completes the order');
- require('../cloudfunctions/orderService/wallet').settle(h.state,Date.now());assert.ok(h.state.wallets[h.engine.idFor('runner')].balance_cents>0,'the runner is paid after the customer resolves');
+ require('../legacy/cloudfunctions/orderService/wallet').settle(h.state,Date.now());assert.ok(h.state.wallets[h.engine.idFor('runner')].balance_cents>0,'the runner is paid after the customer resolves');
  console.log('Report e2e: problem-first chat, neutral notes, early reports, frozen disputes, team replies with unread and read, and resolution with payout passed.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

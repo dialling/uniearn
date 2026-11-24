@@ -1,6 +1,6 @@
 const assert=require('node:assert/strict'),{harness}=require('./helpers/order-cloud');
 const h=harness(),D=86400000,originalNow=Date.now;let now=Date.parse('2026-11-27T23:59:00+08:00');Date.now=()=>now;
-const id=h.engine.idFor('customer'),policy=require('../cloudfunctions/orderService/activity-config');
+const id=h.engine.idFor('customer'),policy=require('../legacy/cloudfunctions/orderService/activity-config');
 const old=policy.clone(policy.defaults),weekly=old.tasks.find(t=>t.kind==='weekly_login');weekly.points=20;weekly.weekStartsOn='monday';delete weekly.repeat;
 h.documents['uniearn_news:activity-config']={value:old};
 const call=(who,action,extra={})=>h.call(who,action,{...extra,checkinVersion:1});

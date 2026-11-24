@@ -1,7 +1,7 @@
 // 2026-11-17: a finished order leaves a fish for Yuni (poster and runner each get one). The points are added when the
 // order is confirmed; feeding the fish on the Me page only shows them, and each fish can be fed once.
 const assert = require('node:assert/strict'), fs = require('node:fs'), path = require('node:path');
-const loyalty = require('../cloudfunctions/orderService/loyalty');
+const loyalty = require('../legacy/cloudfunctions/orderService/loyalty');
 const now = Date.parse('2026-11-17T04:00:00Z');
 const s = { members: {}, requests: [], trips: [], loyaltyStartedAt: now - 86400000 };
 const r = { id: 'r1', ownerId: 'poster', confirmedAt: now };
