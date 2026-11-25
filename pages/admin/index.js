@@ -6,7 +6,15 @@ Page({
  data:{...require('../../utils/motion').data(),zh:true,checking:true,admin:false,busy:false,error:'',username:'',password:'',stats:null,cards:[],bucket:'all',bucketLabel:'',orders:[],ordersLoading:false,applications:[],reviewing:'',supportInbox:[],supportDraft:{},replying:'',openTicket:'',navTop:20,navHeight:32},
  onLoad(){let navTop=20,navHeight=32;try{const m=wx.getMenuButtonBoundingClientRect();if(m&&m.top){navTop=m.top;navHeight=m.height;}}catch(_){}this.setData({zh:store.get().language!=='en',navTop,navHeight});wx.setNavigationBarTitle({title:this.data.zh?'管理后台':'Admin'});},
  home(){wx.reLaunch({url:'/pages/jobs/index'});},
- toggleTicket(e){const id=e.currentTarget.dataset.id;this.setData({openTicket:this.data.openTicket===id?'':id});},
+ async toggleTicket(e){const id=e.currentTarget.dataset.id;
+  if(this.data.openTicket===id){this.setData({openTicket:''});return;}
+  this.setData({openTicket:id});
+  try{
+    const r=await account.call('adminCsMessages',{userId:Number(id)});
+    const messages=(r.messages||[]).map(m=>({text:m.content||'',photo:m.image||'',mine:m.direction!=='user',at:time(m.created_at||'')}));
+    this.setData({supportInbox:this.data.supportInbox.map(x=>x.id===id?{...x,messages}:x)});
+  }catch(err){this.setData({error:err.message});}
+ },
  async onShow(){this.setData({checking:true,error:''});try{const r=await account.call('adminStatus');this.setData({admin:!!r.admin});if(r.admin)await this.load();}catch(e){this.setData({error:e.message});}finally{this.setData({checking:false});}},
  async onPullDownRefresh(){try{if(this.data.admin)await this.load();}catch(e){this.setData({error:e.message});}finally{wx.stopPullDownRefresh();}},
  field(e){this.setData({[e.currentTarget.dataset.field]:e.detail.value});},
@@ -17,7 +25,14 @@ Page({
   const cards=[{key:'all',label:zh?'总订单':'Total orders',value:s.total,tap:true},{key:'waiting',label:zh?'待接单':'Waiting',value:s.waiting,tap:true},{key:'unpaid',label:zh?'未付款':'Unpaid',value:s.unpaid,tap:true},{key:'completed',label:zh?'已完成':'Completed',value:s.completed,tap:true},{key:'users',label:zh?'平台用户':'Users',value:s.users},{key:'runners',label:zh?'跑手':'Runners',value:s.runners}];
   await orders.sync();
   const topics={order:zh?'订单问题':'Order issue',payment:zh?'付款或退款':'Payment / refund',other:zh?'其他问题':'Other',deletion:zh?'删除账户与数据':'Account deletion'};
-  const supportInbox=(store.get().supportInbox||[]).map(t=>({...t,accountLabel:t.accountId.slice(0,8),topicLabel:topics[t.topic]||t.topic,lastText:(t.messages||[]).slice(-1)[0]?.text||'',time:time((t.messages||[]).slice(-1)[0]?.at||t.createdAt),messages:(t.messages||[]).map(m=>({...m,photo:m.photo?orders.photoURL(m.photo):'',time:time(m.at)}))}));
+  // 客服会话来自后台真实接口（此前读本地云遗留 store，永远为空）
+  const cs = await account.call('adminCsList').catch(() => ({ list: [] }));
+  const supportInbox = (cs.list || []).map((c) => ({
+    id: String(c.user_id), userId: c.user_id, accountId: String(c.user_id),
+    topicLabel: c.nickname || ('用户#' + c.user_id), accountLabel: String(c.user_id),
+    lastText: c.last_text || '', time: time(c.last_at || ''), unread: Number(c.unread) || 0,
+    messages: []
+  }));
   this.setData({stats:s,cards,supportInbox,applications:(r.applications||[]).map(a=>({...a,time:time(a.submittedAt)}))});
   await this.loadOrders(this.data.bucket);
  },
@@ -27,6 +42,6 @@ Page({
  reject(e){const id=e.currentTarget.dataset.id,zh=this.data.zh;wx.showModal({title:zh?'拒绝申请':'Reject application',editable:true,placeholderText:zh?'未通过原因（申请人可见）':'Reason for rejection (visible to the applicant)',confirmText:zh?'拒绝':'Reject',cancelText:zh?'取消':'Cancel',success:r=>{if(r.confirm)this.review(id,'reject',r.content||'');}});},
  async review(accountId,decision,note){if(this.data.reviewing)return;const zh=this.data.zh;this.setData({reviewing:accountId,error:''});try{await account.call('review',{accountId,decision,note});wx.showToast({title:decision==='approve'?(zh?'已通过':'Approved'):(zh?'已拒绝':'Rejected'),icon:'success'});await this.load();}catch(e){this.setData({error:e.message});}finally{this.setData({reviewing:''});}},
  supportInput(e){this.setData({['supportDraft.'+e.currentTarget.dataset.id]:e.detail.value});},
- async supportReply(e){const {account,ticket}=e.currentTarget.dataset,text=String(this.data.supportDraft[ticket]||'').trim();if(this.data.replying||!text)return;this.setData({replying:ticket,error:''});try{await orders.act('supportReply',{accountId:account,ticketId:ticket,text});this.setData({['supportDraft.'+ticket]:''});await this.load();}catch(error){this.setData({error:error.message});}finally{this.setData({replying:''});}},
+ async supportReply(e){const {account,ticket}=e.currentTarget.dataset,text=String(this.data.supportDraft[ticket]||'').trim();if(this.data.replying||!text)return;this.setData({replying:ticket,error:''});try{await account.call('adminCsReply',{userId:Number(account),content:text});this.setData({['supportDraft.'+ticket]:''});await this.load();}catch(error){this.setData({error:error.message});}finally{this.setData({replying:''});}},
  copy(e){wx.setClipboardData({data:String(e.currentTarget.dataset.value||'')});}
 });

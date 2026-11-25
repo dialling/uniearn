@@ -172,6 +172,13 @@ async function call(action, extra = {}) {
       if (wx.getStorageSync('admin_ok') !== '1') throw { code: 'UNAUTHORIZED', message: '请先用管理员账号登录' };
       const res = await api2.get('/api/admin/stats');
       const raw = (res && res.stats) || res || {};
+      // 待审核申请不在 stats 里，单独取；之前读 res.applications 永远是空数组
+      const runners = await api2.get('/api/admin/runners').catch(() => ({ list: [] }));
+      const applications = (runners.list || []).filter((r) => r.runner_status === 'pending').map((r) => ({
+        id: r.id, nickname: r.nickname || ('U' + r.id), realName: r.real_name || '',
+        studentNo: r.student_no || '', phone: r.phone || '',
+        submittedAt: Number(r.applied_at ? Date.parse(String(r.applied_at).replace(' ', 'T') + 'Z') : 0) || 0
+      }));
       return {
         ok: true,
         stats: {
@@ -179,11 +186,24 @@ async function call(action, extra = {}) {
           waiting: Number(raw.waiting || raw.pending || 0),
           unpaid: Number(raw.unpaid || 0),
           completed: Number(raw.completed || raw.confirmed || 0),
-          users: Number(raw.users || 0),
+          // 服务端字段是 total_users / total_users_display，之前读 raw.users 恒为 0
+          users: Number(raw.total_users_display || raw.total_users || raw.users || 0),
           runners: Number(raw.runners || 0)
         },
-        applications: Array.isArray(res && res.applications) ? res.applications : []
+        applications
       };
+    }
+    case 'adminCsList': {
+      const res = await api2.get('/api/admin/cs/conversations?limit=100');
+      return { ok: true, list: Array.isArray(res && res.list) ? res.list : [] };
+    }
+    case 'adminCsMessages': {
+      const res = await api2.get('/api/admin/cs/messages?user_id=' + Number(extra.userId || 0));
+      return { ok: true, messages: Array.isArray(res && res.messages) ? res.messages : [] };
+    }
+    case 'adminCsReply': {
+      const res = await api2.post('/api/admin/cs/reply', { user_id: Number(extra.userId || 0), content: String(extra.content || '') });
+      return { ok: !!(res && res.ok) };
     }
     case 'adminOrders': {
       const res = await api2.get('/api/admin/orders', extra);
