@@ -199,10 +199,31 @@ async function call(action, extra = {}) {
     }
     case 'adminCsMessages': {
       const res = await api2.get('/api/admin/cs/messages?user_id=' + Number(extra.userId || 0));
-      return { ok: true, messages: Array.isArray(res && res.messages) ? res.messages : [] };
+      // 服务端返回字段是 list（客服消息 + 订单反馈合并的时间线）
+      const list = (res && (res.list || res.messages)) || [];
+      return { ok: true, messages: list.map((m) => ({
+        text: m.content || m.text || '', image: m.image || '', photo: m.image || '',
+        mine: (m.direction || '') !== 'user', fromUser: (m.direction || '') === 'user', recalled: !!m.recalled_at,
+        at: m.created_at || m.at || '', kind: m.kind || ''
+      })) };
+    }
+    case 'adminCsUploadImage': {
+      const path = String(extra.path || '');
+      const token = require('./util').getToken();   // 管理员登录后 token 已在本地
+      const res = await new Promise((resolve, reject) => {
+        wx.uploadFile({
+          url: require('./config').baseUrl + '/api/cs/upload',
+          filePath: path, name: 'file',
+          header: token ? { Authorization: 'Bearer ' + token } : {},
+          success: (r) => { try { resolve(JSON.parse(r.data)); } catch (e) { reject(Error('上传失败')); } },
+          fail: (e) => reject(Error((e && e.errMsg) || '上传失败'))
+        });
+      });
+      if (!res || res.ok === false) throw Error((res && res.message) || '上传失败');
+      return { ok: true, image: res.image || res.url || '' };
     }
     case 'adminCsReply': {
-      const res = await api2.post('/api/admin/cs/reply', { user_id: Number(extra.userId || 0), content: String(extra.content || '') });
+      const res = await api2.post('/api/admin/cs/reply', { user_id: Number(extra.userId || 0), content: String(extra.content || ''), ...(extra.image ? { image: String(extra.image) } : {}) });
       return { ok: !!(res && res.ok) };
     }
     case 'adminOrders': {

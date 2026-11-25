@@ -13,6 +13,7 @@
     "pages/job/index",
     "pages/takeaway/index",
     "pages/trip-start/index",
+    "pages/messages/index",
     "pages/chat/index",
     "pages/task/index",
     "pages/task-post/index",

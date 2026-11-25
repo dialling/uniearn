@@ -11,7 +11,7 @@ Page({
   this.setData({openTicket:id});
   try{
     const r=await account.call('adminCsMessages',{userId:Number(id)});
-    const messages=(r.messages||[]).map(m=>({text:m.content||'',photo:m.image||'',mine:m.direction!=='user',at:time(m.created_at||'')}));
+    const messages=(r.messages||[]).map(m=>({text:m.text||'',photo:m.photo||'',fromUser:!!m.fromUser,at:time(m.at||''),recalled:!!m.recalled}));
     this.setData({supportInbox:this.data.supportInbox.map(x=>x.id===id?{...x,messages}:x)});
   }catch(err){this.setData({error:err.message});}
  },
@@ -41,6 +41,18 @@ Page({
  approve(e){this.review(e.currentTarget.dataset.id,'approve','');},
  reject(e){const id=e.currentTarget.dataset.id,zh=this.data.zh;wx.showModal({title:zh?'拒绝申请':'Reject application',editable:true,placeholderText:zh?'未通过原因（申请人可见）':'Reason for rejection (visible to the applicant)',confirmText:zh?'拒绝':'Reject',cancelText:zh?'取消':'Cancel',success:r=>{if(r.confirm)this.review(id,'reject',r.content||'');}});},
  async review(accountId,decision,note){if(this.data.reviewing)return;const zh=this.data.zh;this.setData({reviewing:accountId,error:''});try{await account.call('review',{accountId,decision,note});wx.showToast({title:decision==='approve'?(zh?'已通过':'Approved'):(zh?'已拒绝':'Rejected'),icon:'success'});await this.load();}catch(e){this.setData({error:e.message});}finally{this.setData({reviewing:''});}},
+ async sendSupportImage(e){
+   const id=e.currentTarget.dataset.id, zh=this.data.zh;
+   if(this.data.replying)return;
+   let path; try{ path=(await require('../../utils/image-input').chooseImage(['album','camera']))[0]; }catch(_){ return; }
+   this.setData({replying:id,error:''});
+   try{
+     const up=await account.call('adminCsUploadImage',{path});
+     await account.call('adminCsReply',{userId:Number(id),content:'',image:up.image});
+     await this.load();
+   }catch(err){this.setData({error:err.message});}
+   finally{this.setData({replying:''});}
+ },
  supportInput(e){this.setData({['supportDraft.'+e.currentTarget.dataset.id]:e.detail.value});},
  async supportReply(e){const {account,ticket}=e.currentTarget.dataset,text=String(this.data.supportDraft[ticket]||'').trim();if(this.data.replying||!text)return;this.setData({replying:ticket,error:''});try{await account.call('adminCsReply',{userId:Number(account),content:text});this.setData({['supportDraft.'+ticket]:''});await this.load();}catch(error){this.setData({error:error.message});}finally{this.setData({replying:''});}},
  copy(e){wx.setClipboardData({data:String(e.currentTarget.dataset.value||'')});}

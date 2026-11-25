@@ -32,8 +32,8 @@
   <view class="cc-last">{{item.lastText}}</view><view class="cc-time">{{item.time}}</view>
  </view>
  <block wx:if="{{openTicket===item.id}}">
- <view class="support-thread"><view wx:for="{{item.messages}}" wx:for-item="message" wx:key="at" class="support-message {{message.mine?'customer':'team'}}"><view>{{message.text}}</view><image wx:if="{{message.photo}}" src="{{message.photo}}" mode="aspectFill" class="support-photo"/><text>{{message.mine?(zh?'用户':'User'):(zh?'团队':'Team')}} · {{message.time}}</text></view></view>
- <view class="support-compose"><input value="{{supportDraft[item.id]}}" data-id="{{item.id}}" data-account="{{item.accountId}}" data-ticket="{{item.id}}" bindinput="supportInput" bindconfirm="supportReply" confirm-type="send" placeholder="{{zh?'回复用户…':'Reply…'}}"/><button data-account="{{item.accountId}}" data-ticket="{{item.id}}" bindtap="supportReply" loading="{{motionEnabled && (replying===item.id)}}" disabled="{{!!replying||!supportDraft[item.id]}}">{{zh?'发送':'Send'}}</button></view>
+ <view class="support-thread"><view wx:for="{{item.messages}}" wx:for-item="message" wx:key="at" class="support-message {{message.fromUser?'customer':'team'}}"><view>{{message.text}}</view><image wx:if="{{message.photo}}" src="{{message.photo}}" mode="aspectFill" class="support-photo"/><text>{{message.mine?(zh?'用户':'User'):(zh?'团队':'Team')}} · {{message.time}}</text></view></view>
+ <view class="support-compose"><input value="{{supportDraft[item.id]}}" data-id="{{item.id}}" data-account="{{item.accountId}}" data-ticket="{{item.id}}" bindinput="supportInput" bindconfirm="supportReply" confirm-type="send" placeholder="{{zh?'回复用户…':'Reply…'}}"/><button class="btn light" data-id="{{item.id}}" bindtap="sendSupportImage" disabled="{{!!replying}}">{{zh?'图片':'Image'}}</button><button data-account="{{item.accountId}}" data-ticket="{{item.id}}" bindtap="supportReply" loading="{{motionEnabled && (replying===item.id)}}" disabled="{{!!replying||!supportDraft[item.id]}}">{{zh?'发送':'Send'}}</button></view>
  </block>
 </view>
 

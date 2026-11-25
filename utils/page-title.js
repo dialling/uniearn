@@ -21,6 +21,7 @@ const MAP={
   trip:['取件与送达','Pick up & deliver'],
   join:['加入行程','Join a trip'],
   'sms-scan':['读取取件短信','Read pickup SMS'],
+  messages:['我的消息','My messages'],
   'student-check':['跑手申请','Runner application'],
   admin:['管理后台','Admin'],
   earnings:['收益','Earnings'],

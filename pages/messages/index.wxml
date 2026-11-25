@@ -1,0 +1,12 @@
+<view style="{{motionStyle}}">
+<view class="msg-page">
+  <view class="msg-title">{{zh ? '我的消息' : 'My messages'}}</view>
+  <view wx:if="{{loading}}" class="msg-empty">{{zh ? '加载中…' : 'Loading…'}}</view>
+  <view wx:elif="{{error}}" class="msg-empty">{{error}}</view>
+  <view wx:elif="{{!threads.length}}" class="msg-empty">{{zh ? '还没有订单消息' : 'No order messages yet'}}</view>
+  <view wx:for="{{threads}}" wx:key="id" class="msg-row" data-id="{{item.id}}" bindtap="open">
+    <view class="msg-main"><view class="msg-t">{{item.title}}</view><view class="msg-last">{{item.lastText}}</view></view>
+    <view class="msg-side"><text class="msg-time">{{item.time}}</text><text wx:if="{{item.unread}}" class="msg-dot">{{item.unread}}</text></view>
+  </view>
+</view>
+</view>

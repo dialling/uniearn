@@ -868,4 +868,11 @@ function upload(filePath, kind) {
     });
   });
 }
-module.exports = { act, create, pay, mine, hall, sync, loadTrips, support: loadSupport, upload, toRequest, bodyOf };
+async function messageThreads(){
+  const res = await api.get('/api/messages/orders').catch(() => ({ list: [] }));
+  return (res.list || []).map((t) => ({
+    orderId: String(t.order_id), id: 'xp-' + t.order_id, title: t.title || '',
+    status: t.status || '', lastText: t.last_text || '', lastAt: parseTs(t.last_at) || 0, unread: Number(t.unread) || 0
+  }));
+}
+module.exports = { act, create, pay, mine, hall, sync, loadTrips, support: loadSupport, upload, messageThreads, toRequest, bodyOf };

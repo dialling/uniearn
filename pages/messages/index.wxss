@@ -1,0 +1,10 @@
+.msg-page{padding:24rpx}
+.msg-title{font-size:36rpx;font-weight:700;margin:8rpx 0 20rpx}
+.msg-empty{color:#8a8578;font-size:26rpx;padding:60rpx 0;text-align:center}
+.msg-row{display:flex;align-items:center;gap:16rpx;padding:22rpx;background:#fff;border-radius:18rpx;margin-bottom:14rpx}
+.msg-main{flex:1;min-width:0}
+.msg-t{font-size:28rpx;font-weight:600;color:#1f1f1f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.msg-last{font-size:24rpx;color:#8a8578;margin-top:6rpx;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.msg-side{display:flex;flex-direction:column;align-items:flex-end;gap:8rpx}
+.msg-time{font-size:22rpx;color:#a39d90}
+.msg-dot{min-width:32rpx;height:32rpx;line-height:32rpx;padding:0 8rpx;border-radius:16rpx;background:#e8604c;color:#fff;font-size:20rpx;text-align:center}
