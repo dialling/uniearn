@@ -48,7 +48,10 @@ noteChip(e){const t=String(e.currentTarget.dataset.text||''),cur=String(this.dat
  sizeCount(e){if(this.data.scanBusy)return;const {size,delta}=e.currentTarget.dataset;const options=this.data.sizeOptions.map(x=>x.id===size?{...x,count:Math.max(0,Math.min(9,x.count+Number(delta)))}:x);if(options.reduce((n,x)=>n+x.count,0)>12){wx.showToast({title:this.t('Up to 12 parcels per request'),icon:'none'});return;}this.setData({sizeOptions:options});this.totals();},
  openCoupons(){const a=this.data;require('../../utils/nav').navigateTo({url:'/pages/coupon-pick/index?amount='+a.offer+'&fee='+a.fee+'&selected='+encodeURIComponent(a.couponId||''),events:{couponPicked:id=>{this.couponManual=true;this.setData({couponId:id});this.totals();}}});},
  coupon(e){const id=e.currentTarget.dataset.id,c=this.data.coupons.find(x=>x.id===id);if(c&&!c.usable){wx.showToast({title:copy.coupon(c.unavailableLabel,this.lang()),icon:'none'});return;}this.couponManual=true;this.setData({couponId:id});this.totals();},
- openParcelScreenshot(){this.openNoticeReview('sms');},
+ // 直接上传截图即可：不跳识别页，也不解析取件码（取件码自行填写）
+ openParcelScreenshot(){if(this.data.scanBusy)return;require('../../utils/images').chooseImage(['album','camera']).then(path=>{
+   this.setData({scanImages:this.data.scanImages.concat(path).slice(-5),scanError:''});
+ }).catch(()=>{});},
  openNoticeReview(mode){
   if(this.data.scanBusy)return;
   require('../../utils/nav').navigateTo({url:'/pages/sms-scan/index?mode='+mode+'&auto=1',events:{smsSelected:result=>{
