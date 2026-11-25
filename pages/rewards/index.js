@@ -77,6 +77,17 @@ Page({
   backToNews(){this.setData({screen:'home',selectedNews:null});wx.pageScrollTo({scrollTop:0,duration:0});},
   openArticle(e){const item=this.data.news.find(n=>n._id===e.currentTarget.dataset.id);if(item){this.setData({selectedNews:item,screen:'article'});wx.pageScrollTo({scrollTop:0,duration:0});}},
   closeArticle(){this.setData({selectedNews:null,screen:'uniearn'});},
+  // 微信没有直接打开公众号主页的正式 API：能调用就调用，否则复制名称并提示搜索
+  followOa(){
+    const zh=this.data.zh, name='Uniearn';
+    if(typeof wx.openOfficialAccountProfile==='function'){wx.openOfficialAccountProfile({username:name, fail:()=>this.copyOaName(name,zh)});return;}
+    this.copyOaName(name,zh);
+  },
+  copyOaName(name,zh){
+    wx.setClipboardData({data:name,success:()=>{
+      wx.showModal({title:zh?'已复制公众号名称':'Name copied',content:zh?'打开微信「通讯录 → 公众号 → 搜索」粘贴并关注；关注后新单会推送到微信。':'Open WeChat → Official Accounts → Search, paste the name and follow. New orders will then be pushed to WeChat.',showCancel:false});
+    }});
+  },
   openCoupons(){require('../../utils/nav').navigateTo({url:'/pages/coupons/index'});},
   jobs() { wx.reLaunch({url: '/pages/jobs/index'}); }
 });

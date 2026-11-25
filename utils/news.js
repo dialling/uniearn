@@ -5,7 +5,7 @@ async function call(action,extra={}){
   if(action!=='newsList')return {ok:true,items:[]};
   const res=await api.get('/api/news?limit='+(Number(extra.limit)||20));
   if(!res||res.ok===false){const e=Error((res&&res.message)||'动态加载失败 / Could not load news.');e.code=res&&res.error;throw e;}
-  return {ok:true,items:(res.items||[]).map(x=>({id:String(x.id),titleZh:x.titleZh,titleEn:x.titleEn,bodyZh:x.bodyZh,bodyEn:x.bodyEn,cover:x.cover||'',publishedAt:x.publishedAt||0}))};
+  return {ok:true,items:(res.items||[]).map(x=>({id:String(x.id),permanent:x.permanent||'',titleZh:x.titleZh,titleEn:x.titleEn,bodyZh:x.bodyZh,bodyEn:x.bodyEn,cover:x.cover||'',publishedAt:x.publishedAt||0}))};
 }
 async function display(items,zh){
   const ids=[...new Set(items.filter(x=>!x.coverURL).map(x=>x.cover).filter(Boolean))];
