@@ -113,6 +113,11 @@
 .orders-header .service-tabs.rq-roles{padding:6rpx;border-radius:28rpx;background:#e9e7e0;border:0}
 .rq-roles .glass-thumb{left:6rpx;top:6rpx;bottom:6rpx;border-radius:22rpx}
 .rq-roles .glass-thumb.of-2{width:calc((100% - 12rpx) / 2)}
+.rq-roles-3 .glass-thumb.of-3{width:calc((100% - 12rpx) / 3)}
+.rq-roles-3 .service-tab{flex:1}
+.rq-roles-3 .rq-msg-tab{color:#2f6b4f}
+.rq-roles-3 .rq-msg-ico{font-size:26rpx}
+.rq-roles-3 .rq-role-label{font-size:22rpx}
 .rq-roles .service-tab{display:flex;align-items:center;justify-content:center;gap:10rpx;min-height:92rpx;line-height:1.2;padding:0 12rpx;border-radius:22rpx;color:#77736a;font-size:26rpx;font-weight:700}
 .rq-roles .service-tab.active{color:#16181c;transform:none}
 .rq-role-icon{flex:none;width:44rpx;height:44rpx;opacity:.55;transition:var(--ue-transition,opacity .25s ease,transform .3s cubic-bezier(.34,1.5,.55,1))}

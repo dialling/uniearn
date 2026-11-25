@@ -13,7 +13,7 @@ assert.deepEqual(page.data.filters,['all','completed']);
 page.filter({currentTarget:{dataset:{value:'all'}}});assert.deepEqual(page.data.past.map(r=>r.id).sort(),['cancelled','confirmed','refunded']);
 page.filter({currentTarget:{dataset:{value:'completed'}}});assert.deepEqual(page.data.past.map(r=>r.id),['confirmed']);assert.equal(page.data.past[0].cardTone,'order-tone-completed');
 page.filter({currentTarget:{dataset:{value:'refunded'}}});assert.equal(page.data.pastFilter,'all');assert.deepEqual(page.data.past.map(r=>r.id).sort(),['cancelled','confirmed','refunded']);
-const xml=require('node:fs').readFileSync(require.resolve('../pages/requests/index.wxml'),'utf8');assert.doesNotMatch(xml,/已退款/);assert.match(xml,/glass-thumb of-2/);
+const xml=require('node:fs').readFileSync(require.resolve('../pages/requests/index.wxml'),'utf8');assert.doesNotMatch(xml,/已退款/);assert.match(xml,/glass-thumb of-3/);  // 2026-11-25：中间新增「我的消息」，三栏等宽
 for(const [status,tone] of [['taken','running'],['collected','running'],['delivered','completed']]){store.update(s=>s.requests.find(r=>r.id==='waiting').status=status);page.refresh();assert.equal(find('waiting').cardTone,'order-tone-'+tone,'a status update changes the card colour');}
 console.log('Posted order colours follow waiting/accepted/delivered/completed states, keep refunds neutral and survive history filtering');
 const finishedAt=Date.UTC(2026,9,31,16,5);

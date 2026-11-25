@@ -251,4 +251,5 @@ function stop() { foreground=false;quietResume=true;yuniEvents.suspend();stopTim
 function photoURL(path) { return store.get().photoURLs[path] || path; }
 function invalidate(){yuniEvents.reset();generation++;previous=null;quietResume=true;uploads.clear();}
 module.exports={invalidate,sync,support,act,readMessages,upload,bind,unbind,subscribe,start,stop,photoURL};
+module.exports.messageThreads=function(){return require('./xp-orders').messageThreads();};
 module.exports.viewTrip=viewTrip;module.exports.guestSignIn=guestSignIn;

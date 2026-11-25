@@ -7,3 +7,16 @@
 - 修复回退时仅修改受影响部分，不覆盖其他未提交改动。核对实际模板和样式，不能只凭业务逻辑测试通过就判定界面正确。
 - “可接受送至宿舍一楼大厅”按用户要求只放在快递代取：`utils/feature-flags.js` 的 `parcelLobbyDelivery` 开启，云函数只为送往宿舍的快递单保留这个选项。外卖和夜市保留代码但关闭；未经用户明确要求，不得重新打开 `lobbyDelivery`。
 - 发布人取消订单弹层（`utils/customer-cancel-sheet.wxml`、`utils/customer-cancel.js`）按用户 2026-11-13 明确要求定版：选择原因只选中，不自动提交；选中后「返回」变成「取消订单」按钮再提交；旧云函数拒绝原因时用 `legacyBody` 改发「其他」并保留原因。合并或同步 GitHub 时不得恢复为“点原因即提交”的旧版本。
+
+## 改动生效校验（用户 2026-11-25 要求）
+
+- 改任何按钮/交互前，先 `grep` 模板里的 `bindtap`/`catchtap` 找真正的 handler，再改那个函数；不按"看起来相关"的函数名猜。
+- 判断"改完没生效"时，先确认三件事：绑定的 handler 是否就是改的那个、改的仓库/工程是否是用户实际在跑的那一套、上传的版本是否是用户正在用的那条。
+- 上传前必须有一条覆盖该入口的验证（能复现原问题并看到它通过，或明确说明未覆盖的原因）；只跑通全量测试不等于这条路径可用。
+- 交付时说明"验证了哪条路径、用什么证明"，不要用测试通过代替界面路径验证。
+
+## 错误记录（同类问题先查这里）
+
+- 2026-11-25｜快递代取「上传截图」仍跳识别页：改的是未被绑定的 `scan()`，按钮实际绑 `openParcelScreenshot()`→`openNoticeReview('sms')`。原因：未先定位 `bindtap`、用例未覆盖该按钮、没核对入口就上传。修法：改 `openParcelScreenshot` 直接选图，并用 `parcel-stations`/`read-coupons`/`pages` 三个用例覆盖该按钮路径。
+- 2026-11-25｜体验版看不到新功能：CLI 上传用的是另一个开发者账号/工程，后台版本列表里看不到；实际在跑的是 `miniprogram-1/miniprogram` 旧工程。原因：同时维护两套小程序、上传来源未与用户确认。修法：只从 uniearn 上传，版本号 4.1.x 递增。
+- 2026-11-25｜手机后台「通过/驳回」按钮无效、客服看不到历史消息：`adminDashboard` 的 applications 映射缺 `accountId / studentId / gender`（模板 `data-id="{{item.accountId}}"` 为空），客服消息接口返回字段是 `list` 而代码读 `messages`。原因：拼接后端响应时只按假想字段名写，未对照接口实际返回。修法：映射补齐字段；客服映射改读 `list` 并按 `direction` 生成 `fromUser` 气泡；小程序侧调用 `/api/admin/runners/:id/review`（服务端补该统一入口）。检测方式：对照 `curl` 实际 JSON 字段逐个核对，再跑 `npm test` 与页面点击。
