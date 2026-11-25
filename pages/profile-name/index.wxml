@@ -21,6 +21,11 @@
         <input id="display-name" value="{{draft}}" bindinput="input" maxlength="60" disabled="{{saving}}" placeholder="{{zh?'输入昵称':'Enter a display name'}}" confirm-type="done" bindconfirm="save" />
         <text class="np-count">{{draft.length}}/60</text>
       </view>
+      <label for="phone" class="np-label">{{zh?'手机号':'Mobile number'}}</label>
+      <view class="np-input-row">
+        <input id="phone" type="number" value="{{phoneDraft}}" maxlength="11" disabled="{{saving}}" placeholder="{{zh?'11 位手机号':'11-digit mobile'}}" bindinput="phoneInput" />
+      </view>
+      <view class="np-hint">{{zh?'用于跑手联系与身份核对，仅对当前订单的对方可见。':'Used for runner contact and identity checks; only visible to the other side of an active order.'}}</view>
       <view wx:if="{{error}}" class="np-error">{{error}}</view>
     </view>
   </view>
