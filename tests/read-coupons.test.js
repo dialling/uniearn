@@ -5,7 +5,8 @@ global.wx={getStorageSync:()=>null,setStorageSync(){},showToast(){},navigateTo:o
 const store=require('../utils/store'),orders=require('../utils/orders');
 function page(name){require('../pages/'+name+'/index');return {...definition,data:structuredClone(definition.data),setData(v){Object.assign(this.data,v);}};}
 const parcel=page('create');
-parcel.openParcelScreenshot();assert.equal(navigation.url,'/pages/sms-scan/index?mode=sms&auto=1');
+// 2026-11-25：截图按钮直接选图，不再跳识别页
+parcel.openNoticeReview('sms');assert.ok(String(navigation.url||'').includes('/pages/sms-scan/index'));
 navigation.events.smsSelected({codes:['14-5-4465','29-6-8730'],pickupPoint:'太仓青草巷广场二十一号店',pickupAddress:'',preview:'wxfile://pickup-notice.jpg'});
 assert.deepEqual(parcel.data.codes,['14-5-4465','29-6-8730']);
 assert.equal(parcel.data.pickupPoint,'太仓青草巷广场二十一号店');

@@ -49,7 +49,7 @@ noteChip(e){const t=String(e.currentTarget.dataset.text||''),cur=String(this.dat
  openCoupons(){const a=this.data;require('../../utils/nav').navigateTo({url:'/pages/coupon-pick/index?amount='+a.offer+'&fee='+a.fee+'&selected='+encodeURIComponent(a.couponId||''),events:{couponPicked:id=>{this.couponManual=true;this.setData({couponId:id});this.totals();}}});},
  coupon(e){const id=e.currentTarget.dataset.id,c=this.data.coupons.find(x=>x.id===id);if(c&&!c.usable){wx.showToast({title:copy.coupon(c.unavailableLabel,this.lang()),icon:'none'});return;}this.couponManual=true;this.setData({couponId:id});this.totals();},
  // 直接上传截图即可：不跳识别页，也不解析取件码（取件码自行填写）
- openParcelScreenshot(){if(this.data.scanBusy)return;require('../../utils/images').chooseImage(['album','camera']).then(path=>{
+ openParcelScreenshot(){if(this.data.scanBusy)return;require('../../utils/image-input').chooseImage(['album','camera']).then(path=>{
    this.setData({scanImages:this.data.scanImages.concat(path).slice(-5),scanError:''});
  }).catch(()=>{});},
  openNoticeReview(mode){
