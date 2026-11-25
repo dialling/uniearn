@@ -4,7 +4,7 @@ const AREAS=[
   {id:'wenyuan',zh:'文缘',en:'Wenyuan',floors:23,buildings:['D01','D02','D03','D04','D05','D06']},
   {id:'wenxing',zh:'文星',en:'Wenxing',floors:6,buildings:['A01','A02','A03','A04','A05']},
   {id:'wencui',zh:'文萃',en:'Wencui',floors:23,buildings:['C01','C02','C03','C04','C05','C06','C07','C08','C09','C10']},
-  {id:'wenhui',zh:'文荟',en:'Wenhui',floors:23,buildings:['B01','B02','B03','B04','B05','B06','B07','B08','B09','B10']},
+  {id:'wenhui',zh:'文荟',en:'Wenhui',floors:23,buildings:['B01','B02','B03','B04','B05','B06','B07','B08','B09','B10','B11','B12']},
   {id:'bafei',zh:'芭菲',en:'Bafei',floors:6,buildings:['文缘芭菲','文萃芭菲','文星芭菲','文荟芭菲']}
 ];
 // 芭菲 has no lettered building codes, so its names need English labels. Plain "芭菲" is the older single-building value.

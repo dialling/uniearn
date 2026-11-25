@@ -1,6 +1,6 @@
 const assert=require('node:assert/strict'),c=require('../utils/campus'),r=require('../utils/saved-routes');
-assert.equal(c.buildings().length,35,'5 areas x 35 buildings');
-assert.equal(r.dorms.length,35,'route picker uses the real building list');
+assert.equal(c.buildings().length,37,'5 areas x 37 buildings（文荟新增 B11/B12）');
+assert.equal(r.dorms.length,37,'route picker uses the real building list');
 assert.equal(r.dorms[0],'D01');
 assert.equal(c.areaOfBuilding('A05').zh,'文星');
 assert.equal(c.buildingLabel('D01','zh'),'D01');
