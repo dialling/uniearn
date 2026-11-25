@@ -89,6 +89,11 @@ async function call(action, extra = {}) {
       const res = await api2.post('/api/auth/nickname', { nickname: displayName });
       return patchLocal(res && res.user, { displayName, name: displayName });
     }
+    case 'savePhone': {
+      const phone = String(extra.phone || '').replace(/\s/g, '');
+      const res = await api2.post('/api/auth/phone', { phone });
+      return patchLocal(res && res.user, { phone });
+    }
     case 'saveDorm': {
       const body = {
         dorm: extra.dorm || '',

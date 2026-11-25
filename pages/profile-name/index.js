@@ -6,6 +6,8 @@ const images = require('../../utils/image-input');
 Page({
   data: {zh:true, dark:false, draft:'', initial:'U', canSave:false, saving:false, error:'', avatar:'', avatarBusy:false},
   onLoad() {
+    const p = require('../../utils/store').get().profile || {};
+    this.setData({ phoneDraft: String(p.phone || '').replace(/\s/g, '') });
     const {language, meAppearance, profile} = store.get();
     if (!profile.onboarded || profile.loggedOut) return wx.navigateBack();
     const zh = language !== 'en';
@@ -22,6 +24,7 @@ Page({
       error:''
     });
   },
+  phoneInput(e) { this.setData({phoneDraft:String(e.detail.value||'').replace(/\D/g,'').slice(0,11)}); },
   input(e) { this.updateDraft(e.detail.value); },
   // The picture saves on its own, so choosing one never needs the name button.
   async pickAvatar() {
