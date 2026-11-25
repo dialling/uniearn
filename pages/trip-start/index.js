@@ -17,7 +17,11 @@ const selectionMessages={
 Page({
  data:{destinationType:'dorm',stations:[],deliveryAddress:'',pickupAddress:'',waypoint:'',otherStation:'',...require('../../utils/motion').data(),"category":"takeout","when":"now","time":"18:30","duration":30,"durations":[10,20,30],"station":"","stations":[],"stationHints":[],"profileDorm":"","dorm":"D01","capacity":5,"waiting":0,"requestIds":[],"selectionEdited":false,"recommendedOrders":[],"selectedCount":0,"selectedBoxes":0,"reward":"0.00","departLabel":"","joinLabel":"","remindLabel":"","error":"","starting":false,"customDurationOpen":false,"customDurationInput":"15","stationOptions":[],"stationManual":false,"areaIndex":0,"areaLabels":[],"buildingIndex":0,"buildingCodes":[],"buildingLabels":[],"dorms":[],"buildingChips":[]},
  onLoad(o={}){const p=store.get().profile;this.setData({dorm:p.dorm||'D01',profileDorm:p.dorm||'',time:f.clock(Math.min(Date.now()+60*60000,f.todayAt('23:59')))});if(['parcel','other'].includes(o.category))this.changeCategory({currentTarget:{dataset:{value:o.category}}});if(o.selfRequestId){const r=store.get().requests.find(x=>x.id===o.selfRequestId&&x.isMine);if(r)this.setData({selfRequestId:r.id,station:r.category==='takeout'?(r.pickupPoint||''):r.station,stationManual:!!r.pickupPoint,dorm:r.dorm,dorms:[r.dorm],stations:[r.station]});}this.refresh();},
- onShow(){if(wx.setNavigationBarTitle)wx.setNavigationBarTitle({title:zh()?'发起行程':'Start a trip'});orders.bind(this);if(!store.get().profile.studentVerified||!store.get().profile.runnerRulesAccepted){const next='/pages/trip-start/index?category='+this.data.category+(this.data.selfRequestId?'&selfRequestId='+this.data.selfRequestId:'');wx.redirectTo({url:'/pages/student-check/index?next='+encodeURIComponent(next)});}},
+ onShow(){if(wx.setNavigationBarTitle)wx.setNavigationBarTitle({title:zh()?'发起行程':'Start a trip'});orders.bind(this);
+  // 服务端创建行程只要求登录，不要求跑腿员身份；这里只在未登录时引导登录，
+  // 避免刚通过认证（或普通用户）被错误重定向到「已成为跑手」页
+  if(store.get().profile.loggedOut){const next='/pages/trip-start/index?category='+this.data.category+(this.data.selfRequestId?'&selfRequestId='+this.data.selfRequestId:'');require('../../utils/nav').navigateTo({url:'/pages/welcome/index'});}
+ },
  onHide(){orders.unbind(this);},
  onUnload(){orders.unbind(this);},
  selectionState(){const s=store.get();return {...s,requests:s.requests.filter(r=>!r.isMine)};},

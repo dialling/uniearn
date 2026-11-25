@@ -62,7 +62,9 @@ async function status() {
         avatarUrl: account.profile.avatarUrl || s.profile.avatarUrl || '',
         dorm: account.profile.dorm || s.profile.dorm || '',
         room: account.profile.room || s.profile.room || '',
-        studentVerified: account.verification.status === 'verified'
+        studentVerified: account.verification.status === 'verified',
+        // isRunner 需要两个标记：只写 studentVerified 会让主页一直显示「成为跑手」
+        runnerRulesAccepted: !!account.runnerRulesAccepted
       };
     });
     return { account };
