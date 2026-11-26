@@ -175,8 +175,10 @@ async function call(action, extra = {}) {
       // 待审核申请不在 stats 里，单独取；之前读 res.applications 永远是空数组
       const runners = await api2.get('/api/admin/runners').catch(() => ({ list: [] }));
       const applications = (runners.list || []).filter((r) => r.runner_status === 'pending').map((r) => ({
-        id: r.id, nickname: r.nickname || ('U' + r.id), realName: r.real_name || '',
-        studentNo: r.student_no || '', phone: r.phone || '',
+        // 模板用 item.accountId / item.studentId 作为按钮 data-id 与展示字段
+        id: r.id, accountId: r.id, nickname: r.nickname || ('U' + r.id), realName: r.real_name || '',
+        gender: r.gender || '',
+        studentNo: r.student_no || '', studentId: r.student_no || '', phone: r.phone || '',
         submittedAt: Number(r.applied_at ? Date.parse(String(r.applied_at).replace(' ', 'T') + 'Z') : 0) || 0
       }));
       return {
