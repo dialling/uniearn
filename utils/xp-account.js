@@ -57,6 +57,9 @@ async function status() {
       s.profile = {
         ...s.profile,
         accountId: account.accountId,
+        // The server just confirmed this session, so the user is signed in. Guest browsing on Jobs sets
+        // loggedOut:true and trip-start sends logged-out users to the welcome page, so clear it here.
+        loggedOut: !res || !res.user ? s.profile.loggedOut : false,
         name: account.profile.name || s.profile.name || '',
         displayName: account.profile.displayName || s.profile.displayName || '',
         avatarUrl: account.profile.avatarUrl || s.profile.avatarUrl || '',
@@ -234,11 +237,15 @@ async function call(action, extra = {}) {
       const toRequest = require('./xp-orders').toRequest;
       return { ok: true, orders: rawList.map(o => toRequest(o)) };
     }
-    case 'review':
-      return api2.post('/api/admin/runners/' + encodeURIComponent(String(extra.accountId || '')) + '/review', {
-        decision: extra.decision,
-        note: extra.note || ''
-      });
+    case 'review': {
+      // 2026-11-26: the server has no /review route. The web admin (pararouter.cn/admin) uses
+      // POST /api/admin/runners/:uid/approve and POST /api/admin/runners/:uid/reject { reason }, so use the same.
+      const uid = encodeURIComponent(String(extra.accountId || ''));
+      if (!uid) throw Error('找不到这份跑手申请');
+      if (extra.decision === 'approve') return api2.post('/api/admin/runners/' + uid + '/approve', {});
+      if (extra.decision === 'reject') return api2.post('/api/admin/runners/' + uid + '/reject', { reason: String(extra.note || '').trim() || '资料未通过审核' });
+      throw Error('未知的审核操作：' + extra.decision);
+    }
     default:
       throw Error('该账号操作尚未接入西浦跑后端：' + action);
   }

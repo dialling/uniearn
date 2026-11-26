@@ -1,6 +1,6 @@
 // 2026-11-16: a task for a closed trip can still be posted; it goes to the job board instead of the trip.
 const assert=require('node:assert/strict');let def,navigation;
-global.Page=x=>def=x;global.wx={getStorageSync:()=>null,setStorageSync(){},navigateTo:x=>navigation=x.url,redirectTo:x=>navigation=x.url,showToast(){},showModal:o=>o.success({confirm:true})};
+global.Page=x=>def=x;global.wx={getStorageSync:k=>k==='token'?'test-token':null,setStorageSync(){},navigateTo:x=>navigation=x.url,redirectTo:x=>navigation=x.url,showToast(){},showModal:o=>o.success({confirm:true})};
 const store=require('../utils/store'),orders=require('../utils/orders');
 store.reset();
 store.update(s=>{s.language='en';s.profile={...s.profile,name:'Kevin',onboarded:true,phone:'13801026092'};s.publicTrips=[{id:'t9',category:'other',phase:'collect',cancelled:false,joinUntil:Date.now()-60000,capacity:5,remaining:5,station:'Restaurant',dorm:'D01'}];});

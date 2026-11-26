@@ -237,14 +237,14 @@ function addCode(file, list) {
   list.push(JSON.stringify(key) + ':function(require,module,exports,__g){with(__g){\n' + fs.readFileSync(file, 'utf8').replace(/^﻿/, '').replace(/^#!.*/, '') + '\n}}');
 }
 addCode(path.join(root, 'app.js'), modules);
-for (const dir of ['utils', 'pages', 'components']) walk(path.join(root, dir), f => addCode(f, modules));
+for (const dir of ['utils', 'pages', 'components', 'stickers']) walk(path.join(root, dir), f => addCode(f, modules));
 for (const name of CLOUD) walk(path.join(root, 'cloudfunctions', name), f => addCode(f, modules));
 
 // ---------------------------------------------------------------- write
 // Files are overwritten in place: Dropbox can hold a lock on the folder itself.
 fs.mkdirSync(out, { recursive: true });
 const STATIC = /\.(png|jpe?g|gif|svg|webp|mp4|mp3)$/i;
-for (const dir of ['assets', 'pages', 'components', 'utils']) walk(path.join(root, dir), f => {
+for (const dir of ['assets', 'pages', 'components', 'utils', 'stickers']) walk(path.join(root, dir), f => {
   if (!STATIC.test(f)) return;
   const dest = path.join(out, rel(f));
   fs.mkdirSync(path.dirname(dest), { recursive: true });
@@ -257,6 +257,6 @@ const bundle = 'window.PREVIEW={app:' + JSON.stringify(appJson) + ',globalUsing:
   ',modules:{\n' + modules.join(',\n') + '\n}};\n';
 fs.writeFileSync(path.join(out, 'bundle.js'), bundle);
 fs.writeFileSync(path.join(out, 'app.css'), css);
-for (const f of ['index.html', 'runtime.js', 'cloud.js', 'ocr.js', 'base.css']) fs.copyFileSync(path.join(__dirname, 'src', f), path.join(out, f));
+for (const f of ['index.html', 'runtime.js', 'cloud.js', 'ocr.js', 'mock-api.js', 'base.css']) fs.copyFileSync(path.join(__dirname, 'src', f), path.join(out, f));
 console.log('Preview built: ' + pages.length + ' pages, ' + Object.keys(components).length + ' components, ' + modules.length + ' modules -> ' + rel(out));
 if (warnings.length) console.log(warnings.map(w => '  warn: ' + w).join('\n'));

@@ -31,9 +31,15 @@ function card(trip,requests,language='zh',now=Date.now()){
   route:trip.category==='task'?(items[0]?.title||(zh?'任务':'Task')):(trip.category==='takeout'?(routeLabel.group(requests,language)||stationText(trip,language,routeLabel.place)):stationText(trip,language,name))+' → '+(trip.destinationType==='place'?name(trip.dorm):require('./trip-dorms').label(trip,language)),
   total:requests.reduce((sum,r)=>sum+Number(r.reward||0),0).toFixed(2),quantity:items.reduce((sum,r)=>sum+r.quantity,0),
   waiting:!requests.length&&!trip.cancelled&&trip.phase==='collect'&&Number(trip.joinUntil||0)>now,
+  // 2026-11-26 waiting-trip card: title, pickup, buildings and room left, like the Open trips card in the hall
+  tripTitle:trip.category==='takeout'?(zh?'外卖行程':'Takeaway trip'):trip.category==='task'?(zh?'顺路行程':'Errand trip'):(zh?'快递行程':'Parcel trip'),
+  pickupText:trip.category==='task'?'':stationText(trip,language,name),
+  destText:trip.destinationType==='place'?name(trip.dorm):require('./trip-dorms').label(trip,language),
+  roomText:(()=>{const left=Math.max(0,Number(trip.remaining!=null?trip.remaining:trip.capacity)||0),unit=trip.category==='takeout'?(zh?'袋':(left===1?'bag':'bags')):(zh?'件':(left===1?'item':'items'));return zh?'还能带 '+left+' '+unit:'Room for '+left+' '+unit;})(),
+  minutesLeft:Math.max(0,Math.ceil((Number(trip.joinUntil||0)-now)/60000)),
   waitingText:(()=>{const m=Math.max(0,Math.ceil((Number(trip.joinUntil||0)-now)/60000));return zh?'等待同学加入 · 还剩 '+m+' 分钟':'Waiting for students to join · '+m+' min left';})(),
   countText:(()=>{const n=items.length,q=items.reduce((sum,r)=>sum+r.quantity,0),unit=trip.category==='task'?(zh?'项':(q===1?'task':'tasks')):trip.category==='takeout'?(zh?'袋':(q===1?'bag':'bags')):(zh?'件':(q===1?'parcel':'parcels'));return (zh?n+' 单':n+(n===1?' order':' orders'))+(q?' · '+q+(zh?' ':' ')+unit:'');})()};
 }
 // A multi-stop trip stores its stations as a JSON list; show one short line instead of the raw text.
-function stationText(trip,language,one){const ts=require('./trip-stations');return ts.list(trip.station).length>1?ts.short(trip,language):one(trip.station,language);}
+function stationText(trip,language,one){const ts=require('./trip-stations');const s=ts.list(trip.station).length>1?ts.short(trip,language):(ts.short(trip,language)||one(trip.station,language));return s||one(trip.station,language);}
 module.exports={card};

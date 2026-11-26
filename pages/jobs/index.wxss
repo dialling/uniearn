@@ -334,4 +334,29 @@ radial-gradient(80% 42% at 92% 74%,rgba(210,196,170,.20),transparent 55%),
 .page-dark .nj-when.is-task{color:#8fb0ff}
 
 .trip-card{margin-bottom:16rpx}
+/* 2026-11-25 open trip card, as the circled design: type + room/time, pickup, big buildings, runner and Join trip */
+.jobs-page .flow-card.trip-card{padding:30rpx 30rpx 26rpx;border-radius:28rpx}
+.tc-head{display:flex;align-items:center;gap:20rpx}
+.tc-icon{width:76rpx;height:76rpx;flex:none}
+.tc-head-text{min-width:0}
+.tc-title{font-size:30rpx;font-weight:750;color:#16181c;line-height:1.3}
+.tc-meta{font-size:24rpx;color:#8a877f;margin-top:4rpx}
+.tc-from{display:flex;align-items:center;gap:14rpx;margin:24rpx 0 6rpx 6rpx;font-size:26rpx;color:#6b6860}
+.tc-pin{width:14rpx;height:14rpx;border:3rpx solid #b7b4ab;border-radius:50% 50% 50% 0;transform:rotate(-45deg);flex:none}
+.tc-to{display:flex;align-items:center;gap:14rpx;margin-left:6rpx;font-size:40rpx;font-weight:800;color:#16181c;line-height:1.3;word-break:break-all}
+.tc-dot{width:12rpx;height:12rpx;border-radius:50%;background:#16181c;flex:none;margin:0 4rpx}
+.tc-foot{display:flex;align-items:center;gap:14rpx;margin-top:24rpx}
+.tc-avatar{width:56rpx;height:56rpx;border-radius:50%;background:#e7f3ed;flex:none}
+.tc-name{flex:1;min-width:0;font-size:26rpx;color:#6b6860;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tc-join{flex:none;background:linear-gradient(180deg,#2a8a5f,#1f6b4a);color:#fff;border-radius:22rpx;padding:18rpx 30rpx;font-size:28rpx;font-weight:650;box-shadow:0 6rpx 14rpx rgba(31,107,74,.25)}
+.page-dark .tc-title,.page-dark .tc-to{color:#f1f0ec}
+.page-dark .tc-dot{background:#f1f0ec}
+.page-dark .tc-meta,.page-dark .tc-from,.page-dark .tc-name{color:#a9a69e}
 .trip-join{background:#1f6b4a;color:#fff;border-radius:999rpx;padding:8rpx 22rpx;font-size:24rpx;font-weight:500;line-height:1.4;white-space:nowrap;align-self:center;margin-left:12rpx}
+/* 2026-11-26 first visit: sign-in card instead of the guide (the guide follows after sign-in) */
+.signin-modal .btn.signin-go{width:100%;margin:26rpx 0 0;background:#0b7a55;color:#fff;border-radius:999rpx;font-weight:650}
+.signin-later{text-align:center;margin-top:20rpx;padding:8rpx;font-size:26rpx;color:#6b6860}
+/* 2026-11-26 the runner's own trip in the hall: green edge, "Your trip", Manage trip instead of Join */
+.jobs-page .flow-card.trip-card.tc-mine{box-shadow:inset 0 0 0 3rpx #0b7a55}
+.tc-mine .tc-name{color:#0b7a55;font-weight:700}
+.tc-join.tc-manage{background:#fff;color:#0b7a55;box-shadow:inset 0 0 0 2rpx #0b7a55}

@@ -28,17 +28,8 @@ Page({
    const r=await account.call('status'), a=r&&r.account;
    if(!a||a.loggedOut){require('../../utils/nav').navigateTo({url:'/pages/welcome/index'});return;}
    if(!a.verification||a.verification.status!=='verified'){
-    // 先问一句，用户确认后再去认证；取消则留在当前页（或退回上一页）
-    wx.showModal({
-      title: zh()?'还不是跑腿员':'Not a runner yet',
-      content: zh()?'发起行程需要先通过跑腿员认证，是否现在前往注册？':'Creating a trip needs runner verification. Go to the application now?',
-      confirmText: zh()?'前往':'Go',
-      cancelText: zh()?'取消':'Cancel',
-      success:(res)=>{
-        if(res.confirm) wx.redirectTo({url:'/pages/student-check/index?next='+encodeURIComponent(next)});
-        else { const pages=getCurrentPages(); if(pages.length>1)wx.navigateBack(); }
-      }
-    });
+    // 2026-11-26: not a runner yet -> straight to the runner application; it brings them back here once approved
+    wx.redirectTo({url:'/pages/student-check/index?next='+encodeURIComponent(next)});
    }
   }catch(_){/* 网络失败时保持当前页，用户可重试 */}
  },

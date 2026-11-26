@@ -53,7 +53,11 @@ function request(method, path, data = {}, attempt = 1) {
         const d = res.data || {};
         if (res.statusCode === 401) {
           // 先尝试静默续期：token 过期/清缓存都能自己恢复，用户无感
-          if (attempt === 1 && !path.startsWith('/api/auth/')) {
+          // 2026-11-26: /api/auth/me also renews quietly. It used to be excluded with every /api/auth/ path, so an
+          // expired token made the account check fail first: Start a trip treated the user as signed out (welcome
+          // page -> straight back to Jobs) and the token was cleared, emptying My orders → I'm running.
+          // Only the sign-in calls themselves stay excluded.
+          if (attempt === 1 && !/^\/api\/auth\/(login|admin-login)\b/.test(path)) {
             refreshToken()
               .then(() => request(method, path, { ...data }, 2))
               .then(resolve, () => {

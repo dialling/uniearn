@@ -48,6 +48,13 @@
   <view wx:else class="deadline-policy no-deadline-active"><text class="tp-policy-icon">✓</text><text>{{ui.noDeadlineActiveHint}}</text></view>
  </view>
 
+ <!-- 2026-11-26 phone: required like the parcel and takeaway forms -->
+ <view class="flow-card tp-card tp-phone-card">
+  <view class="flow-head tp-step-head"><image class="tp-head-icon" mode="aspectFit" src="/assets/icons3d/phone.svg"/><text>{{zh?'联系电话':'Your phone'}}</text></view>
+  <input always-embed class="tp-phone {{phoneError?'tp-phone-error':''}}" type="number" value="{{phone}}" data-field="phone" bindinput="text" maxlength="11" placeholder="{{zh?'11 位手机号':'11-digit phone number'}}" placeholder-class="ue-ph"/>
+  <view class="tp-note">{{phoneError?(zh?'请填写 11 位手机号。':'Enter an 11-digit phone number.'):(zh?'已从你的资料带入。只有接单的跑手能看到。':'Filled from your profile. Only your runner sees it.')}}</view>
+ </view>
+
  <!-- 3 Offer -->
  <view class="flow-card task-fee-card tp-card">
   <view class="flow-head tp-step-head"><image class="tp-head-icon" mode="aspectFit" src="/assets/icons3d/coin.svg"/><text>{{ui.price}}</text></view>

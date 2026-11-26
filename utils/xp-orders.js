@@ -413,7 +413,9 @@ async function resolvePeer(reqId, row) {
 
 async function loadMessages(reqId, peerId, keepLocal) {
   if (!require('./util').getToken()) return [];
-  const myId = Number((require('./util').getUser() || {}).id) || 0;
+  // 2026-11-26: my messages go on the right. If the saved user is missing, fall back to my role in this order.
+  const row = (store.get().requests || []).find(r => numIdOf(r.id) === numIdOf(reqId)) || {};
+  const myId = Number((require('./util').getUser() || {}).id) || Number(row.isMine ? row.ownerId : row.isRunner ? row.runnerUserId : 0) || 0;
   // 聊天按订单隔离：先走 /api/messages/order/:id，只有拿不到订单号时才退回按人
   const orderId = numIdOf(reqId);
   let res = orderId ? await api.get('/api/messages/order/' + orderId).catch(() => null) : null;
@@ -424,7 +426,8 @@ async function loadMessages(reqId, peerId, keepLocal) {
   const rows = (res && (res.messages || res.list)) || [];
   const out = rows.map((m) => ({
     id: m.id, text: m.content || '', photo: fullAvatar(m.image || ''),
-    at: parseTs(m.created_at), mine: Number(m.sender_id) === myId,
+    at: parseTs(m.created_at),
+    mine: m.is_mine !== undefined ? !!m.is_mine : m.mine !== undefined ? !!m.mine : (!!myId && Number(m.sender_id) === myId),
   }));
   if (!out.length && keepLocal) return out;   // 服务端还没读到时别把刚发的气泡抹掉
   const target = numIdOf(reqId);
@@ -494,7 +497,12 @@ async function loadTrips(strict) {
   if (!data) return null;
   const now = Date.now();
   const signedIn = !!require('./util').getToken();
-  const mineTrips = (data.mine || []).map((t) => tripRow(t, now));
+  // 2026-11-26: the trip I started belongs to me even when the server lists it only in public_trips
+  // (marked is_runner). Count those as mine so the creator always sees it under My orders → I'm running,
+  // and so it isn't marked as ended just because it is missing from `mine`.
+  const mineRows = (data.mine || []).slice();
+  (data.public_trips || []).forEach((t) => { if (t && t.is_runner && !mineRows.some((m) => String(m.id) === String(t.id))) mineRows.push(t); });
+  const mineTrips = mineRows.map((t) => tripRow(t, now));
   const offers = signedIn ? (data.offers || []).map((o) => ({ ...toRequest(o), fromOffer: true })) : [];
   const seen = new Set();
   const publicTrips = (data.public_trips || []).filter((t) => (seen.has(t.id) ? false : (seen.add(t.id), true)))
@@ -597,6 +605,11 @@ async function runAct(action, payload = {}) {
     // 外层 tripId 是页面最终决定（外卖晚到时可能改成发到大厅），优先于 data 里的。
     const data = { ...(payload.data || payload) };
     if (payload.data && Object.prototype.hasOwnProperty.call(payload, 'tripId')) data.tripId = payload.tripId || '';
+    // 2026-11-26: a runner can see their own trip in the hall but must not put their own order into it
+    const st0 = store.get();
+    if (data.tripId && [].concat(st0.trips || [], st0.openTrips || [], st0.publicTrips || []).some((t) => t.id === String(data.tripId) && t.isRunner)) {
+      throw Error(say('这是你自己的行程，不能把自己的订单加进来。', 'This is your own trip. You canʼt add your own order to it.'));
+    }
     return create(data);
   }
   if (action === 'payOrder') return pay(id);

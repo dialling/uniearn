@@ -31,6 +31,8 @@
         if (!k) { const e = Error("Cannot find module '" + r + "' from " + key); e.code = 'MODULE_NOT_FOUND'; throw e; }
         return load(k);
       };
+      // WeChat's require.async loads a sub-package module (e.g. the sticker packs); here everything is already bundled.
+      req.async = r => new Promise((res, rej) => { try { res(req(r)); } catch (e) { rej(e); } });
       onLoad && onLoad(key, true);
       try { P.modules[key].call(module.exports, req, module, module.exports, globals); }
       catch (e) { delete cache[key]; throw e; }

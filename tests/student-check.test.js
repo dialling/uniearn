@@ -92,7 +92,7 @@ assert.deepEqual(JSON.parse(JSON.stringify(applied)),{action:'apply',application
 assert.ok(calls.some(c=>c.action==='agreeRules'),'rules are accepted in the same step');
 assert.equal(page.data.stage,'pending');assert.equal(page.data.busy,false);assert.ok(calls.every(x=>x.action!=='wechatLogin'),'manual submission never requests WeChat phone authorization');
  page.reapply();assert.equal(page.data.stage,'apply');
- page.next='/pages/trip-start/index';page.startTrip();assert.deepEqual(calls.at(-1),{action:'reLaunch',url:'/pages/jobs/index'});
+ page.next='/pages/trip-start/index?category=parcel';page.startTrip();assert.deepEqual(calls.at(-1),{action:'reLaunch',url:'/pages/trip-start/index?category=parcel'});page.next='/pages/jobs/index';page.startTrip();assert.deepEqual(calls.at(-1),{action:'reLaunch',url:'/pages/trip-start/index'});
  let component;
  vm.runInNewContext(fs.readFileSync(require.resolve('../components/yuni-assistant/index.js'),'utf8'),{Component:value=>component=value,require:name=>name.includes('store')?{get:()=>state}:{emit(){}}});
  const guide={...component.methods,data:{topic:'runner'},setData:patch=>Object.assign(guide.data,patch)};

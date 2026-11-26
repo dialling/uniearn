@@ -364,6 +364,8 @@
           }
           resolve({ tempFiles, type: 'image', tempFilePaths: tempFiles.map(f => f.tempFilePath) });
         };
+        // Closing the file dialog without a picture: answer like WeChat's chooseMedia does ("fail cancel").
+        input.addEventListener('cancel', () => reject({ errMsg: 'chooseMedia:fail cancel' }));
         input.click();
       });
     }
@@ -426,7 +428,9 @@
           getFileInfo(o) { o.success && o.success({ size: 0 }); }, stat(o) { o.fail && o.fail({ errMsg: 'stat:fail' }); }, readdir(o) { o.success && o.success({ files: [] }); }
         }),
         downloadFile: api('downloadFile', o => ({ tempFilePath: o.url, statusCode: 200 })),
-        request: api('request', () => { throw Error('Network requests are disabled in the preview.'); }),
+        // The app's server calls go to the in-browser stand-in server (mock-api.js), never the network.
+        request: api('request', o => { if (!window.PreviewMockApi) throw Error('Network requests are disabled in the preview.'); return window.PreviewMockApi.request(phone, o); }),
+        uploadFile: api('uploadFile', o => { if (!window.PreviewMockApi) throw Error('Uploads are disabled in the preview.'); return window.PreviewMockApi.upload(phone, o); }),
         loadSubpackage: o => { setTimeout(() => { o && o.success && o.success({}); o && o.complete && o.complete({}); }); return { onProgressUpdate() {} }; },
         loadFontFace: api('loadFontFace', () => {}),
         createVideoContext: () => ({ play() {}, pause() {}, stop() {}, seek() {}, requestFullScreen() {}, exitFullScreen() {} }),
