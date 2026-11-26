@@ -40,6 +40,11 @@ body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSys
 .note b{color:var(--ink)}
 .boot-error{position:absolute;inset:0;padding:60px 20px;font:13px/1.5 monospace;color:#b42318;background:#fff;white-space:pre-wrap;overflow:auto;z-index:300}
 @media (max-width:860px){.tabs{display:flex}.phones[data-one] .device-wrap:not(.on){display:none}}
+/* two-phone mode: Student + Runner side by side at any width, no tabs */
+body.pair .tabs{display:none!important}
+body.pair .phones{flex-wrap:nowrap;gap:24px;padding-left:12px;padding-right:12px}
+body.pair .phones .device-wrap{display:flex!important}
+body.pair .phones .device-wrap:nth-of-type(3){display:none!important}
 </style>
 </head>
 <body>
@@ -50,6 +55,7 @@ body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSys
   </div>
   <div class="actions">
     <button id="lang" type="button">App language: English</button>
+    <button id="pair" type="button">Two phones side by side</button>
     <button id="reset" type="button">Reset demo data</button>
   </div>
 </header>
@@ -85,9 +91,19 @@ body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSys
   const cloud = new PreviewCloud.CloudHost();
   const users = [{ id: 'student', openid: 'preview-student', label: 'Student' }, { id: 'runner', openid: 'preview-runner', label: 'Runner' }, { id: 'friend', openid: 'preview-friend', label: 'Friend' }];
   const phones = window.previewPhones = [];
+  // Two-phone mode: Student and Runner side by side at any width, to post on one and take the order on the other.
+  const PAIR = 'uniearn-preview:pair';
+  let pair = /[?&#]pair\b/.test(location.search + location.hash);
+  try { if (!pair) pair = localStorage.getItem(PAIR) === '1'; } catch (_) {}
+  const pairButton = document.getElementById('pair');
+  const showPair = () => { document.body.classList.toggle('pair', pair); if (pairButton) pairButton.textContent = pair ? 'Show all three phones' : 'Two phones side by side'; };
+  if (pairButton) pairButton.addEventListener('click', () => { pair = !pair; try { localStorage.setItem(PAIR, pair ? '1' : '0'); } catch (_) {} showPair(); fit(); });
+  showPair();
   function fit() {
     const narrow = window.innerWidth <= 860, avail = Math.min(window.innerWidth - 32, 399), byHeight = (window.innerHeight - 40) / 836;
-    const k = Math.max(0.5, Math.min(1, narrow ? avail / 399 : Math.min(1, Math.max(byHeight, 0.72))));
+    const k = pair
+      ? Math.max(0.35, Math.min(1, (window.innerWidth - 56) / (2 * 399), Math.max(byHeight, 0.6)))
+      : Math.max(0.5, Math.min(1, narrow ? avail / 399 : Math.min(1, Math.max(byHeight, 0.72))));
     document.documentElement.style.setProperty('--k', k);
     phones.forEach(p => p.scale = k);
   }

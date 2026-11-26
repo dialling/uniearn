@@ -88,7 +88,11 @@ function bodyOf(data) {
     floor: Number(data.floor) || 0,
     shop: String(data.shop || ''),
     dorm_type: ['male', 'female'].includes(data.dormGender) ? data.dormGender : '',
-    pickup_code: (data.codes || [])[0] || ''
+    pickup_code: (data.codes || [])[0] || '',
+    // 2026-11-26: photos travel with the order (the pickup screenshot first) so the runner can see them;
+    // they were never sent before. The app reads them back from order.images.
+    images: [data.noticePhoto].concat(Array.isArray(data.orderPictures) ? data.orderPictures : [])
+      .map((x) => (x && typeof x === 'object' ? (x.url || x.fileID || '') : String(x || ''))).filter(Boolean).slice(0, 6)
   };
   // 加入顺路行程：服务端只认数字 trip_id，客户端是 'xp-trip-12' 这种
   // 只认字符串/数字：页面曾把布尔标记 joinedTrip=true 当成 tripId 传进来，导致 trip_id 丢失

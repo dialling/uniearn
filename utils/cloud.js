@@ -41,7 +41,9 @@ async function restCall(name, data = {}) {
     const path = localFiles.get(String(data.fileID || ''));
     if (!path) return { ok: false, error: '请重新选择截图' };
     const fields = await uploadOcr(mode, path);
-    return { ok: true, ...fields };
+    // 2026-11-26: utils/ocr.js and pages/sms-scan read r.fields; spreading alone left it undefined, so a read
+    // screenshot still showed "couldn't read". Keep both shapes.
+    return { ok: true, ...fields, fields };
   }
   if (name === 'studentAccount' && data.action === 'status') {
     const me = await api.get('/api/auth/me');

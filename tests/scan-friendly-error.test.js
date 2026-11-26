@@ -4,10 +4,11 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), path = re
 const read = f => fs.readFileSync(path.join(__dirname, '..', f), 'utf8');
 const EN = "We couldn't read the pickup code. Please try again with a clear screenshot where the code is easy to see.";
 const ZH = '没能识别取件码。请换一张清晰的截图再试，确保取件码完整可见。';
-// 2026-11-25 用户要求：发单上传截图只保存图片，不再识别取件码（取件码手填），
-// 因此这里只校验仍保留识别功能的 sms-scan 页面。
+// 2026-11-26 用户要求：快递代取上传截图后重新识别取件码和驿站（截图同时作为凭证发给跑手）。
+// 识别失败时只提示手填，绝不显示原始云端错误。
 const create = read('pages/create/index.js');
-assert.ok(!/ocr\.recognize/.test(create), 'create page no longer runs OCR on screenshots');
+assert.ok(/ocr\.recognize/.test(create), 'the parcel page reads the pickup screenshot again');
+assert.doesNotMatch(create, /scanState:e\.message|scanError:e\.message/, 'the parcel page never shows the raw error');
 for (const f of ['pages/sms-scan/index.js']) {
   const s = read(f);
   assert.ok(s.includes(EN) && s.includes(ZH), f + ' has the friendly message in both languages');
