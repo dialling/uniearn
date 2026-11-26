@@ -11,6 +11,7 @@
 ## 改动生效校验（用户 2026-11-25 要求）
 
 - 改任何按钮/交互前，先 `grep` 模板里的 `bindtap`/`catchtap` 找真正的 handler，再改那个函数；不按"看起来相关"的函数名猜。
+- 给模板拼数据时，先把模板里用到的每个 `{{item.x}}`、`data-x="{{item.y}}"` 列出来逐个对照，缺字段一律补齐；按钮类字段（data-id/data-account 等）为空的后果是"点了没反应"，交付前必须确认它非空。
 - 判断"改完没生效"时，先确认三件事：绑定的 handler 是否就是改的那个、改的仓库/工程是否是用户实际在跑的那一套、上传的版本是否是用户正在用的那条。
 - 上传前必须有一条覆盖该入口的验证（能复现原问题并看到它通过，或明确说明未覆盖的原因）；只跑通全量测试不等于这条路径可用。
 - 交付时说明"验证了哪条路径、用什么证明"，不要用测试通过代替界面路径验证。
@@ -20,3 +21,4 @@
 - 2026-11-25｜快递代取「上传截图」仍跳识别页：改的是未被绑定的 `scan()`，按钮实际绑 `openParcelScreenshot()`→`openNoticeReview('sms')`。原因：未先定位 `bindtap`、用例未覆盖该按钮、没核对入口就上传。修法：改 `openParcelScreenshot` 直接选图，并用 `parcel-stations`/`read-coupons`/`pages` 三个用例覆盖该按钮路径。
 - 2026-11-25｜体验版看不到新功能：CLI 上传用的是另一个开发者账号/工程，后台版本列表里看不到；实际在跑的是 `miniprogram-1/miniprogram` 旧工程。原因：同时维护两套小程序、上传来源未与用户确认。修法：只从 uniearn 上传，版本号 4.1.x 递增。
 - 2026-11-25｜手机后台「通过/驳回」按钮无效、客服看不到历史消息：`adminDashboard` 的 applications 映射缺 `accountId / studentId / gender`（模板 `data-id="{{item.accountId}}"` 为空），客服消息接口返回字段是 `list` 而代码读 `messages`。原因：拼接后端响应时只按假想字段名写，未对照接口实际返回。修法：映射补齐字段；客服映射改读 `list` 并按 `direction` 生成 `fromUser` 气泡；小程序侧调用 `/api/admin/runners/:id/review`（服务端补该统一入口）。检测方式：对照 `curl` 实际 JSON 字段逐个核对，再跑 `npm test` 与页面点击。
+- 2026-11-26｜手机后台「通过」按钮点击无效：applications 映射缺 `accountId`，模板 `data-id` 为空，请求变成 `/api/admin/runners//review` 404。原因：拼映射时没有逐项核对模板字段（同一天同一处已犯过一次，仍未补全）。检测方式：`grep` 模板里的 `data-` 与 `{{item.` 生成清单，对照映射键；再用管理员 token 直接 curl 该接口确认路由与非空 id。
