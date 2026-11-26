@@ -171,7 +171,9 @@ function toRequest(order, opts = {}) {
   const createdAt = parseTs(order.created_at) || Date.now();
   const riderPhotos = Array.isArray(order.rider_photos) ? order.rider_photos : (order.rider_photo ? [order.rider_photo] : []);
   const orderPictures = Array.isArray(order.images) ? order.images : (Array.isArray(order.order_pictures) ? order.order_pictures : []);
-  const realTrip = order.runner_trip_id || order.trip_id;
+  // 2026-11-27: trip_id is only the trip the customer ASKED to join. While the order is still waiting it is a join
+  // request, not part of that trip — using it here hid the request from the runner's "New requests" (Accept/Decline).
+  const realTrip = order.runner_trip_id || (status !== 'waiting' ? order.trip_id : null);
   const runnerId = realTrip
     ? ('xp-trip-' + realTrip)
     : (runId && ['taken', 'collected', 'delivered', 'confirmed', 'disputed'].includes(status) ? ('xp-trip-' + order.id) : null);

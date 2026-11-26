@@ -6,7 +6,9 @@ const store=require('../../utils/store'),f=require('../../utils/workflow'),copy=
 function runnerRows(s,lang){
  const rows=[],seen=new Set();
  const add=(trip,items)=>{items=items.map(r=>require('../../utils/order-feedback-state').view(r));seen.add(trip.id);try{rows.push({...card.card(trip,items,lang),pendingOffers:(s.requests||[]).filter(r=>r.offeredTripId===trip.id&&r.status==='waiting'&&!r.runnerId).length});}catch(e){console.error('Trip card failed',trip.id,e);rows.push(fallbackRow(trip,items,lang));}};
- for(const t of s.trips){const items=(t.requestIds||[]).map(id=>s.requests.find(r=>r.id===id)).filter(Boolean);if(t.cancelled&&!items.some(r=>!['confirmed','cancelled','refunded'].includes(r.status)))continue;add(t,items);}
+ /* 2026-11-27: I'm running = trips I run. A trip I joined as a customer (its isRunner is false) is someone else's, and my own
+    orders inside any trip belong in "I requested", like any order I post. */
+ for(const t of s.trips){if(t.isRunner===false)continue;const items=(t.requestIds||[]).map(id=>s.requests.find(r=>r.id===id)).filter(r=>r&&!(r.isMine&&!r.isRunner));if(t.cancelled&&!items.some(r=>!['confirmed','cancelled','refunded'].includes(r.status)))continue;add(t,items);}
  // 自己发自己接的单只留在「我发布的」，不重复出现在「我接的单」
  for(const r of s.requests){if(!r.isRunner||r.isMine)continue;const id=r.runnerId||('solo:'+r.id);if(seen.has(id))continue;add({id,category:r.category==='task'?'task':(r.category||'parcel'),station:r.station||'',dorm:r.dorm||'',phase:'deliver',capacity:1,requestIds:[r.id],cancelled:false},[r]);}
  return rows;
