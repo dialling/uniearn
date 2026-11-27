@@ -4,10 +4,12 @@ async function load() {
   // 没登录时服务端会回 401，直接跳过，别在启动日志里刷红字
   if (!require('./util').getToken()) return [];
   try {
-    const [all, avail] = await Promise.all([api.get('/api/coupons'), api.get('/api/coupons/available')]);
+    const [all, avail] = await Promise.all([api.get('/api/coupons'), api.get('/api/coupons/available').catch(() => null)]);
     const rows = (all && all.list) || [];
-    const usable = new Set(((avail && (avail.list || avail.coupons)) || []).map(c => c.id));
-    const coupons = rows.map(c => ({
+    const usable = avail ? new Set(((avail.list || avail.coupons) || []).map(c => c.id)) : null;
+    const coupons = rows.map(c => {
+      const isUsable = usable ? usable.has(c.id) : (c.status === 'available' || c.status === 'unused');
+      return {
       id: c.id,
       title: c.title || 'Coupon',
       titleZh: c.title_zh || c.title || '优惠券',
@@ -18,11 +20,12 @@ async function load() {
       stored: false,
       balance: 0,
       expiresAt: c.expires_at ? Date.parse(c.expires_at) : null,
-      usable: usable.has(c.id),
-      status: c.status || (usable.has(c.id) ? 'available' : 'expired'),
+      usable: isUsable,
+      status: c.status || (isUsable ? 'available' : 'expired'),
       description: c.description || '',
       short: c.title || 'Coupon'
-    }));
+    };
+    });
     store.update(s => { s.rewards = { ...(s.rewards || {}), coupons, couponHistory: coupons }; });
     return coupons;
   } catch (e) { return []; }

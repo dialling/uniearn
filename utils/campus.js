@@ -10,7 +10,7 @@ const AREAS=[
 // 芭菲 has no lettered building codes, so its names need English labels. Plain "芭菲" is the older single-building value.
 const BUILDING_EN={'文缘芭菲':'Wenyuan Bafei','文萃芭菲':'Wencui Bafei','文星芭菲':'Wenxing Bafei','文荟芭菲':'Wenhui Bafei','芭菲':'Bafei'};
 // 文缘 D01–D06、文萃 C01–C10、文荟 B01–B10 每栋 23 层；文星 A05 20 层，其余默认 6 层。
-const FLOORS={D01:23,D02:23,D03:23,D04:23,D05:23,D06:23,C01:23,C02:23,C03:23,C04:23,C05:23,C06:23,C07:23,C08:23,C09:23,C10:23,B01:23,B02:23,B03:23,B04:23,B05:23,B06:23,B07:23,B08:23,B09:23,B10:23,A05:20};
+const FLOORS={D01:23,D02:23,D03:23,D04:23,D05:23,D06:23,C01:23,C02:23,C03:23,C04:23,C05:23,C06:23,C07:23,C08:23,C09:23,C10:23,B01:23,B02:23,B03:23,B04:23,B05:23,B06:23,B07:23,B08:23,B09:23,B10:23,B11:23,B12:23,A05:20};
 const FLOOR_MAX=6;
 const NO_FLOOR_SURCHARGE=['A05'];
 const HIGH_FLOOR_AREA='wenxing',HIGH_FLOOR_MIN=3,HIGH_FLOOR_CENTS=100;

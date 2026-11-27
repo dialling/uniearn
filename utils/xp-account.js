@@ -85,7 +85,12 @@ async function call(action, extra = {}) {
     case 'status': return status();
     case 'logout':
       require('./util').clearAuth();
-      store.update(s => { s.profile = { ...s.profile, loggedOut: true }; });
+      store.update(s => {
+        s.profile = { ...s.profile, loggedOut: true };
+        s.requests = [];
+        s.trips = [];
+        if (s.rewards) s.rewards = { ...s.rewards, coupons: [], couponHistory: [] };
+      });
       return { account: { ...shape({}), loggedOut: true } };
     case 'saveDisplayName': {
       const displayName = String(extra.displayName || extra.name || '').trim();

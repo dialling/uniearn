@@ -85,7 +85,7 @@ function bodyOf(data) {
       const list = require('./campus').AREAS || [];
       const hit = list.find(a => a.id === raw) || list.find(a => a.zh === raw);
       return hit ? hit.zh : raw; })(),
-    floor: Number(data.floor) || 0,
+    floor: require('./campus').floorOfRoom(data.room) || Number(data.floor) || 0,
     shop: String(data.shop || ''),
     dorm_type: ['male', 'female'].includes(data.dormGender) ? data.dormGender : '',
     pickup_code: (data.codes || [])[0] || '',
@@ -105,6 +105,14 @@ function bodyOf(data) {
     if (Array.isArray(data.parcelItems)) {
       body.size_items = data.parcelItems.reduce((acc, it) => { acc[it.size] = (acc[it.size] || 0) + 1; return acc; }, {});
       body.pickup_code = data.parcelItems.map(it => it.code).filter(Boolean).join(',');
+    }
+  }
+  if (data.category === 'takeout' && !data.night) {
+    body.arrived = !!data.arrived;
+    if (!data.arrived && data.arrivalTime) {
+      let at = 0;
+      try { at = require('./workflow').todayAt(data.arrivalTime); } catch (_) {}
+      if (at) { body.food_arrival_at = at; body.arrival_at = at; }
     }
   }
   return body;
@@ -891,6 +899,7 @@ function upload(filePath, kind) {
   });
 }
 async function messageThreads(){
+  if (!require('./util').getToken()) return [];
   const res = await api.get('/api/messages/orders').catch(() => ({ list: [] }));
   return (res.list || []).map((t) => ({
     orderId: String(t.order_id), id: 'xp-' + t.order_id, title: t.title || '',

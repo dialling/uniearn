@@ -353,9 +353,6 @@ radial-gradient(80% 42% at 92% 74%,rgba(210,196,170,.20),transparent 55%),
 .page-dark .tc-dot{background:#f1f0ec}
 .page-dark .tc-meta,.page-dark .tc-from,.page-dark .tc-name{color:#a9a69e}
 .trip-join{background:#1f6b4a;color:#fff;border-radius:999rpx;padding:8rpx 22rpx;font-size:24rpx;font-weight:500;line-height:1.4;white-space:nowrap;align-self:center;margin-left:12rpx}
-/* 2026-11-26 first visit: sign-in card instead of the guide (the guide follows after sign-in) */
-.signin-modal .btn.signin-go{width:100%;margin:26rpx 0 0;background:#0b7a55;color:#fff;border-radius:999rpx;font-weight:650}
-.signin-later{text-align:center;margin-top:20rpx;padding:8rpx;font-size:26rpx;color:#6b6860}
 /* 2026-11-26 the runner's own trip in the hall: green edge, "Your trip", Manage trip instead of Join */
 .jobs-page .flow-card.trip-card.tc-mine{box-shadow:inset 0 0 0 3rpx #0b7a55}
 .tc-mine .tc-name{color:#0b7a55;font-weight:700}
