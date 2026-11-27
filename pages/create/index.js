@@ -49,9 +49,7 @@ noteChip(e){const t=String(e.currentTarget.dataset.text||''),cur=String(this.dat
  openCoupons(){const a=this.data;require('../../utils/nav').navigateTo({url:'/pages/coupon-pick/index?amount='+a.offer+'&fee='+a.fee+'&selected='+encodeURIComponent(a.couponId||''),events:{couponPicked:id=>{this.couponManual=true;this.setData({couponId:id});this.totals();}}});},
  coupon(e){const id=e.currentTarget.dataset.id,c=this.data.coupons.find(x=>x.id===id);if(c&&!c.usable){wx.showToast({title:copy.coupon(c.unavailableLabel,this.lang()),icon:'none'});return;}this.couponManual=true;this.setData({couponId:id});this.totals();},
  // 直接上传截图即可：不跳识别页，也不解析取件码（取件码自行填写）
- openParcelScreenshot(){if(this.data.scanBusy)return;require('../../utils/image-input').chooseImage(['album','camera']).then(path=>{
-   this.setData({scanImages:this.data.scanImages.concat(path).slice(-5),scanError:''});
- }).catch(()=>{});},
+ /* 2026-11-26: the Upload screenshot button reads the picture too (code + station fill in, the student checks them) */openParcelScreenshot(){return this.scan();},
  openNoticeReview(mode){
   if(this.data.scanBusy)return;
   require('../../utils/nav').navigateTo({url:'/pages/sms-scan/index?mode='+mode+'&auto=1',events:{smsSelected:result=>{
@@ -63,7 +61,7 @@ noteChip(e){const t=String(e.currentTarget.dataset.text||''),cur=String(this.dat
  },
  pickStation(e){if(this.trip&&this.tripId){const p=(this.data.stationList||[])[Number(e.detail.value)];if(p){this.tripPoint=p;this.syncStation();}return;}const row=Number(e.currentTarget.dataset.i),pick=Number(e.detail.value);if(!Number.isInteger(row)||row<0||row>=this.data.codes.length||!Number.isInteger(pick)||pick<0||pick>this.data.stationList.length)return;const other=pick===this.data.stationList.length,parcelStations=this.data.parcelStations.map((x,i)=>i===row?{...x,point:other?String(x.custom||'').trim():this.data.stationList[pick],other,custom:other?x.custom||'':''}:x);this.setData({parcelStations});this.syncStation();},
  otherStation(e){const row=Number(e.currentTarget.dataset.i);if(!Number.isInteger(row)||!this.data.parcelStations[row])return;const value=String(e.detail.value||'').slice(0,100),parcelStations=this.data.parcelStations.map((x,i)=>i===row?{...x,point:value.trim(),custom:value,other:true}:x);this.setData({parcelStations});this.syncStation();},
- syncStation(){if(this.trip&&this.tripId){/* Joining a trip: one order is collected at one of the trip's stations; the server limits pickup_location to a single place. */const pts=require('../../utils/trip-stations').list(this.trip.station),lang=this.lang(),labels=pts.map(x=>require('../../utils/runner-copy').name(x,lang)||x);if(!pts.includes(this.tripPoint))this.tripPoint=pts.length===1?pts[0]:'';const st=this.tripPoint||'',i=pts.indexOf(st),label=i>=0?labels[i]:'';this.setData({tripStationCount:pts.length,stationList:pts,stationLabels2:labels,pickupPoint:st,parcelStations:(this.data.codes||[]).map(()=>({point:st,chosen:!!st,label,pick:Math.max(0,i),custom:'',other:false}))});return;}const zh=this.lang()!=='en',list=PARCEL_STATIONS.map(x=>x[0]),labels=PARCEL_STATIONS.map(x=>zh?x[0]:x[1]).concat(zh?'其他驿站（手动输入）':'Other station (type it)'),old=this.data.parcelStations||[],fallback=old.some(x=>x.point||x.other)?'':String(this.data.pickupPoint||'').trim(),rules=[[/妈妈/,'翰林妈妈驿站'],[/兔喜/,'翰林兔喜'],[/菜鸟/,'文缘菜鸟驿站'],[/A03|文星.*快递站/i,'文星A03快递站']];
+ syncStation(){if(this.trip&&this.tripId){/* Joining a trip: one order is collected at one of the trip's stations; the server limits pickup_location to a single place. */const pts=require('../../utils/trip-stations').list(this.trip.station),lang=this.lang(),labels=pts.map(x=>require('../../utils/runner-copy').name(x,lang)||x);if(!pts.includes(this.tripPoint))this.tripPoint=pts.length===1?pts[0]:'';const st=this.tripPoint||'',i=pts.indexOf(st),label=i>=0?labels[i]:'';this.setData({tripStationCount:pts.length,stationList:pts,stationLabels2:labels,pickupPoint:st,parcelStations:(this.data.codes||[]).map(()=>({point:st,chosen:!!st,label,pick:Math.max(0,i),custom:'',other:false}))});return;}const zh=this.lang()!=='en',list=PARCEL_STATIONS.map(x=>x[0]),labels=PARCEL_STATIONS.map(x=>zh?x[0]:x[1]).concat(zh?'其他驿站（手动输入）':'Other station (type it)'),old=this.data.parcelStations||[],fallback=old.some(x=>x.point||x.other)?'':String(this.data.pickupPoint||'').trim(),rules=[[/妈妈/,'翰林妈妈驿站'],[/[兔免]喜/,'翰林兔喜'],[/菜鸟/,'文缘菜鸟驿站'],[/A03|文星.*快递站/i,'文星A03快递站']];
   const parcelStations=this.data.codes.map((_,i)=>{const row=old[i]||{},raw=String(row.point||fallback).trim(),hit=!row.other&&rules.find(([re])=>re.test(raw)),point=hit?hit[1]:raw,pick=list.indexOf(point),other=!!row.other||!!point&&pick<0;return {...row,point,chosen:!!point,other,pick:other?list.length:Math.max(0,pick),custom:other?(row.custom===undefined?raw:row.custom):'',label:point?(pick>=0?labels[pick]:point):(zh?'选择驿站':'Station')};});
   this.setData({stationList:list,stationLabels2:labels,parcelStations,pickupPoint:[...new Set(parcelStations.map(x=>x.point).filter(Boolean))].join('、')});},
  toggleFragile(){this.setData({fragile:!this.data.fragile});},
@@ -81,8 +79,29 @@ noteChip(e){const t=String(e.currentTarget.dataset.text||''),cur=String(this.dat
  async scan(){
   if(this.data.scanBusy)return;
   let path;try{path=await images.chooseImage(['album','camera']);}catch(e){return;}
-  // 只保存截图，不再识别取件码：取件码由用户自己填写
-  this.setData({scanImages:this.data.scanImages.concat(path).slice(-5),scanError:''});
+  // 2026-11-26: keep the screenshot (it goes to the runner with the order) AND read it: codes go into empty code
+  // boxes and the station is matched to the list (syncStation maps 兔喜/妈妈/菜鸟 names). If nothing is read,
+  // the screenshot stays attached and the student types the code.
+  this.setData({scanImages:this.data.scanImages.concat(path).slice(-5),scanError:'',scanBusy:true,scanState:this.t('Reading screenshot…')});
+  try{
+   const fields=await ocr.recognize(path)||{};
+   const found=(Array.isArray(fields.candidates)&&fields.candidates.length?fields.candidates:(fields.pickupCodes||(fields.pickupCode?[fields.pickupCode]:[])).map(code=>({code,point:fields.pickupPoint})))
+    .map(c=>({...c,point:/欢迎|使用|所有包|都可查|可查|查询|搜索|联系|到驿站的/.test(String(c.point||fields.pickupPoint||''))?'':(c.point||fields.pickupPoint||'')}))   /* the courier app's own banner/search text (欢迎使用菜鸟驿站, 到驿站的所有包裹都可查) is not a station */
+    .map(c=>({code:String(c.code||'').replace(/\s/g,'').trim(),point:String(c.point||fields.pickupPoint||'').trim()}))
+    /* only real pickup-code shapes: 8-3-7279, 26-4-4757, 97-5608, A12-3456 (last group 3-6 digits) or a 4-8 digit locker code. Drops addresses such as 富康苑2-1. */
+    /* a reader can mistake a digit for a look-alike letter at the start (97-5608 read as Q7-5608): turn those back into digits */
+    .map(c=>({...c,code:c.code.replace(/^[OoDQ](?=\d)/,m=>m==='Q'?'9':'0').replace(/^[Il|](?=\d)/,'1').replace(/^S(?=\d)/,'5').replace(/^B(?=\d)/,'8').replace(/^Z(?=\d)/,'2').replace(/^G(?=\d)/,'6')}))
+    .filter(c=>/^[A-Za-z]?\d{1,3}(?:-\d{1,3})?-\d{3,6}$/.test(c.code)||/^\d{4,8}$/.test(c.code))
+    /* drop a code that is only the end of another one (7-5608 inside 97-5608) */
+    .filter((c,i,all)=>!all.some((o,j)=>j!==i&&o.code!==c.code&&o.code.length>c.code.length&&o.code.endsWith(c.code)))
+    .filter((c,i,all)=>all.findIndex(o=>o.code===c.code)===i);
+   const codes=this.data.codes.slice(),parcelStations=(this.data.parcelStations||[]).slice();
+   found.forEach(c=>{if(codes.includes(c.code)||codes.length>=12&&!codes.some(x=>!x))return;let k=codes.findIndex(x=>!x);if(k<0){codes.push(c.code);k=codes.length-1;}else codes[k]=c.code;if(c.point)parcelStations[k]={...(parcelStations[k]||{}),point:c.point,other:false,custom:''};});
+   const sizeOptions=this.data.sizeOptions.map(x=>({...x})),needed=codes.length-sizeOptions.reduce((n,x)=>n+x.count,0);if(needed>0)sizeOptions[0].count+=needed;
+   this.setData({codes,sizeOptions,parcelStations,pickupAddress:fields.pickupAddress||this.data.pickupAddress,scanState:found.length?(this.data.zh?'已读取 '+found.length+' 个取件码 · 请核对驿站和取件码':'Read '+found.length+(found.length===1?' code':' codes')+' · check the station and code'):(this.data.zh?'没找到取件码，请在下方填写':'No code found · type it below')});
+   this._analyticsOcr=true;this._analyticsOcrEdited=false;this.syncStation();this.totals();this.setData({foundCodes:this.data.codes.filter(Boolean).length});
+  }catch(e){try{console.warn('[parcel scan] read failed',e&&(e.errMsg||e.message||e));}catch(_){}this.setData({scanState:this.data.zh?'截图已添加，没能读取取件码，请在下方填写':'Screenshot added. Couldnʼt read the code, so type it below.'});}
+  finally{this.setData({scanBusy:false});}
 },
  clearScans(){if(this.data.scanBusy)return;this.setData({scanImages:[],scanState:'',scanError:''});},
  async orderPhoto(){const left=3-this.data.orderPictures.length;if(left<=0)return;try{const paths=await images.compressAll(await images.chooseImages(['album','camera'],left));this.setData({orderPictures:this.data.orderPictures.concat(paths).slice(-3)});}catch(e){}},removePhoto(e){const index=Number(e.currentTarget.dataset.index??e.currentTarget.dataset.i);if(!Number.isInteger(index)||index<0)return;this.setData({orderPictures:this.data.orderPictures.filter((_,i)=>i!==index)});},removeScanImage(e){const index=Number(e.currentTarget.dataset.index);if(!Number.isInteger(index)||index<0)return;this.setData({scanImages:this.data.scanImages.filter((_,i)=>i!==index)});},previewOrderPhoto(e){const urls=this.data.orderPictures,index=Number(e.currentTarget.dataset.index);if(urls[index])wx.previewImage({urls,current:urls[index]});},previewScan(e){const urls=this.data.scanImages,index=Number(e.currentTarget.dataset.index);if(urls[index])wx.previewImage({urls,current:urls[index]});},
