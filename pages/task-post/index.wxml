@@ -65,7 +65,6 @@
   </view>
   <view class="tp-note tp-center">{{ui.typeAny}}</view>
  </view>
- <view class="tp-test">{{zh?'团队测试，不会真实扣款。跑手接单前可免费取消。':'Team test: no real payment is taken. Cancel for free until a runner takes it.'}}</view>
 
  <view class="flow-bottom task-bottom tp-bottom">
   <view class="tp-sum"><text>{{ui.total}}</text><text class="tp-sum-money">¥{{total}}</text></view>
