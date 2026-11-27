@@ -164,8 +164,11 @@ function toRequest(order, opts = {}) {
   const big = sizeItems
     ? (Number(sizeItems.large || 0) + Number(sizeItems.oversized || 0))
     : (['large', 'oversized'].includes(order.size) ? 1 : 0);
+  // 2026-11-27: count parcels from size_items when the server sends them. The hall hides pickup codes from other
+  // runners, so counting codes showed "1 box" for a 6-parcel order.
+  const sizedTotal = sizeItems ? Object.values(sizeItems).reduce((n, v) => n + (Number(v) || 0), 0) : 0;
   const small = category === 'parcel'
-    ? Math.max(0, Math.max(1, codes.length) - big)
+    ? Math.max(0, Math.max(1, sizedTotal || codes.length) - big)
     : (category === 'takeout' ? Math.max(1, Number(order.bags || 1)) : 1);
   const collected = ['collected', 'delivered', 'confirmed'].includes(status) ? codes.slice() : [];
   const createdAt = parseTs(order.created_at) || Date.now();

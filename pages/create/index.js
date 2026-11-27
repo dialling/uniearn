@@ -86,7 +86,7 @@ noteChip(e){const t=String(e.currentTarget.dataset.text||''),cur=String(this.dat
   try{
    const fields=await ocr.recognize(path)||{};
    const found=(Array.isArray(fields.candidates)&&fields.candidates.length?fields.candidates:(fields.pickupCodes||(fields.pickupCode?[fields.pickupCode]:[])).map(code=>({code,point:fields.pickupPoint})))
-    .map(c=>({...c,point:/欢迎|使用|所有包裹|都可查|可查询|搜索|联系/.test(String(c.point||fields.pickupPoint||''))?'':(c.point||fields.pickupPoint||'')}))   /* the courier app's own banner/search text (欢迎使用菜鸟驿站, 到驿站的所有包裹都可查) is not a station */
+    .map(c=>({...c,point:/欢迎|使用|所有包|都可查|可查|查询|搜索|联系|到驿站的/.test(String(c.point||fields.pickupPoint||''))?'':(c.point||fields.pickupPoint||'')}))   /* the courier app's own banner/search text (欢迎使用菜鸟驿站, 到驿站的所有包裹都可查) is not a station */
     .map(c=>({code:String(c.code||'').replace(/\s/g,'').trim(),point:String(c.point||fields.pickupPoint||'').trim()}))
     /* only real pickup-code shapes: 8-3-7279, 26-4-4757, 97-5608, A12-3456 (last group 3-6 digits) or a 4-8 digit locker code. Drops addresses such as 富康苑2-1. */
     /* a reader can mistake a digit for a look-alike letter at the start (97-5608 read as Q7-5608): turn those back into digits */
