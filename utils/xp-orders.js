@@ -115,6 +115,13 @@ function bodyOf(data) {
       if (at) { body.food_arrival_at = at; body.arrival_at = at; }
     }
   }
+  if (data.category === 'task') {
+    const cents = Math.round(Number(data.price) * 100);
+    if (Number.isFinite(cents) && cents >= 300) {
+      body.price_cents = cents;
+      body.tip_cents = Math.max(0, cents - 300);
+    }
+  }
   return body;
 }
 function parseTs(v) {
