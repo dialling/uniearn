@@ -107,19 +107,26 @@ function bodyOf(data) {
       body.pickup_code = data.parcelItems.map(it => it.code).filter(Boolean).join(',');
     }
   }
-  if (data.category === 'takeout' && !data.night) {
-    body.arrived = !!data.arrived;
-    if (!data.arrived && data.arrivalTime) {
-      let at = 0;
-      try { at = require('./workflow').todayAt(data.arrivalTime); } catch (_) {}
-      if (at) { body.food_arrival_at = at; body.arrival_at = at; }
+  if (data.category === 'takeout') {
+    const unit = Math.round(Number(data.price) * 100);
+    if (Number.isSafeInteger(unit) && unit >= (data.night ? 400 : 300)) {
+      body.unit_reward_cents = unit;
+      body.bag_count = data.night ? 1 : Math.min(5, Math.max(1, Math.floor(Number(data.bags) || 1)));
+    }
+    if (!data.night) {
+      body.arrived = !!data.arrived;
+      if (!data.arrived && data.arrivalTime) {
+        let at = 0;
+        try { at = require('./workflow').todayAt(data.arrivalTime); } catch (_) {}
+        if (at) { body.food_arrival_at = at; body.arrival_at = at; }
+      }
     }
   }
   if (data.category === 'task') {
     const cents = Math.round(Number(data.price) * 100);
-    if (Number.isFinite(cents) && cents >= 300) {
+    if (Number.isSafeInteger(cents) && cents >= 300) {
+      body.unit_reward_cents = cents;
       body.price_cents = cents;
-      body.tip_cents = Math.max(0, cents - 300);
     }
   }
   return body;
